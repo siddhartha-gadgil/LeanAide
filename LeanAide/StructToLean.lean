@@ -159,7 +159,7 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
         let body' := body.instantiate1 (mkFVar fVarId)
         dropLocalContext body'
       else return type
-    | some (.ldecl _ fVarId _ dtype value ..) =>
+    | some (.ldecl _ _ _ dtype value ..) =>
       let check ← isDefEq dtype binderType
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
@@ -403,20 +403,6 @@ def matchCases (discr: String)
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
-def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.Tactic)(qp: CodeGenerator)
-    : TranslateM <| Array Syntax.Tactic := do
-    match cond_pfs with
-    | [] => return #[← `(tactic| auto?)]
-    | (condProp, pf) :: tail => do
-      -- let condProp? ← theoremExprInContext? context cond qp
-      -- match condProp? with
-      -- | Except.error _ =>
-      --   return #[← mkNoteTactic s!"Failed to translate condition {cond}"]
-      -- | Except.ok condProp => do
-      let condTerm ← delab condProp
-      let condTerm' : Syntax.Term := ⟨condTerm⟩
-      let tailTacs ← groupCasesAux context tail qp
-      return #[← `(tactic| if $condTerm':term then $pf* else  $tailTacs*)]
 
 def orAllSimple (terms: List Syntax.Term) : Syntax.Term :=
   match terms with
@@ -446,6 +432,24 @@ partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
   | _ =>
     let terms ← terms.mapM dropLocalContext
     orAllSimpleExpr terms
+
+def exhaustiveType (goal: MVarId)(context : Array Json) (conds: List <| String)
+    (qp: CodeGenerator)  : TranslateM Expr := goal.withContext do
+  let condExprs ←  conds.filterMapM fun cond => do
+      let e? ← qp.theoremExprInContext? context cond
+      pure e?.toOption
+  orAllWithGoal condExprs (← goal.getType)
+
+def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.Tactic)(qp: CodeGenerator)
+    : TranslateM <| Array Syntax.Tactic := do
+    match cond_pfs with
+    | [] => return #[← `(tactic| auto?)]
+    | (condProp, pf) :: tail => do
+      let condTerm ← delab condProp
+      let condTerm' : Syntax.Term := ⟨condTerm⟩
+      let tailTacs ← groupCasesAux context tail qp
+      return #[← `(tactic| if $condTerm':term then $pf* else  $tailTacs*)]
+
 
 def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)
     (union_pfs: Array Syntax.Tactic) (qp: CodeGenerator) (goal?: Option Expr) :
@@ -582,8 +586,6 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
         `(tactic| have $name : $typeStx := by
             auto?)
 
-#check Elab.runTactic
-
 def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId := do
   let tacticCode ← `(tacticSeq| $tacs*)
@@ -605,12 +607,24 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
       IO.eprintln s!"Tactic: {← ppTactic tac}"
     return List.replicate n mvarId
 
+def groupCasesGoals (goal: MVarId) (context : Array Json) (conds: List String)
+    (qp: CodeGenerator) : TranslateM <| List MVarId := do
+    match conds with
+    | [] => return [goal]
+    | [_] => return [goal]
+    | h :: t => do
+      let tacs ← ifSkeleton h
+      let splitGoals ← runAndGetMVars goal #[tacs] 2
+      let tailGoals ← groupCasesGoals (splitGoals.get! 1) context t qp
+      return splitGoals.get! 0 :: tailGoals
+
+
 namespace expr
 -- TODO: Correct the `goal` passed in various cases.
 mutual
-  partial def structToCommand? (goal: MVarId)(context: Array Json)
+  partial def structToCommand? (context: Array Json)
       (input: Json) (qp: CodeGenerator) : TranslateM <| Option Syntax.Command :=
-      goal.withContext do
+      do
       match input.getKV? with
       | some ("theorem", v) =>
         -- logInfo s!"Found theorem"
@@ -701,13 +715,13 @@ mutual
                 pure <| prevTacs ++ #[tac]
             | _ => pure #[]
           | some ("define", head) =>
-            match ← structToCommand? goal context head qp with
+            match ← goal.withContext do structToCommand? context head qp with
             | some cmd =>
               let tac ← commandToTactic  <| ←  purgeLocalContext cmd
               pure #[tac]
             | none => pure #[]
           | some ("theorem", head) =>
-            match ← structToCommand? goal context head qp with
+            match (← goal.withContext do structToCommand? context head qp) with
             | some cmd =>
               let tac ← commandToTactic  <| ←  purgeLocalContext cmd
               pure #[tac]
@@ -715,13 +729,37 @@ mutual
           | some ("cases", head) =>
             match head.getObjValAs? (Array Json) "proof_cases" with
             | Except.ok cs =>
-              let conditionProofs ← cs.filterMapM fun js =>
+              let conds := cs.filterMap fun js =>
+                match js.getKV? with
+                | some ("case", js) => js.getObjString? "condition"
+                | _ => none
+              let newGoals : List MVarId ←
+                match head.getObjString? "split_kind" with
+                | "group" =>
+                  groupCasesGoals goal context conds.toList qp
+                | "condition" =>
+                  match conds.toList with
+                  | [cond₁, _] =>
+                    let tac ← ifSkeleton cond₁
+                    runAndGetMVars goal #[tac] 2
+                  | _ =>
+                    pure [goal, goal]
+                | "match" =>
+                  match head.getObjString? "on" with
+                  | some discr =>
+                    let casesTac ← matchCasesSkeleton discr conds
+                    runAndGetMVars goal #[casesTac] 2
+                  | _ => pure <| List.replicate conds.size goal
+                | _ =>
+                  groupCasesGoals goal context conds.toList qp
+              let conditionProofs ←
+                (cs.zip newGoals.toArray).filterMapM fun (js, newGoal) =>
                 match js.getKV? with
                 | some ("case", js) =>
                   match js.getObjString? "condition",
                     js.getObjValAs? (List Json) "proof" with
                   | some cond, Except.ok pfSource => do
-                    let pf ← structToTactics goal #[] context pfSource qp
+                    let pf ← structToTactics newGoal #[] context pfSource qp
                     pure <| some (cond, pf)
                   | _, _ => pure none
                 | _ => pure none
@@ -736,7 +774,9 @@ mutual
                 let union_pf : Array Syntax.Tactic ←
                   match head.getObjValAs? (List Json) "exhaustiveness" with
                   | Except.ok pfSource =>
-                    structToTactics goal #[] context pfSource qp
+                    let exType ← exhaustiveType goal context conds.toList qp
+                    let mvar ← mkFreshExprMVar exType
+                    structToTactics mvar.mvarId! #[] context pfSource qp
                   | _ => pure #[← `(tactic| auto?)]
                 groupCases context conditionProofs.toList union_pf qp none
               | some "condition" =>
@@ -1089,7 +1129,7 @@ def statementToCode (s: String) (qp: CodeGenerator) :
       IO.println fmt
     return fmt
 
-#check MVarId.introN
+-- #check MVarId.introN
 
 elab "intro_experiment%" t:term : term => do
   let t ← elabType t
@@ -1106,9 +1146,9 @@ elab "intro_experiment%" t:term : term => do
     logInfo m!"Inner type: {← PrettyPrinter.ppExpr type'}"
   return t
 
-#check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m
+-- #check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m
 
-#check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n)
+-- #check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n)
 
 elab "intro_experiment%%" t:term "vs" s:term : term => do
   let t ← elabType t
@@ -1126,8 +1166,8 @@ elab "intro_experiment%%" t:term "vs" s:term : term => do
     logInfo m!"Inner type: {← PrettyPrinter.ppExpr type'}"
   return t
 
-#check intro_experiment%% (∀(n  : Nat), n = 1) vs
-    (∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n))
+-- #check intro_experiment%% (∀(n  : Nat), n = 1) vs
+--     (∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n))
 
 
 end CodeGenerator
