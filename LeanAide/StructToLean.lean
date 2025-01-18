@@ -4,7 +4,7 @@ import LeanCodePrompts.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
 import LeanAide.AutoTactic
-open LeanAide.Meta Lean Meta
+open LeanAide.Meta Lean Meta PrettyPrinter
 
 /-!
 # Lean code from `ProofJSON`
@@ -298,7 +298,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
       return Except.error #[ElabError.parsed statement s!"Failed to infer type {type}, error {← e.toMessageData.format}" [] none]
     if univ.isSort then
       let type ←  dropLocalContext type
-      IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}; {repr type}"
+      -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
       return Except.ok type
     else
       IO.eprintln s!"Not a type: {type}"
@@ -360,11 +360,15 @@ def matchCasesSkeleton (discr: String)
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
-def ifSkeleton (discr: String) : TermElabM Syntax.Tactic := do
-  let discrTerm :=
-    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(_))
-  let discrTerm' : Syntax.Term := ⟨discrTerm⟩
-  `(tactic| if $discrTerm':term then _ else _)
+def ifSkeleton (context: Array Json) (discr: String) (qp: CodeGenerator) : TranslateM Syntax.Tactic := do
+  let discrTerm? ←
+    theoremExprInContext? context discr qp
+  match discrTerm? with
+  | Except.error e =>
+    mkNoteTactic s!"Failed to translate condition {discr}"
+  | Except.ok discrTerm => do
+    let discrTerm' : Syntax.Term ← delab discrTerm
+    `(tactic| if $discrTerm':term then _ else _)
 
 
 example (n: Nat) : n = n := by
@@ -590,10 +594,17 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId :=
     mvarId.withContext do
   let tacticCode ← `(tacticSeq| $tacs*)
+  -- let tacticCode ← `(tacticSeq| skip)
   try
-    let (mvars, s) ← Elab.runTactic mvarId tacticCode
+    let (mvars, s) ←
+      withoutErrToSorry do
+      Elab.runTactic mvarId tacticCode {mayPostpone := false, errToSorry := false}
     if allowClosure && mvars.isEmpty then
       set s
+      IO.eprintln s!"Tactics returned no goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
+      IO.eprintln s!"Assignment: {← mvarId.isAssigned}; {← PrettyPrinter.ppExpr <| mkMVar mvarId} "
+      for tac in tacs do
+        IO.eprintln s!"Tactic: {← ppTactic tac}"
       return mvars
     unless mvars.length == n do
       IO.eprintln s!"Tactics returned wrong number of goals on {← mvarId.getType}: {mvars.length} instead of {n}"
@@ -603,7 +614,7 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     set s
     return mvars
   catch e =>
-    IO.eprintln s!"Tactics failed on {← mvarId.getType}: {← e.toMessageData.toString}"
+    IO.eprintln s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
     for tac in tacs do
       IO.eprintln s!"Tactic: {← ppTactic tac}"
     return List.replicate n mvarId
@@ -614,7 +625,7 @@ def groupCasesGoals (goal: MVarId) (context : Array Json) (conds: List String)
     | [] => return [goal]
     | [_] => return [goal]
     | h :: t => do
-      let tacs ← ifSkeleton h
+      let tacs ← ifSkeleton context h qp
       let splitGoals ← runAndGetMVars goal #[tacs] 2
       let tailGoals ← groupCasesGoals (splitGoals.get! 1) context t qp
       return splitGoals.get! 0 :: tailGoals
@@ -641,6 +652,7 @@ mutual
             | Except.error _ =>
               mkNoteCmd s!"Failed to translate theorem {claim}"
             | Except.ok thm => do
+              IO.eprintln s!"Theorem: {← PrettyPrinter.ppExpr thm}"
               let mvar ← mkFreshExprMVar thm
               let mvarId := mvar.mvarId!
               let vars ← getVars thm
@@ -670,7 +682,9 @@ mutual
     (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := goal.withContext do
       match input with
       | [] => return accum.push <| ← `(tactic| auto?)
-      | head :: tail =>
+      | head :: tail => do
+      IO.eprintln s!"Processing {head}"
+      IO.eprintln s!"Goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
         -- IO.eprintln s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
           match head.getKV? with
@@ -741,7 +755,7 @@ mutual
                 | "condition" =>
                   match conds.toList with
                   | [cond₁, _] =>
-                    let tac ← ifSkeleton cond₁
+                    let tac ← ifSkeleton context cond₁ qp
                     runAndGetMVars goal #[tac] 2
                   | _ =>
                     pure [goal, goal]
@@ -818,7 +832,7 @@ mutual
               head.getObjValAs? (List Json) "proof" with
             | Except.ok s, Except.ok pf => do
               let fe := mkIdent ``False.elim
-              let newGoals ← runAndGetMVars goal #[← `(tactic|apply $fe)] 1 true
+              let newGoals ← runAndGetMVars goal #[← `(tactic|apply $fe)] 1
               let proof ← structToTactics newGoals[0]! #[] context pf qp
               contradictionTactics s proof context qp
             | _, _ => pure #[]
@@ -832,12 +846,12 @@ mutual
             calculateTactics js context qp
           | _ =>
             pure #[]
-        -- IO.eprintln s!"Head tactics"
-        -- for tac in headTactics do
-        --   IO.eprintln s!"{← ppTactic tac}"
+        IO.eprintln s!"Head tactics : {headTactics.size}"
         let newGoals ← runAndGetMVars goal  headTactics 1 true
         match newGoals.head? with
-        | none => return accum
+        | none =>
+          IO.eprintln s!"Failed to get new goal"
+          return accum
         | some newGoal =>
           structToTactics newGoal (accum ++ headTactics) (context.push head) tail qp
 
@@ -1030,7 +1044,7 @@ mutual
 end
 end stx
 
-open stx
+open expr
 
 def structToCommandSeq? (context: Array Json)
     (input: Json) (qp: CodeGenerator) : TranslateM <| Option <| Array Syntax.Command := do
