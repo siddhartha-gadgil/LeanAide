@@ -587,7 +587,8 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
             auto?)
 
 def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
-    (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId := do
+    (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId :=
+    mvarId.withContext do
   let tacticCode ← `(tacticSeq| $tacs*)
   try
     let (mvars, s) ← Elab.runTactic mvarId tacticCode
@@ -608,7 +609,7 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     return List.replicate n mvarId
 
 def groupCasesGoals (goal: MVarId) (context : Array Json) (conds: List String)
-    (qp: CodeGenerator) : TranslateM <| List MVarId := do
+    (qp: CodeGenerator) : TranslateM <| List MVarId := goal.withContext do
     match conds with
     | [] => return [goal]
     | [_] => return [goal]
