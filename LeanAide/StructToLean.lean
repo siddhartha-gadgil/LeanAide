@@ -232,6 +232,19 @@ def inductionCase (name: String)(condition: String)
       let ihId' ← `(Lean.binderIdent| $ihId:ident)
       `(tactic| case $succId' $nId:ident $ihId' => $pf*)
 
+def inductionCaseSkeleton (name: String)(condition: String)
+     : TermElabM (TSyntax ``Tactic.inductionAlt) := do
+  match condition with
+  | "base" =>
+      let zeroId := mkIdent ``Nat.zero
+      `(inductionAlt| | $zeroId => _)
+  | _ =>
+      let nId := mkIdent name.toName
+      let succId := mkIdent ``Nat.succ
+      let ihId := mkIdent `ih
+      `(inductionAlt| | $succId $nId $ihId => _)
+
+
 def inductionCases (name: String)
     (condPfs : Array (String × Array Syntax.Tactic))
     : TermElabM <| Array Syntax.Tactic := do
@@ -241,6 +254,18 @@ def inductionCases (name: String)
     let caseTac ← inductionCase name cond pf
     cases := cases.push caseTac
   return cases
+
+def inductionCasesSkeleton (name: String)
+    (conds : Array (String))
+    : TermElabM <| Syntax.Tactic := do
+  let nId := mkIdent name.toName
+  let mut cases := #[]
+  for cond in conds do
+    let caseTac ← inductionCaseSkeleton name cond
+    cases := cases.push caseTac
+  let alts ← `(inductionAlts| with $cases:inductionAlt*)
+  `(tactic| induction $nId:ident $alts:inductionAlts)
+
 
 namespace CodeGenerator
 
@@ -334,6 +359,13 @@ def matchCasesSkeleton (discr: String)
     runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(_))
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
+
+def ifSkeleton (discr: String) : TermElabM Syntax.Tactic := do
+  let discrTerm :=
+    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(_))
+  let discrTerm' : Syntax.Term := ⟨discrTerm⟩
+  `(tactic| if $discrTerm':term then _ else _)
+
 
 example (n: Nat) : n = n := by
   induction n with
@@ -550,6 +582,229 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
         `(tactic| have $name : $typeStx := by
             auto?)
 
+#check Elab.runTactic
+
+def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
+    (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId := do
+  let tacticCode ← `(tacticSeq| $tacs*)
+  try
+    let (mvars, s) ← Elab.runTactic mvarId tacticCode
+    if allowClosure && mvars.isEmpty then
+      set s
+      return mvars
+    unless mvars.length == n do
+      IO.eprintln s!"Tactics returned wrong number of goals on {← mvarId.getType}: {mvars.length} instead of {n}"
+      for tac in tacs do
+        IO.eprintln s!"Tactic: {← ppTactic tac}"
+      return List.replicate n mvarId
+    set s
+    return mvars
+  catch e =>
+    IO.eprintln s!"Tactics failed on {← mvarId.getType}: {← e.toMessageData.toString}"
+    for tac in tacs do
+      IO.eprintln s!"Tactic: {← ppTactic tac}"
+    return List.replicate n mvarId
+
+namespace expr
+-- TODO: Correct the `goal` passed in various cases.
+mutual
+  partial def structToCommand? (goal: MVarId)(context: Array Json)
+      (input: Json) (qp: CodeGenerator) : TranslateM <| Option Syntax.Command :=
+      goal.withContext do
+      match input.getKV? with
+      | some ("theorem", v) =>
+        -- logInfo s!"Found theorem"
+        let name? := v.getObjString? "name" |>.map String.toName
+        let name? := name?.filter (· ≠ Name.anonymous)
+        let hypothesis :=
+          v.getObjValAs? (Array Json) "hypothesis"
+            |>.toOption.getD #[]
+        match v.getObjValAs? String "conclusion", v.getObjValAs? Json "proof" with
+        | Except.ok claim, Except.ok (.arr steps) =>
+            let thm? ← theoremExprInContext?  (context ++ hypothesis) claim qp
+            match thm? with
+            | Except.error _ =>
+              mkNoteCmd s!"Failed to translate theorem {claim}"
+            | Except.ok thm => do
+              let mvar ← mkFreshExprMVar thm
+              let mvarId := mvar.mvarId!
+              let vars ← getVars thm
+              let varIds := vars.toArray.map fun n => Lean.mkIdent n
+              let introTacs ← `(tactic| intro $varIds*)
+              let (_, mvarId) ← mvarId.introN vars.length vars
+              mvarId.withContext do
+                let pf ←
+                  structToTactics mvarId #[] (context ++ hypothesis) steps.toList qp
+                let pf := #[introTacs] ++  pf
+                let pfTerm ← `(by $pf*)
+                -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
+                mkStatementStx name? (← delab thm) pfTerm true
+        | _, _ =>
+          -- logInfo s!"failed to get theorem conclusion or proof"
+          mkNoteCmd "No theorem conclusion or proof found"
+      | some ("def", v) =>
+        match v.getObjValAs? String "statement", v.getObjValAs? String "term" with
+        | Except.ok s, Except.ok t =>
+          let statement := s!"We define {t} as follows:\n{s}."
+          defnInContext? context statement qp
+        | _ , _ => return none
+      | _ => mkNoteCmd s!"Json not a KV pair {input.compress}"
+
+  partial def structToTactics (goal: MVarId) (accum: Array Syntax.Tactic)
+    (context: Array Json)(input: List Json)
+    (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := goal.withContext do
+      match input with
+      | [] => return accum.push <| ← `(tactic| auto?)
+      | head :: tail =>
+        -- IO.eprintln s!"Processing {head}"
+        let headTactics: Array Syntax.Tactic ←
+          match head.getKV? with
+          | some ("assert", head) =>
+            match head.getObjValAs? String "claim" with
+            | Except.ok claim =>
+              let mut useResults: Array String := #[]
+              let mut prevTacs : Array Syntax.Tactic := #[]
+              match head.getObjValAs? Json "deduced_from_results"  with
+              | Except.ok known =>
+                match known.getKV? with
+                | some ("deduced_from", .arr results) =>
+                  for js in results do
+                    match js.getObjString? "result_used", js.getObjValAs? Bool "proved_earlier" with
+                    | some s, Except.ok false => useResults := useResults.push s
+                    | some s, Except.ok true =>
+                      let type? ← theoremExprInContext? context s qp
+                      match type? with
+                      | Except.ok e =>
+                        let stx ← delab e
+                        let name := mkIdent <| Name.mkSimple s
+                        prevTacs := prevTacs.push <| ← `(tactic| have $name : $stx := by
+                          auto?)
+                      | _ => pure ()
+                    | _, _ => pure ()
+                | _ => pure ()
+              | _ => pure ()
+              match head.getObjValAs? Json "calculate" with
+              | Except.ok js =>
+                let tac ← calculateTactics js context qp
+                prevTacs := prevTacs ++ tac
+              | _ => pure ()
+              let type? ← theoremExprInContext? context claim qp
+              match type? with
+              | Except.error _ =>
+                IO.eprintln s!"Failed to translate assertion {claim}"
+                pure #[← mkNoteTactic s!"Failed to translate assertion {claim}"]
+              | Except.ok type =>
+                let names' ← useResults.toList.mapM fun s =>
+                  Translator.matchingTheoremsAI   (s := s) (qp:= qp)
+                let premises := names'.flatten
+                let tac ← haveForAssertion  (← delab type) premises
+                pure <| prevTacs ++ #[tac]
+            | _ => pure #[]
+          | some ("define", head) =>
+            match ← structToCommand? goal context head qp with
+            | some cmd =>
+              let tac ← commandToTactic  <| ←  purgeLocalContext cmd
+              pure #[tac]
+            | none => pure #[]
+          | some ("theorem", head) =>
+            match ← structToCommand? goal context head qp with
+            | some cmd =>
+              let tac ← commandToTactic  <| ←  purgeLocalContext cmd
+              pure #[tac]
+            | none => pure #[]
+          | some ("cases", head) =>
+            match head.getObjValAs? (Array Json) "proof_cases" with
+            | Except.ok cs =>
+              let conditionProofs ← cs.filterMapM fun js =>
+                match js.getKV? with
+                | some ("case", js) =>
+                  match js.getObjString? "condition",
+                    js.getObjValAs? (List Json) "proof" with
+                  | some cond, Except.ok pfSource => do
+                    let pf ← structToTactics goal #[] context pfSource qp
+                    pure <| some (cond, pf)
+                  | _, _ => pure none
+                | _ => pure none
+              match head.getObjString? "split_kind" with
+              | some "match" =>
+                match head.getObjString? "on" with
+                | some discr =>
+                  let casesTac ← matchCases discr conditionProofs
+                  return #[casesTac]
+                | _ => pure #[]
+              | some "group" =>
+                let union_pf : Array Syntax.Tactic ←
+                  match head.getObjValAs? (List Json) "exhaustiveness" with
+                  | Except.ok pfSource =>
+                    structToTactics goal #[] context pfSource qp
+                  | _ => pure #[← `(tactic| auto?)]
+                groupCases context conditionProofs.toList union_pf qp none
+              | some "condition" =>
+                match conditionProofs with
+                | #[(cond₁, pf₁), (cond₂, pf₂)] =>
+                  conditionCases cond₁ cond₂ pf₁ pf₂ context qp
+                | _ => pure #[]
+              | _ => /- treat like a group but with conditions as claims;
+                      works for `iff` -/
+                let union_pf : Array Syntax.Tactic ←
+                  pure #[← `(tactic| auto?)]
+                groupCases context conditionProofs.toList union_pf qp none
+            | _ =>
+              pure #[]
+          | some ("induction", head) =>
+            match head.getObjValAs? String "on",
+              head.getObjValAs? (Array Json) "proof_cases" with
+            | Except.ok name, Except.ok cs =>
+              let skeletonTac ←
+                inductionCasesSkeleton name <|
+                  cs.filterMap fun js => js.getObjString? "condition"
+              let newGoals ← runAndGetMVars goal #[skeletonTac] cs.size
+              let cs' := cs.zip newGoals.toArray
+              let conditionProofs ← cs'.filterMapM fun (js, newGoal) =>
+                match js.getKV? with
+                | some ("case", js) =>
+                  match js.getObjString? "condition",
+                    js.getObjValAs? (List Json) "proof" with
+                  | some cond, Except.ok pfSource => do
+                    let pf ← structToTactics newGoal #[] context pfSource qp
+                    return some (cond, pf)
+                  | _, _ => return none
+                | _ => return none
+              inductionCases name conditionProofs
+            | _, _ => pure #[]
+          | some ("contradiction", head) =>
+            match head.getObjValAs? String "assumption",
+              head.getObjValAs? (List Json) "proof" with
+            | Except.ok s, Except.ok pf => do
+              let fe := mkIdent ``False.elim
+              let newGoals ← runAndGetMVars goal #[← `(tactic|apply $fe)] 1 true
+              let proof ← structToTactics newGoals[0]! #[] context pf qp
+              contradictionTactics s proof context qp
+            | _, _ => pure #[]
+          | some ("conclude", head) =>
+            match head.getObjValAs? String "claim" with
+            | Except.ok s => pure #[← conclusionTactic s context qp]
+            | _ =>
+              IO.eprintln s!"Failed to translate conclusion {head}"
+              pure #[]
+          | some ("calculate", js) =>
+            calculateTactics js context qp
+          | _ =>
+            pure #[]
+        -- IO.eprintln s!"Head tactics"
+        -- for tac in headTactics do
+        --   IO.eprintln s!"{← ppTactic tac}"
+        let newGoals ← runAndGetMVars goal  headTactics 1 true
+        match newGoals.head? with
+        | none => return accum
+        | some newGoal =>
+          structToTactics newGoal (accum ++ headTactics) (context.push head) tail qp
+
+end
+end expr
+
+
+namespace stx
 mutual
   partial def structToCommand? (context: Array Json)
       (input: Json) (qp: CodeGenerator) : TranslateM <| Option Syntax.Command := do
@@ -732,10 +987,9 @@ mutual
         structToTactics (accum ++ headTactics) (context.push head) tail qp goal?
 
 end
+end stx
 
-#check MVarId.induction
-#check InductionSubgoal
-
+open stx
 
 def structToCommandSeq? (context: Array Json)
     (input: Json) (qp: CodeGenerator) : TranslateM <| Option <| Array Syntax.Command := do
