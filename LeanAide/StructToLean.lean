@@ -176,12 +176,12 @@ def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
 | `(command|def $name  : $type := $value) => do
   let typeElab ← elabType type
   let type ← dropLocalContext typeElab
-  let type ← delab type
+  let type ← delabDetailed type
   `(command|def $name : $type := $value)
 | `(command|theorem $name  : $type := $value) => do
   let typeElab ← elabType type
   let type ← dropLocalContext typeElab
-  let type ← delab type
+  let type ← delabDetailed type
   `(command|theorem $name : $type := $value)
 | stx => return stx
 
@@ -331,8 +331,8 @@ def conditionCases (cond₁ cond₂ : String)
   | _, Except.error _ => do
     return #[← mkNoteTactic s!"Failed to translate condition {cond₂}"]
   | Except.ok condProp₁, Except.ok condProp₂ => do
-  let condTerm₁ ← delab condProp₁
-  let condTerm₂ ← delab condProp₂
+  let condTerm₁ ← delabDetailed condProp₁
+  let condTerm₂ ← delabDetailed condProp₂
   let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
   let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
   let tac ← `(tacticSeq| auto?)
@@ -367,7 +367,7 @@ def ifSkeleton (context: Array Json) (discr: String) (qp: CodeGenerator) : Trans
   | Except.error e =>
     mkNoteTactic s!"Failed to translate condition {discr}"
   | Except.ok discrTerm => do
-    let discrTerm' : Syntax.Term ← delab discrTerm
+    let discrTerm' : Syntax.Term ← delabDetailed discrTerm
     `(tactic| if $discrTerm':term then _ else _)
 
 
@@ -449,7 +449,7 @@ def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.
     match cond_pfs with
     | [] => return #[← `(tactic| auto?)]
     | (condProp, pf) :: tail => do
-      let condTerm ← delab condProp
+      let condTerm ← delabDetailed condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
       let tailTacs ← groupCasesAux context tail qp
       return #[← `(tactic| if $condTerm':term then $pf* else  $tailTacs*)]
@@ -468,7 +468,7 @@ def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.
   let orAllExpr ←  match goal? with
     | some goal => orAllWithGoal condExprs goal
     | none => orAllSimpleExpr condExprs
-  let orAll ← delab orAllExpr
+  let orAll ← delabDetailed orAllExpr
   let hash := hash orAll.raw.reprint
   let orAllId := mkIdent <| Name.mkSimple s!"orAll_{hash}"
   let casesTacs ← groupCasesAux context condPfExprs qp
@@ -480,7 +480,7 @@ def conclusionTactic (conclusion: String)(context: Array Json) (qp: CodeGenerato
   let conclusionTerm? ← qp.theoremExprInContext? context conclusion
   let conclusionTerm :=
     conclusionTerm? |>.toOption.getD (mkConst ``True)
-  let conclusionTerm' : Syntax.Term ← delab conclusionTerm
+  let conclusionTerm' : Syntax.Term ← delabDetailed conclusionTerm
   let hash := hash conclusion
   let conclusionId := mkIdent <| Name.mkSimple s!"conclusion_{hash}"
   let tac ← `(tacticSeq| auto?)
@@ -491,7 +491,7 @@ def contradictionTactics (statement: String)
   let statementTerm? ← qp.theoremExprInContext? context statement
   let statementTerm :=
     statementTerm? |>.toOption.getD (mkConst ``True)
-  let statementTerm' : Syntax.Term ← delab statementTerm
+  let statementTerm' : Syntax.Term ← delabDetailed statementTerm
   let falseId := mkIdent `False
   let assId := mkIdent `assumption
   let assumeTactic ← `(tactic| intro $assId:ident)
@@ -584,7 +584,7 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
         IO.eprintln s!"Failed to translate calculation: {repr e}"
         mkNoteTactic s!"Failed to translate calculation {js.compress}"
       | Except.ok type =>
-        let typeStx ← delab type
+        let typeStx ← delabDetailed type
         let hash := hash statement
         let name := mkIdent <| Name.mkSimple s!"calculation_{hash}"
         `(tactic| have $name : $typeStx := by
@@ -596,9 +596,11 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
   let tacticCode ← `(tacticSeq| $tacs*)
   -- let tacticCode ← `(tacticSeq| skip)
   try
+    let ctx ← read
     let (mvars, s) ←
       withoutErrToSorry do
-      Elab.runTactic mvarId tacticCode {mayPostpone := false, errToSorry := false}
+      Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false}
+        {}  (s:= ← get)
     if allowClosure && mvars.isEmpty then
       set s
       IO.eprintln s!"Tactics returned no goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
@@ -665,7 +667,7 @@ mutual
                 let pf := #[introTacs] ++  pf
                 let pfTerm ← `(by $pf*)
                 -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
-                mkStatementStx name? (← delab thm) pfTerm true
+                mkStatementStx name? (← delabDetailed thm) pfTerm true
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"
@@ -704,7 +706,7 @@ mutual
                       let type? ← theoremExprInContext? context s qp
                       match type? with
                       | Except.ok e =>
-                        let stx ← delab e
+                        let stx ← delabDetailed e
                         let name := mkIdent <| Name.mkSimple s
                         prevTacs := prevTacs.push <| ← `(tactic| have $name : $stx := by
                           auto?)
@@ -726,7 +728,7 @@ mutual
                 let names' ← useResults.toList.mapM fun s =>
                   Translator.matchingTheoremsAI   (s := s) (qp:= qp)
                 let premises := names'.flatten
-                let tac ← haveForAssertion  (← delab type) premises
+                let tac ← haveForAssertion  (← delabDetailed type) premises
                 pure <| prevTacs ++ #[tac]
             | _ => pure #[]
           | some ("define", head) =>
@@ -890,7 +892,7 @@ mutual
                 let pf := #[introTacs] ++  pf
                 let pfTerm ← `(by $pf*)
                 -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
-                mkStatementStx name? (← delab thm) pfTerm true
+                mkStatementStx name? (← delabDetailed thm) pfTerm true
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"
@@ -927,7 +929,7 @@ mutual
                       let type? ← theoremExprInContext? context s qp
                       match type? with
                       | Except.ok e =>
-                        let stx ← delab e
+                        let stx ← delabDetailed e
                         let name := mkIdent <| Name.mkSimple s
                         prevTacs := prevTacs.push <| ← `(tactic| have $name : $stx := by
                           auto?)
@@ -949,7 +951,7 @@ mutual
                 let names' ← useResults.toList.mapM fun s =>
                   Translator.matchingTheoremsAI   (s := s) (qp:= qp)
                 let premises := names'.flatten
-                let tac ← haveForAssertion  (← delab type) premises
+                let tac ← haveForAssertion  (← delabDetailed type) premises
                 pure <| prevTacs ++ #[tac]
             | _ => pure #[]
           | some ("define", head) =>

@@ -499,6 +499,20 @@ def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
                     pp.unicode.fun.set o' true) do
               PrettyPrinter.delab e
 
+def delabDetailed (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
+                    -- let o₂ := pp.motives.all.set o₁ true
+                    let o₃ := pp.fieldNotation.set o₁ false
+                    let o₄ := pp.proofs.set o₃ true
+                    let o₅ := pp.deepTerms.set o₄ true
+                    let o₆ := pp.funBinderTypes.set o₅ true
+                    let o₇ := pp.piBinderTypes.set o₆ true
+                    let o₈ := pp.letVarTypes.set o₇ true
+                    let o₉ := pp.coercions.types.set o₈ true
+                    let o' := pp.motives.nonConst.set o₉ true
+                    pp.unicode.fun.set o' true) do
+              PrettyPrinter.delab e
+
+
 def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.FS.Handle := do
     let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
     let dir := System.mkFilePath <| [".", "rawdata"] ++
