@@ -80,6 +80,8 @@ def contextStatementOfJson (js: Json) : Option String :=
     | _ => none
   | _ => none
 
+namespace LeanAide
+
 def localDeclExists (name: Name) (type : Expr) : MetaM Bool := do
   let lctx ← getLCtx
   match lctx.findFromUserName? name with
@@ -135,6 +137,7 @@ match stx with
   evalTactic tac
 | _ => throwUnsupportedSyntax
 
+open Translator
 def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Option Expr) := do
   let mut context := #[]
   for js in ctx do
@@ -144,8 +147,9 @@ def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Opti
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   IO.eprintln s!"Full statement: {fullStatement}"
   let type? ← translateToProp?
-    fullStatement.trim server params pb .simple
-  IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
+    fullStatement.trim {}
+  let type? := type?.toOption
+  -- IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
 def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
@@ -161,6 +165,7 @@ def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
   `(command|theorem $name : $type := $value)
 | stx => return stx
 
+open Translator
 def defnInContext? (ctx: Array Json)(statement: String) : TranslateM (Option Syntax.Command) := do
   let mut context := #[]
   for js in ctx do
@@ -169,7 +174,7 @@ def defnInContext? (ctx: Array Json)(statement: String) : TranslateM (Option Syn
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) statement
   let cmd? ←
-    translateDefCmdM? fullStatement server params pb .doc
+    translateDefCmdM? fullStatement {}
   let cmd? ← cmd?.mapM purgeLocalContext
   return cmd?.toOption
 
@@ -336,7 +341,7 @@ mutual
         | Except.ok claim, Except.ok pfSource =>
           match pfSource.getObjValAs? (List Json) "steps" with
           | Except.ok steps =>
-            let thm? ← theoremExprInContext? server params pb (context ++ hypothesis) claim
+            let thm? ← theoremExprInContext? (context ++ hypothesis) claim
             if thm?.isNone then
               IO.eprintln s!"failed to get theorem conclusion"
             thm?.mapM fun thm => do
@@ -348,7 +353,7 @@ mutual
           | _ =>
             IO.eprintln s!"failed to get proof steps"
             logInfo s!"failed to get proof steps"
-            none
+            return none
         | _, _ =>
           logInfo s!"failed to get theorem conclusion or proof"
           return none
@@ -356,8 +361,8 @@ mutual
         match input.getObjValAs? String "statement", input.getObjValAs? String "term" with
         | Except.ok s, Except.ok t =>
           let statement := s!"We define {t} as follows:\n{s}."
-          defnInContext? server params pb context statement
-        | _ , _ => none
+          defnInContext?  context statement
+        | _ , _ => return none
       | _ => return none
 
   partial def structToTactics  (accum: Array Syntax.Tactic)(context: Array Json)
@@ -378,13 +383,13 @@ mutual
                   | Except.ok results => results
                   | _ => []
                 | _ => []
-              let type? ← theoremExprInContext? server params pb context claim
+              let type? ← theoremExprInContext? context claim
               match type? with
               | none => pure #[]
               | some type =>
                 let names' ← useResults.mapM fun s =>
-                  matchingTheoremsAI server params  (s := s) numLeanSearch numMoogle
-                let premises := names'.join
+                  matchingTheoremsAI   (s := s) (qp := {})
+                let premises := names'.flatten
                 let tac ← haveForAssertion  (← delab type) premises
                 pure #[tac]
             | _ => pure #[]
