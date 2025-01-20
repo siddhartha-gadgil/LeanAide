@@ -1,0 +1,48 @@
+{"usage":
+ {"total_tokens": 2284,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2211,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 73},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-ArisQ8jKO6CAGRsQvT7gIJ5KBRDEq",
+ "created": 1737367254,
+ "choices":
+ [{"message":
+   {"role": "assistant", "refusal": null, "content": "∀ n : ℕ, Odd n"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {n : ℕ}, Odd n -> Even (n.succ)"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {n : ℕ}, Odd n ↔ n % 2 = 1"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {n : ℕ}, Odd n → Odd (n + 1)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "∀ {n : ℕ}, Odd n"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"}]}
