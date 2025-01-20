@@ -4,7 +4,7 @@ import LeanCodePrompts.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
 import LeanAide.AutoTactic
-open LeanAide.Meta Lean Meta
+open LeanAide.Meta Lean Meta PrettyPrinter
 
 /-!
 # Lean code from `ProofJSON`
@@ -158,14 +158,18 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
       if check then
         let body' := body.instantiate1 (mkFVar fVarId)
         dropLocalContext body'
-      else return type
-    | some (.ldecl _ fVarId _ dtype value ..) =>
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        return type
+    | some (.ldecl _ _ _ dtype value ..) =>
       let check ← isDefEq dtype binderType
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 value
         dropLocalContext body'
-      else return type
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        return type
     | _ => return type
   | _ => return type
 
@@ -176,12 +180,12 @@ def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
 | `(command|def $name  : $type := $value) => do
   let typeElab ← elabType type
   let type ← dropLocalContext typeElab
-  let type ← delab type
+  let type ← delabDetailed type
   `(command|def $name : $type := $value)
 | `(command|theorem $name  : $type := $value) => do
   let typeElab ← elabType type
   let type ← dropLocalContext typeElab
-  let type ← delab type
+  let type ← delabDetailed type
   `(command|theorem $name : $type := $value)
 | stx => return stx
 
@@ -232,6 +236,19 @@ def inductionCase (name: String)(condition: String)
       let ihId' ← `(Lean.binderIdent| $ihId:ident)
       `(tactic| case $succId' $nId:ident $ihId' => $pf*)
 
+def inductionCaseSkeleton (name: String)(condition: String)
+     : TermElabM (TSyntax ``Tactic.inductionAlt) := do
+  match condition with
+  | "base" =>
+      let zeroId := mkIdent ``Nat.zero
+      `(inductionAlt| | $zeroId => _)
+  | _ =>
+      let nId := mkIdent name.toName
+      let succId := mkIdent ``Nat.succ
+      let ihId := mkIdent `ih
+      `(inductionAlt| | $succId $nId $ihId => _)
+
+
 def inductionCases (name: String)
     (condPfs : Array (String × Array Syntax.Tactic))
     : TermElabM <| Array Syntax.Tactic := do
@@ -241,6 +258,18 @@ def inductionCases (name: String)
     let caseTac ← inductionCase name cond pf
     cases := cases.push caseTac
   return cases
+
+def inductionCasesSkeleton (name: String)
+    (conds : Array (String))
+    : TermElabM <| Syntax.Tactic := do
+  let nId := mkIdent name.toName
+  let mut cases := #[]
+  for cond in conds do
+    let caseTac ← inductionCaseSkeleton name cond
+    cases := cases.push caseTac
+  let alts ← `(inductionAlts| with $cases:inductionAlt*)
+  `(tactic| induction $nId:ident $alts:inductionAlts)
+
 
 namespace CodeGenerator
 
@@ -273,7 +302,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
       return Except.error #[ElabError.parsed statement s!"Failed to infer type {type}, error {← e.toMessageData.format}" [] none]
     if univ.isSort then
       let type ←  dropLocalContext type
-      IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}; {repr type}"
+      -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
       return Except.ok type
     else
       IO.eprintln s!"Not a type: {type}"
@@ -306,8 +335,8 @@ def conditionCases (cond₁ cond₂ : String)
   | _, Except.error _ => do
     return #[← mkNoteTactic s!"Failed to translate condition {cond₂}"]
   | Except.ok condProp₁, Except.ok condProp₂ => do
-  let condTerm₁ ← delab condProp₁
-  let condTerm₂ ← delab condProp₂
+  let condTerm₁ ← delabDetailed condProp₁
+  let condTerm₂ ← delabDetailed condProp₂
   let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
   let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
   let tac ← `(tacticSeq| auto?)
@@ -316,13 +345,56 @@ def conditionCases (cond₁ cond₂ : String)
   let ass₂ ← `(tactic| have $condId₂ : $condTerm₂' := by
     $tac:tacticSeq)
   let pf₂' := #[ass₂] ++ pf₂
-  let posId := mkIdent `pos
-  let negId := mkIdent `neg
-  let posId' ← `(caseArg| $posId:ident)
-  let negId' ← `(caseArg| $negId:ident)
-  return #[← `(tactic| by_cases $condTerm₁'), ← `(tactic| case $posId' => $pf₁*), ← `(tactic| case $negId' => $pf₂'*)]
+  return #[← `(tactic| if $condTerm₁' then $pf₁* else $pf₂'*)]
 
 def matchAltTac := Term.matchAlt (rhsParser := matchRhs)
+
+def matchCasesSkeleton (discr: String)
+    (pats: Array <| String) : TermElabM Syntax.Tactic := do
+  let mut alts : Array <| TSyntax ``matchAltTac := #[]
+  for pat in pats do
+    let patTerm :=
+      runParserCategory (← getEnv) `term pat |>.toOption.getD (← `(_))
+    let patTerm' : Syntax.Term := ⟨patTerm⟩
+    let m ← `(matchAltTac| | $patTerm' => _)
+    alts := alts.push m
+  let alts' : Array <| TSyntax ``matchAlt := alts.map fun alt => ⟨alt⟩
+  let discrTerm :=
+    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(_))
+  let discrTerm' : Syntax.Term := ⟨discrTerm⟩
+  `(tactic| match $discrTerm':term with $alts':matchAlt*)
+
+def ifSkeleton (context: Array Json) (discr: String) (qp: CodeGenerator) : TranslateM Syntax.Tactic := do
+  let discrTerm? ←
+    theoremExprInContext? context discr qp
+  match discrTerm? with
+  | Except.error e =>
+    mkNoteTactic s!"Failed to translate condition {discr}"
+  | Except.ok discrTerm => do
+    let discrTerm' : Syntax.Term ← delabDetailed discrTerm
+    `(tactic| if $discrTerm':term then _ else _)
+
+
+example (n: Nat) : n = n := by
+  induction n with
+  | zero  => _
+  | succ n ih => _
+  rfl
+  rfl
+
+example (n: Nat) : n = n := by
+  match n with
+  | Nat.zero  => _
+  | Nat.succ n  => _
+  rfl
+  rfl
+
+example (n: Nat) : n = n := by
+  if n = 0 then _ else _
+  rfl
+  rfl
+
+
 
 def matchCases (discr: String)
     (pat_pfs: Array <| String × Array Syntax.Tactic) : TermElabM Syntax.Tactic := do
@@ -339,24 +411,6 @@ def matchCases (discr: String)
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
-def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.Tactic)(qp: CodeGenerator)
-    : TranslateM <| Array Syntax.Tactic := do
-    match cond_pfs with
-    | [] => return #[← `(tactic| auto?)]
-    | (condProp, pf) :: tail => do
-      -- let condProp? ← theoremExprInContext? context cond qp
-      -- match condProp? with
-      -- | Except.error _ =>
-      --   return #[← mkNoteTactic s!"Failed to translate condition {cond}"]
-      -- | Except.ok condProp => do
-      let condTerm ← delab condProp
-      let condTerm' : Syntax.Term := ⟨condTerm⟩
-      let tailTacs ← groupCasesAux context tail qp
-      let posId := mkIdent `pos
-      let negId := mkIdent `neg
-      let posId' ← `(caseArg| $posId:ident)
-      let negId' ← `(caseArg| $negId:ident)
-      return #[← `(tactic| by_cases $condTerm':term), ← `(tactic| case $posId' => $pf*), ← `(tactic| case $negId' => $tailTacs*)]
 
 def orAllSimple (terms: List Syntax.Term) : Syntax.Term :=
   match terms with
@@ -387,6 +441,24 @@ partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
     let terms ← terms.mapM dropLocalContext
     orAllSimpleExpr terms
 
+def exhaustiveType (goal: MVarId)(context : Array Json) (conds: List <| String)
+    (qp: CodeGenerator)  : TranslateM Expr := goal.withContext do
+  let condExprs ←  conds.filterMapM fun cond => do
+      let e? ← qp.theoremExprInContext? context cond
+      pure e?.toOption
+  orAllWithGoal condExprs (← goal.getType)
+
+def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.Tactic)(qp: CodeGenerator)
+    : TranslateM <| Array Syntax.Tactic := do
+    match cond_pfs with
+    | [] => return #[← `(tactic| auto?)]
+    | (condProp, pf) :: tail => do
+      let condTerm ← delabDetailed condProp
+      let condTerm' : Syntax.Term := ⟨condTerm⟩
+      let tailTacs ← groupCasesAux context tail qp
+      return #[← `(tactic| if $condTerm':term then $pf* else  $tailTacs*)]
+
+
 def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)
     (union_pfs: Array Syntax.Tactic) (qp: CodeGenerator) (goal?: Option Expr) :
     TranslateM <| Array Syntax.Tactic := do
@@ -400,7 +472,7 @@ def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.
   let orAllExpr ←  match goal? with
     | some goal => orAllWithGoal condExprs goal
     | none => orAllSimpleExpr condExprs
-  let orAll ← delab orAllExpr
+  let orAll ← delabDetailed orAllExpr
   let hash := hash orAll.raw.reprint
   let orAllId := mkIdent <| Name.mkSimple s!"orAll_{hash}"
   let casesTacs ← groupCasesAux context condPfExprs qp
@@ -412,7 +484,7 @@ def conclusionTactic (conclusion: String)(context: Array Json) (qp: CodeGenerato
   let conclusionTerm? ← qp.theoremExprInContext? context conclusion
   let conclusionTerm :=
     conclusionTerm? |>.toOption.getD (mkConst ``True)
-  let conclusionTerm' : Syntax.Term ← delab conclusionTerm
+  let conclusionTerm' : Syntax.Term ← delabDetailed conclusionTerm
   let hash := hash conclusion
   let conclusionId := mkIdent <| Name.mkSimple s!"conclusion_{hash}"
   let tac ← `(tacticSeq| auto?)
@@ -423,7 +495,7 @@ def contradictionTactics (statement: String)
   let statementTerm? ← qp.theoremExprInContext? context statement
   let statementTerm :=
     statementTerm? |>.toOption.getD (mkConst ``True)
-  let statementTerm' : Syntax.Term ← delab statementTerm
+  let statementTerm' : Syntax.Term ← delabDetailed statementTerm
   let falseId := mkIdent `False
   let assId := mkIdent `assumption
   let assumeTactic ← `(tactic| intro $assId:ident)
@@ -459,6 +531,30 @@ partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term)
     logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
 
+partial def existsVarTypes (type: Syntax.Term) : MetaM <| Option (Array <| Syntax.Ident × Syntax.Term) := do
+  match type with
+  | `(∃ $n:ident, $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+  | `(∃ ($n:ident: $_), $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+  | `(∃ $n:ident: $_, $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+  | `(∃ $n:ident $ms*, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ $ms':binderIdent*, $t)
+    return some <| #[(n, t)] ++ ((← existsVarTypes t').getD #[])
+  | `(∃ ($n:ident $ms* : $type), $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    return some <| #[(n, t)] ++ ((← existsVarTypes t').getD #[])
+  | `(∃ $n:ident $ms* : $type, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    return some <| #[(n, t)] ++ ((← existsVarTypes t').getD #[])
+  | _ =>
+    logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
+    return none
+
 
 elab "#exists_vars" type:term : command => do
   Command.liftTermElabM do
@@ -478,6 +574,28 @@ example (h : ∃ l n m : Nat, l + n + m = 3) : True := by
 
 def haveForAssertion  (type: Syntax.Term)
   (premises: List Name) :
+    MetaM <| Array Syntax.Tactic := do
+  let ids := premises.toArray.map fun n => Lean.mkIdent n
+  let hash₀ := hash type.raw.reprint
+  let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let tac ← `(tacticSeq| auto? [$ids,*])
+  let existsVarTypes? ← existsVarTypes type
+  let existsVarTypes := existsVarTypes?.getD #[]
+  let existsVarTypeIdents := existsVarTypes.map fun (n, t) =>
+    let hsh := hash t.raw.reprint
+    let tId := mkIdent <| Name.mkSimple s!"assert_{hsh}"
+    (n, tId)
+  let typeIdent := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let typeIdent ← `($typeIdent)
+  let rhsIdents := #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
+  let existsTacs ←
+    (existsVarTypeIdents.zip rhsIdents).mapM fun ((name, tId), rhs) =>
+      `(tactic| have ⟨$name, $tId⟩  := $rhs:term)
+  let head ← `(tactic| have $name : $type := by $tac:tacticSeq)
+  return #[head] ++ existsTacs
+
+def haveForAssertionSingle  (type: Syntax.Term)
+  (premises: List Name) :
     MetaM <| Syntax.Tactic := do
   let ids := premises.toArray.map fun n => Lean.mkIdent n
   let hash := hash type.raw.reprint
@@ -485,10 +603,11 @@ def haveForAssertion  (type: Syntax.Term)
   let tac ← `(tacticSeq| auto? [$ids,*])
   match ← existsVars type with
     | some vars =>
-      let lhs ← `(⟨[$vars:term,*], $name⟩)
+      let lhs ← `(⟨$vars:term,*, $name⟩)
       `(tactic| have $lhs:term : $type  := by $tac:tacticSeq)
     | none =>
       `(tactic| have $name : $type := by $tac:tacticSeq)
+
 
 def calculateStatement (js: Json) : IO <| Array String := do
   match js.getKV? with
@@ -509,6 +628,10 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
     TranslateM <| Array Syntax.Tactic := do
   let statements ←  calculateStatement js
   IO.eprintln s!"Calculating: {statements}"
+  IO.eprintln s!"Local declarations:"
+  let lctx ← getLCtx
+  for decl in lctx do
+    IO.eprintln s!"Declaration: {decl.userName} : {← PrettyPrinter.ppExpr decl.type}"
   statements.mapM fun statement => do
     let type? ← theoremExprInContext? context statement qp
     match type? with
@@ -516,12 +639,293 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
         IO.eprintln s!"Failed to translate calculation: {repr e}"
         mkNoteTactic s!"Failed to translate calculation {js.compress}"
       | Except.ok type =>
-        let typeStx ← delab type
+        let typeStx ← delabDetailed type
         let hash := hash statement
         let name := mkIdent <| Name.mkSimple s!"calculation_{hash}"
         `(tactic| have $name : $typeStx := by
             auto?)
 
+def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
+    (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId :=
+    mvarId.withContext do
+  let tacticCode ← `(tacticSeq| $tacs*)
+  -- let tacticCode ← `(tacticSeq| skip)
+  try
+    let ctx ← read
+    let (mvars, s) ←
+      withoutErrToSorry do
+      Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode}
+        {}  (s:= ← get)
+    if allowClosure && mvars.isEmpty then
+      set s
+      IO.eprintln s!"Tactics returned no goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
+      IO.eprintln s!"Assignment: {← mvarId.isAssigned}; {← PrettyPrinter.ppExpr <| mkMVar mvarId} "
+      for tac in tacs do
+        IO.eprintln s!"Tactic: {← ppTactic tac}"
+      return mvars
+    unless mvars.length == n do
+      IO.eprintln s!"Tactics returned wrong number of goals on {← mvarId.getType}: {mvars.length} instead of {n}"
+      for tac in tacs do
+        IO.eprintln s!"Tactic: {← ppTactic tac}"
+      return List.replicate n mvarId
+    set s
+    IO.eprintln s!"Tactics succeeded on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
+    return mvars
+  catch e =>
+    IO.eprintln s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
+    for tac in tacs do
+      IO.eprintln s!"Tactic: {← ppTactic tac}"
+    return List.replicate n mvarId
+
+def groupCasesGoals (goal: MVarId) (context : Array Json) (conds: List String)
+    (qp: CodeGenerator) : TranslateM <| List MVarId := goal.withContext do
+    match conds with
+    | [] => return [goal]
+    | [_] => return [goal]
+    | h :: t => do
+      let tacs ← ifSkeleton context h qp
+      let splitGoals ← runAndGetMVars goal #[tacs] 2
+      let tailGoals ← groupCasesGoals (splitGoals.get! 1) context t qp
+      return splitGoals.get! 0 :: tailGoals
+
+
+namespace expr
+-- TODO: Correct the `goal` passed in various cases.
+mutual
+  partial def structToCommand? (context: Array Json)
+      (input: Json) (qp: CodeGenerator) : TranslateM <| Option Syntax.Command :=
+      do
+      match input.getKV? with
+      | some ("theorem", v) =>
+        -- logInfo s!"Found theorem"
+        let name? := v.getObjString? "name" |>.map String.toName
+        let name? := name?.filter (· ≠ Name.anonymous)
+        let hypothesis :=
+          v.getObjValAs? (Array Json) "hypothesis"
+            |>.toOption.getD #[]
+        match v.getObjValAs? String "conclusion", v.getObjValAs? Json "proof" with
+        | Except.ok claim, Except.ok (.arr steps) =>
+            let thm? ← theoremExprInContext?  (context ++ hypothesis) claim qp
+            match thm? with
+            | Except.error _ =>
+              mkNoteCmd s!"Failed to translate theorem {claim}"
+            | Except.ok thm => do
+              IO.eprintln s!"Theorem: {← PrettyPrinter.ppExpr thm}"
+              let mvar ← mkFreshExprMVar thm
+              let mvarId := mvar.mvarId!
+              let vars ← getVars thm
+              let varIds := vars.toArray.map fun n => Lean.mkIdent n
+              let introTacs ← `(tactic| intro $varIds*)
+              let (_, mvarId) ← mvarId.introN vars.length vars
+              mvarId.withContext do
+                let pf ←
+                  structToTactics mvarId #[] (context ++ hypothesis) steps.toList qp
+                let pf := #[introTacs] ++  pf
+                let pfTerm ← `(by $pf*)
+                -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
+                mkStatementStx name? (← delabDetailed thm) pfTerm true
+        | _, _ =>
+          -- logInfo s!"failed to get theorem conclusion or proof"
+          mkNoteCmd "No theorem conclusion or proof found"
+      | some ("def", v) =>
+        match v.getObjValAs? String "statement", v.getObjValAs? String "term" with
+        | Except.ok s, Except.ok t =>
+          let statement := s!"We define {t} as follows:\n{s}."
+          defnInContext? context statement qp
+        | _ , _ => return none
+      | _ => mkNoteCmd s!"Json not a KV pair {input.compress}"
+
+
+  partial def structToTactics (goal: MVarId) (accum: Array Syntax.Tactic)
+    (context: Array Json)(input: List Json)
+    (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := goal.withContext do
+      match input with
+      | [] => return accum.push <| ← `(tactic| auto?)
+      | head :: tail => do
+        IO.eprintln s!"Processing {head}"
+        IO.eprintln s!"Goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
+        let lctx ← getLCtx
+        IO.eprintln s!"Local declarations"
+        for decl? in lctx.decls do
+          match decl? with
+          | some decl =>
+            IO.eprintln s!"Decl: {decl.userName}"
+          | none => pure ()
+        -- IO.eprintln s!"Processing {head}"
+        let headTactics: Array Syntax.Tactic ←
+          match head.getKV? with
+          | some ("assert", head) =>
+            match head.getObjValAs? String "claim" with
+            | Except.ok claim =>
+              let mut useResults: Array String := #[]
+              let mut prevTacs : Array Syntax.Tactic := #[]
+              match head.getObjValAs? Json "deduced_from_results"  with
+              | Except.ok known =>
+                match known.getKV? with
+                | some ("deduced_from", .arr results) =>
+                  for js in results do
+                    match js.getObjString? "result_used", js.getObjValAs? Bool "proved_earlier" with
+                    | some s, Except.ok false => useResults := useResults.push s
+                    | some s, Except.ok true =>
+                      let type? ← theoremExprInContext? context s qp
+                      match type? with
+                      | Except.ok e =>
+                        let stx ← delabDetailed e
+                        let name := mkIdent <| Name.mkSimple s
+                        prevTacs := prevTacs.push <| ← `(tactic| have $name : $stx := by
+                          auto?)
+                      | _ => pure ()
+                    | _, _ => pure ()
+                | _ => pure ()
+              | _ => pure ()
+              match head.getObjValAs? Json "calculate" with
+              | Except.ok js =>
+                let tac ← calculateTactics js context qp
+                prevTacs := prevTacs ++ tac
+              | _ => pure ()
+              let type? ← theoremExprInContext? context claim qp
+              match type? with
+              | Except.error _ =>
+                IO.eprintln s!"Failed to translate assertion {claim}"
+                pure #[← mkNoteTactic s!"Failed to translate assertion {claim}"]
+              | Except.ok type =>
+                let names' ← useResults.toList.mapM fun s =>
+                  Translator.matchingTheoremsAI   (s := s) (qp:= qp)
+                let premises := names'.flatten
+                let tacs ← haveForAssertion  (← delabDetailed type) premises
+                pure <| prevTacs ++ tacs
+            | _ => pure #[]
+          | some ("define", head) =>
+            match ← goal.withContext do structToCommand? context head qp with
+            | some cmd =>
+              let tac ← commandToTactic  <| ←  purgeLocalContext cmd
+              pure #[tac]
+            | none => pure #[]
+          | some ("theorem", head) =>
+            match (← goal.withContext do structToCommand? context head qp) with
+            | some cmd =>
+              let tac ← commandToTactic  <| ←  purgeLocalContext cmd
+              pure #[tac]
+            | none => pure #[]
+          | some ("cases", head) =>
+            match head.getObjValAs? (Array Json) "proof_cases" with
+            | Except.ok cs =>
+              let conds := cs.filterMap fun js =>
+                match js.getKV? with
+                | some ("case", js) => js.getObjString? "condition"
+                | _ => none
+              let newGoals : List MVarId ←
+                match head.getObjString? "split_kind" with
+                | "group" =>
+                  groupCasesGoals goal context conds.toList qp
+                | "condition" =>
+                  match conds.toList with
+                  | [cond₁, _] =>
+                    let tac ← ifSkeleton context cond₁ qp
+                    runAndGetMVars goal #[tac] 2
+                  | _ =>
+                    pure [goal, goal]
+                | "match" =>
+                  match head.getObjString? "on" with
+                  | some discr =>
+                    let casesTac ← matchCasesSkeleton discr conds
+                    runAndGetMVars goal #[casesTac] 2
+                  | _ => pure <| List.replicate conds.size goal
+                | _ =>
+                  groupCasesGoals goal context conds.toList qp
+              let conditionProofs ←
+                (cs.zip newGoals.toArray).filterMapM fun (js, newGoal) =>
+                match js.getKV? with
+                | some ("case", js) =>
+                  match js.getObjString? "condition",
+                    js.getObjValAs? (List Json) "proof" with
+                  | some cond, Except.ok pfSource => do
+                    let pf ← structToTactics newGoal #[] context pfSource qp
+                    pure <| some (cond, pf)
+                  | _, _ => pure none
+                | _ => pure none
+              match head.getObjString? "split_kind" with
+              | some "match" =>
+                match head.getObjString? "on" with
+                | some discr =>
+                  let casesTac ← matchCases discr conditionProofs
+                  return #[casesTac]
+                | _ => pure #[]
+              | some "group" =>
+                let union_pf : Array Syntax.Tactic ←
+                  match head.getObjValAs? (List Json) "exhaustiveness" with
+                  | Except.ok pfSource =>
+                    let exType ← exhaustiveType goal context conds.toList qp
+                    let mvar ← mkFreshExprMVar exType
+                    structToTactics mvar.mvarId! #[] context pfSource qp
+                  | _ => pure #[← `(tactic| auto?)]
+                groupCases context conditionProofs.toList union_pf qp none
+              | some "condition" =>
+                match conditionProofs with
+                | #[(cond₁, pf₁), (cond₂, pf₂)] =>
+                  conditionCases cond₁ cond₂ pf₁ pf₂ context qp
+                | _ => pure #[]
+              | _ => /- treat like a group but with conditions as claims;
+                      works for `iff` -/
+                let union_pf : Array Syntax.Tactic ←
+                  pure #[← `(tactic| auto?)]
+                groupCases context conditionProofs.toList union_pf qp none
+            | _ =>
+              pure #[]
+          | some ("induction", head) =>
+            match head.getObjValAs? String "on",
+              head.getObjValAs? (Array Json) "proof_cases" with
+            | Except.ok name, Except.ok cs =>
+              let skeletonTac ←
+                inductionCasesSkeleton name <|
+                  cs.filterMap fun js => js.getObjString? "condition"
+              let newGoals ← runAndGetMVars goal #[skeletonTac] cs.size
+              let cs' := cs.zip newGoals.toArray
+              let conditionProofs ← cs'.filterMapM fun (js, newGoal) =>
+                match js.getKV? with
+                | some ("case", js) =>
+                  match js.getObjString? "condition",
+                    js.getObjValAs? (List Json) "proof" with
+                  | some cond, Except.ok pfSource => do
+                    let pf ← structToTactics newGoal #[] context pfSource qp
+                    return some (cond, pf)
+                  | _, _ => return none
+                | _ => return none
+              inductionCases name conditionProofs
+            | _, _ => pure #[]
+          | some ("contradiction", head) =>
+            match head.getObjValAs? String "assumption",
+              head.getObjValAs? (List Json) "proof" with
+            | Except.ok s, Except.ok pf => do
+              let fe := mkIdent ``False.elim
+              let newGoals ← runAndGetMVars goal #[← `(tactic|apply $fe)] 1
+              let proof ← structToTactics newGoals[0]! #[] context pf qp
+              contradictionTactics s proof context qp
+            | _, _ => pure #[]
+          | some ("conclude", head) =>
+            match head.getObjValAs? String "claim" with
+            | Except.ok s => pure #[← conclusionTactic s context qp]
+            | _ =>
+              IO.eprintln s!"Failed to translate conclusion {head}"
+              pure #[]
+          | some ("calculate", js) =>
+            calculateTactics js context qp
+          | _ =>
+            pure #[]
+        IO.eprintln s!"Head tactics : {headTactics.size}"
+        let newGoals ← runAndGetMVars goal  headTactics 1 true
+        match newGoals.head? with
+        | none =>
+          IO.eprintln s!"Failed to get new goal"
+          return accum
+        | some newGoal =>
+          structToTactics newGoal (accum ++ headTactics) (context.push head) tail qp
+
+end
+end expr
+
+
+namespace stx
 mutual
   partial def structToCommand? (context: Array Json)
       (input: Json) (qp: CodeGenerator) : TranslateM <| Option Syntax.Command := do
@@ -552,7 +956,7 @@ mutual
                 let pf := #[introTacs] ++  pf
                 let pfTerm ← `(by $pf*)
                 -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
-                mkStatementStx name? (← delab thm) pfTerm true
+                mkStatementStx name? (← delabDetailed thm) pfTerm true
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"
@@ -589,7 +993,7 @@ mutual
                       let type? ← theoremExprInContext? context s qp
                       match type? with
                       | Except.ok e =>
-                        let stx ← delab e
+                        let stx ← delabDetailed e
                         let name := mkIdent <| Name.mkSimple s
                         prevTacs := prevTacs.push <| ← `(tactic| have $name : $stx := by
                           auto?)
@@ -611,8 +1015,8 @@ mutual
                 let names' ← useResults.toList.mapM fun s =>
                   Translator.matchingTheoremsAI   (s := s) (qp:= qp)
                 let premises := names'.flatten
-                let tac ← haveForAssertion  (← delab type) premises
-                pure <| prevTacs ++ #[tac]
+                let tacs ← haveForAssertion  (← delabDetailed type) premises
+                pure <| prevTacs ++ tacs
             | _ => pure #[]
           | some ("define", head) =>
             match ← structToCommand? context head qp with
@@ -704,10 +1108,9 @@ mutual
         structToTactics (accum ++ headTactics) (context.push head) tail qp goal?
 
 end
+end stx
 
-#check MVarId.induction
-#check InductionSubgoal
-
+open expr
 
 def structToCommandSeq? (context: Array Json)
     (input: Json) (qp: CodeGenerator) : TranslateM <| Option <| Array Syntax.Command := do
@@ -807,7 +1210,7 @@ def statementToCode (s: String) (qp: CodeGenerator) :
       IO.println fmt
     return fmt
 
-#check MVarId.introN
+-- #check MVarId.introN
 
 elab "intro_experiment%" t:term : term => do
   let t ← elabType t
@@ -824,9 +1227,9 @@ elab "intro_experiment%" t:term : term => do
     logInfo m!"Inner type: {← PrettyPrinter.ppExpr type'}"
   return t
 
-#check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m
+-- #check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m
 
-#check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n)
+-- #check intro_experiment% ∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n)
 
 elab "intro_experiment%%" t:term "vs" s:term : term => do
   let t ← elabType t
@@ -844,8 +1247,8 @@ elab "intro_experiment%%" t:term "vs" s:term : term => do
     logInfo m!"Inner type: {← PrettyPrinter.ppExpr type'}"
   return t
 
-#check intro_experiment%% (∀(n  : Nat), n = 1) vs
-    (∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n))
+-- #check intro_experiment%% (∀(n  : Nat), n = 1) vs
+--     (∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n))
 
 
 end CodeGenerator

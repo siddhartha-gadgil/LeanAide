@@ -1,0 +1,177 @@
+{"usage":
+ {"total_tokens": 5236,
+  "prompt_tokens_details": {"cached_tokens": 2944, "audio_tokens": 0},
+  "prompt_tokens": 3086,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 2150},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AqBMGbgKWc8uQjaRdI2X4R25KK6h1",
+ "created": 1737000080,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : Field 𝕜] →\n      [inst_1 : DecidableEq n] →\n        [inst_2 : Fintype n] →\n          (A : Matrix n n 𝕜) →\n            Diagonalizable 𝕜 A ↔ ∃ (P : Matrix n n 𝕜), IsUnit P ∧ IsDiagonal (P⁻¹ ⬝ A ⬝ P)"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : Fintype n] →\n      [inst_1 : Field 𝕜] →\n        [inst_2 : DecidableEq n] →\n          (A : Matrix n n 𝕜) → \n          ∃ (P : Matrix n n 𝕜), Invertible P ∧ Matrix.isDiagonal (P⁻¹ * A * P)"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_2} {𝕜 : Type u_3} [inst : Field 𝕜] [inst_1 : DecidableEq n] [inst_2 : Fintype n] (A : Matrix n n 𝕜) :=\n  ∃ (P : Matrix n n 𝕜) [inst_3 : Invertible P], IsDiagonal (P⁻¹ ⬝ A ⬝ P)"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_2} →\n  {𝕜 : Type u_3} →\n    [inst : DecidableEq n] →\n      [inst_1 : Fintype n] →\n        [inst_2 : Field 𝕜] →\n          (A : Matrix n n 𝕜) →\n            ∃ (P : Matrix n n 𝕜) [inst_3 : Invertible P],\n              P⁻¹ ⬝ A ⬝ P = Matrix.diagonal (fun _ => 0 : n → 𝕜)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_2} →\n  {ℂ : Type u_3} →\n    [inst : Fintype n] →\n      [inst_1 : DecidableEq n] →\n        [inst_2 : Field ℂ] →\n          (A : Matrix n n ℂ) →\n            ∃ (P : Matrix n n ℂ) [inst_3 : Invertible P], Matrix.isDiagonal (P⁻¹ ⬝ A ⬝ P)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : Field 𝕜] →\n      [inst_1 : DecidableEq n] →\n        [inst_2 : Fintype n] →\n          (A : Matrix n n 𝕜) →\n            ∃ (P : Matrix n n 𝕜) [inst_3 : Invertible P], P⁻¹ * A * P = Matrix.diagonal 𝕜"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : Field 𝕜] →\n      [inst_1 : Algebra 𝕜 (Matrix n n 𝕜)] →\n        (A : Matrix n n 𝕜) →\n          Diagonalizable A ↔ ∃ (P : Matrix n n 𝕜) [inst_2 : Invertible P], P⁻¹ * A * P = Matrix.diagonal (λ i, A i i)"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : Field 𝕜] →\n      [inst_1 : DecidableEq n] →\n        (A : Matrix n n 𝕜) →\n          Diagonalizable A ↔ ∃ (P : Matrix n n 𝕜), IsUnit P ∧ P⁻¹ * A * P = Matrix.diagonal (Matrix.diag A)"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_2} → {𝕜 : Type u_3} → [inst : Field 𝕜] → [inst_1 : DecidableEq n] → [inst_2 : Fintype n] →\n  (A : Matrix n n 𝕜) → ∃ (P : Matrix n n 𝕜) [inst_3 : Invertible P], Matrix.IsDiag (P⁻¹ ⬝ A ⬝ P)"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} {𝕜 : Type u_2} [inst : Field 𝕜] [inst_1 : DecidableEq n] [inst_2 : Fintype n]\n  (A : Matrix n n 𝕜) : Prop :=\n  ∃ (P : Matrix n n 𝕜) [inst_3 : Invertible P], Matrix.IsDiag (P⁻¹ ⬝ A ⬝ P)"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_2} →\n  {𝕜 : Type u_3} →\n    [inst : Field 𝕜] →\n      [inst_1 : Fintype n] →\n        (A : Matrix n n 𝕜) →\n          Diagonalizable A ↔ ∃ (P : Matrix n n 𝕜) [invP : Invertible P], P⁻¹ ⬝ A ⬝ P.isDiagonal"},
+   "logprobs": null,
+   "index": 10,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : DecidableEq n] →\n      [inst_1 : Fintype n] →\n        [inst_2 : Field 𝕜] →\n          (A : Matrix n n 𝕜) →\n            (∃ (P : Matrix n n 𝕜), IsUnit P ∧ IsDiagonal (P⁻¹ ⬝ A ⬝ P)) → Diagonalizable A"},
+   "logprobs": null,
+   "index": 11,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : Field 𝕜] →\n      [inst_1 : DecidableEq n] →\n        [inst_2 : Fintype n] →\n          (A : Matrix n n 𝕜) → \n            Prop :=\n              ∃ (P : Matrix n n 𝕜), Invertible P ∧ P⁻¹ * A * P = Matrix.diagonal (fun i => Matrix.diagonal_entry i i)"},
+   "logprobs": null,
+   "index": 12,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : Field 𝕜] →\n      [inst_1 : Fintype n] →\n        [inst_2 : DecidableEq n] →\n          (A : Matrix n n 𝕜) →\n            Diagonalizable A ↔ ∃ (P : Matrix n n 𝕜), Invertible P ∧ ∃ (D : Matrix n n 𝕜), Matrix.diagonal D = P⁻¹ * A * P"},
+   "logprobs": null,
+   "index": 13,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_2} →\n  {𝕜 : Type u_3} →\n    [inst : Field 𝕜] [inst_1 : DecidableEq n] [inst_2 : Fintype n] →\n      (A : Matrix n n 𝕜) →\n        ∃ (P : Matrix n n 𝕜) [inst_3 : Invertible P], IsDiagonal (P⁻¹ * A * P)"},
+   "logprobs": null,
+   "index": 14,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : Field 𝕜] →\n      [inst_1 : DecidableEq n] →\n        [inst_2 : Fintype n] →\n          (A : Matrix n n 𝕜) →\n            (∃ (P : Matrix n n 𝕜), IsUnit P ∧ ∃ D, P⁻¹ * A * P = D ∧ D.IsDiag) → A.IsDiagonalizableIn 𝕜"},
+   "logprobs": null,
+   "index": 15,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} [inst : Fintype n] [inst_1 : DecidableEq n] (A : Matrix n n ℂ) : Prop :=\n∃ (P : Matrix n n ℂ), Invertible P ∧ ∃ (D : Matrix n n ℂ), Matrix.IsDiag D ∧ P⁻¹ * A * P = D"},
+   "logprobs": null,
+   "index": 16,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} {𝕜 : Type u_2} [inst : Field 𝕜] [inst_1 : DecidableEq n] [inst_2 : Fintype n]\n  (A : Matrix n n 𝕜) : Prop :=\n∃ (P : Matrix n n 𝕜) [inst_3 : Invertible P], Matrix.isDiagonal (⅟P * A * P)"},
+   "logprobs": null,
+   "index": 17,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_3} →\n  {𝕜 : Type u_4} →\n    [inst : Field 𝕜] →\n      [inst_1 : Fintype n] →\n        [inst_2 : DecidableEq n] →\n          (A : Matrix n n 𝕜) → \n            Diagonalizable A ↔ ∃ (P : Matrix n n 𝕜) [invertibleP : Invertible P], Matrix.isDiagonal (P⁻¹ * A * P)"},
+   "logprobs": null,
+   "index": 18,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_2} →\n  {α : Type u_3} →\n    [inst : DecidableEq n] →\n      [inst_1 : Fintype n] →\n        [inst_2 : Field α] →\n          (A : Matrix n n α) →\n            ∃ (P : Matrix n n α) [inst_3 : Invertible P], Matrix.isDiagonal (P⁻¹ * A * P)"},
+   "logprobs": null,
+   "index": 19,
+   "finish_reason": "stop"}]}

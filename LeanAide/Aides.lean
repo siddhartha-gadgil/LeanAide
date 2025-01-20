@@ -499,6 +499,20 @@ def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
                     pp.unicode.fun.set o' true) do
               PrettyPrinter.delab e
 
+def delabDetailed (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
+                    -- let o₂ := pp.motives.all.set o₁ true
+                    let o₃ := pp.fieldNotation.set o₁ false
+                    let o₄ := pp.proofs.set o₃ true
+                    let o₅ := pp.deepTerms.set o₄ true
+                    let o₆ := pp.funBinderTypes.set o₅ true
+                    let o₇ := pp.piBinderTypes.set o₆ true
+                    let o₈ := pp.letVarTypes.set o₇ true
+                    let o₉ := pp.coercions.types.set o₈ true
+                    let o' := pp.motives.nonConst.set o₉ true
+                    pp.unicode.fun.set o' true) do
+              PrettyPrinter.delab e
+
+
 def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.FS.Handle := do
     let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
     let dir := System.mkFilePath <| [".", "rawdata"] ++
@@ -673,3 +687,24 @@ def evalTacticSafe (tacticCode: Syntax): TacticM (Bool × Nat) := do
     state.restore
     logWarning e.toMessageData
     return (false, 1)
+
+def checkTacticSafe (mvarId: MVarId)(tacticCode: Syntax):
+    TermElabM Bool := withoutModifyingState do
+  let ctx ← readThe Term.Context
+  let s ← getThe Term.State
+  let mctx ← readThe Meta.Context
+  let s' ← getThe Meta.State
+  let state ← saveState
+  let res ← Core.tryCatchRuntimeEx (do
+      let res ← runTacticToCore mvarId tacticCode ctx s mctx s'
+      pure <| Except.ok res
+      ) (fun e => pure <| Except.error e)
+  match res with
+  | Except.ok ((mvarIds, s), ms) => do
+    set ms
+    set s
+    return mvarIds.isEmpty
+  | Except.error e =>
+    state.restore
+    logWarning e.toMessageData
+    return false

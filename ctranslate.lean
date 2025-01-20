@@ -99,7 +99,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln msg
       return 1
 
-unsafe def translate : Cmd := `[Cli|
+unsafe def ctranslate : Cmd := `[Cli|
   translate VIA runTranslate;
   "Elaborate a set of inputs and report whether successful and the result if successful."
 
@@ -123,4 +123,4 @@ unsafe def translate : Cmd := `[Cli|
 ]
 
 unsafe def main (args: List String) : IO UInt32 :=
-  translate.validate args
+  ctranslate.validate args

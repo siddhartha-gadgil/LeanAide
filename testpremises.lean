@@ -38,7 +38,7 @@ def main (args: List String) : IO Unit := do
   let propMap ← if ← path.pathExists then
         let lines ←  IO.FS.lines path
         let lines := lines.filterMap (fun l => (Lean.Json.parse l).toOption)
-        let dfns : Array DefnTypes :=
+        let dfns : Array DefDataRepr :=
           lines.filterMap (fun l=>  (fromJson? l).toOption)
         let propList := dfns.toList.filter (·.isProp) |>.map (fun d => (d.name.toString, (d.type, d.statement)))
         pure <| Std.HashMap.ofList propList

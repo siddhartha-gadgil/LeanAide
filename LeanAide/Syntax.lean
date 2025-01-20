@@ -29,10 +29,6 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
       let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
       let (js, _) ←
         translator.getLeanCodeJson  s |>.run' {}
-      let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq |>.run' {}
-      logTimed "obtained expression"
-      let stx' ← delab e
-      logTimed "obtained syntax"
       let name ← match name? with
       | some name => pure name
       | none =>
@@ -43,12 +39,69 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
         -- logInfo llm_name
         pure llm_name.toName
       let name := mkIdent name
-      let cmd ← `(command| theorem $name : $stx' := by sorry)
-      TryThis.addSuggestion stx cmd
-      logTimed "added suggestion"
-      return
+      let e? ←
+        jsonToExprFallback js (← greedy) !(← chatParams).stopColEq |>.run' {}
+      match e? with
+      | .ok e =>
+        logTimed "obtained expression"
+        let stx' ← delab e
+        logTimed "obtained syntax"
+        let cmd ← `(command| theorem $name : $stx' := by sorry)
+        TryThis.addSuggestion stx cmd
+        logTimed "added suggestion"
+        let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
+        let cmd ←
+          `(command| $docs:docComment theorem $name:ident : $stx' := by sorry)
+        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+        return
+      | .error e =>
+        logWarning "No valid lean code found, suggesting best option"
+        let cmd := s!"theorem {name} : {e} := by sorry"
+        TryThis.addSuggestion stx cmd
+        let cmd := s!"/-- {s} -/\ntheorem {name} : {e} := by sorry"
+        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+
     else
       logWarning "To translate a theorem, end the string with a `.`."
+
+syntax (name := defCommand) "#def"  str : command
+@[command_elab defCommand] def defCommandImpl : CommandElab :=
+  fun stx => Command.liftTermElabM do
+  match stx with
+  | `(command| #def $s:str) =>
+    let s := s.getString
+    go s stx
+  | _ => throwUnsupportedSyntax
+  where go (s: String) (stx: Syntax) : TermElabM Unit := do
+    if s.endsWith "." then
+      let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
+      let cmd? ←
+        translator.translateDefCmdM?  s |>.run' {}
+      match cmd? with
+      | .ok cmd =>
+        TryThis.addSuggestion stx cmd
+        logTimed "added suggestion"
+        let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
+        match cmd with
+        | `(command| def $name $args* : $stx' := $val) =>
+          let cmd ←
+            `(command| $docs:docComment def $name $args* : $stx' := $val)
+          TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+        | `(command| noncomputable def $name:ident $args* : $stx' := $val) =>
+          let cmd ←
+            `(command| $docs:docComment noncomputable def $name:ident $args* : $stx' := $val)
+          TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+        | _ => pure ()
+        return
+      | .error es =>
+        let e ← CmdElabError.fallback es
+        logWarning "No valid lean code found, suggesting best option"
+        TryThis.addSuggestion stx e
+        let cmd := s!"/-- {s} -/\n{e}"
+        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+    else
+      logWarning "To translate a definition, end the string with a `.`."
+
 
 /-!
 # Proof Syntax
@@ -90,7 +143,8 @@ def mkTextStx (s: String) : Syntax :=
   fun stx => Command.liftTermElabM do
   match stx with
   | `(command| #text $t:proofBodyInit ∎) =>
-    let s := stx.getArgs[1]!.reprint.get!.trim
+    -- let s := stx.getArgs[1]!.reprint.get!.trim
+    return
   | _ => throwUnsupportedSyntax
 
 /-!
@@ -103,8 +157,8 @@ open Tactic
   fun _ => withMainContext do
   evalTactic (← `(tactic|sorry))
 
-example : True := by
-  #proof "trivial"
+-- example : True := by
+--   #proof "trivial"
 
 open Tactic Translator
 elab "what" : tactic => withMainContext do
@@ -129,7 +183,7 @@ syntax (name:= whyTac) "why" : tactic
   let proofTac : Syntax.Tactic := ⟨mkProofStx transl⟩
   TryThis.addSuggestion stx proofTac
 
-syntax (name:= addDocs) "#doc" "theorem" ident declSig declVal : command
+syntax (name:= addDocs) "#doc" command : command
 
 open Command in
 @[command_elab addDocs] def elabAddDocsImpl : CommandElab := fun stx =>
@@ -144,6 +198,28 @@ open Command in
       Translator.getTypeDescriptionM type {} | throwError "No description found for type {type}"
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (desc ++ " -/")]
     let stx' ← `(command| $docs:docComment theorem $id:ident $ty $val)
+    TryThis.addSuggestion stx stx'
+  | `(#doc def $id:ident $args* : $ty:term := $val:term) =>
+    Command.liftTermElabM do
+    let name := id.getId
+    let stx' ← `(command| def $id:ident $args* : $ty:term := $val:term)
+    let fmt ← PrettyPrinter.ppCommand stx'
+    let (type, value) ← elabFrontDefTypeValExprM fmt.pretty name true
+    let some (desc, _) ←
+      Translator.getDefDescriptionM type value name {} | throwError "No description found for type {type}"
+    let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (desc ++ " -/")]
+    let stx' ← `(command| $docs:docComment def $id:ident $args* : $ty:term := $val:term)
+    TryThis.addSuggestion stx stx'
+  | `(#doc noncomputable def $id:ident $args* : $ty:term := $val:term) =>
+    Command.liftTermElabM do
+    let name := id.getId
+    let stx' ← `(command| noncomputable def $id:ident $args* : $ty:term := $val:term)
+    let fmt ← PrettyPrinter.ppCommand stx'
+    let (type, value) ← elabFrontDefTypeValExprM fmt.pretty name true
+    let some (desc, _) ←
+      Translator.getDefDescriptionM type value name {} | throwError "No description found for type {type}"
+    let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (desc ++ " -/")]
+    let stx' ← `(command| $docs:docComment noncomputable def $id:ident $args* : $ty:term := $val:term)
     TryThis.addSuggestion stx stx'
   | _ => throwError "unexpected syntax"
 
