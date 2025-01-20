@@ -158,14 +158,18 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
       if check then
         let body' := body.instantiate1 (mkFVar fVarId)
         dropLocalContext body'
-      else return type
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        return type
     | some (.ldecl _ _ _ dtype value ..) =>
       let check ← isDefEq dtype binderType
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 value
         dropLocalContext body'
-      else return type
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        return type
     | _ => return type
   | _ => return type
 
@@ -624,6 +628,10 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
     TranslateM <| Array Syntax.Tactic := do
   let statements ←  calculateStatement js
   IO.eprintln s!"Calculating: {statements}"
+  IO.eprintln s!"Local declarations:"
+  let lctx ← getLCtx
+  for decl in lctx do
+    IO.eprintln s!"Declaration: {decl.userName} : {← PrettyPrinter.ppExpr decl.type}"
   statements.mapM fun statement => do
     let type? ← theoremExprInContext? context statement qp
     match type? with
@@ -727,14 +735,22 @@ mutual
         | _ , _ => return none
       | _ => mkNoteCmd s!"Json not a KV pair {input.compress}"
 
+
   partial def structToTactics (goal: MVarId) (accum: Array Syntax.Tactic)
     (context: Array Json)(input: List Json)
     (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := goal.withContext do
       match input with
       | [] => return accum.push <| ← `(tactic| auto?)
       | head :: tail => do
-      IO.eprintln s!"Processing {head}"
-      IO.eprintln s!"Goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
+        IO.eprintln s!"Processing {head}"
+        IO.eprintln s!"Goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
+        let lctx ← getLCtx
+        IO.eprintln s!"Local declarations"
+        for decl? in lctx.decls do
+          match decl? with
+          | some decl =>
+            IO.eprintln s!"Decl: {decl.userName}"
+          | none => pure ()
         -- IO.eprintln s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
           match head.getKV? with
