@@ -39,7 +39,7 @@ unsafe def main (args: List String) : IO UInt32 := do
     let hashCode := hash result.pretty
     let outFile := System.mkFilePath <| ["CodeGen", s!"from_statement_{hashCode}.lean"]
     IO.FS.writeFile outFile result.pretty
-    IO.eprintln "Ran successfully"
+    IO.eprintln s!"Ran successfully, written to {outFile}"
     return 0
   | Except.error e =>
     do

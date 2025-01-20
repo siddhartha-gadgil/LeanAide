@@ -84,7 +84,7 @@ theorem aux_17159876999765957439 : ∀ (n : ℕ), Even (n * (n + 1)) :=
   by
   intro n
   #note["Failed to translate calculation {\"inline_calculation\":\"n(n+1)\"}"]
-  if Even n then
+  if Even n then 
     have assert_6170125354565453887 : ∃ (k : ℤ), (↑n : ℤ) = 2 * k := by auto? []
     have ⟨k, assert_5821292936828346117⟩ := assert_6170125354565453887
     have calculation_14047433094544108429 : ∀ (k : ℕ), n * (n + 1) = 2 * k * (n + 1) := by auto?
