@@ -527,6 +527,30 @@ partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term)
     logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
 
+partial def existsVarTypes (type: Syntax.Term) : MetaM <| Option (Array <| Syntax.Ident × Syntax.Term) := do
+  match type with
+  | `(∃ $n:ident, $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+  | `(∃ ($n:ident: $_), $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+  | `(∃ $n:ident: $_, $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+  | `(∃ $n:ident $ms*, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ $ms':binderIdent*, $t)
+    return some <| #[(n, t)] ++ ((← existsVarTypes t').getD #[])
+  | `(∃ ($n:ident $ms* : $type), $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    return some <| #[(n, t)] ++ ((← existsVarTypes t').getD #[])
+  | `(∃ $n:ident $ms* : $type, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    return some <| #[(n, t)] ++ ((← existsVarTypes t').getD #[])
+  | _ =>
+    logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
+    return none
+
 
 elab "#exists_vars" type:term : command => do
   Command.liftTermElabM do
@@ -546,6 +570,28 @@ example (h : ∃ l n m : Nat, l + n + m = 3) : True := by
 
 def haveForAssertion  (type: Syntax.Term)
   (premises: List Name) :
+    MetaM <| Array Syntax.Tactic := do
+  let ids := premises.toArray.map fun n => Lean.mkIdent n
+  let hash₀ := hash type.raw.reprint
+  let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let tac ← `(tacticSeq| auto? [$ids,*])
+  let existsVarTypes? ← existsVarTypes type
+  let existsVarTypes := existsVarTypes?.getD #[]
+  let existsVarTypeIdents := existsVarTypes.map fun (n, t) =>
+    let hsh := hash t.raw.reprint
+    let tId := mkIdent <| Name.mkSimple s!"assert_{hsh}"
+    (n, tId)
+  let typeIdent := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let typeIdent ← `($typeIdent)
+  let rhsIdents := #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
+  let existsTacs ←
+    (existsVarTypeIdents.zip rhsIdents).mapM fun ((name, tId), rhs) =>
+      `(tactic| have ⟨$name, $tId⟩  := $rhs:term)
+  let head ← `(tactic| have $name : $type := by $tac:tacticSeq)
+  return #[head] ++ existsTacs
+
+def haveForAssertionSingle  (type: Syntax.Term)
+  (premises: List Name) :
     MetaM <| Syntax.Tactic := do
   let ids := premises.toArray.map fun n => Lean.mkIdent n
   let hash := hash type.raw.reprint
@@ -557,6 +603,7 @@ def haveForAssertion  (type: Syntax.Term)
       `(tactic| have $lhs:term : $type  := by $tac:tacticSeq)
     | none =>
       `(tactic| have $name : $type := by $tac:tacticSeq)
+
 
 def calculateStatement (js: Json) : IO <| Array String := do
   match js.getKV? with
@@ -599,7 +646,7 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     let ctx ← read
     let (mvars, s) ←
       withoutErrToSorry do
-      Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false}
+      Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode}
         {}  (s:= ← get)
     if allowClosure && mvars.isEmpty then
       set s
@@ -614,6 +661,7 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
         IO.eprintln s!"Tactic: {← ppTactic tac}"
       return List.replicate n mvarId
     set s
+    IO.eprintln s!"Tactics succeeded on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
     return mvars
   catch e =>
     IO.eprintln s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
@@ -728,8 +776,8 @@ mutual
                 let names' ← useResults.toList.mapM fun s =>
                   Translator.matchingTheoremsAI   (s := s) (qp:= qp)
                 let premises := names'.flatten
-                let tac ← haveForAssertion  (← delabDetailed type) premises
-                pure <| prevTacs ++ #[tac]
+                let tacs ← haveForAssertion  (← delabDetailed type) premises
+                pure <| prevTacs ++ tacs
             | _ => pure #[]
           | some ("define", head) =>
             match ← goal.withContext do structToCommand? context head qp with
@@ -951,8 +999,8 @@ mutual
                 let names' ← useResults.toList.mapM fun s =>
                   Translator.matchingTheoremsAI   (s := s) (qp:= qp)
                 let premises := names'.flatten
-                let tac ← haveForAssertion  (← delabDetailed type) premises
-                pure <| prevTacs ++ #[tac]
+                let tacs ← haveForAssertion  (← delabDetailed type) premises
+                pure <| prevTacs ++ tacs
             | _ => pure #[]
           | some ("define", head) =>
             match ← structToCommand? context head qp with
