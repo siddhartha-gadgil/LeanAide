@@ -613,7 +613,7 @@ def calculateStatement (js: Json) : IO <| Array String := do
   match js.getKV? with
   | some ("inline_calculation", .str s) => return #["We have: " ++ s]
   | some ("calculation_sequence", .arr seq) =>
-    IO.eprintln s!"Calculating sequence: {seq}"
+    -- IO.eprintln s!"Calculating sequence: {seq}"
     let steps := seq.filterMap fun js =>
       js.getStr? |>.toOption |>.orElse fun _ =>
       match js.getKV? with
@@ -627,11 +627,11 @@ def calculateStatement (js: Json) : IO <| Array String := do
 def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
     TranslateM <| Array Syntax.Tactic := do
   let statements ←  calculateStatement js
-  IO.eprintln s!"Calculating: {statements}"
-  IO.eprintln s!"Local declarations:"
-  let lctx ← getLCtx
-  for decl in lctx do
-    IO.eprintln s!"Declaration: {decl.userName} : {← PrettyPrinter.ppExpr decl.type}"
+  -- IO.eprintln s!"Calculating: {statements}"
+  -- IO.eprintln s!"Local declarations:"
+  -- let lctx ← getLCtx
+  -- for decl in lctx do
+  --   IO.eprintln s!"Declaration: {decl.userName} : {← PrettyPrinter.ppExpr decl.type}"
   statements.mapM fun statement => do
     let type? ← theoremExprInContext? context statement qp
     match type? with
@@ -669,7 +669,7 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
         IO.eprintln s!"Tactic: {← ppTactic tac}"
       return List.replicate n mvarId
     set s
-    IO.eprintln s!"Tactics succeeded on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
+    -- IO.eprintln s!"Tactics succeeded on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
     return mvars
   catch e =>
     IO.eprintln s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
@@ -742,15 +742,15 @@ mutual
       match input with
       | [] => return accum.push <| ← `(tactic| auto?)
       | head :: tail => do
-        IO.eprintln s!"Processing {head}"
-        IO.eprintln s!"Goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
-        let lctx ← getLCtx
-        IO.eprintln s!"Local declarations"
-        for decl? in lctx.decls do
-          match decl? with
-          | some decl =>
-            IO.eprintln s!"Decl: {decl.userName}"
-          | none => pure ()
+        -- IO.eprintln s!"Processing {head}"
+        -- IO.eprintln s!"Goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
+        -- let lctx ← getLCtx
+        -- IO.eprintln s!"Local declarations"
+        -- for decl? in lctx.decls do
+        --   match decl? with
+        --   | some decl =>
+        --     IO.eprintln s!"Decl: {decl.userName}"
+        --   | none => pure ()
         -- IO.eprintln s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
           match head.getKV? with
@@ -912,7 +912,7 @@ mutual
             calculateTactics js context qp
           | _ =>
             pure #[]
-        IO.eprintln s!"Head tactics : {headTactics.size}"
+        -- IO.eprintln s!"Head tactics : {headTactics.size}"
         let newGoals ← runAndGetMVars goal  headTactics 1 true
         match newGoals.head? with
         | none =>
@@ -1191,7 +1191,7 @@ def statementToCode (s: String) (qp: CodeGenerator) :
       IO.println fmt
       let (code, names) ← mathDocumentCode js qp
       fmt := fmt ++ code
-      IO.println fmt
+      -- IO.println fmt
       let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
       fmt := fmt ++ "\n\n/-!\n## Elaboration logs\n"
       for msg in msgLogs.toList do
@@ -1203,7 +1203,7 @@ def statementToCode (s: String) (qp: CodeGenerator) :
         for s in sorries do
           fmt := fmt ++ "\n "++ s!"* `{← PrettyPrinter.ppExpr s}`".replace "\n" " "
       fmt := fmt ++ "\n-/\n"
-      IO.println fmt
+      -- IO.println fmt
       return topCode ++ fmt
     | _ =>
       fmt := fmt ++ "No structured proof found"
