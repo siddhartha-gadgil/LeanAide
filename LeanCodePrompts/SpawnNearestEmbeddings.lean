@@ -8,9 +8,6 @@ def getNearestEmbeddingsExe
   (query : String)(numSim: Nat)(penalty: Float)
   (descField: String) : IO String := do
   let exePath := System.mkFilePath [".", ".lake", "build", "bin", "nearest_embeddings"]
-  if !(← exePath.pathExists) then
-    let _ ←  IO.Process.run {cmd := "lake", args := #["build",  "nearest_embeddings"], cwd := "."}
-  let cmd := exePath.toString
   -- let child ← getNearestEmbeddingsFullProcess
   -- let stdin := child.stdin
   let p : JsonNumber := match JsonNumber.fromFloat? penalty with
@@ -20,7 +17,14 @@ def getNearestEmbeddingsExe
     [("n" , numSim), ("docString", query), ("descField", descField),
     ("penalty", Json.num p)]
   logTimed "sending query"
-  let inp ← IO.Process.run {cmd := cmd, args := #[jsQuery.compress]}
+  if !(← exePath.pathExists) then
+    let _ ←  IO.Process.run {cmd := "lake", args := #["build",  "nearest_embeddings"], cwd := "."}
+  let cmd := exePath.toString
+  let inp ←
+    if (← exePath.pathExists) then
+      IO.Process.run {cmd := cmd, args := #[jsQuery.compress]}
+    else
+      IO.Process.run {cmd := "lake", args := #["exe",  "nearest_embeddings", jsQuery.compress], cwd := "."}
   logTimed "got response"
   return inp
 

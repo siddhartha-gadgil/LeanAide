@@ -214,7 +214,7 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
 def getPromptPairsOrdered (pb: PromptExampleBuilder)
   (query: String) : TranslateM ((Array (String × Json))) := do
     let file : System.FilePath :=
-      ".leanaide_cache"/ "prompt" / s!"{hash pb}_{hash query}.json"
+      (← cachePath) / "prompt" / s!"{hash pb}_{hash query}.json"
     if (← file.pathExists) then
       -- IO.eprintln s!"Getting prompt pairs from cache: {file}"
       let js ← IO.FS.readFile file
@@ -351,7 +351,7 @@ partial def RelevantDefs.names (nbd: RelevantDefs)(s: String) (pairs : Array (St
     bestDefsInConsts num searchNames.toList depth
   | RelevantDefs.env => do
     let env ← get
-    return env.defs.map (·.1.name)
+    return env.defs.map (·.name)
   | .data d => return d.map (·.1)
   | RelevantDefs.seq nbs => do
     let names ← nbs.mapM fun nb => nb.names s pairs

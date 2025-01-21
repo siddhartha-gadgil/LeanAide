@@ -224,7 +224,7 @@ def translateDef (s: String)(n: Name)(add : Bool := true) : SessionM Unit := do
     say "Success in translation" `translateDef
     sayM res.jsonView `translateDef
     if add then
-      let dd : DefWithDoc := {res with doc := s}
+      let dd : DefData := {res with doc? := some s}
       addDefn dd
   | Except.error err =>
     say "Error in translation"
@@ -308,8 +308,7 @@ open Lean.Elab.Term
 
 def addDefByName (name: Name)(doc? : Option String := none) : SessionM Unit := do
   let dfn ← DefData.ofNameM name
-  let envdoc?  ← findDocString? (← getEnv) name
-  let doc? := doc?.orElse fun _ => envdoc?
+  let doc? := doc?.orElse fun _ => dfn.doc?
   let some doc := doc? | throwError "No docstring found or specified"
   let dfnStatement ← dfn.statementWithDoc doc
   addDefRaw name dfnStatement
