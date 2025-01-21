@@ -16,7 +16,6 @@ unsafe def fetchEmbedding (descField : String) (force: Bool) : IO UInt32 := do
     IO.eprintln s!"Fetched embeddings: {out.stdout}"
   return out.exitCode
 
-
 unsafe def main (args: List String) : IO UInt32 := do
   let force := args.any (· == "--force")
   for descField in ["docString", "description", "concise-description"] do

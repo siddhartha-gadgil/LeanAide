@@ -5,7 +5,7 @@ open Lean Meta Elab Term PrettyPrinter Tactic Command Parser
 
 namespace LeanAide.Meta
 
-syntax (name := thmCommand) "#theorem" (ident)? str : command
+syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
 @[command_elab thmCommand] def thmCommandImpl : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
@@ -16,7 +16,13 @@ syntax (name := thmCommand) "#theorem" (ident)? str : command
     let s := s.getString
     let name := name.getId
     go s stx (some name)
-
+  | `(command| #theorem : $s:str) =>
+    let s := s.getString
+    go s stx none
+  | `(command| #theorem $name:ident : $s:str) =>
+    let s := s.getString
+    let name := name.getId
+    go s stx (some name)
   | _ => throwUnsupportedSyntax
   where go (s: String) (stx: Syntax) (name? : Option Name) : TermElabM Unit := do
     if s.endsWith "." then
