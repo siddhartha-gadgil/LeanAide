@@ -723,7 +723,10 @@ mutual
                 let pf := #[introTacs] ++  pf
                 let pfTerm ← `(by $pf*)
                 -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
-                mkStatementStx name? (← delabDetailed thm) pfTerm true
+                let name ← match name? with
+                  | some n => pure n
+                  | none => qp.server.theoremName (← PrettyPrinter.ppExpr thm).pretty
+                mkStatementStx name (← delabDetailed thm) pfTerm true
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"

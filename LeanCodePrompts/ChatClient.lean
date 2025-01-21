@@ -545,6 +545,15 @@ def structuredProofFromStatement (server: ChatServer)
   theories.mapM fun (pf, thmPf) => do
     pure (pf, ← structuredProof server thmPf)
 
+def theoremName (server: ChatServer)
+  (statement: String): CoreM Name := do
+    let query := s!"Give a name following the conventions of the Lean Prover and Mathlib for the theorem: \n{statement}\n\nGive ONLY the name of the theorem."
+    let namesArr ←  server.mathCompletions query 1
+    let llm_name := namesArr.get! 0 |>.replace "`" ""
+          |>.replace "\""  "" |>.trim
+        -- logInfo llm_name
+    return llm_name.toName
+
 -- @[deprecated structuredProof]
 -- def structuredProofFull (server: ChatServer)
 --   (pf: String)(n: Nat := 1)
