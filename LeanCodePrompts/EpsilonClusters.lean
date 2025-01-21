@@ -24,8 +24,6 @@ def insertBy (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
     l.insertIdx! idx (x, cx) |>.take sizeBound
   | none => l.push (x, cx) |>.take sizeBound
 
-#eval #[1, 3, 44].take 0
-
 def bestWithCost (l: Array <| α)
   (cost : α → Float)(n: Nat)(accum : Array <| α × Float := #[]): Array <| α × Float :=
   l.foldl (fun (acc : Array <| α × Float) (x: α) =>

@@ -1,8 +1,7 @@
 import Lean
 import LeanAide.Aides
--- import LeanAide.ConstDeps
-import LeanAide.Using
 import LeanAide.StatementSyntax
+import LeanAide.DefData
 
 /-!
 # Premise data
@@ -107,32 +106,6 @@ def getBinders : List Syntax → MetaM (Option (List ContextTerm))
             return some (s :: t)
         | _ => return none
 
-def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
-| [] => return type
-| x :: ys => do
-    let tailType ← foldContext type ys
-    match x with
-    | `(letDecl|$n:ident : $type := $val) => do
-        `(let $n : $type := $val; $tailType)
-    | `(funBinder|($n:ident : $type:term)) => do
-        `(($n : $type) → $tailType)
-    | `(funImplicitBinder |{$n:ident : $type:term}) => do
-        `({$n : $type} → $tailType)
-    | `(funBinder|(_ : $type:term)) => do
-        `((_ : $type) → $tailType)
-    | `(funImplicitBinder|{_ : $type:term}) => do
-        `({_ : $type} → $tailType)
-    | `(instBinder|[$n:ident : $type:term]) => do
-        `([$n : $type] → $tailType)
-    | `(instBinder|[$type:term]) => do
-        `([$type] → $tailType)
-    | `(bracketedBinderF|⦃$n:ident : $type:term⦄) => do
-        `(($n : $type) → $tailType)
-    | `(bracketedBinderF|($n:ident : $type:term)) => do
-        `(($n : $type) → $tailType)
-    | _ =>
-        IO.println s!"foldContext: {x}, i.e., {x.reprint.get!} could not be folded"
-        return type
 
 #check Term.explicitBinder
 
@@ -356,7 +329,7 @@ instance : ToJsonM TermData :=
 /-- Increase depth of a subterm (for recursion) -/
 def TermData.increaseDepth (d: Nat) : TermData → TermData :=
 fun data ↦
-    ⟨data.context, data.value, data.size, data.depth + d, data.isProp⟩
+    {context := data.context, value := data.value, size := data.size, depth := data.depth + d, isProp := data.isProp}
 
 /-- Lemma data with proofs -/
 structure PropProofData where
@@ -388,7 +361,7 @@ instance : ToJsonM PropProofData :=
 /-- Increase depth for a lemma (for recursion) -/
 def PropProofData.increaseDepth (d: Nat) : PropProofData → PropProofData :=
 fun data ↦
-    ⟨data.context, data.prop, data.proof, data.propSize, data.proofSize, data.depth + d⟩
+    {context := data.context, prop := data.prop, proof := data.proof, propSize := data.propSize, proofSize := data.proofSize, depth := data.depth + d}
 
 /-- Full premise data for a proposition -/
 structure PremiseData  where
@@ -465,10 +438,7 @@ deriving Repr, ToJson, FromJson, BEq
 def CorePropData.ofPropProof (propPf : PropProofData) : CoreM CorePropData := do
     let type ← termToString propPf.prop
     let thm ← foldContext propPf.prop propPf.context.toList
-    return ⟨← propPf.context.mapM declToString,
-    type,
-    ← termToString thm,
-    ← propPf.statement⟩
+    return {context := ← propPf.context.mapM declToString, prop := type, thm := ← termToString thm, statement := ← propPf.statement}
 
 structure CorePremiseDataDirect where
     context : Array String
@@ -486,18 +456,7 @@ deriving Repr, ToJson, FromJson, BEq
 def CorePremiseDataDirect.fromPremiseData (pd: PremiseData) : CoreM CorePremiseDataDirect := do
     let thm ← foldContext pd.type pd.context.toList
     let type ← termToString pd.type
-    return ⟨← pd.context.mapM declToString,
-        pd.name?,
-        pd.doc?,
-        type,
-        ← termToString thm,
-        ← pd.statement,
-        ← termToString  pd.typeGroup,
-        pd.ids.map (fun (n, _) => shrink n) |>.toList.eraseDups.toArray,
-        (← pd.terms.toList.mapM (fun td => do
-        pure ⟨← td.context.mapM declToString,
-        ← termToString td.value, td.isProp⟩)) |>.eraseDups,
-        ← pd.propProofs.mapM CorePropData.ofPropProof⟩
+    return {context := ← pd.context.mapM declToString, name? := pd.name?, doc? := pd.doc?, type := type, thm := ← termToString thm, statement := ← pd.statement, typeGroup := ← termToString  pd.typeGroup, ids := pd.ids.map (fun (n, _) => shrink n) |>.toList.eraseDups.toArray, terms := (← pd.terms.toList.mapM (fun td => do pure {context := ← td.context.mapM declToString, value := ← termToString td.value, isProp := td.isProp})) |>.eraseDups, lemmas := ← pd.propProofs.mapM CorePropData.ofPropProof}
 
 structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array (String × String)
@@ -522,14 +481,10 @@ def getDefn? (name: String)(propMap : Std.HashMap String (String × String)) : M
 namespace CorePremiseData
 
 def fromDirect (direct: CorePremiseDataDirect)(propMap : Std.HashMap String (String × String)) : MetaM CorePremiseData := do
-    return {direct with
-        namedLemmas := ←
-            direct.ids.toList.eraseDups.toArray.filterMapM (
-            fun id =>  getDefn? id propMap)}
+    return {direct with namedLemmas := ← direct.ids.toList.eraseDups.toArray.filterMapM (fun id =>  getDefn? id propMap)}
 
 def fromPremiseData (pd: PremiseData)(propMap : Std.HashMap String (String × String)) : MetaM CorePremiseData := do
     CorePremiseData.fromDirect (← CorePremiseDataDirect.fromPremiseData pd) propMap
-
 
 def write (data: CorePremiseData)(group: String)(handles: Std.HashMap (String × String) IO.FS.Handle) : IO Unit := do
     let l := (toJson data).compress
@@ -553,8 +508,7 @@ def filterIds (pd: PremiseData)(p: Name → Bool) : PremiseData :=
 
 def increaseDepth (d: Nat) : PremiseData → PremiseData :=
 fun data ↦
-    ⟨data.context, data.name?, data.doc?, data.defnName, data.type, data.typeGroup, data.proof, data.typeSize, data.proofSize, (data.terms.map (fun td => td.increaseDepth d)), (data.propProofs.map (fun p => p.increaseDepth d)),
-        (data.ids.map (fun (n,  m) => (n,  m + d))) ⟩
+    {context := data.context, name? := data.name?, doc? := data.doc?, defnName := data.defnName, type := data.type, typeGroup := data.typeGroup, proof := data.proof, typeSize := data.typeSize, proofSize := data.proofSize, terms := data.terms.map (fun td => td.increaseDepth d), propProofs := data.propProofs.map (fun p => p.increaseDepth d), ids := data.ids.map (fun (n,  m) => (n,  m + d))}
 
 def coreData (data: PremiseData)(propMap : Std.HashMap String (String × String)) : MetaM CorePremiseData :=
     CorePremiseData.fromPremiseData data propMap
@@ -569,114 +523,14 @@ def write (data: PremiseData)(group: String)
 end PremiseData
 
 
-/--
-Data associated to a definition. This was originally intended to be used for tracking premises but is also used ignoring a few parameters as *syntax* data for a definition.
--/
-structure DefData where
-    name : Name
-    type : Syntax.Term
-    value : Syntax.Term
-    isProp : Bool
-    isNoncomputable : Bool
+
+structure DefPremiseData extends DefData where
     typeDepth : Option Nat
     valueDepth : Option Nat
     premises : List PremiseData -- empty if depth exceeds bound
     deriving Inhabited,  Repr
 
-def DefData.statement (data: DefData)(omitProofs: Bool := true) :
-        CoreM String := do
-    let value? := if omitProofs && data.isProp then none else some data.value
-    mkStatement (some data.name) data.type value? data.isProp (isNoncomputable := data.isNoncomputable)
-
-def DefData.statementWithDoc (data: DefData)(doc: String)
-    (omitProofs: Bool := true)(useExample: Bool := true) :
-        CoreM String := do
-    let value? := if omitProofs && data.isProp then none else some data.value
-    mkStatementWithDoc
-        (some data.name) data.type value? data.isProp useExample doc data.isNoncomputable
-
--- incorrect
--- def relType (xs:  List (TSyntax [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])) (type: Syntax.Term) : MetaM Syntax.Term := do
---     match xs with
---     | [] => return type
---     | h :: t =>
---         let prev ← relType t type
---         `(h → $prev)
-
-open Elab Term  in
-def DefData.toDeclaration (data: DefData) : TermElabM Declaration := do
-    let typeExpr ← elabType data.type
-    let valueExpr ← elabTerm data.value typeExpr
-    let valueExpr ← instantiateMVars valueExpr
-    let typeExpr ← instantiateMVars typeExpr
-    Term.synthesizeSyntheticMVarsNoPostponing
-    -- logInfo s!"DefData.toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr}"
-    -- logInfo s!"Mvar? : {valueExpr.hasExprMVar}, {valueExpr.hasLevelMVar}"
-    -- logInfo s!"{repr valueExpr}"
-    let decl ← match data.isProp with
-    | true => do
-        let decl := .thmDecl {
-            name := data.name,
-            type := typeExpr,
-            value := valueExpr,
-            levelParams := []
-        }
-        return decl
-    | false => do
-        let decl := Declaration.defnDecl {
-            name := data.name,
-            levelParams := [],
-            type := typeExpr,
-            value := valueExpr,
-            hints := ReducibilityHints.abbrev,
-            safety := DefinitionSafety.safe
-        }
-        -- logInfo s!"DefData.toDeclaration: {data.name} : {data.type} := {data.value}"
-        return decl
-
-def DefData.addDeclaration (data: DefData) : TermElabM Unit := do
-    let decl ← data.toDeclaration
-    addAndCompile decl
-
-
-def DefData.ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
-    match stx with
-    | `(command| def $n:ident $xs* : $type := $val) => do
-        let type ← foldContext type xs.toList
-        let name := n.getId
-        let type := type
-        let value := val
-        let isProp := false
-        let typeDepth := none
-        let valueDepth := none
-        return some ⟨name, type, value, isProp, false, typeDepth, valueDepth, []⟩
-    | `(command| noncomputable def $n:ident $xs* : $type := $val) => do
-        let type ← foldContext type xs.toList
-        let name := n.getId
-        let type := type
-        let value := val
-        let isProp := false
-        let typeDepth := none
-        let valueDepth := none
-        return some ⟨name, type, value, isProp, true, typeDepth, valueDepth, []⟩
-    | `(command| theorem $n:ident $xs* : $type := $val) =>
-        let type ← foldContext type xs.toList
-        let name := n.getId
-        let type := type
-        let value := val
-        let isProp := true
-        let typeDepth := none
-        let valueDepth := none
-        return some ⟨name, type, value, isProp, false, typeDepth, valueDepth, []⟩
-    | _ => return none
-
-def DefData.jsonView (data: DefData) : MetaM Json := do
-    return Json.mkObj [("name", toJson data.name),
-    ("type", toJson (← ppTerm data.type).pretty),
-    ("value", toJson (← ppTerm data.value).pretty),
-    ("isProp", toJson data.isProp)]
-
-def DefData.ofNameM (name: Name) : MetaM DefData := do
+def DefPremiseData.ofNameM (name: Name) : MetaM DefPremiseData := do
     let decl ← getConstInfo name
     let type ← instantiateMVars decl.type
     let value ← instantiateMVars decl.value!
@@ -689,7 +543,10 @@ def DefData.ofNameM (name: Name) : MetaM DefData := do
     | _ => false
     let typeDepth := type.approxDepth.toNat
     let valueDepth := value.approxDepth.toNat
-    return ⟨name, typeStx, valueStx, isProp, nc, typeDepth, valueDepth, []⟩
+    let doc? ← findDocString? (← getEnv) name
+    return {name := name, type := typeStx, value := valueStx, isProp := isProp, isNoncomputable := nc, doc? := doc?, typeDepth := typeDepth, valueDepth := valueDepth, premises := []}
+
+
 
 structure IdentData where
     context : Array String
@@ -744,10 +601,10 @@ def writeString (data: IdentData)(group: String)(handles: Std.HashMap (String ×
 
 
 def unfold (data: IdentData) : Array IdentPair :=
-    data.ids.map (fun id => ⟨data.context, data.type, data.thm, data.statement, id⟩)
+    data.ids.map (fun id => {context := data.context, type := data.type, thm := data.thm, statement := data.statement, id := id})
 
 def ofCorePremiseData (data: CorePremiseData) : IdentData :=
-    ⟨data.context, data.type, data.thm, data.name?, data.doc?, data.statement, data.ids⟩
+    {context := data.context, type := data.type, thm := data.thm, name? := data.name?, doc? := data.doc?, statement := data.statement, ids := data.ids}
 
 end IdentData
 
@@ -811,9 +668,9 @@ def write (data: LemmaPair)(group: String)(handles: Std.HashMap (String × Strin
 
 def ofCorePremiseData (data: CorePremiseData) : Array LemmaPair :=
     data.lemmas.map (fun l =>
-        ⟨data.name?, data.doc?, data.context, data.type, data.thm, data.statement, l.thm, l.statement⟩) ++
+        {name? := data.name?, doc? := data.doc?, thmContext := data.context, thmType := data.type, thm := data.thm, statement := data.statement, lemmaType := l.thm, lemmaStatement := l.statement}) ++
     data.namedLemmas.map (fun (type, statement) =>
-        ⟨data.name?, data.doc?, data.context, data.type, data.thm, data.statement, type, statement⟩)
+        {name? := data.name?, doc? := data.doc?, thmContext := data.context, thmType := data.type, thm := data.thm, statement := data.statement, lemmaType := type, lemmaStatement := statement})
 
 end LemmaPair
 
@@ -851,21 +708,13 @@ def write (data: TermPair)(group: String)(handles: Std.HashMap (String × String
 
 def ofCorePremiseData (data: CorePremiseData) : List TermPair :=
     data.terms.map (fun t =>
-        ⟨data.context, data.type, data.thm, data.statement, t.context, t.value, t.isProp⟩)
+        {thmContext := data.context, thmType := data.type, thm := data.thm, statement := data.statement, termContext := t.context, term := t.value, isProp := t.isProp})
 
 end TermPair
 
 def IdentData.filter (d: IdentData)(p : String → Bool) : IdentData :=
     {d with ids := d.ids.filter p}
 
-def DefData.identData (d: DefData) : CoreM <| List IdentData := do
+def DefPremiseData.identData (d: DefPremiseData) : CoreM <| List IdentData := do
     d.premises.mapM (fun p => do
-        pure {
-                context:= ← p.context.mapM declToString
-                type := ← termToString p.type
-                thm := ← termToString p.type
-                name? := p.name?
-                doc? := p.doc?
-                statement := ← p.statement
-                ids :=
-                    p.ids.map (·.1) |>.toList.eraseDups.toArray})
+        pure {context := ← p.context.mapM declToString, type := ← termToString p.type, thm := ← termToString p.type, name? := p.name?, doc? := p.doc?, statement := ← p.statement, ids := p.ids.map (·.1) |>.toList.eraseDups.toArray})

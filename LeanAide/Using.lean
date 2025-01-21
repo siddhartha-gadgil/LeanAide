@@ -1,5 +1,4 @@
 import Lean
-import Mathlib
 open Lean Meta Elab Term Tactic
 
 def usingM (type: Expr) : TacticM Unit :=
@@ -22,5 +21,3 @@ example : 1 ≤ 3 := by
   · intro h
     apply Nat.le_step
     assumption
-
--- #check getLocalDeclFromUserName

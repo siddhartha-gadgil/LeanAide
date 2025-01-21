@@ -36,7 +36,7 @@ def main : IO Unit := do
     match name?, desc?, concise? with
     | some name, some desc, some concise =>
       let name := name.toName
-      let core := DefnTypes.thmFromNameCore? name
+      let core := DefDataRepr.thmFromNameCore? name
       let dfn? ← core.run' coreContext {env := env} |>.runToIO'
       match dfn? with
       | some dfn =>

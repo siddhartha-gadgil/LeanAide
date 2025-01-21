@@ -3,6 +3,7 @@ import Lean.Meta
 import Init.System
 import LeanAide.Aides
 import LeanAide.StatementSyntax
+import LeanAide.DefData
 open Lean Meta Elab
 
 set_option synthInstance.maxHeartbeats 1000000
@@ -219,17 +220,6 @@ def nameValueDocs (consts: Array Name) : MetaM (Array (Name × Expr ×  Option S
     fun (name, _, _)  ↦ !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && !(excludeSuffixes.any (fun pfx => pfx.isSuffixOf name))
   return names
 
-
-structure DefnTypes where
-    name: Name
-    type: String
-    isProp : Bool
-    isNoncomputable : Bool
-    docString? : Option String
-    value? : Option String
-    statement : String
-    deriving Repr, ToJson, FromJson
-
 structure ConstructorTypes where
     name: Name
     induc : Name
@@ -243,17 +233,17 @@ structure InductiveTypes where
     docString? : Option String
     deriving Repr, ToJson, FromJson
 
-def propMapFromDefns (dfns : Array DefnTypes) : MetaM <| Std.HashMap Name (String × String) := do
+def propMapFromDefns (dfns : Array DefDataRepr) : MetaM <| Std.HashMap Name (String × String) := do
     return Std.HashMap.ofList <|
        dfns.filter (fun d => d.isProp)
         |>.toList.map fun d => (d.name, (d.type, d.statement))
 
-namespace DefnTypes
-def getM : MetaM <| Array DefnTypes := do
+namespace DefDataRepr
+def getM : MetaM <| Array DefDataRepr := do
     let cs ← constantNameValueTypes
     IO.println s!"Total: {cs.size}"
     let mut count := 0
-    let mut dfns : Array DefnTypes := #[]
+    let mut dfns : Array DefDataRepr := #[]
     for (name, value, type, doc?) in cs do
         if count % 1000 = 0 then
           IO.println s!"count: {count}"
@@ -282,7 +272,7 @@ def getM : MetaM <| Array DefnTypes := do
           IO.eprintln s!"Failed to process {name}; error {← msg.toString}"
     return dfns
 
-def writeM (dfns : Array DefnTypes)(name: String := "all.json") : MetaM Unit := do
+def writeM (dfns : Array DefDataRepr)(name: String := "all.json") : MetaM Unit := do
     let jsonl := dfns.map toJson
     let jsonc := jsonl.map Json.compress
     let path := System.mkFilePath ["rawdata", "defn-types", name]
@@ -293,7 +283,7 @@ def writeM (dfns : Array DefnTypes)(name: String := "all.json") : MetaM Unit := 
         handle.putStrLn l
 
 /-- Saving to file and returning for convenience along with map -/
-def getWriteSplitM : MetaM <| (Array DefnTypes) × (Std.HashMap Name (String × String)) × Std.HashMap String (Array DefnTypes) := do
+def getWriteSplitM : MetaM <| (Array DefDataRepr) × (Std.HashMap Name (String × String)) × Std.HashMap String (Array DefDataRepr) := do
     let dfns ← getM
     writeM dfns
     let split ← splitData dfns
@@ -303,24 +293,20 @@ def getWriteSplitM : MetaM <| (Array DefnTypes) × (Std.HashMap Name (String × 
     let pm ← propMapFromDefns dfns
     return (dfns, pm, split)
 
-def getWriteSplitCore : CoreM ((Array DefnTypes) × (Std.HashMap Name (String × String)) × Std.HashMap String (Array DefnTypes)) :=
+def getWriteSplitCore : CoreM ((Array DefDataRepr) × (Std.HashMap Name (String × String)) × Std.HashMap String (Array DefDataRepr)) :=
     (getWriteSplitM).run'
 
-def getWriteM : MetaM <| (Array DefnTypes) × (Std.HashMap Name (String × String)) := do
+def getWriteM : MetaM <| (Array DefDataRepr) × (Std.HashMap Name (String × String)) := do
     let dfns ← getM
     writeM dfns
     let pm ← propMapFromDefns dfns
     return (dfns, pm)
 
-def getWriteCore : CoreM ((Array DefnTypes) × (Std.HashMap Name (String × String))) :=
+def getWriteCore : CoreM ((Array DefDataRepr) × (Std.HashMap Name (String × String))) :=
     (getWriteM).run'
 
-def withDoc (dfn: DefnTypes) : String :=
-  match dfn.docString? with
-  | some doc => s!"/-- {doc} -/\n{dfn.statement}"
-  | none => dfn.statement
 
-def thmFromName? (name : Name) : MetaM <| Option DefnTypes := do
+def thmFromName? (name : Name) : MetaM <| Option DefDataRepr := do
   let env ← getEnv
   let doc? ← findDocString? env name
   let info? := env.find? name
@@ -338,10 +324,10 @@ def thmFromName? (name : Name) : MetaM <| Option DefnTypes := do
         return some ⟨name, fmt.pretty, isProp, isNoncomputable, doc?, value, statement⟩
     | _ => return none
 
-def thmFromNameCore? (name : Name) : CoreM <| Option DefnTypes :=
+def thmFromNameCore? (name : Name) : CoreM <| Option DefDataRepr :=
     (thmFromName? name).run'
 
-def defFromName? (name : Name) : MetaM <| Option DefnTypes := do
+def defFromName? (name : Name) : MetaM <| Option DefDataRepr := do
   let env ← getEnv
   let doc? ← findDocString? env name
   let info? := env.find? name
@@ -362,7 +348,7 @@ def defFromName? (name : Name) : MetaM <| Option DefnTypes := do
         return some ⟨name, fmt.pretty, isProp, isNoncomputable, doc?, value, statement⟩
     | _ => return none
 
-end DefnTypes
+end DefDataRepr
 
 def InductiveTypes.fromName? (name : Name) : MetaM <| Option InductiveTypes := do
   let env ← getEnv
@@ -389,12 +375,12 @@ def ConstructorTypes.fromName? (name : Name) : MetaM <| Option ConstructorTypes 
 
 def writeDocsM : MetaM <| Json := do
   IO.println "Getting defn types"
-  let dfns ← DefnTypes.getM
+  let dfns ← DefDataRepr.getM
   IO.println s!"Total: {dfns.size}"
-  DefnTypes.writeM dfns
-  let dfns := dfns.filter (fun d => d.docString?.isSome)
+  DefDataRepr.writeM dfns
+  let dfns := dfns.filter (fun d => d.doc?.isSome)
   IO.println s!"Total: {dfns.size}"
-  DefnTypes.writeM dfns "docs.jsonl"
+  DefDataRepr.writeM dfns "docs.jsonl"
   return Json.arr <| dfns.map toJson
 
 -- #check Json.mergeObj
@@ -403,7 +389,7 @@ def writeDocsCore : CoreM <| Json :=
     (writeDocsM).run'
 
 def getPropMap : MetaM <| Std.HashMap Name (String × String) := do
-    let dfns ← DefnTypes.getM
+    let dfns ← DefDataRepr.getM
     propMapFromDefns dfns
 
 
@@ -418,7 +404,7 @@ def getPropMapStr : MetaM <| Std.HashMap String (String × String) := do
     propOmittedHandle.putStrLn "import Mathlib"
     let cs ← constantNameValueTypes
     let mut m : Std.HashMap String (String × String) := Std.HashMap.empty
-    let mut dfs : Array DefnTypes := #[]
+    let mut dfs : Array DefDataRepr := #[]
     for (name, value, type, doc?) in cs do
       if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && type.approxDepth < 60 then
       try
@@ -433,7 +419,7 @@ def getPropMapStr : MetaM <| Std.HashMap String (String × String) := do
         let statement ←
             mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
 
-        let dfn : DefnTypes :=
+        let dfn : DefDataRepr :=
           ⟨name, fmt.pretty, isProp, isNoncomputable, doc?, value?, statement⟩
         dfs := dfs.push dfn
         if count % 1000 = 0 then

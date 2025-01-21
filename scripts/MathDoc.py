@@ -1,3 +1,11 @@
+import os
+
+__about__ = """
+This file contains the structure of the MathDocTree, which is a tree structure that represents the structure of a mathematical document.
+
+NOTE: To generate JSON format file, change the default value of `xml` to False. If you want `XML` format, keep it as True.
+"""
+
 class MathDocTree:
     def __init__(self,
                  name: str,
@@ -6,6 +14,7 @@ class MathDocTree:
                  key_value_str: list = [],
                  optional: bool = False,
                  give_json: str = "",
+                 xml: bool = True, # Change to False to generate JSON
                  post_text: str = ""):
         """Initialise a node in the MathDocTree."""
         self.name = name
@@ -13,6 +22,7 @@ class MathDocTree:
         self.children = []
         self.optional = optional
         self.give_json = give_json
+        self.xml = xml
         self.key_value_str = key_value_str
         self.post_text = post_text
         for child in children:
@@ -41,23 +51,26 @@ class MathDocTree:
     def _to_markdown(self, depth=0):
         """Helper function to generate Markdown with proper indentation."""
 
+        format_type = "XML" if self.xml else "JSON"
         def key_value_pair_txt(keys: list) -> str:
             if keys == []:
                 return ""
-            return " with each element of the list is a JSON object with exactly one _key-value pair_, with the _key_ one of " + ", ".join([f"`{key}`" for key in keys]) + "."
+            return f" with each element of the list is a {format_type} object with exactly one _key-value pair_, with the _key_ one of " + ", ".join([f"`{key}`" for key in keys]) + "."
 
         # Children are indented by 2 spaces * depth
         indent = " " * 2 * depth
         optional_text = " (OPTIONAL)" if self.optional else ""
         post_text = f" {self.post_text}" if self.post_text != "" else ""
-        give_json_text = f" Give a JSON {self.give_json}" if self.give_json else ""
+        give_json_text = f" Give a {format_type} {self.give_json}" if self.give_json else ""
         key_value_pair_str = key_value_pair_txt(self.key_value_str) 
+
         if key_value_pair_str == "": 
             punct = "."
         else:
             punct = ","
-        # name is bolded
-        line = f"{indent}- **{self.name}**:{optional_text} {self.desc}{give_json_text}{punct}{key_value_pair_str}{post_text}"
+
+        # Replace any file formats in the content, if written. USE :: {{format_type}} :: to denote position to replace
+        line = f"{indent}- **{self.name}**:{optional_text} {self.desc}{give_json_text}{punct}{key_value_pair_str}{post_text}".replace("{{format_type}}", format_type)
         lines = [line]
 
         for child in self.children:
@@ -129,11 +142,15 @@ calculate = MathDocTree("calculate", "An equation, inequality, short calculation
 
 ### Missing Proofs
 missing = MathDocTree("missing", "A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field.", give_json="string")
-missing_proofs = MathDocTree("missing_proofs", node_sequence_txt("missing"), [missing], optional=True)
+missing_level = MathDocTree("missing_level", "The severity of the missing statement in the proof, on a scale of 1 to 5, with 1 being the least severe and 5 being the most severe. Follow the RUBRIC mentioned previously.", give_json="number")
+missing_proofs = MathDocTree("missing_proofs", node_sequence_txt("missing"), [missing, missing_level], optional=True)
 
 ### Errors
 error = MathDocTree("error", "An error in a proof or calculation. Report only actual errors, with missing steps reported in the 'missing' field.", give_json = "string")
-errors = MathDocTree("errors", node_sequence_txt("error"), children = [error], optional=True)
+error_level = MathDocTree("error_level", "The severity of the error, on a scale of 1 to 5, with 1 being the least severe and 5 being the most severe. Follow the RUBRIC mentioned previously.", give_json="number")
+errors = MathDocTree("errors", node_sequence_txt("error"), children = [error, error_level], optional=True)
+
+### Assert
 
 assert_children = [claim, proof_method, deduced_from_results, calculate, missing_proofs, errors]
 
@@ -142,16 +159,17 @@ root_child.append(assert_type)
 
 ## Theorem
 
-hypothesis = MathDocTree("hypothesis", "a JSON list of data and assumptions, i.e., **let** and **assume** statements.", give_json = "list", key_value_str=["let", "some", "assume"])
+hypothesis = MathDocTree("hypothesis", "a {{format_type}} list of data and assumptions, i.e., **let** and **assume** statements.", give_json = "list", key_value_str=["let", "some", "assume"])
 
 conclusion = MathDocTree("conclusion", "The conclusion of the theorem.", give_json="string")
 proved = MathDocTree("proved", "Whether the theorem has been proved, either here or earlier or by citing the literature.", give_json="boolean")
+overall_score = MathDocTree("overall_score", "The overall score (upto 1 decimal point) of the proof out of 10 based on the correctness of the proof.", give_json="number")
 
 proof = MathDocTree("proof", "A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`.", optional = True, give_json="list", key_value_str = md_blobnames) 
 ref = MathDocTree("ref", "A reference where the result has been previously proved.", optional = True, give_json="string")
 cite = MathDocTree("cite", "A citation of a result from the mathematical literature which gives the proof.", optional= True, give_json="string")
 
-theorem = MathDocTree("theorem", "A mathematical theorem, with a list of hypotheses and a conclusion.", children = [hypothesis, conclusion, proved, name_field, proof, ref, cite, missing_proofs, errors], give_json= "object", post_text= subkeys_posttext)
+theorem = MathDocTree("theorem", "A mathematical theorem, with a list of hypotheses and a conclusion.", children = [hypothesis, conclusion, proved, overall_score, name_field, proof, ref, cite, missing_proofs, errors], give_json= "object", post_text= subkeys_posttext)
 root_child.append(theorem)
 
 ## Problem
@@ -206,15 +224,51 @@ root_child.append(conclude)
 remark = MathDocTree("remark", "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc.", give_json="string")
 root_child.append(remark)
 
-## Root 
+## Mathdoc Root 
 # Tree initialisation from root.
-root = MathDocTree("math_document", "A structured math document in a custom JSON format.", children=root_child, key_value_str=md_blobnames, give_json="list")
-root.post_text = "The descriptions for the choices of _key_ and corresponding _value_ are as follows:"
+mathdoc_root = MathDocTree("math_document", "A structured math document in a custom {{format_type}} format.", children=root_child, key_value_str=md_blobnames, give_json="list")
+mathdoc_root.post_text = "The descriptions for the choices of _key_ and corresponding _value_ are as follows:"
 
+## Rubric 
+
+## 1
+description = MathDocTree("description", "Notation/terminology issues without affecting logic")
+example_1 = MathDocTree("Example", "Mislabeling variables, missing definitions, or minor imprecision")
+score_1 = MathDocTree("Score 1", "Minor Formal Errors", children=[description, example_1])
+
+## 2
+description = MathDocTree("description", "Missing obvious steps or intermediate details")
+example_2 = MathDocTree("Example", "Skipping base cases, omitting domains, or straightforward simplifications")
+score_2 = MathDocTree("Score 2", "Incomplete Details", children=[description, example_2])
+
+## 3
+description = MathDocTree("description", "Missing important considerations but proof is mostly valid")
+example_3 = MathDocTree("Example", "Ignoring edge cases, unproven minor lemmas, or weak case handling")
+score_3 = MathDocTree("Score 3", "Logical Oversights", children=[description, example_3])
+
+## 4
+description = MathDocTree("description", "Incorrect logic or invalid steps undermining the proof")
+example_4 = MathDocTree("Example", "Using wrong theorems, circular reasoning, or overlooking critical conditions")
+score_4 = MathDocTree("Score 4", "Substantial Flaws", children=[description, example_4])
+
+## 5
+description = MathDocTree("description", "Flaws that fully invalidate the proof or its conclusion")
+example_5 = MathDocTree("Example", "Proving the wrong statement, misinterpreting the problem, or contradictory logic")
+score_5 = MathDocTree("Score 5", "Critical Errors", children=[description, example_5])
+
+rubric_node = MathDocTree("rubric", "A rubric containing the criteria for scoring the proof for errors and missing proofs", children=[score_1, score_2, score_3, score_4, score_5], post_text="The rubric is as follows:")
+
+# Root
+root = MathDocTree("AutoTA", "An evaluation of mathematical proof in a structured document with a predefined RUBRIC" ,children=[rubric_node, mathdoc_root])
 
 if __name__ == "__main__":
     # Converting the tree to markdown (Always at the bottom)
     mathdoc = root.to_markdown()
+    rubric = rubric_node.to_markdown()
 
-    with open("./MathDoc.md", "w") as f:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    with open(os.path.join(current_dir, "../scripts/", "MathDoc.md"), "w") as f:
         f.write(mathdoc)
+    with open(os.path.join(current_dir, "../scripts/", "Rubric.md"), "w") as f:
+        f.write(rubric)

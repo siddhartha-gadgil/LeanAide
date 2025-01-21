@@ -3,6 +3,7 @@ import Mathlib
 import Plausible
 import LeanSearchClient.Syntax
 import Lake.Toml.ParserUtil
+import Lake
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
 
@@ -326,3 +327,6 @@ example : True := by
 #check Aesop.runTacticSyntaxAsMetaM
 
 #check Elab.runTactic
+
+#check Lake.getRootPackage
+#check Lake.MonadWorkspace

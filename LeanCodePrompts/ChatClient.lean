@@ -130,19 +130,19 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
   let dataJs := dataJs.mergeObj stopJs
   let data := dataJs.pretty
   trace[Translate.info] "Model query: {data}"
-  logInfo s!"Querying {server.model} with {data}"
+  -- logInfo s!"Querying {server.model} with {data}"
   let url ← server.url
-  logInfo "Authenticating"
+  -- logInfo "Authenticating"
   let authHeader? ← server.authHeader?
-  logInfo s!"Auth header: {authHeader?}"
-  IO.eprintln s!"Querying {url} at {← IO.monoMsNow }"
+  -- logInfo s!"Auth header: {authHeader?}"
+  -- IO.eprintln s!"Querying {url} at {← IO.monoMsNow }"
   let start ← IO.monoMsNow
   let baseArgs :=
     #[url, "-X", "POST", "-H", "Content-Type: application/json"]
   let args := match authHeader? with
     | some h => #["-H", h] ++ baseArgs
     | none => baseArgs
-  logInfo s!"Querying {url} with {data}"
+  -- logInfo s!"Querying {url} with {data}"
   let output ← Cache.IO.runCurl (args ++ #["--data", data])
   trace[Translate.info] "Model response: {output}"
   let queryJs := Json.mkObj [
@@ -162,9 +162,9 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
     return .null
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
-  logInfo s!"Querying {server.model}"
+  -- logInfo s!"Querying {server.model}"
   let file : System.FilePath :=
-    ".leanaide_cache" / "chat" /
+    (← cachePath) / "chat" /
       s!"{hash server}_{hash params}_{hash messages}.json"
   if ← file.pathExists then
     -- IO.eprintln s!"Reading from cache: {file}"
@@ -545,22 +545,31 @@ def structuredProofFromStatement (server: ChatServer)
   theories.mapM fun (pf, thmPf) => do
     pure (pf, ← structuredProof server thmPf)
 
-@[deprecated structuredProof]
-def structuredProofFull (server: ChatServer)
-  (pf: String)(n: Nat := 1)
-  (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatExample := #[]): CoreM (Array Json) := do
-  let queryString ← structuredProofQueryFull pf
-  let outs ← ChatServer.mathCompletions server queryString n params examples
-  return outs.map extractJson
+def theoremName (server: ChatServer)
+  (statement: String): CoreM Name := do
+    let query := s!"Give a name following the conventions of the Lean Prover and Mathlib for the theorem: \n{statement}\n\nGive ONLY the name of the theorem."
+    let namesArr ←  server.mathCompletions query 1
+    let llm_name := namesArr.get! 0 |>.replace "`" ""
+          |>.replace "\""  "" |>.trim
+        -- logInfo llm_name
+    return llm_name.toName
 
-@[deprecated structuredProof]
-def make_structured (server: ChatServer)
-  (text: String)(n: Nat := 3)
-  (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatExample := #[]): CoreM (Array String) := do
-  let queryString ← fromTemplate "make_structured" [("text", text)]
-  ChatServer.mathCompletions server queryString n params examples
+-- @[deprecated structuredProof]
+-- def structuredProofFull (server: ChatServer)
+--   (pf: String)(n: Nat := 1)
+--   (params: ChatParams := {n := n, stopTokens := #[]})
+--   (examples: Array ChatExample := #[]): CoreM (Array Json) := do
+--   let queryString ← structuredProofQueryFull pf
+--   let outs ← ChatServer.mathCompletions server queryString n params examples
+--   return outs.map extractJson
+
+-- @[deprecated structuredProof]
+-- def make_structured (server: ChatServer)
+--   (text: String)(n: Nat := 3)
+--   (params: ChatParams := {n := n, stopTokens := #[]})
+--   (examples: Array ChatExample := #[]): CoreM (Array String) := do
+--   let queryString ← fromTemplate "make_structured" [("text", text)]
+--   ChatServer.mathCompletions server queryString n params examples
 
 def informalize (server: ChatServer)
   (code: String)(n: Nat := 3)

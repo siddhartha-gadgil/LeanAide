@@ -1,0 +1,81 @@
+{"usage":
+ {"total_tokens": 3811,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 3086,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 725},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AqBK1aaYemS4qn4B02CwN0chQbtfx",
+ "created": 1736999941,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  {𝕜 : Type u_2} →\n    [inst : Field 𝕜] →\n      [inst_2 : Fintype n] →\n        (A : Matrix n n 𝕜) →\n          Diagonalizable := ∃ (P : Matrix n n 𝕜), Invertible P ∧ ∃ (D : Matrix n n 𝕜), P⁻¹ * A * P = D ∧ D.IsDiagonal"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u} →\n  {𝕜 : Type v} →\n  [inst : Field 𝕜] →\n  [inst_1 : DecidableEq n] →\n  [inst_2 : Fintype n] →\n  (A : Matrix n n 𝕜) →\n  ∃ (P : Matrix n n 𝕜), (Invertible P) ∧ ∃ (D : Matrix n n 𝕜), IsDiagonal D ∧ P⁻¹ ⬝ A ⬝ P = D"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} {𝕜 : Type u_2} [inst : Field 𝕜] [inst_1 : Fintype n] [inst_2 : DecidableEq n] (A : Matrix n n 𝕜) →\n  ∃ (P : Matrix n n 𝕜) [Invertible P], Matrix.isDiagonal (⅟P * A * P)"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} →\n  (A : Matrix n n ℂ) →\n    ∃ (P : Matrix n n ℂ) [inst : Invertible P], Matrix.isDiagonal (⅟P * A * P)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u} → \n  {𝕜 : Type v} → \n    [inst : Field 𝕜] → \n      [inst_1 : Fintype n] → \n        [inst_2 : DecidableEq n] → \n          (A : Matrix n n 𝕜) → \n            ∃ (P : Matrix n n 𝕜) [Invertible P], P⁻¹ ⬝ A ⬝ P = Matrix.diagonal (Matrix.eigenvalues A)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_2} →\n  {α : Type u_3} →\n    [inst : Fintype n] →\n      [inst_1 : DecidableEq n] →\n        [inst_2 : Field α] →\n          (A : Matrix n n α) →\n            ∃ (P : Matrix n n α), Invertible P ∧ Matrix.IsDiag (P⁻¹ ⬝ A ⬝ P)"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_1} (A : Matrix n n ℂ) : Prop :=\n  ∃ (P : Matrix n n ℂ) [Invertible P], Matrix.isDiagonal (⅟P * A * P)"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{n : Type u_2} →\n  {𝕜 : Type u_3} →\n    [inst : Field 𝕜] →\n      [inst_1 : DecidableEq n] →\n        (A : Matrix n n 𝕜) →\n          Prop :=\n            ∃ (P : Matrix n n 𝕜), IsUnit P ∧ IsDiag (P⁻¹ * A * P)"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"}]}
