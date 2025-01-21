@@ -23,6 +23,9 @@ open LeanAide.Meta
 namespace LeanAide
 open Translate
 
+@[default_instance]
+instance : Add ℤ := inferInstance
+
 register_option lean_aide.translate.prompt_size : Nat :=
   { defValue := 10
     group := "lean_aide.translate"
