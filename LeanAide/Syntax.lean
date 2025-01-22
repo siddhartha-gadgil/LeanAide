@@ -32,12 +32,7 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
       let name ← match name? with
       | some name => pure name
       | none =>
-        let query := s!"Give a name following the conventions of the Lean Prover and Mathlib for the theorem: \n{s}\n\nGive ONLY the name of the theorem."
-        let namesArr ←  translator.server.mathCompletions query 1
-        let llm_name := namesArr.get! 0 |>.replace "`" ""
-          |>.replace "\""  "" |>.trim
-        -- logInfo llm_name
-        pure llm_name.toName
+          translator.server.theoremName s
       let name := mkIdent name
       let e? ←
         jsonToExprFallback js (← greedy) !(← chatParams).stopColEq |>.run' {}
