@@ -279,6 +279,15 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
     match contextStatementOfJson js with
     | some s => context := context.push s
     | none => pure ()
+  let mut decls : Array String := #[]
+  for decl in ← getLCtx do
+    let s := s!"{decl.userName} : {← PrettyPrinter.ppExpr decl.type};"
+    unless decl.userName.toString.contains '_' do
+      decls := decls.push s
+  -- IO.eprintln s!"Context: {context}"
+  -- IO.eprintln s!"Declarations: {decls}"
+  unless decls.isEmpty do
+    context := context ++ #["We have the following variables with types in context: "] ++ decls ++ #["."]
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   -- IO.eprintln s!"Full statement: {fullStatement}"
   let translator := qp.toTranslator
