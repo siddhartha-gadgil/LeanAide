@@ -1192,35 +1192,39 @@ set_option linter.unreachableTactic false
 
 "
 
+def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
+    TranslateM <| Format := do
+    let mut fmt : Format := s!"/-!\n## Theorem\n{thm}"
+    fmt := fmt ++ "\n## Proof\n" ++ pf ++ "\n"
+    fmt := fmt ++ "\n## JSON structured proof\n" ++ js.pretty ++ "-/\n"
+    IO.println fmt
+    let (code, names) ← mathDocumentCode js qp
+    fmt := fmt ++ code
+    -- IO.println fmt
+    let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
+    fmt := fmt ++ "\n\n/-!\n## Elaboration logs\n"
+    for msg in msgLogs.toList do
+      fmt := fmt ++ (← msg.data.format) ++ "\n"
+    fmt := fmt ++ "\n"
+    for (n, e) in exprs do
+      fmt := fmt ++ s!"* Sorries in {n}:\n"
+      let sorries ← getSorryTypes e
+      for s in sorries do
+        fmt := fmt ++ "\n "++ s!"* `{← PrettyPrinter.ppExpr s}`".replace "\n" " "
+    fmt := fmt ++ "\n-/\n"
+    return topCode ++ fmt
+
+
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format  := do
-    let mut fmt : Format := s!"/-!\n## Theorem\n{s}"
     let xs ← qp.server.structuredProofFromStatement s
     match xs.get? 0 with
     | some (pf, #[js]) =>
-      fmt := fmt ++ "\n## Proof\n" ++ pf ++ "\n"
-      fmt := fmt ++ "\n## JSON structured proof\n" ++ js.pretty ++ "-/\n"
-      IO.println fmt
-      let (code, names) ← mathDocumentCode js qp
-      fmt := fmt ++ code
-      -- IO.println fmt
-      let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
-      fmt := fmt ++ "\n\n/-!\n## Elaboration logs\n"
-      for msg in msgLogs.toList do
-        fmt := fmt ++ (← msg.data.format) ++ "\n"
-      fmt := fmt ++ "\n"
-      for (n, e) in exprs do
-        fmt := fmt ++ s!"* Sorries in {n}:\n"
-        let sorries ← getSorryTypes e
-        for s in sorries do
-          fmt := fmt ++ "\n "++ s!"* `{← PrettyPrinter.ppExpr s}`".replace "\n" " "
-      fmt := fmt ++ "\n-/\n"
-      -- IO.println fmt
-      return topCode ++ fmt
+      thmProofStrucToCode s pf js qp
     | _ =>
-      fmt := fmt ++ "No structured proof found"
+      let fmt := s!"/-!\n## Theorem\n{s}" ++ "No structured proof found"
       IO.println fmt
-    return fmt
+      return fmt
 
 -- #check MVarId.introN
 
