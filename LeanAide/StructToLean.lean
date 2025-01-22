@@ -279,6 +279,15 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
     match contextStatementOfJson js with
     | some s => context := context.push s
     | none => pure ()
+  let mut decls : Array String := #[]
+  for decl in ← getLCtx do
+    let s := s!"{decl.userName} : {← PrettyPrinter.ppExpr decl.type};"
+    unless decl.userName.toString.contains '_' do
+      decls := decls.push s
+  -- IO.eprintln s!"Context: {context}"
+  -- IO.eprintln s!"Declarations: {decls}"
+  unless decls.isEmpty do
+    context := context ++ #["We have the following variables with types in context: "] ++ decls ++ #["."]
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   -- IO.eprintln s!"Full statement: {fullStatement}"
   let translator := qp.toTranslator
@@ -1183,35 +1192,39 @@ set_option linter.unreachableTactic false
 
 "
 
+def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
+    TranslateM <| Format := do
+    let mut fmt : Format := s!"/-!\n## Theorem\n{thm}"
+    fmt := fmt ++ "\n## Proof\n" ++ pf ++ "\n"
+    fmt := fmt ++ "\n## JSON structured proof\n" ++ js.pretty ++ "-/\n"
+    IO.println fmt
+    let (code, names) ← mathDocumentCode js qp
+    fmt := fmt ++ code
+    -- IO.println fmt
+    let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
+    fmt := fmt ++ "\n\n/-!\n## Elaboration logs\n"
+    for msg in msgLogs.toList do
+      fmt := fmt ++ (← msg.data.format) ++ "\n"
+    fmt := fmt ++ "\n"
+    for (n, e) in exprs do
+      fmt := fmt ++ s!"* Sorries in {n}:\n"
+      let sorries ← getSorryTypes e
+      for s in sorries do
+        fmt := fmt ++ "\n "++ s!"* `{← PrettyPrinter.ppExpr s}`".replace "\n" " "
+    fmt := fmt ++ "\n-/\n"
+    return topCode ++ fmt
+
+
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format  := do
-    let mut fmt : Format := s!"/-!\n## Theorem\n{s}"
     let xs ← qp.server.structuredProofFromStatement s
     match xs.get? 0 with
     | some (pf, #[js]) =>
-      fmt := fmt ++ "\n## Proof\n" ++ pf ++ "\n"
-      fmt := fmt ++ "\n## JSON structured proof\n" ++ js.pretty ++ "-/\n"
-      IO.println fmt
-      let (code, names) ← mathDocumentCode js qp
-      fmt := fmt ++ code
-      -- IO.println fmt
-      let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
-      fmt := fmt ++ "\n\n/-!\n## Elaboration logs\n"
-      for msg in msgLogs.toList do
-        fmt := fmt ++ (← msg.data.format) ++ "\n"
-      fmt := fmt ++ "\n"
-      for (n, e) in exprs do
-        fmt := fmt ++ s!"* Sorries in {n}:\n"
-        let sorries ← getSorryTypes e
-        for s in sorries do
-          fmt := fmt ++ "\n "++ s!"* `{← PrettyPrinter.ppExpr s}`".replace "\n" " "
-      fmt := fmt ++ "\n-/\n"
-      -- IO.println fmt
-      return topCode ++ fmt
+      thmProofStrucToCode s pf js qp
     | _ =>
-      fmt := fmt ++ "No structured proof found"
+      let fmt := s!"/-!\n## Theorem\n{s}" ++ "No structured proof found"
       IO.println fmt
-    return fmt
+      return fmt
 
 -- #check MVarId.introN
 
