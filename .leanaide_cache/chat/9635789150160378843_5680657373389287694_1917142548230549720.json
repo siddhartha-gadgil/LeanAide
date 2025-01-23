@@ -1,0 +1,97 @@
+{"usage":
+ {"total_tokens": 1117,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 770,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 347},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AsiiMcB9n0BDAAqWHpNjG4nyp9pyt",
+ "created": 1737604958,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "class IsPerfect (G : Type u) [Group G] : Prop :=\n  (abelianization_eq_trivial : Abelianization G ≃* (⊥ : Subgroup G))"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "class IsPerfect (G : Type u) [Group G] : Prop :=\n  (abelianization_trivial : Abelianization G ≃* Trivial)"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "Class Group.IsPerfect (G : Type u) [Group G] : Prop :=\n  (abelianization_eq_trivial : Abelianization G ≃* PUnit)"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsPerfectGroup (G : Type u_1) [Group G] : Prop :=\n  Abelianization G ≃* (1 : Type u_1)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsPerfectGroup (G : Type u) [Group G] : Prop :=\n  Abelianization G ≃* (⊥ : Subgroup G)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsPerfect (G : Type u) [Group G] : Prop :=\n  Abelianization G ≃* PUnit"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u} [Group G] : Prop := Abelianization G ≃* (⊥ : Subgroup G)"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def is_perfect_group (G : Type u) [Group G] : Prop :=\n  Abelianization G ≃* (⊥ : Subgroup G)"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "Class Group.IsPerfect (G : Type u) [Group G] : Prop :=\n(abelianization_trivial : Abelianization G ≃* (⊥ : Subgroup G))"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsPerfect (G : Type u) [Group G] : Prop :=\n  Abelianization G ≃* (⊥ : Subgroup G)"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

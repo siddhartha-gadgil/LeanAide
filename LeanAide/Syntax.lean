@@ -69,7 +69,7 @@ syntax (name := defCommand) "#def"  str : command
   | _ => throwUnsupportedSyntax
   where go (s: String) (stx: Syntax) : TermElabM Unit := do
     if s.endsWith "." then
-      let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
+      let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams, toChat := .doc}
       let cmd? ←
         translator.translateDefCmdM?  s |>.run' {}
       match cmd? with
