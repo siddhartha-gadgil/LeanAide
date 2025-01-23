@@ -41,7 +41,7 @@ Using in your own project still involves some issues, for example it is slow.
 As we use precompiled embeddings, we must have toolchains matching. For using with `v4.15.0` (so far the only version supported), include this project as a dependency in `lakefile.lean` using the following (or use the equivalent in `lakefile.toml`):
 
 ```lean
-require LeanCodePrompts from git "https://github.com/siddhartha-gadgil/LeanAide"@"main"
+require LeanCodePrompts from git "https://github.com/siddhartha-gadgil/LeanAide"@"4.15.0"
 ```
 
 The run from a terminal the following to download the prebuilt embeddings.
