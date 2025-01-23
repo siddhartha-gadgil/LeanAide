@@ -1,0 +1,97 @@
+{"usage":
+ {"total_tokens": 1153,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 834,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 319},
+ "system_fingerprint": "fp_4691090a87",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AsikhlYBQEMOTlBg53jJZ82CJvmSm",
+ "created": 1737605103,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Group.perfect G ↔ Abelianization G ≃* ⊥"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u} → [inst : Group G] → IsTrivial (Abelianization G) → IsPerfect G"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Prop := Abelianization G ≃* TrivialGroup"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u} → [inst : Group G] → Group.IsPerfect G := Abelianization G ≃* (⊥ : Type u)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Prop := Abelianization G ≃* (⊥ : Subgroup G)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Prop :=\n  Abelianization G ≃* (⊥ : Subgroup G)"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Prop := Abelianization G ≃* (1 : Type u_1)"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Prop := Abelianization G ≃* (⊥ : Subgroup G)"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Prop := Abelianization G ≃* PUnit"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u} → [Group G] → Prop := Abelianization G ≃* (⊥ : Subgroup G)"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}
