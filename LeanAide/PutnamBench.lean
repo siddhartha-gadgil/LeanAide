@@ -1,10 +1,11 @@
 import Lean
+import LeanAide.Config
 open Lean
 namespace LeanAide
 namespace putnam
 
 def src : IO Json := do
-  let path := System.mkFilePath ["resources", "putnam.json"]
+  let path := (← resourcesDir)/ "putnam.json"
   let src ←  IO.FS.readFile path
   match Json.parse src with
   | Except.error e => throw <| IO.userError e
