@@ -12,7 +12,7 @@ def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", posi
     }
 
 def main : IO Unit := do
-  let names ← IO.FS.lines ((← resourcesDir / "doconly_names.txt"))
+  let names ← IO.FS.lines ((← resourcesDir) / "doconly_names.txt")
   let names := names.map (fun s => s.trim)
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
