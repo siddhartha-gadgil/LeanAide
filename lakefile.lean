@@ -46,7 +46,7 @@ lean_exe translate {
   supportInterpreter := true
 }
 
-lean_exe ctranslate {
+lean_exe preload_translate {
   supportInterpreter := true
 }
 
