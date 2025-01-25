@@ -1,4 +1,5 @@
 import Lean
+import LeanAide.Config
 import Batteries
 open Batteries Lean
 
@@ -412,10 +413,8 @@ end MathParaStructure
 -- #eval MathParaStructure.mathDoc.suppressed (maxDepth := 4) |>.eraseDups |>.map (·.name)
 
 def writeMathDoc : IO Unit := do
-  let dir : System.FilePath := "resources"
-  if !(← dir.pathExists) then
-        IO.FS.createDirAll dir
-  IO.FS.writeFile "resources/MathDoc.md"
+  let dir := (← resourcesDir)
+  IO.FS.writeFile (dir/"MathDoc.md")
     (MathParaStructure.mathDoc.toIndendentList |>.render)
 
 #eval writeMathDoc

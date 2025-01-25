@@ -20,4 +20,4 @@ unsafe def main : IO Unit := do
     {module := `LeanAide.ConstDeps}] {}
   let core := writeDocsCore
   let js ← core.run' coreContext {env := env} |>.runToIO'
-  IO.FS.writeFile ("resources" / "mathlib4-prompts.json") js.pretty
+  IO.FS.writeFile ((← resourcesDir) / "mathlib4-prompts.json") js.pretty

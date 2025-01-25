@@ -204,8 +204,8 @@ def uploadDesciptions (file: System.FilePath) : TranslateM Unit := do
     | Except.error _ => continue
 
 def preloadDescriptions : TranslateM Unit := do
-  uploadDesciptions <| "resources" / "mathlib4-prompts.jsonl"
-  uploadDesciptions <| "resources" / "mathlib4-descs.jsonl"
+  uploadDesciptions <| (← resourcesDir) / "mathlib4-prompts.jsonl"
+  uploadDesciptions <| (← resourcesDir) / "mathlib4-descs.jsonl"
 
 def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   let m ← getDescMap
