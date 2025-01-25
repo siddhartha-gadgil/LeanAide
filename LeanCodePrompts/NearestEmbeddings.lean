@@ -39,7 +39,7 @@ def nearestDocsToDocFullEmbeddingConc (data : EmbedData)
   (embedding : Array Float) (k : Nat)
   (dist: FloatArray → Array Float → Float := distL2Sq)(penalty : Float) :
    IO <| List (String × String × Bool × String × Float) := do
-  IO.eprintln "finding nearest embeddings"
+  IO.eprintln s!"finding nearest embeddings (data size: {data.size})"
   let start ← IO.monoMsNow
   let tuples : Array <| ((String × String × Bool × String) × FloatArray) × Float ←
     bestWithCostConc data (fun ((_, _, isProp, _), flArr) ↦

@@ -1,0 +1,91 @@
+{"usage":
+ {"total_tokens": 3110,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2736,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 374},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AtcDqVKUAxR6Z7DuMZPTCF6rYH7DM",
+ "created": 1737818330,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u_1} [inst : AddCommMonoid α] [inst_1 : HasNatCast α] {l : List α}, \n  (∀ x ∈ l, Even x) → Even l.sum"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {s : Finset ℕ}, (∀ n ∈ s, Even n) → Even (∑ n in s, n)"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u_1} [inst : AddMonoid α] {s : Finset α}, (∀ x ∈ s, Even x) → Even (∑ x in s, x)"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u} [inst : AddMonoid α] {s : Finset α}, (∀ x ∈ s, Even x) → Even (s.sum id)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {s : Finset ℕ}, (∀ x ∈ s, Even x) → Even (∑ x in s, x)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u} [inst : AddMonoid α] [inst_1 : HasZero α] [inst_2 : HasOne α] [inst_3 : DecidablePred Even],\n  ∀ {s : Finset α}, (∀ x ∈ s, Even x) → Even (∑ x in s, x)"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {l : List ℕ}, (∀ n ∈ l, Even n) → Even l.sum"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {m n : ℕ}, Even m → Even n → Even (m + n)"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {s : Finset ℕ}, (∀ n ∈ s, Even n) → Even (∑ n in s, n)"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {l : List ℕ}, (∀ x ∈ l, Even x) → Even (l.Sum)"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}
