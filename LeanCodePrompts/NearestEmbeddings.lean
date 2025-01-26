@@ -63,33 +63,6 @@ def embedQuery (doc: String) : IO <| Except String Json := do
 -- #eval embedQuery "There are infinitely many odd numbers"
 
 
-def nearestDocsToDocThms (data: Array ((String × String) × FloatArray))(doc: String)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq) : IO (List (String × String)) := do
-  let start ← IO.monoMsNow
-  let queryRes? ← embedQuery doc
-  let finish ← IO.monoMsNow
-  IO.eprintln s!"query time ??: {finish - start}"
-  -- IO.println "query complete"
-  match queryRes? with
-  | Except.ok queryRes =>
-    -- IO.println s!"query result obtained"
-    let queryData? := queryRes.getObjVal? "data"
-    match queryData? with
-    | Except.error error =>
-        IO.println s!"no data in query result: {error}"
-        panic s!"no data in query result: {error}"
-    | Except.ok queryDataArr =>
-      -- IO.println s!"data in query result obtained"
-      let queryData := queryDataArr.getArrVal? 0 |>.toOption.get!
-      match queryData.getObjValAs? (Array Float) "embedding" with
-      | Except.ok queryEmbedding =>
-        -- IO.println s!"embedding in query result obtained"
-        let res := nearestDocsToDocEmbedding data queryEmbedding k dist
-        -- IO.println s!"getNearestDocsToEmbedding complete: {res}"
-        pure res
-      | Except.error error =>
-        panic s!"no embedding in query result: {error} in {queryData}"
-  | Except.error err => panic! s!"error querying openai: {err}"
-
 def nearestDocsToDocFromEmb (data: Array ((String × String × Bool × String) × FloatArray))
     (queryRes?: Except String Json)(k : Nat)(dist: FloatArray → Array Float → Float := distL2Sq)
     (penalty: Float) : IO (List (String × String × Bool × String × Float)) := do

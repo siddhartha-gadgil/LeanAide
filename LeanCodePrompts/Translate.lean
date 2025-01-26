@@ -119,7 +119,7 @@ def chatServer : CoreM ChatServer := do
     if url.isEmpty then
       return ChatServer.openAI model
     else
-      return ChatServer.generic model url (← hasSysPrompt)
+      return ChatServer.generic model url none (← hasSysPrompt)
 
 
 /-!
