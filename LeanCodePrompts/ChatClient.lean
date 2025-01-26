@@ -66,7 +66,7 @@ inductive ChatServer where
   | azure (deployment: String := "GPT4TestDeployment")
       (model: String := "GPT-4")
   | google (model: String := "gemini-1.5-pro-001") (location: String := "asia-south1")
-  | generic (model: String) (url: String) (hasSysPropmpt : Bool := false)
+  | generic (model: String) (url: String) (authHeader? : Option String) (hasSysPropmpt : Bool := false)
   deriving Repr, FromJson, ToJson, DecidableEq, Hashable
 
 namespace ChatServer
@@ -90,19 +90,19 @@ def url : ChatServer → IO String
       let url ←  pure s!"https://{location}-aiplatform.googleapis.com/v1beta1/projects/{← projectID}/locations/{location}/endpoints/openapi/chat/completions"
       -- IO.eprintln s!"Google URL: {url}"
       return url
-  | generic _ url _ =>
+  | generic _ url .. =>
       return url++"/v1/chat/completions"
 
 def model : ChatServer → String
   | openAI model => model
   | azure _ model => model
-  | generic model _ _ => model
+  | generic model .. => model
   | google model _ => "google/" ++ model
 
 def hasSysPrompt : ChatServer → Bool
   | openAI model => !(model.startsWith "o1")
   | azure _ _ => true
-  | generic _ _ b => b
+  | generic _ _ _ b => b
   | google _ _ => true
 
 def authHeader? : ChatServer → IO (Option String)
@@ -116,8 +116,8 @@ def authHeader? : ChatServer → IO (Option String)
       | some k => k
       | none => panic! "AZURE_OPENAI_KEY not set"
     return some <| "api-key: " ++ key
-  | generic .. =>
-    return none
+  | generic _ _ h _ =>
+    return h
   | google _ _ => do
     let key ← IO.Process.run {cmd := "gcloud", args := #["auth", "print-access-token"]}
     return some <|"Authorization: Bearer " ++ key.trim
