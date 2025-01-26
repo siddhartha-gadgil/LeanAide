@@ -86,6 +86,11 @@ register_option lean_aide.translate.has_sysprompt : Bool :=
     group := "lean_aide.translate"
     descr := "Whether the server has a system prompt." }
 
+register_option lean_aide.translate.temperature10 : Int :=
+  { defValue := 8
+    group := "lean_aide.translate"
+    descr := "temperature * 10." }
+
 /--
 Number of similar sentences to query in interactive mode
 -/
@@ -106,7 +111,7 @@ def chatParams : CoreM ChatParams := do
   let opts ← getOptions
   return {
     n := lean_aide.translate.choices.get opts,
-    temp := 0.8
+    temp := {mantissa:= lean_aide.translate.temperature10.get opts, exponent :=1}
   }
 
 def greedy : CoreM Bool := do
