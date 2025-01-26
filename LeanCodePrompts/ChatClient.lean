@@ -91,7 +91,7 @@ def url : ChatServer → IO String
       -- IO.eprintln s!"Google URL: {url}"
       return url
   | generic _ url .. =>
-      return url++"/v1/chat/completions"
+      return url
 
 def model : ChatServer → String
   | openAI model _ => model
@@ -128,7 +128,7 @@ def authHeader? : ChatServer → IO (Option String)
     return some <|"Authorization: Bearer " ++ key.trim
 
 def addKey (key: String) : ChatServer → ChatServer
-| .generic model url _ => .generic model url <| some <|"Authorization: Bearer " ++ key
+| .generic model url _ p => .generic model url (some <|"Authorization: Bearer " ++ key) p
 | .openAI model _ => .openAI model <| some <|"Authorization: Bearer " ++ key
 | .azure deployment model _ => .azure deployment model <| some <| "api-key: " ++ key
 | x => x
