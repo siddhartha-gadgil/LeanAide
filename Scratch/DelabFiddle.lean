@@ -135,5 +135,5 @@ def writeTermKindDocJson : MetaM Unit :=
     do
     let json ← termKindDocJson
     let jsonStr := Json.pretty json
-    IO.FS.writeFile ("resources" / "termKindDoc.json") jsonStr
+    IO.FS.writeFile ((← resourcesDir)/ "termKindDoc.json") jsonStr
 #eval writeTermKindDocJson

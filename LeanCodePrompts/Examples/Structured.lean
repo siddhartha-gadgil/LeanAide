@@ -738,7 +738,7 @@ theorem aux.6408636406479867264 :
 -- #eval Structured.eg4
 
 def parseEg : TranslateM <| Array Format := do
-  let source ← IO.FS.readFile "resources/mathdoc.json"
+  let source ← IO.FS.readFile ((← resourcesDir)/"mathdoc.json")
   match Json.parse source with
   | Except.error e => throwError s!"Failed to parse JSON: {e}"
   | Except.ok js => do
@@ -751,7 +751,7 @@ def parseEg : TranslateM <| Array Format := do
 -- #eval parseEg
 
 def egJson : TranslateM <| Array String := do
-  let source ← IO.FS.readFile "resources/mathdoc.json"
+  let source ← IO.FS.readFile ((← resourcesDir)/"mathdoc.json")
   match Json.parse source with
   | Except.error e => throwError s!"Failed to parse JSON: {e}"
   | Except.ok js =>
@@ -767,7 +767,7 @@ def egJson : TranslateM <| Array String := do
       | _ => throwError "Expected JSON object with key 'theorem'"
     | _ => throwError "Expected JSON object with key 'math_document'"
 
-#eval egJson
+--#eval egJson
 
 def code := "theorem aux_6254569564645631286 : ∀ {a b : ℕ}, Odd a → Odd b → Odd (a * b) :=
   by

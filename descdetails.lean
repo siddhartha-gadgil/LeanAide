@@ -24,7 +24,7 @@ def main : IO Unit := do
       IO.FS.lines dataPathDocs
   let data :=
     (jsData ++ jsDataDocs).filterMap (fun js => Json.parse js |>.toOption)
-  let outPath := System.mkFilePath ["resources", "mathlib4-descs.jsonl"]
+  let outPath := (← resourcesDir) / "mathlib4-descs.jsonl"
   IO.FS.writeFile outPath ""
   let h ← IO.FS.Handle.mk outPath IO.FS.Mode.append
   let mut count := 0
