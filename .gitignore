@@ -80,3 +80,4 @@ target/
 *.xopp
 *.swp
 .scala-build/
+venv/

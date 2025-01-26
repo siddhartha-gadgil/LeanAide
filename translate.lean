@@ -45,6 +45,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     |>.getD 1600
   let sysLess := p.hasFlag "no_sysprompt"
   let url? := p.flag? "url" |>.map (fun s => s.as! String)
+  let authKey? := p.flag? "auth_key" |>.map (fun s => s.as! String)
   let showPrompt := p.hasFlag "show_prompt"
   let chatServer :=
     if azure then ChatServer.azure else
@@ -52,6 +53,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
         match url? with
         | some url => ChatServer.generic model url none !sysLess
         | none => ChatServer.openAI model
+  let chatServer := chatServer.addKeyOpt authKey?
   let chatParams : ChatParams :=
     {temp := temp, n := queryNum, maxTokens := maxTokens}
   let gitHash ← gitHash
@@ -149,7 +151,8 @@ def translateCmd : Cmd := `[Cli|
     roundtrip; "Roundtrip the translation."
     azure; "Use Azure instead of OpenAI."
     gemini; "Use Gemini instead of OpenAI."
-    url : String; "URL to query (for a local server)."
+    url : String; "URL to query (for a local or generic server)."
+    auth_key : String; "Authentication key (for a local or generic server)."
     show_prompt; "Output the prompt to the LLM."
     show_elaborated; "Output the elaborated terms"
     max_tokens : Nat; "Maximum tokens to use in the translation."
