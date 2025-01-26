@@ -301,8 +301,8 @@ import transformers
 from datetime import datetime
 
 project = "journal-finetune"
-base_model_name = "mistral"
-run_name = base_model_name + "-" + project
+base_model = "mistral"
+run_name = base_model + "-" + project
 output_dir = "./" + run_name
 
 trainer = transformers.Trainer(

@@ -41,7 +41,7 @@ def getPromptTriples(s: String)(numSim : Nat)
         ("field", "doc_string"),
         ("doc_string", s),
         ("n", numSim),
-        ("model_name", "all-mpnet-base-v2")
+        ("model", "all-mpnet-base-v2")
       ]
       let simJsonOut ←
         IO.Process.output {cmd:= "curl", args:=
