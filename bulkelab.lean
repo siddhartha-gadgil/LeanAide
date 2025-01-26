@@ -52,7 +52,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   let chatServer :=
     if azure then ChatServer.azure (model := model) else
         match url? with
-        | some url => ChatServer.generic model url !sysLess
+        | some url => ChatServer.generic model url none !sysLess
         | none => ChatServer.openAI model
   let chatParams : ChatParams :=
     let params: ChatParams :=

@@ -48,7 +48,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     if azure then ChatServer.azure else
     if gemini then ChatServer.google model else
         match url? with
-        | some url => ChatServer.generic model url !sysLess
+        | some url => ChatServer.generic model url none !sysLess
         | none => ChatServer.openAI model
   let chatParams : ChatParams :=
     {temp := temp, n := queryNum, maxTokens := maxTokens}
