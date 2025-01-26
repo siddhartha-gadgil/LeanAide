@@ -331,7 +331,7 @@ def appendLog (logFile: String) (content : Json) : IO Unit := do
   | some "0" => return ()
   | some _ => let dir : FilePath := "rawdata"
               if !(← dir.pathExists) then
-              IO.FS.createDirAll dir
+                IO.FS.createDirAll dir
               let fname : FilePath := "rawdata/" / ("log_" ++ logFile ++ ".jsonl")
               appendFile fname content.compress
   | none => return ()
