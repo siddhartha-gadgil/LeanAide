@@ -62,9 +62,9 @@ end ChatParams
 
 
 inductive ChatServer where
-  | openAI (model: String := "gpt-4o")
+  | openAI (model: String := "gpt-4o") (authHeader? : Option String := none)
   | azure (deployment: String := "GPT4TestDeployment")
-      (model: String := "GPT-4")
+      (model: String := "GPT-4") (authHeader? : Option String := none)
   | google (model: String := "gemini-1.5-pro-001") (location: String := "asia-south1")
   | generic (model: String) (url: String) (authHeader? : Option String) (hasSysPropmpt : Bool := false)
   deriving Repr, FromJson, ToJson, DecidableEq, Hashable
@@ -82,45 +82,62 @@ initialize pendingQueries :
   IO.Ref (Array (ChatServer × Json × ChatParams)) ← IO.mkRef #[]
 
 def url : ChatServer → IO String
-  | openAI _ =>
+  | openAI _ _ =>
       return "https://api.openai.com/v1/chat/completions"
-  | azure deployment _ =>
+  | azure deployment _ _ =>
       azureURL deployment
   | google _ location => do
       let url ←  pure s!"https://{location}-aiplatform.googleapis.com/v1beta1/projects/{← projectID}/locations/{location}/endpoints/openapi/chat/completions"
       -- IO.eprintln s!"Google URL: {url}"
       return url
   | generic _ url .. =>
-      return url++"/v1/chat/completions"
+      return url
 
 def model : ChatServer → String
-  | openAI model => model
-  | azure _ model => model
+  | openAI model _ => model
+  | azure _ model _ => model
   | generic model .. => model
   | google model _ => "google/" ++ model
 
 def hasSysPrompt : ChatServer → Bool
-  | openAI model => !(model.startsWith "o1")
-  | azure _ _ => true
+  | openAI model _ => !(model.startsWith "o")
+  | azure _ _ _ => true
   | generic _ _ _ b => b
   | google _ _ => true
 
+
 def authHeader? : ChatServer → IO (Option String)
-  | openAI _ => do
+  | openAI _ h? => match h? with
+    | some h => pure h
+    | none =>  do
     let key ←  openAIKey
     return some <|"Authorization: Bearer " ++ key
-  | azure .. => do
+  | azure _ _ h? => match h? with
+    | some h => pure h
+    | none => do
     let key? ← azureKey
     let key :=
     match key? with
       | some k => k
       | none => panic! "AZURE_OPENAI_KEY not set"
     return some <| "api-key: " ++ key
-  | generic _ _ h _ =>
-    return h
+  | generic _ _ h? _ =>
+    return h?
   | google _ _ => do
     let key ← IO.Process.run {cmd := "gcloud", args := #["auth", "print-access-token"]}
     return some <|"Authorization: Bearer " ++ key.trim
+
+def addKey (key: String) : ChatServer → ChatServer
+| .generic model url _ p => .generic model url (some <|"Authorization: Bearer " ++ key) p
+| .openAI model _ => .openAI model <| some <|"Authorization: Bearer " ++ key
+| .azure deployment model _ => .azure deployment model <| some <| "api-key: " ++ key
+| x => x
+
+
+def addKeyOpt (key?: Option String) (cs : ChatServer) : ChatServer :=
+  match key? with
+  | some key => addKey key cs
+  | none => cs
 
 def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
   let stopJs := Json.mkObj <| if params.stopTokens.isEmpty then [] else
@@ -223,7 +240,7 @@ def cachedQuery (server: ChatServer)(messages : Json)
 
 def dataPath (server: ChatServer) : IO  FilePath := do
   match server with
-  | azure deployment _ => do
+  | azure deployment _ _ => do
     let path := llmDir / "azure" / deployment
     IO.FS.createDirAll path
     return path

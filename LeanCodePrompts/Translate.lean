@@ -25,6 +25,10 @@ open Translate
 
 @[default_instance]
 instance : Add ℤ := inferInstance
+@[default_instance]
+instance : Semiring ℤ := inferInstance
+
+example : {n | Odd n}.Infinite := by sorry
 
 register_option lean_aide.translate.prompt_size : Nat :=
   { defValue := 10
@@ -65,7 +69,12 @@ register_option lean_aide.translate.azure : Bool :=
 register_option lean_aide.translate.url? : String :=
   { defValue := ""
     group := "lean_aide.translate"
-    descr := "Local url to query. Empty string for none" }
+    descr := "Local or generic url to query. Empty string for none" }
+
+register_option lean_aide.translate.authkey? : String :=
+  { defValue := ""
+    group := "lean_aide.translate"
+    descr := "Authentication key for OpenAI or generic model" }
 
 register_option lean_aide.translate.greedy : Bool :=
   { defValue := false
@@ -76,6 +85,11 @@ register_option lean_aide.translate.has_sysprompt : Bool :=
   { defValue := true
     group := "lean_aide.translate"
     descr := "Whether the server has a system prompt." }
+
+register_option lean_aide.translate.temperature10 : Int :=
+  { defValue := 8
+    group := "lean_aide.translate"
+    descr := "temperature * 10." }
 
 /--
 Number of similar sentences to query in interactive mode
@@ -97,7 +111,7 @@ def chatParams : CoreM ChatParams := do
   let opts ← getOptions
   return {
     n := lean_aide.translate.choices.get opts,
-    temp := 0.8
+    temp := {mantissa:= lean_aide.translate.temperature10.get opts, exponent :=1}
   }
 
 def greedy : CoreM Bool := do
@@ -110,14 +124,17 @@ def hasSysPrompt : CoreM Bool := do
 Chat server to use in interactive mode
 -/
 def chatServer : CoreM ChatServer := do
-  let model := lean_aide.translate.model.get (← getOptions)
   let opts ← getOptions
+  let model := lean_aide.translate.model.get opts
   if lean_aide.translate.azure.get opts then
     return ChatServer.azure
   else
+    let authkeyString := lean_aide.translate.authkey?.get opts
+    let authKey? :=
+      if authkeyString = "" then none else some authkeyString
     let url := lean_aide.translate.url?.get opts
     if url.isEmpty then
-      return ChatServer.openAI model
+      return ChatServer.openAI model |>.addKeyOpt authKey?
     else
       return ChatServer.generic model url none (← hasSysPrompt)
 

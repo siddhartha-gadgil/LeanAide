@@ -14,7 +14,7 @@
 """
 # regular:
 python examples/scripts/sft.py \
-    --model_name_or_path="facebook/opt-350m" \
+    --model_or_path="facebook/opt-350m" \
     --report_to="wandb" \
     --learning_rate=1.41e-5 \
     --per_device_train_batch_size=64 \
@@ -28,7 +28,7 @@ python examples/scripts/sft.py \
 
 # peft:
 python examples/scripts/sft.py \
-    --model_name_or_path="facebook/opt-350m" \
+    --model_or_path="facebook/opt-350m" \
     --report_to="wandb" \
     --learning_rate=1.41e-5 \
     --per_device_train_batch_size=64 \
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         device_map=get_kbit_device_map() if quantization_config is not None else None,
         quantization_config=quantization_config,
     )
-    tokenizer = AutoTokenizer.from_pretrained(model_config.model_name_or_path, use_fast=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_config.model_or_path, use_fast=True)
     tokenizer.pad_token = tokenizer.eos_token
 
     ################
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     # Training
     ################
     trainer = SFTTrainer(
-        model=model_config.model_name_or_path,
+        model=model_config.model_or_path,
         model_init_kwargs=model_kwargs,
         args=training_args,
         train_dataset=train_dataset,

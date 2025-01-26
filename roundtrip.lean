@@ -36,7 +36,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   let chatServer :=
     if azure then ChatServer.azure else
         match url? with
-        | some url => ChatServer.generic model url !sysLess
+        | some url => ChatServer.generic model url none !sysLess
         | none => ChatServer.openAI model
   let chatParams : ChatParams :=
     {temp := temp, n := queryNum, maxTokens := maxTokens}
@@ -141,7 +141,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   IO.println s!"Matched: {matched}, Mismatched: {mismatched}"
   return 0
 
-unsafe def translate : Cmd := `[Cli|
+unsafe def roundtrip : Cmd := `[Cli|
   translate VIA runTranslate;
   "Elaborate a set of inputs and report whether successful and the result if successful."
 
@@ -166,4 +166,4 @@ unsafe def translate : Cmd := `[Cli|
 ]
 
 unsafe def main (args: List String) : IO UInt32 :=
-  translate.validate args
+  roundtrip.validate args
