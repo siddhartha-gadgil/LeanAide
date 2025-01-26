@@ -1,0 +1,91 @@
+{"usage":
+ {"total_tokens": 3265,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2862,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 403},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AtcAhaIrQK9Gjq2CRRnktIncUECg8",
+ "created": 1737818135,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u_1} [inst : AddMonoid α] [inst_1 : HasZero α], (∀ a ∈ s, Even a) → Even (∑ a in s, a)"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u_1} [inst : AddMonoid α] {s : Finset α} (f : α → ℕ), (∀ x ∈ s, Even (f x)) → Even (∑ x in s, f x)"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {s : Finset ℕ}, (∀ x ∈ s, Even x) → Even (∑ x in s, x)"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ (s : Finset ℕ), (∀ x ∈ s, Even x) → Even (∑ x in s, x)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ (s : Finset ℕ), (∀ x ∈ s, Even x) → Even (∑ x in s, x)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u_1} [inst : AddMonoid α] [inst_1 : HasZero α] (s : Finset α), (∀ x ∈ s, Even x) → Even (∑ x in s, x)"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ (s : Finset ℕ), (∀ n ∈ s, Even n) → Even (∑ n in s, n)"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u_1} [inst : AddMonoid α] {s : Finset α} {f : α → ℕ}, (∀ x ∈ s, Even (f x)) → Even (∑ x in s, f x)"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ (s : Finset ℕ), (∀ x ∈ s, Even x) → Even (∑ x in s, x)"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {s : Finset ℕ}, (∀ x ∈ s, Even x) → Even (∑ x in s, x)"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

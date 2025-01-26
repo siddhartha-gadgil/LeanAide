@@ -37,6 +37,7 @@ def getNearestEmbeddingsFull
     getNearestEmbeddingsExe query numSim penalty descField
   | some data =>
     logTimed s!"got data for {descField}"
+    IO.eprintln s!"Have embedding data for {descField}"
     let embs ←
       nearestDocsToDocFromEmb data queryRes? numSim (penalty := penalty)
     let out :=

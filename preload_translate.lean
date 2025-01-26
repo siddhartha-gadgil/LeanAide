@@ -18,13 +18,25 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     |>.getD 20
   let numConcise := p.flag? "concise_descriptions" |>.map (fun s => s.as! Nat)
     |>.getD 2
+  let numDesc := p.flag? "descriptions" |>.map
+    (fun s => s.as! Nat) |>.getD 2
+  let pbSource? := p.flag? "prompt_examples" |>.map
+    (fun s => s.as! String)
+  let pbJs? := pbSource?.bind fun pb =>
+    (Json.parse pb |>.toOption)
+  let pb? : Option PromptExampleBuilder := pbJs?.bind
+    fun js =>
+      fromJson? js |>.toOption
+  let pb := pb?.getD <|
+    PromptExampleBuilder.embedBuilder numSim numConcise numDesc
   let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
     |>.getD 10
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
     |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
+  let gemini := p.hasFlag "gemini"
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD "gpt-4o"
+    |>.getD (if gemini then "gemini-1.5-pro-001" else "gpt-4o")
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
@@ -34,8 +46,9 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   let showPrompt := p.hasFlag "show_prompt"
   let chatServer :=
     if azure then ChatServer.azure else
+    if gemini then ChatServer.google model else
         match url? with
-        | some url => ChatServer.generic model url !sysLess
+        | some url => ChatServer.generic model url none !sysLess
         | none => ChatServer.openAI model
   let chatParams : ChatParams :=
     {temp := temp, n := queryNum, maxTokens := maxTokens}
@@ -57,7 +70,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     <|fun (concDescData : EmbedData) => do
   let dataMap :
     EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
-  let translator : Translator := {server := chatServer, params := chatParams}
+  let translator : Translator := {pb := pb, server := chatServer, params := chatParams}
   let core :=
     translator.translateViewVerboseM type  |>.runWithEmbeddings dataMap
   let io? :=
@@ -73,6 +86,34 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln "---"
     match translation? with
     | some result =>
+      IO.eprintln "Translation:"
+      IO.println result.view
+      if p.hasFlag "roundtrip" then
+        IO.eprintln "Roundtrip:"
+        let core :=
+          translator.checkTranslationM result.view result.term |>.run' {}
+          let io? :=
+            core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
+            {env := env}
+          let io?' ← io?.toIO'
+          match io?' with
+          | Except.ok <| some p =>
+            let trans:= p.1
+            let checks := p.2
+            IO.eprintln "Checked translation"
+            IO.eprintln "Translation:"
+            IO.eprintln trans
+            IO.eprintln "Checks:"
+            for check in checks do
+              IO.eprintln check
+          | Except.ok none =>
+            IO.eprintln "Ran with error (no output)"
+            return 1
+          | Except.error e =>
+            do
+              IO.eprintln "Ran with error"
+              let msg ← e.toMessageData.toString
+              IO.eprintln msg
       if p.hasFlag "show_elaborated" then
         IO.eprintln "Elaborated terms:"
         for out in result.allElaborated do
@@ -83,8 +124,6 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
           for out in gp do
             IO.eprintln out
           IO.eprintln "---"
-      IO.eprintln "Translation:"
-      IO.println result.view
       return 0
     | none =>
       IO.eprintln "No translation"

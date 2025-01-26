@@ -46,7 +46,7 @@ lean_exe translate {
   supportInterpreter := true
 }
 
-lean_exe ctranslate {
+lean_exe preload_translate {
   supportInterpreter := true
 }
 
@@ -81,9 +81,9 @@ lean_exe batchcheck{
   supportInterpreter := true
 }
 
+@[default_target]
 lean_exe nearest_embeddings
 
-@[default_target]
 lean_exe nearest_embeddings_full
 
 lean_exe fetch_embeddings
