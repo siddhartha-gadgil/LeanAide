@@ -26,7 +26,7 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
   | _ => throwUnsupportedSyntax
   where go (s: String) (stx: Syntax) (name? : Option Name) : TermElabM Unit := do
     if s.endsWith "." then
-      let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
+      let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams}
       let (js, _) ←
         translator.getLeanCodeJson  s |>.run' {}
       let name ← match name? with

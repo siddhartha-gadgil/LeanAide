@@ -39,6 +39,11 @@ register_option lean_aide.translate.concise_desc_size : Nat :=
     group := "lean_aide.translate"
     descr := "Number of concise descriptions in a prompt (default 0)" }
 
+register_option lean_aide.translate.desc_size : Nat :=
+  { defValue := 0
+    group := "lean_aide.translate"
+    descr := "Number of descriptions in a prompt (default 0)" }
+
 
 register_option lean_aide.translate.choices : Nat :=
   { defValue := 10
@@ -75,6 +80,11 @@ register_option lean_aide.translate.authkey? : String :=
     group := "lean_aide.translate"
     descr := "Authentication key for OpenAI or generic model" }
 
+register_option lean_aide.translate.embed_url? : String :=
+  { defValue := ""
+    group := "lean_aide.translate"
+    descr := "Local or generic url to query for embeddings. Empty string for none" }
+
 register_option lean_aide.translate.greedy : Bool :=
   { defValue := false
     group := "lean_aide.translate"
@@ -102,6 +112,8 @@ Number of similar concise descriptions to query in interactive mode
 def conciseDescSize : CoreM Nat := do
   return  lean_aide.translate.concise_desc_size.get (← getOptions)
 
+def descSize : CoreM Nat := do
+  return  lean_aide.translate.desc_size.get (← getOptions)
 
 /--
 Parameters for a chat query in interactive mode
@@ -665,7 +677,9 @@ open PrettyPrinter Tactic
   match stx with
   | `(l! $s:str) =>
   let s := s.getString
-  let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
+  let embedUrl := lean_aide.translate.embed_url?.get (← getOptions)
+  let embedUrl? := if embedUrl.isEmpty then none else some embedUrl
+  let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.mkEmbedBuilder embedUrl? (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams}
   let (js, _) ←
     translator.getLeanCodeJson  s |>.run' {}
   let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq |>.run' {}

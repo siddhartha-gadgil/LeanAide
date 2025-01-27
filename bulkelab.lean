@@ -39,26 +39,18 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   let temp : JsonNumber := ⟨temp10, 1⟩
   let model := p.flag? "model" |>.map (fun s => s.as! String)
     |>.getD "gpt-4o"
-  let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
-    |>.getD 20
-  let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
-    |>.getD 0
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
     |>.getD 1600
-  let azure := p.hasFlag "azure"
-  let tag := p.hasFlag "tag"
-  let roundtrip := p.hasFlag "roundtrip"
-  let url? := p.flag? "url" |>.map (fun s => s.as! String)
-  let sysLess := p.hasFlag "no_sysprompt"
-  let chatServer :=
-    if azure then ChatServer.azure (model := model) else
-        match url? with
-        | some url => ChatServer.generic model url none !sysLess
-        | none => ChatServer.openAI model
   let chatParams : ChatParams :=
     let params: ChatParams :=
       {temp := temp, n := queryNum, maxTokens := maxTokens}
     params.withoutStop (p.hasFlag "no_stop")
+  let translator : Translator := Translator.ofCli p
+  let tag := p.hasFlag "tag"
+  let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
+    |>.getD 20
+  let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
+    |>.getD 0
   let queryData? : Option (Std.HashMap String Json) ←
     p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM
       fun filename => do
@@ -108,7 +100,6 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   let dataMap :
     EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   IO.eprintln "Loaded hashmap"
-  let translator : Translator := {pb := pb, server := chatServer, params := chatParams, roundTrip := roundtrip}
   let core :=
     translator.checkTranslatedThmsM input_file  delay repeats
     queryData? tag |>.runWithEmbeddings dataMap
@@ -152,6 +143,7 @@ unsafe def bulkElab : Cmd := `[Cli|
     repeats : Nat; "Number of times to repeat the request (default 0)."
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
+    embed_url : String; "URL to query for nearby embeddings (for a generic server)."
     tag; "Include the git hash in the results filepath"
     no_stop; "Don't use `:=` as a stop token."
     max_tokens : Nat; "Maximum tokens to use in the translation."

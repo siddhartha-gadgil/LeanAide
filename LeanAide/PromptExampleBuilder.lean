@@ -20,7 +20,7 @@ inductive PromptExampleBuilder where
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
 | moogle (descFields : List String)
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
-| generic (url inputField docField: String) (baseData : Json) (headers : Array String) (n: Nat) : PromptExampleBuilder
+| generic (url: String) (baseData : Json) (headers : Array String) (n: Nat) : PromptExampleBuilder
 | fixed (prompts : Array (String × Json)) : PromptExampleBuilder
 | sequence : List PromptExampleBuilder → PromptExampleBuilder
 | blend : List PromptExampleBuilder → PromptExampleBuilder
@@ -57,6 +57,18 @@ def embedBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
 def searchBuilder (numLeanSearch numMoogle: Nat) : PromptExampleBuilder :=
   .blend [.leansearch ["concise-description", "description"] true numLeanSearch,
       .moogle ["concise-description", "description"] true numMoogle]
+
+def genericEmbedBuilder (url: String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
+  .blend [
+    .generic url (Json.mkObj [("prompt_field", "docString")]) headers numSim,
+    .generic url (Json.mkObj [("prompt_field", "concise-description")]) headers numConcise,
+    .generic url (Json.mkObj [("prompt_field", "description")]) headers numDesc,
+  ]
+
+def mkEmbedBuilder (url?: Option String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
+  match url? with
+  | some url => genericEmbedBuilder url numSim numConcise numDesc headers
+  | none => embedBuilder numSim numConcise numDesc
 
 /--
 Append two `PromptExampleBuilder`s together.
