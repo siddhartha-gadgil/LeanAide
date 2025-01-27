@@ -438,6 +438,13 @@ structure Translator where
   roundTripSelect : Bool := false -- selecting first to pass roundtrip
 deriving Repr, FromJson, ToJson
 
+def Translator.forDef (t: Translator)  : Translator :=
+  let chat : ChatExampleType := match t.toChat with
+  | .simple => .doc
+  | .detailed => .detailedDoc
+  | x => x
+  {t with toChat := chat}
+
 /--
 Structure collecting together parameters used in code generation.
 -/

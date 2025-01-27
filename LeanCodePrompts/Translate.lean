@@ -27,7 +27,7 @@ instance : Add ℤ := inferInstance
 @[default_instance]
 instance : Semiring ℤ := inferInstance
 
-example : {n | Odd n}.Infinite := by sorry
+-- example : {n | Odd n}.Infinite := by sorry
 
 register_option lean_aide.translate.prompt_size : Nat :=
   { defValue := 10
@@ -595,7 +595,7 @@ def translateDefCmdM? (s: String) (translator : Translator)
   (isProp: Bool := false): TranslateM <| Except (Array CmdElabError) Syntax.Command := do
   logTimed "starting translation"
   let header := if isProp then "Theorem" else "Definition"
-  let (js, _) ← translator.getLeanCodeJson  s (header:= header)
+  let (js, _) ← translator.forDef.getLeanCodeJson  s (header:= header)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   let context? ← getContext
