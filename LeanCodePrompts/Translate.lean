@@ -13,7 +13,6 @@ import LeanCodePrompts.ChatClient
 import LeanAide.StatementSyntax
 import LeanAide.TranslateM
 import LeanAide.PromptBuilder
--- import LeanAide.ConstDeps
 import LeanAide.SimpleFrontend
 import LeanAide.Descriptions
 

@@ -397,7 +397,7 @@ def translatePromptPairs (docPairs: Array (String × Json))
     (s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
 
 def translateMessages (s: String)(promptPairs: Array (String × Json))
-      (header: String) (dfns: Array String) (toChat : ChatExampleType := .simple)
+      (header: String) (dfns: Array String) (toChat : ChatExampleType)
       (sysPrompt: Bool) : TranslateM Json := do
   let examples ←  promptPairs.filterMapM fun pair =>
     toChat.map? pair
