@@ -20,6 +20,7 @@ inductive PromptExampleBuilder where
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
 | moogle (descFields : List String)
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
+| generic (url inputField docField: String) (baseData : Json) (headers : Array String) (n: Nat) : PromptExampleBuilder
 | fixed (prompts : Array (String × Json)) : PromptExampleBuilder
 | sequence : List PromptExampleBuilder → PromptExampleBuilder
 | blend : List PromptExampleBuilder → PromptExampleBuilder
@@ -86,6 +87,17 @@ def classicDefault :=
   PromptExampleBuilder.embedBuilder 20 2 2
 
 instance : Inhabited PromptExampleBuilder := ⟨default⟩
+
+partial def purge? (pb: PromptExampleBuilder) : Option PromptExampleBuilder :=
+  match pb with
+  | .sequence [] => none
+  | .blend [] => none
+  | .embedSearch _ 0 _ => none
+  | .leansearch _ _ 0 => none
+  | .moogle _ _ 0 => none
+  | .sequence ps => some <| .sequence <| ps.filterMap purge?
+  | .blend ps => some <| .blend <| ps.filterMap purge?
+  | x => some x
 
 /--
 Prepend a fixed set of prompts to a `PromptExampleBuilder`.

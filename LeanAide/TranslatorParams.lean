@@ -29,6 +29,7 @@ def Translator.ofCli (p: Parsed) : Translator :=
   let pb := if numLeanSeach + numMoogle > 0 then
     pb₁ ++ pb₂
   else pb₁
+  let pb := pb.simplify
   let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
     |>.getD 10
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)

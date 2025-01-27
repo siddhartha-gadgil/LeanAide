@@ -156,6 +156,7 @@ partial def num : PromptExampleBuilder →  Nat
 | embedSearch _ n _ => n
 | leansearch _ _ n => n
 | moogle _ _ n => n
+| generic _ _ _ _ _ n => n
 | fixed ps => ps.size
 | sequence ps => (ps.map num).sum
 | blend ps => (ps.map num).sum
@@ -203,6 +204,28 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
        SearchResult.ofMoogleJson? js
     pairsFromSearchResults srs descFields preferDocs
   | fixed ps => return ps
+  | generic url inputField docField baseData headers n =>
+    let data := Json.mkObj [(inputField, Json.str query), ("n", n)]
+    let data := data.mergeObj baseData
+    let mut httpHeaders := #["-H", "content-type: application/json"]
+    for header in headers do
+      httpHeaders := httpHeaders ++ #["-H", header]
+    let s ← IO.Process.output {cmd := "curl", args := #[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}
+    match Json.parse s.stdout with
+    | Except.error e =>
+      IO.eprintln s!"Could not parse JSON from generic output: {s.stdout}; error: {e}"
+      return #[]
+    | Except.ok js =>
+      let result? := js.getObjValAs?  Json "data"
+      match result? with
+      | Except.ok result =>
+        match result.getArr? with
+        | Except.ok arr =>
+          return arr.filterMap fun js =>
+            js.getObjValAs? String docField |>.toOption
+            |>.map fun doc => (doc, js)
+        | Except.error e => IO.throwServerError s!"Could not obtain array from {js}; error: {e}"
+      | _ => IO.throwServerError s!"Could not obtain data from {js}"
   | sequence ps => do
     let offspringGps ← ps.mapM fun pb => getPromptPairsOrderedAux pb query
     return offspringGps.toArray.flatten
@@ -263,6 +286,7 @@ match pb with
 | .leansearch _ _ n => if n > 0 then some pb else none
 | .moogle _ _ n => if n > 0 then some pb else none
 | .fixed ps => if ps.size > 0 then some pb else none
+| .generic _ _ _ _ _ n => if n > 0 then some pb else none
 | .sequence pbs =>
   match pbs.filterMap simplify? with
   | [] => none
@@ -285,6 +309,8 @@ partial def signature (pb: PromptExampleBuilder) : String := match pb with
 | .leansearch _ _  n => s!"leansearch${n}"
 | .moogle _ _ n => s!"moogle${n}"
 | .fixed ps => s!"fixed${ps.size}"
+| .generic url inputField docField _ _ n =>
+    s!"generic${url}_${inputField}_${docField}_${n}"
 | .sequence pbs => (pbs.map signature).foldl (· ++ "-" ++ ·) "" |>.drop 1
 | .blend pbs => (pbs.map signature).foldl (· ++ "~" ++ ·) "" |>.drop 1
 
