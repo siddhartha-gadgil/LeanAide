@@ -19,8 +19,16 @@ def Translator.ofCli (p: Parsed) : Translator :=
   let pb? : Option PromptExampleBuilder := pbJs?.bind
     fun js =>
       fromJson? js |>.toOption
-  let pb := pb?.getD <|
+  let pb₁ := pb?.getD <|
     PromptExampleBuilder.embedBuilder numSim numConcise numDesc
+  let numLeanSeach := p.flag? "leansearch_prompts" |>.map
+    (fun s => s.as! Nat) |>.getD 0
+  let numMoogle := p.flag? "moogle_prompts" |>.map
+    (fun s => s.as! Nat) |>.getD 0
+  let pb₂ := PromptExampleBuilder.searchBuilder numLeanSeach numMoogle |>.simplify
+  let pb := if numLeanSeach + numMoogle > 0 then
+    pb₁ ++ pb₂
+  else pb₁
   let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
     |>.getD 10
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
@@ -46,3 +54,5 @@ def Translator.ofCli (p: Parsed) : Translator :=
     {temp := temp, n := queryNum, maxTokens := maxTokens}
   let translator : Translator := {pb := pb, server := chatServer, params := chatParams}
   translator
+
+end LeanAide

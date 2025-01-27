@@ -111,7 +111,10 @@ unsafe def ctranslate : Cmd := `[Cli|
   FLAGS:
     include_fixed;         "Include the 'Lean Chat' fixed prompts."
     p, prompts : Nat;      "Number of example prompts (default 20)."
-    concise_descriptions : Nat; "Number of example descriptions (default 2)."
+    descriptions : Nat; "Number of example descriptions (default 2)."
+    concise_descriptions : Nat; "Number of example concise descriptions (default 2)."
+    leansearch_prompts: Nat; "Number of examples from LeanSearch"
+    moogle_prompts: Nat; "Number of examples from Moogle"
     r, responses : Nat;    "Number of responses to ask for (default 10)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     m, model : String ; "Model to be used (default `gpt-4o`)"

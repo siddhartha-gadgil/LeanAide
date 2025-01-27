@@ -2,6 +2,7 @@ import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
+import LeanAide.TranslatorParams
 import Cli
 open Lean Cli LeanAide.Meta LeanAide Translator Translate
 
