@@ -15,7 +15,7 @@ def main : IO Unit := do
   let env ←
     importModules #[
     {module := `Mathlib},
-    {module := `LeanAide.ConstDeps}] {}
+    {module := `DataGenAide.ConstDeps}] {}
   let dataPath : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descs.jsonl")
   let jsData ←
       IO.FS.lines dataPath

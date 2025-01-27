@@ -32,7 +32,7 @@ def main : IO Unit := do
   let env ←
     importModules #[
     {module := `Mathlib},
-    {module := `LeanAide.ConstDeps}] {}
+    {module := `DataGenAide.ConstDeps}] {}
   let dataPath : System.FilePath := (← resourcesDir)/ "mathlib4-descs.jsonl"
   let jsData ←
       IO.FS.lines dataPath

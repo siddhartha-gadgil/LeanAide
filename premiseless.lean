@@ -1,11 +1,11 @@
-import LeanAide.PremiseData
+import DataGenAide.PremiseData
 import LeanAide.ProofSearch
 open Lean Json Data LeanAide.Meta
 
 def environment : IO Environment := do
   importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanAide.PremiseData},
+    {module:= `DataGenAide.PremiseData},
     {module:= `LeanAide.ProofSearch},
     {module := `Mathlib}] {}
 

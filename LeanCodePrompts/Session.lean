@@ -2,7 +2,6 @@ import LeanCodePrompts.BatchTranslate
 import LeanAide.Aides
 import LeanAide.Descriptions
 import LeanAide.PutnamBench
--- import LeanAide.Premises
 /-!
 # Translation Session
 
@@ -354,7 +353,7 @@ macro "#session" n:ident ":=" t:term : command => do
   translateText
   save `small
   consider (← putnamProblem 57)
-  discard <|  chatQuery "Are there infinitely many odd numbers?"
+  -- discard <|  chatQuery "Are there infinitely many odd numbers?"
   -- discard docsText
 
 /-

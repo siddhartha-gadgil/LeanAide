@@ -1,5 +1,5 @@
 import Lean
-import LeanCodePrompts.TacticExtractionOutputCache
+import DataGenAide.TacticExtractionOutputCache
 
 open Lean Elab Parser Term Meta Tactic
 

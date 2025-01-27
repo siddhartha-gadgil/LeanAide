@@ -1,4 +1,4 @@
-import LeanAide.FirstTacticData
+import DataGenAide.FirstTacticData
 
 import LeanCodePrompts.Translate
 import Lean

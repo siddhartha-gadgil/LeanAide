@@ -1,5 +1,5 @@
 import Lean
-import LeanAide.ConstDeps
+import DataGenAide.ConstDeps
 import LeanAide.VerboseDelabs
 import LeanAide.PremiseData
 
@@ -18,6 +18,8 @@ As theorems are equivalent to others where we trade `∀` with context terms, we
 -/
 
 open Lean Meta Elab Parser PrettyPrinter
+
+
 
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
@@ -47,6 +49,8 @@ partial def Lean.Syntax.purge: Syntax → MetaM Syntax := fun stx ↦ do
     | _ =>
         let t : Syntax.Term := TSyntax.mk t
         `(($t:term))
+
+namespace LeanAide
 
 partial def purgeTerm : Syntax.Term → MetaM Syntax.Term := fun stx ↦ do
   match stx.raw with
@@ -282,7 +286,7 @@ def Lean.Syntax.premiseDataM (context : Array Syntax)
     else return ps
 
 
-def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  withOptions (fun o =>
+def DefPremiseData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefPremiseData) :=  withOptions (fun o =>
                     let o' :=  pp.match.set o false
                     let o'' :=
                         pp.fieldNotation.set o' false
@@ -305,12 +309,12 @@ def DefData.getM? (name: Name)(term type: Expr) : MetaM (Option  DefData) :=  wi
         IO.println s!"Error {← ex.toMessageData.toString} getting {name}"
         return none
 
-def DefData.ofNameVerboseM? (name: Name) : MetaM (Option DefData) := do
+def DefPremiseData.ofNameVerboseM? (name: Name) : MetaM (Option DefPremiseData) := do
     let info ←  getConstInfo name
     let type := info.type
     let term? := info.value?
     match term? with
-    | some term => DefData.getM? name term type
+    | some term => DefPremiseData.getM? name term type
     | none => return none
 
 def depths (name: Name) : MetaM (Option (Nat × Nat)) := do
@@ -343,12 +347,12 @@ def verboseView? (name: Name) : MetaM (Option String) :=
 def verboseViewCore? (name: Name) : CoreM (Option String) :=
     (verboseView? name).run' {}
 
-def DefData.ofNameCore? (name: Name) : CoreM (Option DefData) :=
-    (DefData.ofNameVerboseM? name).run' {}
+def DefPremiseData.ofNameCore? (name: Name) : CoreM (Option DefPremiseData) :=
+    (DefPremiseData.ofNameVerboseM? name).run' {}
 
 def PremiseData.ofNames (names: List Name) : MetaM (List PremiseData) := do
-    let defs ← names.filterMapM DefData.ofNameVerboseM?
-    return defs >>= (fun d => d.premises)
+    let defs ← names.filterMapM DefPremiseData.ofNameVerboseM?
+    return defs.flatMap (fun d => d.premises)
 
 
 
@@ -360,7 +364,7 @@ def PremiseData.writeBatch (names: List Name)(group: String)
     for name in names do
         let dfn ←
             try
-                DefData.ofNameVerboseM? name
+                DefPremiseData.ofNameVerboseM? name
             catch ex =>
                 IO.println s!"Error {← ex.toMessageData.toString} writing {name}"
                 pure none
@@ -399,7 +403,7 @@ def PremiseData.writeBatchCore (names: List Name)(group: String)
 
 def CorePremiseData.ofNameM? (name: Name) :
     MetaM (Option <| List CorePremiseData) := do
-    let dfn? ← DefData.ofNameVerboseM? name
+    let dfn? ← DefPremiseData.ofNameVerboseM? name
     let premises := dfn?.map (·.premises)
     let propMap ← getPropMapStr
     match premises with

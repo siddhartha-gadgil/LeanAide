@@ -2,7 +2,6 @@ import Lean
 import LeanAide.Aides
 import Batteries.Util.Pickle
 import LeanAide.SimpleFrontend
--- import LeanAide.ConstDeps
 import LeanAide.DefData
 import LeanAide.PromptExampleBuilder
 import LeanCodePrompts.ChatClient

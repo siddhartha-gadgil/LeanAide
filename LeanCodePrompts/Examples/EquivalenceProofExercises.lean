@@ -1,7 +1,6 @@
 import Mathlib
 import Mathlib.Tactic.Basic
 import LeanAide.TheoremElab
-import LeanCodePrompts.ThmInfo
 universe u v u_1 u_2
 
 /-- Every Nat.Prime that is `1` greater than a multiple of `4` can be expressed as the sum of two squares. -/

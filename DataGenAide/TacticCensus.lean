@@ -1,5 +1,5 @@
-import LeanAide.FirstTacticData
-import LeanAide.FirstTacticDataExamples
+import DataGenAide.FirstTacticData
+import DataGenAide.FirstTacticDataExamples
 import Lean
 open Lean Meta
 
@@ -9,11 +9,11 @@ def countAndSave (p: String) : MetaM Nat := do
   let censusFile := System.mkFilePath ["data", "tactic-census.txt"]
   let h ← IO.FS.Handle.mk censusFile IO.FS.Mode.append
   for f in files do
-    let blob : String ←  
-      try 
+    let blob : String ←
+      try
         IO.FS.readFile f
       catch e =>
-        logWarning m!"{f} {e.toMessageData}" 
+        logWarning m!"{f} {e.toMessageData}"
         pure ""
     let blocks ← parseTacticBlocks blob
     for arr in blocks do

@@ -14,6 +14,8 @@ lean_lib LeanAide {
 lean_lib LeanCodePrompts {
 }
 
+lean_lib DataGenAide
+
 lean_lib StatementAutoformalisation {
 }
 

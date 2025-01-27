@@ -1,8 +1,8 @@
 import Lean.Meta
 -- import LeanCodePrompts
 import LeanAide.Config
-import LeanAide.ConstDeps
-import LeanAide.PremiseData
+import DataGenAide.ConstDeps
+import DataGenAide.PremiseData
 open Lean LeanAide.Meta
 
 set_option maxHeartbeats 10000000
@@ -17,7 +17,7 @@ def main : IO Unit := do
   let env ←
     importModules #[
     {module := `Mathlib},
-    {module := `LeanAide.ConstDeps}] {}
+    {module := `DataGenAide.ConstDeps}] {}
   IO.eprintln "Seeking term kind examples..."
   let core := termKindExamplesCore
   let l ← core.run' coreContext {env := env} |>.runToIO'

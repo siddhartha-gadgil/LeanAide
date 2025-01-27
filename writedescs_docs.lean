@@ -18,7 +18,7 @@ def main : IO Unit := do
   let env ←
     importModules #[
     {module := `Mathlib},
-    {module := `LeanAide.ConstDeps}] {}
+    {module := `DataGenAide.ConstDeps}] {}
   let outpath : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descriptions_docs.jsonl")
   let preread ← if ← outpath.pathExists then
       IO.FS.lines outpath

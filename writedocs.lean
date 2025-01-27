@@ -1,7 +1,7 @@
 import Lean.Meta
 -- import LeanCodePrompts
 import LeanAide.Config
-import LeanAide.ConstDeps
+import DataGenAide.ConstDeps
 open Lean LeanAide.Meta
 
 set_option maxHeartbeats 10000000
@@ -17,7 +17,7 @@ unsafe def main : IO Unit := do
   let env ←
     importModules #[
     {module := `Mathlib},
-    {module := `LeanAide.ConstDeps}] {}
+    {module := `DataGenAide.ConstDeps}] {}
   let core := writeDocsCore
   let js ← core.run' coreContext {env := env} |>.runToIO'
   IO.FS.writeFile ((← resourcesDir) / "mathlib4-prompts.json") js.pretty

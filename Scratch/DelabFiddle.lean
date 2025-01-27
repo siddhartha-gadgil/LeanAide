@@ -1,5 +1,5 @@
 import Lean
-import LeanAide.PremiseData
+import DataGenAide.PremiseData
 
 open Lean Meta PrettyPrinter
 def delabView (name: Name) : MetaM String :=

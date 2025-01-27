@@ -1,4 +1,4 @@
-import LeanAide.Premises
+import DataGenAide.Premises
 import Lean.Meta
 import LeanAide.Config
 open Lean Meta LeanAide.Meta
@@ -15,14 +15,14 @@ def environment : IO Environment := do
     {module:= `LeanAide.TheoremElab},
 
     {module:= `LeanAide.VerboseDelabs},
-    {module:= `LeanAide.Premises},
+    {module:= `DataGenAide.Premises},
     {module := `Mathlib}] {}
 
 def environment' : IO Environment := do
   importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
 
-    {module:= `LeanAide.ConstDeps},
+    {module:= `DataGenAide.ConstDeps},
     {module := `Mathlib}] {}
 
 def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]

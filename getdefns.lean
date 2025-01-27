@@ -1,4 +1,4 @@
-import LeanAide.Premises
+import DataGenAide.Premises
 import Lean.Meta
 import LeanAide.Config
 open Lean Meta LeanAide.Meta
@@ -19,7 +19,7 @@ def main (args: List String) : IO Unit := do
     {module:= `LeanAide.TheoremElab},
 
     {module:= `LeanAide.VerboseDelabs},
-    {module:= `LeanAide.Premises},
+    {module:= `DataGenAide.Premises},
     {module := `Mathlib}] {}
   let core : CoreM Nat :=
      writeBatchDefnsCore start stop

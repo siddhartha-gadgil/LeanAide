@@ -1,6 +1,6 @@
 import Lean.Meta
 import LeanCodePrompts
-import LeanAide.ConstDeps
+import DataGenAide.ConstDeps
 import LeanAide.Config
 open Lean LeanAide.Meta
 
