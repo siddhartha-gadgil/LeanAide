@@ -32,7 +32,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   let pb :=
     if includeFixed then pb₁ ++ pb₂ ++ PromptExampleBuilder.proofNetPromptBuilder
     else pb₁ ++ pb₂
-  let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
+  let queryNum := p.flag? "num_responses" |>.map (fun s => s.as! Nat)
     |>.getD 5
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
     |>.getD 8
@@ -134,7 +134,7 @@ unsafe def bulkElab : Cmd := `[Cli|
     descriptions : Nat; "Number of example descriptions (default 2)."
     leansearch_prompts: Nat; "Number of examples from LeanSearch"
     moogle_prompts: Nat; "Number of examples from Moogle"
-    r, responses : Nat;    "Number of responses to ask for (default 5)."
+    n, num_responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     roundtrip; "Translate back to natural language and compare."
     m, model : String ; "Model to be used (default `gpt-4o`)"

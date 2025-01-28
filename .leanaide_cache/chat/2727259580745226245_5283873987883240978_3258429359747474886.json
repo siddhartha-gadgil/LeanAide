@@ -1,0 +1,23 @@
+{"usage":
+ {"total_tokens": 3045,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2569,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 448,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 476},
+ "system_fingerprint": "fp_c3053a504d",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "o1-mini-2024-09-12",
+ "id": "chatcmpl-AuU4TuX0IgY9WHSdVbsSLV3S2X2kO",
+ "created": 1738025325,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "```lean\n{n : ℕ | Even n}.Infinite\n```"},
+   "index": 0,
+   "finish_reason": "stop"}]}

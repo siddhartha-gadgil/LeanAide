@@ -34,7 +34,7 @@ def Translator.ofCli (p: Parsed) : Translator :=
         pb₁ ++ pb₂
       else pb₁
   let pb := pb.simplify
-  let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
+  let queryNum := p.flag? "num_responses" |>.map (fun s => s.as! Nat)
     |>.getD 10
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
     |>.getD 8

@@ -19,7 +19,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   let numDesc := p.flag? "descriptions" |>.map (fun s => s.as! Nat)
     |>.getD 2
 
-  let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
+  let queryNum := p.flag? "num_responses" |>.map (fun s => s.as! Nat)
     |>.getD 10
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
     |>.getD 8
@@ -150,7 +150,7 @@ unsafe def roundtrip : Cmd := `[Cli|
     p, prompts : Nat;      "Number of example prompts (default 20)."
     descriptions : Nat; "Number of example descriptions (default 2)."
     concise_descriptions : Nat; "Number of example concise descriptions (default 2)."
-    r, responses : Nat;    "Number of responses to ask for (default 10)."
+    n, num_responses : Nat;    "Number of responses to ask for (default 10)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
     azure; "Use Azure instead of OpenAI."
