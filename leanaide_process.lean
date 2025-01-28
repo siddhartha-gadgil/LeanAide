@@ -22,7 +22,7 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
     let result ←
       core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
       {env := env} |>.runToIO'
-    IO.eprintln "Ran successfully"
+    -- IO.eprintln "Ran successfully"
     stdout.putStrLn <| result.compress
     stdout.flush
     process_loop env stdin stdout translator dataMap

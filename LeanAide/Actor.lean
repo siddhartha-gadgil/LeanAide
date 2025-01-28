@@ -21,8 +21,19 @@ def response (data: Json) (translator : Translator) : TranslateM Json :=
       | (Except.ok translation, _) => do
         let result := Json.mkObj [("result", "success"), ("theorem", ← translation.view)]
         return result
+  | Except.ok "translate_def" => do
+    match data.getObjValAs? String "text" with
+    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
+    | Except.ok text => do
+      match ← translator.translateDefCmdM? text with
+      | Except.error e =>
+        return Json.mkObj [("result", "error"), ("errors", toJson e)]
+      | Except.ok cmd => do
+        let fmt ← PrettyPrinter.ppCommand cmd
+        let result := Json.mkObj [("result", "success"), ("definition", fmt.pretty)]
+        return result
   | Except.ok task => do
-    let result := Json.mkObj [("result", "error"), ("error", s!"unknown task: {task}")]
+    let result := Json.mkObj [("result", "error"), ("error", s!"unknown task"), ("task", task)]
     return result
 
 
