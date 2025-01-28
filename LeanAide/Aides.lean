@@ -329,10 +329,10 @@ def appendFile (fname : FilePath) (content : String) : IO Unit := do
 def appendLog (logFile: String) (content : Json) : IO Unit := do
   match (← leanAideLogging?) with
   | some "0" => return ()
-  | some _ => let dir : FilePath := "rawdata"
+  | some _ => let dir : FilePath := "leanaide_logs"
               if !(← dir.pathExists) then
                 IO.FS.createDirAll dir
-              let fname : FilePath := "rawdata/" / ("log_" ++ logFile ++ ".jsonl")
+              let fname : FilePath := "leanaide_logs" / (logFile ++ ".jsonl")
               appendFile fname content.compress
   | none => return ()
 

@@ -21,13 +21,15 @@ def logHandle : IO IO.FS.Handle := do
 
 def logTimed (message: String) : IO Unit := do
   match (← leanAideLogging?) with
-  | some "0" => return ()
+  | some "0" =>
+    return ()
   | some _   => let handle ← logHandle
                 let time ← IO.monoMsNow
                 let message := s!"[{time}]  {message}"
                 IO.FS.Handle.putStrLn handle message
                 IO.FS.Handle.flush handle
-  | _ => return ()
+  | _ =>
+    return ()
 
 def baseDir : IO System.FilePath := do
   let pathLeanAidePackages := System.mkFilePath [".lake","packages","leanaide"]
