@@ -61,3 +61,13 @@ def Translator.ofCli (p: Parsed) : Translator :=
   translator
 
 end LeanAide
+
+open Lean
+structure Eg where
+  x : Nat
+  y? : Option Nat
+deriving ToJson, FromJson, Repr
+
+#eval fromJson? (α := Eg) (toJson ({ x := 1, y? := none } : Eg))
+
+#eval fromJson? (α := Eg) (Json.mkObj [("x", toJson 1), ("extra", 7)])

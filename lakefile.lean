@@ -52,6 +52,10 @@ lean_exe preload_translate {
   supportInterpreter := true
 }
 
+lean_exe leanaide_process {
+  supportInterpreter := true
+}
+
 lean_exe chkelab {
   supportInterpreter := true
 }

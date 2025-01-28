@@ -177,7 +177,7 @@ def getErrors : TranslateM <| Array ElabErrorData := do
 
 def printKeys : TranslateM Unit := do
   let em := (← getEmbedMap)
-  IO.println s!"Embeddings: {em.toList.map Prod.fst}"
+  IO.eprintln s!"Loaded embeddings: {em.toList.map Prod.fst}"
 
 def getDescMap : TranslateM (Std.HashMap Name Json) := do
   return (← get).descriptionMap
@@ -244,7 +244,7 @@ def runWithEmbeddings (em : EmbedMap)
     (x: TranslateM α) : CoreM α := do
   let x :=
     withEmbeddings em do
-      printKeys
+      -- printKeys
       x
   x.run' {} |>.run'.run'
 
