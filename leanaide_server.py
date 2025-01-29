@@ -6,8 +6,13 @@ import json
 import os
 import threading
 import queue
-PORT = int(os.environ.get("PORT", 7654))
-COMMAND = os.environ.get("COMMAND", "lake exe leanaide_process")
+import sys
+PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
+COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
+for arg in sys.argv[1:]:
+    COMMAND += " " + arg
+
+print(f"Command: {COMMAND}")
 process = None
 process_lock = threading.Lock()
 output_queue = queue.Queue()

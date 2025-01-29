@@ -29,13 +29,13 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
       let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams}
       let (js, _) ←
         translator.getLeanCodeJson  s |>.run' {}
+      let e? ←
+        jsonToExprFallback js (← greedy) !(← chatParams).stopColEq |>.run' {}
       let name ← match name? with
       | some name => pure name
       | none =>
           translator.server.theoremName s
       let name := mkIdent name
-      let e? ←
-        jsonToExprFallback js (← greedy) !(← chatParams).stopColEq |>.run' {}
       match e? with
       | .ok e =>
         logTimed "obtained expression"
