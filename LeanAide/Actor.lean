@@ -54,6 +54,26 @@ def response (data: Json) (translator : Translator) : TranslateM Json :=
         let fmt ← PrettyPrinter.ppCommand cmd
         let result := Json.mkObj [("result", "success"), ("definition", fmt.pretty)]
         return result
+  | Except.ok "theorem_doc" => do
+    match data.getObjValAs? String "name", data.getObjValAs? String "command" with
+    | Except.ok name, Except.ok cmd => do
+      let type : Expr ← elabFrontThmExprM cmd name.toName true
+      match ← translator.getTypeDescriptionM type {} with
+      | some (desc, _) =>
+        return Json.mkObj [("result", "success"), ("doc", desc)]
+      | none => return Json.mkObj [("result", "error"), ("error", s!"no description found for {name} after elaboration of {cmd}")]
+    | _, _ =>
+      return Json.mkObj [("result", "error"), ("error", "no name or command found")]
+  | Except.ok "def_doc" => do
+    match data.getObjValAs? String "name", data.getObjValAs? String "command" with
+    | Except.ok name, Except.ok cmd => do
+      let (type, value) ← elabFrontDefTypeValExprM cmd name.toName true
+      match ← translator.getDefDescriptionM type value name.toName {} with
+      | some (desc, _) =>
+        return Json.mkObj [("result", "success"), ("doc", desc)]
+      | none => return Json.mkObj [("result", "error"), ("error", s!"no description found for {name} after elaboration of {cmd}")]
+    | _, _ =>
+      return Json.mkObj [("result", "error"), ("error", "no name or command found")]
   | Except.ok task => do
     let result := Json.mkObj [("result", "error"), ("error", s!"unknown task"), ("task", task)]
     return result
