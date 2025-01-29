@@ -1,0 +1,113 @@
+{"usage":
+ {"total_tokens": 449,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 123,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 326},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AuxrgmNNlCRH8173S2QKKEYkXjFXm",
+ "created": 1738139852,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if there exists a natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if there exists a natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if there exists a natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number is a cube if and only if there exists another natural number whose cube equals the original number."},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if there exists a natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if there exists a natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if there exists a natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number is a cube if there exists another natural number whose cube is equal to it."},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if and only if there exists a natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if there exists another natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if there exists a natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 10,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "A natural number $n$ is a cube if there exists a natural number $m$ such that $m^3 = n$."},
+   "logprobs": null,
+   "index": 11,
+   "finish_reason": "stop"}]}

@@ -74,6 +74,15 @@ def response (data: Json) (translator : Translator) : TranslateM Json :=
       | none => return Json.mkObj [("result", "error"), ("error", s!"no description found for {name} after elaboration of {cmd}")]
     | _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no name or command found")]
+  | Except.ok "theorem_name" => do
+    match data.getObjValAs? String "text" with
+    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
+    | Except.ok text => do
+      try
+        let name ← translator.server.theoremName text
+        return Json.mkObj [("result", "success"), ("name", toJson name)]
+      catch e =>
+        return Json.mkObj [("result", "error"), ("error", s!"error in theorem name: {← e.toMessageData.format}")]
   | Except.ok task => do
     let result := Json.mkObj [("result", "error"), ("error", s!"unknown task"), ("task", task)]
     return result
