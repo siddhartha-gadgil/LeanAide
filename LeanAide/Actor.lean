@@ -5,6 +5,50 @@ import LeanAide.StructToLean
 namespace LeanAide.Actor
 open LeanAide Lean
 
+/--
+Executing various tasks with Json input and output. These are for the server.
+
+## Tasks
+
+* `echo`: Echoes the input data.
+  * input: `data: Json`
+  * output: `data: Json`
+* `translate_thm`: Translates a theorem to natural language.
+  * input: `text: String`
+  * output: `theorem: String`
+  * parameters:
+    * `greedy: Bool` (default: `true`)
+    * `fallback: Bool` (default: `true`)
+* `translate_def`: Translates a definition to natural language.
+  * input: `text: String`
+  * output: `definition: String`
+  * parameters:
+    * `fallback: Bool` (default: `true`)
+* `theorem_doc`: Generates documentation for a theorem.
+  * input: `name: String`, `command: String`
+  * output: `doc: String`
+* `def_doc`: Generates documentation for a definition.
+  * input: `name: String`, `command: String`
+  * output: `doc: String`
+* `theorem_name`: Names a theorem in Lean's style.
+  * input: `text: String`
+  * output: `name: String`
+* `prove`: Attempts to prove a theorem.
+  * input: `theorem: String`
+  * output: `proof: String`
+* `structured_json_proof`: Converts a theorem and proof to structured JSON.
+  * input: `theorem: String`, `proof: String`
+  * output: `json_structured: Json`
+* `lean_from_json_structured`: Generates Lean code from structured JSON.
+  * input: `json_structured: String`
+  * output: `lean_code: String`, `declarations: List String`, `top_code: String`
+* `elaborate`: Elaborates Lean code.
+  * input: `lean_code: String`, `declarations: List Name`
+  * output: `logs: List String`, `sorries: List Json`
+  * parameters:
+    * `top_code: String` (default: `""`)
+    * `describe_sorries: Bool` (default: `false`)
+-/
 def runTask (data: Json) (translator : Translator) : TranslateM Json :=
   let fallback :=
     data.getObjValAs? Bool "fallback" |>.toOption |>.getD true
@@ -105,7 +149,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         return Json.mkObj [("result", "success"), ("json_structured", json)]
     | _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no theorem or proof found")]
-  | Except.ok "lean_from_thm_pf_json" => do
+  | Except.ok "lean_from_json_structured" => do
     match data.getObjValAs? String "json_structured" with
     | Except.ok js => do
       try
@@ -121,6 +165,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     match data.getObjValAs? String "lean_code", data.getObjValAs? (List Name) "declarations" with
     | Except.ok code, Except.ok names => do
       try
+        let describeSorries := data.getObjValAs? Bool "describe_sorries" |>.toOption |>.getD false
         let (exprs, logs) ← elabFrontDefsExprM (topCode ++ code) names
         let hasErrors := logs.toList.any (fun log => log.severity == MessageSeverity.error)
         let result := if hasErrors then "fallback" else "success"
@@ -128,10 +173,19 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         let logs := logs.map (fun log => log.pretty)
         let sorries ← exprs.mapM fun (n, e) => do
           let ss ← Meta.getSorryTypes e
-          ss.mapM (fun s => do
-            let s ← PrettyPrinter.ppExpr s
+          ss.mapM fun expr => do
+            let s ← PrettyPrinter.ppExpr expr
             let s := s.pretty
-            pure (n, s))
+            let res := Json.mkObj [("name", toJson n), ("sorry", s)]
+            if describeSorries then
+              let desc ← translator.getTypeDescriptionM expr {}
+              match desc with
+              | some (desc, _) =>
+                let res := res.mergeObj <| Json.mkObj [("description", desc)]
+                pure res
+              | none => pure res
+            else
+              pure res
         return Json.mkObj
           [("result", result), ("logs", toJson logs), ("sorries", toJson sorries)]
       catch e =>
@@ -147,6 +201,9 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
       let res ←  ElabError.fallback es
       return Json.mkObj [("result", "fallback"), ("theorem", res)]
 
+/--
+Executing a list of tasks with Json input and output. These are for the server. When a task fails, the rest of the tasks are not executed. Results are accumulated in the output.
+-/
 def runTaskList (data: Json) (translator : Translator) : List String →  TranslateM Json
 | [] => return data
 | (task :: tasks) => do
@@ -161,6 +218,9 @@ def runTaskList (data: Json) (translator : Translator) : List String →  Transl
     let data := result.mergeObj data
     runTaskList data translator tasks
 
+/--
+Responds to a request with a JSON response. The response is a JSON object that includes the input data and the output data. The output data is the result of the task or tasks. The task or tasks are specified in the input data.
+-/
 def response (data: Json) (translator : Translator) : TranslateM Json := do
   match data.getObjValAs? (List String) "tasks" with
   | Except.ok tasks => runTaskList data translator tasks

@@ -1,7 +1,7 @@
 import Lean
 import DataGenAide.ConstDeps
 import LeanAide.VerboseDelabs
-import LeanAide.PremiseData
+import DataGenAide.PremiseData
 
 /-!
 # Premise data extraction
