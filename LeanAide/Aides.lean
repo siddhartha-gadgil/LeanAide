@@ -326,15 +326,19 @@ def appendFile (fname : FilePath) (content : String) : IO Unit := do
   h.putStrLn content
   h.flush
 
-def appendLog (logFile: String) (content : Json) : IO Unit := do
-  match (← leanAideLogging?) with
-  | some "0" => return ()
-  | some _ => let dir : FilePath := "leanaide_logs"
-              if !(← dir.pathExists) then
-                IO.FS.createDirAll dir
-              let fname : FilePath := "leanaide_logs" / (logFile ++ ".jsonl")
-              appendFile fname content.compress
-  | none => return ()
+def appendLog (logFile: String) (content : Json) (force: Bool := false) : IO Unit := do
+  if force then go logFile content
+  else
+    match (← leanAideLogging?) with
+    | some "0" => return ()
+    | some _ => go logFile content
+    | none => return ()
+  where go (logFile: String) (content: Json) : IO Unit := do
+    let dir : FilePath := "leanaide_logs"
+    if !(← dir.pathExists) then
+      IO.FS.createDirAll dir
+    let fname : FilePath := "leanaide_logs" / (logFile ++ ".jsonl")
+    appendFile fname content.compress
 
 def gitHash : IO String := do
   let hash ← IO.Process.output { cmd := "git", args := #["rev-parse", "--short", "HEAD"] }

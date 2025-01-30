@@ -4,8 +4,7 @@ import LeanCodePrompts.Translate
 namespace LeanAide.Actor
 open LeanAide Lean
 
-#check Except.mapM
-def response (data: Json) (translator : Translator) : TranslateM Json :=
+def runTask (data: Json) (translator : Translator) : TranslateM Json :=
   let fallback :=
     data.getObjValAs? Bool "fallback" |>.toOption |>.getD true
   match data.getObjVal? "task" with
@@ -93,5 +92,26 @@ def response (data: Json) (translator : Translator) : TranslateM Json :=
       let res ←  ElabError.fallback es
       return Json.mkObj [("result", "fallback"), ("theorem", res)]
 
+def runTaskList (data: Json) (translator : Translator) : List String →  TranslateM Json
+| [] => return data
+| (task :: tasks) => do
+  let data := data.setObjValAs! "task" (Json.str task)
+  let result ← runTask data translator
+  appendLog "server" (force := true) <| Json.mkObj [("data", data), ("output", result)]
+  match result.getObjVal? "result" with
+  | Except.error e =>
+    return data.mergeObj <| Json.mkObj [("result", "error"), ("error", s!"error in task {task}: {e}")]
+  | Except.ok "error" => return data.mergeObj result
+  | Except.ok _ => do
+    let data := result.mergeObj data
+    runTaskList data translator tasks
+
+def response (data: Json) (translator : Translator) : TranslateM Json := do
+  match data.getObjValAs? (List String) "tasks" with
+  | Except.ok tasks => runTaskList data translator tasks
+  | _ =>
+    let result ← runTask data translator
+    appendLog "server" (force:=true) <| Json.mkObj [("data", data), ("output", result)]
+    return result.mergeObj data
 
 end LeanAide.Actor

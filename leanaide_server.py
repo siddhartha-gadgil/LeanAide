@@ -8,6 +8,7 @@ import threading
 import queue
 import sys
 PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
+HOST = os.environ.get("HOST", "localhost")  
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     COMMAND += " " + arg
@@ -90,8 +91,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.wfile.write("Send a POST request with JSON to interact with the process.".encode())
 
 
-def run(server_class=http.server.HTTPServer, handler_class=Handler, port=PORT):
-    server_address = ('', port)
+def run(server_class=http.server.HTTPServer, handler_class=Handler, port=PORT, host=HOST):
+    server_address = (host, port) # Use the host
     httpd = server_class(server_address, handler_class)
     print(f"Starting httpd on port {port}, command: {COMMAND}")
     try:
@@ -106,4 +107,4 @@ def run(server_class=http.server.HTTPServer, handler_class=Handler, port=PORT):
             print("Process terminated.")
 
 if __name__ == "__main__":
-    run()
+    run(host=HOST)
