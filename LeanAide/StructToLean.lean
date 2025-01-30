@@ -686,6 +686,55 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
       IO.eprintln s!"Tactic: {← ppTactic tac}"
     return List.replicate n mvarId
 
+def runTacticAndGetMessages (mvarId : MVarId) (tacticCode : Syntax.Tactic): TermElabM <| MessageLog  :=
+    mvarId.withContext do
+  let msgs ← Core.getAndEmptyMessageLog
+  try
+    let ctx ← read
+    let (_, _) ←
+      withoutErrToSorry do
+      Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode}
+        {}  (s:= ← get)
+  catch e =>
+    logWarning m!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
+  let msgs' ← Core.getMessageLog
+  Core.setMessageLog msgs
+  return msgs'
+
+elab "#run_tactic" goal:term "by" tacticCode:tactic "log" : command =>
+  Command.liftTermElabM do
+  let goal ← elabType goal
+  let mvar ← mkFreshExprMVar  goal
+  let msgs' ← runTacticAndGetMessages mvar.mvarId! tacticCode
+  logInfo "Messages:"
+  for msg in msgs'.toList do
+    logInfo "Message:"
+    logInfo msg.data
+    let s ←  msg.data.toString
+    if s.trim.startsWith "Try this:" then
+      let s' := s.drop 10 |>.trim
+      logInfo s'
+      match runParserCategory (← getEnv) `term ("by\n  " ++ s') with
+      | Except.ok term => do
+        let tacs := match term with
+        | `(by $[$t]*) => t
+        | _ => #[]
+        let term : Syntax.Term := ⟨term⟩
+        let pf ←  PrettyPrinter.ppTerm term
+        logInfo m!"Parsed tactic, proof term: {pf}"
+        logInfo "Tactics:"
+        for tac in tacs do
+          logInfo m!"Tactic: {← ppTactic tac}"
+      | Except.error e => do
+        logInfo s!"Failed to parse tactic: {e}"
+    else
+      logInfo "Not a Try this message"
+      logInfo s
+
+
+#run_tactic (∀ n: Nat,(1 : Nat) ≤  7) by auto? log
+
+
 def groupCasesGoals (goal: MVarId) (context : Array Json) (conds: List String)
     (qp: CodeGenerator) : TranslateM <| List MVarId := goal.withContext do
     match conds with
