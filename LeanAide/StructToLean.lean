@@ -701,6 +701,22 @@ def runTacticAndGetMessages (mvarId : MVarId) (tacticCode : Syntax.Tactic): Term
   Core.setMessageLog msgs
   return msgs'
 
+def getTacticsFromMessage? (msg: Message) :
+    MetaM <| Option (Array Syntax.Tactic) := do
+  let s ← msg.data.toString
+  let s := s.trim
+  if s.startsWith "Try this:" then
+    let s' := s.drop 10 |>.trim
+    match runParserCategory (← getEnv) `term ("by\n  " ++ s') with
+    | Except.ok term => do
+      match term with
+      | `(by $[$t]*) => return t
+      | _ => return none
+    | Except.error _ => do
+      return none
+  else
+    return none
+
 elab "#run_tactic" goal:term "by" tacticCode:tactic "log" : command =>
   Command.liftTermElabM do
   let goal ← elabType goal
@@ -710,26 +726,15 @@ elab "#run_tactic" goal:term "by" tacticCode:tactic "log" : command =>
   for msg in msgs'.toList do
     logInfo "Message:"
     logInfo msg.data
-    let s ←  msg.data.toString
-    if s.trim.startsWith "Try this:" then
-      let s' := s.drop 10 |>.trim
-      logInfo s'
-      match runParserCategory (← getEnv) `term ("by\n  " ++ s') with
-      | Except.ok term => do
-        let tacs := match term with
-        | `(by $[$t]*) => t
-        | _ => #[]
-        let term : Syntax.Term := ⟨term⟩
-        let pf ←  PrettyPrinter.ppTerm term
-        logInfo m!"Parsed tactic, proof term: {pf}"
-        logInfo "Tactics:"
-        for tac in tacs do
-          logInfo m!"Tactic: {← ppTactic tac}"
-      | Except.error e => do
-        logInfo s!"Failed to parse tactic: {e}"
-    else
-      logInfo "Not a Try this message"
-      logInfo s
+    let tacs? ← getTacticsFromMessage? msg
+    match tacs? with
+    | some tacs => do
+      logInfo "Tactics found:"
+      for tac in tacs do
+        logInfo m!"Tactic: {← ppTactic tac}"
+    | none => do
+      logInfo "No tactics found"
+      return ()
 
 
 #run_tactic (∀ n: Nat,(1 : Nat) ≤  7) by auto? log
