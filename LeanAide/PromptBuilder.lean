@@ -482,6 +482,8 @@ structure CodeGenerator extends Translator where
   numMoogleDirect : Nat := 2
 deriving Repr, FromJson, ToJson
 
+def Translator.codeGenerator (t: Translator) : CodeGenerator := {t with}
+
 -- #eval toJson <| ({} : CodeGenerator)
 -- #eval (fromJson? (toJson <| ({} : CodeGenerator)) : Except _ Translator)
 

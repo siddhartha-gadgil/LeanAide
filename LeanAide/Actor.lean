@@ -1,5 +1,6 @@
 import LeanAide.TranslatorParams
 import LeanCodePrompts.Translate
+import LeanAide.StructToLean
 
 namespace LeanAide.Actor
 open LeanAide Lean
@@ -38,7 +39,8 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         return Json.mkObj [("result", "success"), ("theorem", translation)]
   | Except.ok "translate_def" => do
     match data.getObjValAs? String "text" with
-    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
+    | Except.error e =>
+      return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
     | Except.ok text => do
       match ← translator.translateDefCmdM? text with
       | Except.error es =>
@@ -82,6 +84,59 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         return Json.mkObj [("result", "success"), ("name", toJson name)]
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in theorem name: {← e.toMessageData.format}")]
+  | Except.ok "prove" => do
+    match data.getObjValAs? String "theorem" with
+    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no theorem found: {e}")]
+    | Except.ok thm => do
+      let pfs ← translator.server.prove thm 1 translator.params
+      match pfs.get? 0 with
+      | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
+      | some pf => do
+        return Json.mkObj [("result", "success"), ("proof", toJson pf)]
+  | Except.ok "structured_json_proof" => do
+    match data.getObjValAs? String "theorem", data.getObjValAs? String "proof" with
+    | Except.ok statement, Except.ok pf => do
+      let block := s!"## Theorem : {statement}\n##Proof: {pf}"
+      let jsons ←
+        translator.server.structuredProof block 1 translator.params
+      match jsons.get? 0 with
+      | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
+      | some json => do
+        return Json.mkObj [("result", "success"), ("json_structured", json)]
+    | _, _ =>
+      return Json.mkObj [("result", "error"), ("error", "no theorem or proof found")]
+  | Except.ok "lean_from_thm_pf_json" => do
+    match data.getObjValAs? String "json_structured" with
+    | Except.ok js => do
+      try
+        let qp := translator.codeGenerator
+        let (code, declarations) ← qp.mathDocumentCode js
+        return Json.mkObj
+          [("result", "success"), ("lean_code", code.pretty), ("declarations", toJson declarations), ("top_code", CodeGenerator.topCode)]
+      catch e =>
+        return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
+    | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
+  | Except.ok "elaborate" => do
+    let topCode := data.getObjValAs? String "top_code" |>.toOption |>.getD ""
+    match data.getObjValAs? String "lean_code", data.getObjValAs? (List Name) "declarations" with
+    | Except.ok code, Except.ok names => do
+      try
+        let (exprs, logs) ← elabFrontDefsExprM (topCode ++ code) names
+        let hasErrors := logs.toList.any (fun log => log.severity == MessageSeverity.error)
+        let result := if hasErrors then "fallback" else "success"
+        let logs ←  logs.toList.mapM (fun log => log.data.format)
+        let logs := logs.map (fun log => log.pretty)
+        let sorries ← exprs.mapM fun (n, e) => do
+          let ss ← Meta.getSorryTypes e
+          ss.mapM (fun s => do
+            let s ← PrettyPrinter.ppExpr s
+            let s := s.pretty
+            pure (n, s))
+        return Json.mkObj
+          [("result", result), ("logs", toJson logs), ("sorries", toJson sorries)]
+      catch e =>
+        return Json.mkObj [("result", "error"), ("error", s!"error in code elaboration: {← e.toMessageData.format}")]
+    | _, _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
   | Except.ok task => do
     let result := Json.mkObj [("result", "error"), ("error", s!"unknown task"), ("task", task)]
     return result
