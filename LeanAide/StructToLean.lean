@@ -449,7 +449,7 @@ def exhaustiveType (goal: MVarId)(context : Array Json) (conds: List <| String)
 def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.Tactic)(qp: CodeGenerator)
     : TranslateM <| Array Syntax.Tactic := do
     match cond_pfs with
-    | [] => return #[← `(tactic| auto?)]
+    | [] => return #[]
     | (condProp, pf) :: tail => do
       let condTerm ← delabDetailed condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
@@ -569,22 +569,6 @@ elab "#exists_vars" type:term : command => do
 example (h : ∃ l n m : Nat, l + n + m = 3) : True := by
   let ⟨l, ⟨n, ⟨m, h⟩⟩⟩  := h
   trivial
-
-
-def haveForAssertionSingle  (type: Syntax.Term)
-  (premises: List Name) :
-    MetaM <| Syntax.Tactic := do
-  let ids := premises.toArray.map fun n => Lean.mkIdent n
-  let hash := hash type.raw.reprint
-  let name := mkIdent <| Name.mkSimple s!"assert_{hash}"
-  let tac ← `(tacticSeq| auto? [$ids,*])
-  match ← existsVars type with
-    | some vars =>
-      let lhs ← `(⟨$vars:term,*, $name⟩)
-      `(tactic| have $lhs:term : $type  := by $tac:tacticSeq)
-    | none =>
-      `(tactic| have $name : $type := by $tac:tacticSeq)
-
 
 def calculateStatement (js: Json) : IO <| Array String := do
   match js.getKV? with
@@ -731,7 +715,6 @@ def haveForAssertion (goal: Expr)
   let ids := premises.toArray.map fun n => Lean.mkIdent n
   let hash₀ := hash type.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
-  -- let tac ← `(tacticSeq| auto? [$ids,*])
   let existsVarTypes? ← existsVarTypes type
   let existsVarTypes := existsVarTypes?.getD #[]
   let existsVarTypeIdents := existsVarTypes.map fun (n, t) =>
@@ -748,7 +731,7 @@ def haveForAssertion (goal: Expr)
     runTacticsAndGetTryThis goal #[← `(tactic| auto? [$ids,*])]
   if headTacs?.isNone then
     IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr goal} while running "
-  let headTacs := headTacs?.getD #[← `(tactic| auto? [$ids,*])]
+  let headTacs := headTacs?.getD #[← `(tactic| sorry)]
   let head ← `(tactic| have $name : $type := by $headTacs*)
   IO.eprintln s!"Tactics found for {← PrettyPrinter.ppExpr goal}"
   for tac in headTacs do
@@ -758,11 +741,6 @@ def haveForAssertion (goal: Expr)
 def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
     TranslateM <| Array Syntax.Tactic := do
   let statements ←  calculateStatement js
-  -- IO.eprintln s!"Calculating: {statements}"
-  -- IO.eprintln s!"Local declarations:"
-  -- let lctx ← getLCtx
-  -- for decl in lctx do
-  --   IO.eprintln s!"Declaration: {decl.userName} : {← PrettyPrinter.ppExpr decl.type}"
   statements.mapM fun statement => do
     let type? ← theoremExprInContext? context statement qp
     match type? with
@@ -777,7 +755,7 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
           runTacticsAndGetTryThis type #[← `(tactic| auto?)]
         if headTacs?.isNone then
           IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr type} while running "
-        let headTacs := headTacs?.getD #[← `(tactic| auto?)]
+        let headTacs := headTacs?.getD #[← `(tactic| sorry)]
         `(tactic| have $name : $typeStx := by
             $headTacs*)
 
@@ -795,14 +773,13 @@ def conditionCases (cond₁ cond₂ : String)
   let condTerm₂ ← delabDetailed condProp₂
   let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
   let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
-  -- let tac ← `(tacticSeq| auto?)
   let hash := hash cond₂
   let condId₂ := mkIdent <| Name.mkSimple s!"cond_{hash}"
   let headTacs? ←
     runTacticsAndGetTryThis condProp₂ #[← `(tactic| auto?)]
   if headTacs?.isNone then
     IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr condProp₂} while running "
-  let headTacs := headTacs?.getD #[← `(tactic| auto?)]
+  let headTacs := headTacs?.getD #[← `(tactic| sorry)]
   let ass₂ ← `(tactic| have $condId₂ : $condTerm₂' := by
     $headTacs*)
   let pf₂' := #[ass₂] ++ pf₂
@@ -883,19 +860,9 @@ mutual
           runTacticsAndGetTryThis (← goal.getType) #[← `(tactic| auto?)]
         if headTacs?.isNone then
           IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr <| ← goal.getType} while running "
-        let headTacs := headTacs?.getD #[← `(tactic| auto?)]
+        let headTacs := headTacs?.getD #[← `(tactic| sorry)]
         return accum ++ headTacs
       | head :: tail => do
-        -- IO.eprintln s!"Processing {head}"
-        -- IO.eprintln s!"Goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
-        -- let lctx ← getLCtx
-        -- IO.eprintln s!"Local declarations"
-        -- for decl? in lctx.decls do
-        --   match decl? with
-        --   | some decl =>
-        --     IO.eprintln s!"Decl: {decl.userName}"
-        --   | none => pure ()
-        -- IO.eprintln s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
           match head.getKV? with
           | some ("assert", head) =>
@@ -998,10 +965,10 @@ mutual
                   return #[casesTac]
                 | _ => pure #[]
               | some "group" =>
+                let exType ← exhaustiveType goal context conds.toList qp
                 let union_pf : Array Syntax.Tactic ←
                   match head.getObjValAs? (List Json) "exhaustiveness" with
                   | Except.ok pfSource =>
-                    let exType ← exhaustiveType goal context conds.toList qp
                     let mvar ← mkFreshExprMVar exType
                     structToTactics mvar.mvarId! #[] context pfSource qp
                   | _ => pure #[← `(tactic| auto?)]
