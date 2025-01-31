@@ -1,0 +1,25 @@
+{"usage":
+ {"total_tokens": 5067,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 4488,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 579},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AvdTN10FjTarMXJ29YtVnl34zXAaJ",
+ "created": 1738299793,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```json\n{\n  \"math_document\": [\n    {\n      \"theorem\": {\n        \"hypothesis\": [\n          {\n            \"let\": {\n              \"variable\": \"n\",\n              \"kind\": \"natural number\"\n            }\n          }\n        ],\n        \"conclusion\": \"The product of two successive natural numbers is even.\",\n        \"proved\": true,\n        \"proof\": [\n          {\n            \"let\": {\n              \"variable\": \"n\",\n              \"kind\": \"natural number\"\n            }\n          },\n          {\n            \"calculate\": {\n              \"inline_calculation\": \"n(n+1)\"\n            }\n          },\n          {\n            \"cases\": {\n              \"split_kind\": \"condition\",\n              \"on\": \"n\",\n              \"proof_cases\": [\n                {\n                  \"case\": {\n                    \"condition\": \"n is even\",\n                    \"proof\": [\n                      {\n                        \"some\": {\n                          \"variable\": \"k\",\n                          \"kind\": \"integer\",\n                          \"properties\": \"n = 2k\"\n                        }\n                      },\n                      {\n                        \"calculate\": {\n                          \"calculation_sequence\": [\n                            {\n                              \"calculation_step\": \"n(n+1) = (2k)(2k+1)\"\n                            },\n                            {\n                              \"calculation_step\": \"= 2k(2k+1)\"\n                            }\n                          ]\n                        }\n                      },\n                      {\n                        \"assert\": {\n                          \"claim\": \"2k(2k+1) is even\",\n                          \"proof_method\": \"since it is divisible by 2\"\n                        }\n                      }\n                    ]\n                  }\n                },\n                {\n                  \"case\": {\n                    \"condition\": \"n is odd\",\n                    \"proof\": [\n                      {\n                        \"some\": {\n                          \"variable\": \"k\",\n                          \"kind\": \"integer\",\n                          \"properties\": \"n = 2k + 1\"\n                        }\n                      },\n                      {\n                        \"calculate\": {\n                          \"calculation_sequence\": [\n                            {\n                              \"calculation_step\": \"n(n+1) = (2k+1)((2k+1)+1)\"\n                            },\n                            {\n                              \"calculation_step\": \"= (2k+1)(2k+2)\"\n                            },\n                            {\n                              \"calculation_step\": \"= 2(2k+1)(k+1)\"\n                            }\n                          ]\n                        }\n                      },\n                      {\n                        \"assert\": {\n                          \"claim\": \"2(2k+1)(k+1) is even\",\n                          \"proof_method\": \"since it is divisible by 2\"\n                        }\n                      }\n                    ]\n                  }\n                }\n              ]\n            }\n          },\n          {\n            \"conclude\": {\n              \"claim\": \"In both cases, the product n(n+1) is even.\"\n            }\n          }\n        ]\n      }\n    }\n  ]\n}\n```"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"}]}
