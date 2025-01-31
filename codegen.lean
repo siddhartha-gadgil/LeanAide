@@ -17,7 +17,8 @@ unsafe def main (args: List String) : IO UInt32 := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module:= `LeanAide.AutoTactic},
-    {module:= `LeanAide.StructToLean}] {}
+    {module:= `LeanAide.StructToLean},
+    {module:= `LeanAide.Syntax}] {}
   withUnpickle (← picklePath "docString")
     <|fun (docStringData : EmbedData) => do
   withUnpickle (← picklePath "description")
@@ -31,11 +32,15 @@ unsafe def main (args: List String) : IO UInt32 := do
   let core :=
     codeGen.statementToCode statement  |>.runWithEmbeddings dataMap
   let io? :=
-    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
+    core.run {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
   let io?' ← io?.toIO'
   match io?' with
-  | Except.ok result =>
+  | Except.ok (result, s) =>
+    let messages := s.messages
+    IO.eprintln "Ran successfully, with messages:"
+    for msg in messages.toList do
+      IO.eprintln (← msg.data.toString)
     let hashCode := hash result.pretty
     let outFile := System.mkFilePath <| ["CodeGen", s!"from_statement_{hashCode}.lean"]
     IO.FS.writeFile outFile result.pretty

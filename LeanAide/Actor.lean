@@ -167,10 +167,11 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
       try
         let describeSorries := data.getObjValAs? Bool "describe_sorries" |>.toOption |>.getD false
         let (exprs, logs) ← elabFrontDefsExprM (topCode ++ code) names
-        let hasErrors := logs.toList.any (fun log => log.severity == MessageSeverity.error)
+        let hasErrors := logs.toList.any
+          (fun lg => lg.severity == MessageSeverity.error)
         let result := if hasErrors then "fallback" else "success"
-        let logs ←  logs.toList.mapM (fun log => log.data.format)
-        let logs := logs.map (fun log => log.pretty)
+        let logs ←  logs.toList.mapM (fun lg => lg.data.format)
+        let logs := logs.map (fun lg => lg.pretty)
         let sorries ← exprs.mapM fun (n, e) => do
           let ss ← Meta.getSorryTypes e
           ss.mapM fun expr => do
