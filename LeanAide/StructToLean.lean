@@ -344,27 +344,6 @@ def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator) : Tr
   | Except.ok cmd => return cmd
 
 
-def conditionCases (cond₁ cond₂ : String)
-    (pf₁ pf₂ : Array Syntax.Tactic) (context: Array Json) (qp: CodeGenerator)  : TranslateM <| Array Syntax.Tactic := do
-  let condProp₁? ← theoremExprInContext?  context cond₁ qp
-  let condProp₂? ← theoremExprInContext?  context cond₂ qp
-  match condProp₁?, condProp₂? with
-  | Except.error _, _ => do
-    return #[← mkNoteTactic s!"Failed to translate condition {cond₁}"]
-  | _, Except.error _ => do
-    return #[← mkNoteTactic s!"Failed to translate condition {cond₂}"]
-  | Except.ok condProp₁, Except.ok condProp₂ => do
-  let condTerm₁ ← delabDetailed condProp₁
-  let condTerm₂ ← delabDetailed condProp₂
-  let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
-  let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
-  let tac ← `(tacticSeq| auto?)
-  let hash := hash cond₂
-  let condId₂ := mkIdent <| Name.mkSimple s!"cond_{hash}"
-  let ass₂ ← `(tactic| have $condId₂ : $condTerm₂' := by
-    $tac:tacticSeq)
-  let pf₂' := #[ass₂] ++ pf₂
-  return #[← `(tactic| if $condTerm₁' then $pf₁* else $pf₂'*)]
 
 def matchAltTac := Term.matchAlt (rhsParser := matchRhs)
 
@@ -622,27 +601,6 @@ def calculateStatement (js: Json) : IO <| Array String := do
     IO.eprintln s!"No calculation found in {js.compress}"
     return #[]
 
-def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
-    TranslateM <| Array Syntax.Tactic := do
-  let statements ←  calculateStatement js
-  -- IO.eprintln s!"Calculating: {statements}"
-  -- IO.eprintln s!"Local declarations:"
-  -- let lctx ← getLCtx
-  -- for decl in lctx do
-  --   IO.eprintln s!"Declaration: {decl.userName} : {← PrettyPrinter.ppExpr decl.type}"
-  statements.mapM fun statement => do
-    let type? ← theoremExprInContext? context statement qp
-    match type? with
-      | Except.error e =>
-        IO.eprintln s!"Failed to translate calculation: {repr e}"
-        mkNoteTactic s!"Failed to translate calculation {js.compress}"
-      | Except.ok type =>
-        let typeStx ← delabDetailed type
-        let hash := hash statement
-        let name := mkIdent <| Name.mkSimple s!"calculation_{hash}"
-        `(tactic| have $name : $typeStx := by
-            auto?)
-
 def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId :=
     mvarId.withContext do
@@ -677,13 +635,24 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
 
 def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
     mvarId.withContext do
-  let tacticCode ← `(tacticSeq| $tactics*)
   IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
   let lctx ← getLCtx
+  let mut vars : Array Syntax.Term := #[]
   for decl in lctx do
-    IO.eprintln s!"Declaration: {decl.userName} : {← PrettyPrinter.ppExpr decl.type}"
-  let targetType ← relLCtx mvarId
+    let name := decl.userName
+    let term ← if !name.isInternal then
+      let id := mkIdent name
+      `($id)
+    else
+      `(_)
+    vars := vars.push term
+    IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
+  -- vars := vars[1:]
+  let targetType ← relLCtx' mvarId
   let typeView ← PrettyPrinter.ppExpr targetType
+  let introTac ← `(tactic| intro $vars*)
+  let tactics := #[introTac] ++ tactics
+  let tacticCode ← `(tacticSeq| $tactics*)
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
   let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
@@ -781,7 +750,63 @@ def haveForAssertion (goal: Expr)
     IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr goal} while running "
   let headTacs := headTacs?.getD #[← `(tactic| auto? [$ids,*])]
   let head ← `(tactic| have $name : $type := by $headTacs*)
+  IO.eprintln s!"Tactics found for {← PrettyPrinter.ppExpr goal}"
+  for tac in headTacs do
+    IO.eprintln s!"Tactic: {← ppTactic tac}"
   return #[head] ++ existsTacs
+
+def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
+    TranslateM <| Array Syntax.Tactic := do
+  let statements ←  calculateStatement js
+  -- IO.eprintln s!"Calculating: {statements}"
+  -- IO.eprintln s!"Local declarations:"
+  -- let lctx ← getLCtx
+  -- for decl in lctx do
+  --   IO.eprintln s!"Declaration: {decl.userName} : {← PrettyPrinter.ppExpr decl.type}"
+  statements.mapM fun statement => do
+    let type? ← theoremExprInContext? context statement qp
+    match type? with
+      | Except.error e =>
+        IO.eprintln s!"Failed to translate calculation: {repr e}"
+        mkNoteTactic s!"Failed to translate calculation {js.compress}"
+      | Except.ok type =>
+        let typeStx ← delabDetailed type
+        let hash := hash statement
+        let name := mkIdent <| Name.mkSimple s!"calculation_{hash}"
+        let headTacs? ←
+          runTacticsAndGetTryThis type #[← `(tactic| auto?)]
+        if headTacs?.isNone then
+          IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr type} while running "
+        let headTacs := headTacs?.getD #[← `(tactic| auto?)]
+        `(tactic| have $name : $typeStx := by
+            $headTacs*)
+
+def conditionCases (cond₁ cond₂ : String)
+    (pf₁ pf₂ : Array Syntax.Tactic) (context: Array Json) (qp: CodeGenerator)  : TranslateM <| Array Syntax.Tactic := do
+  let condProp₁? ← theoremExprInContext?  context cond₁ qp
+  let condProp₂? ← theoremExprInContext?  context cond₂ qp
+  match condProp₁?, condProp₂? with
+  | Except.error _, _ => do
+    return #[← mkNoteTactic s!"Failed to translate condition {cond₁}"]
+  | _, Except.error _ => do
+    return #[← mkNoteTactic s!"Failed to translate condition {cond₂}"]
+  | Except.ok condProp₁, Except.ok condProp₂ => do
+  let condTerm₁ ← delabDetailed condProp₁
+  let condTerm₂ ← delabDetailed condProp₂
+  let condTerm₁' : Syntax.Term := ⟨condTerm₁⟩
+  let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
+  -- let tac ← `(tacticSeq| auto?)
+  let hash := hash cond₂
+  let condId₂ := mkIdent <| Name.mkSimple s!"cond_{hash}"
+  let headTacs? ←
+    runTacticsAndGetTryThis condProp₂ #[← `(tactic| auto?)]
+  if headTacs?.isNone then
+    IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr condProp₂} while running "
+  let headTacs := headTacs?.getD #[← `(tactic| auto?)]
+  let ass₂ ← `(tactic| have $condId₂ : $condTerm₂' := by
+    $headTacs*)
+  let pf₂' := #[ass₂] ++ pf₂
+  return #[← `(tactic| if $condTerm₁' then $pf₁* else $pf₂'*)]
 
 
 #tactic_trythis (∀ n: Nat,(1 : Nat) ≤  7) by auto? log

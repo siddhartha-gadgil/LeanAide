@@ -552,6 +552,11 @@ def relLCtx (mvarId : MVarId) : MetaM Expr :=
     let decls := decls[1:].toArray
     relLCtxAux (← mvarId.getType) decls.toList
 
+def relLCtx' (mvarId : MVarId) : MetaM Expr :=
+  mvarId.withContext do
+    let decls := (← getLCtx).decls.toArray |>.filterMap id
+    relLCtxAux (← mvarId.getType) decls.toList
+
 def groups := ["train", "test", "valid"]
 
 def splitData (data: Array α) : IO <| Std.HashMap String (Array α) := do
