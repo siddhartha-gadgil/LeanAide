@@ -178,18 +178,19 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
           ss.mapM fun expr => do
             let s ← PrettyPrinter.ppExpr expr
             let s := s.pretty
-            let res := Json.mkObj [("name", toJson n), ("sorry", s)]
+            let res := Json.mkObj [("declaration_name", toJson n), ("sorry_type", s)]
             if describeSorries then
               let desc ← translator.getTypeDescriptionM expr {}
               match desc with
               | some (desc, _) =>
-                let res := res.mergeObj <| Json.mkObj [("description", desc)]
+                let res := res.mergeObj <| Json.mkObj [("sorry_description", desc)]
                 pure res
               | none => pure res
             else
               pure res
-        return Json.mkObj
+        let response := Json.mkObj
           [("result", result), ("logs", toJson logs), ("sorries", toJson sorries)]
+        return response
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code elaboration: {← e.toMessageData.format}")]
     | _, _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
