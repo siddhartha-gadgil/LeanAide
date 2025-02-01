@@ -4,6 +4,7 @@ import LeanAide.Config
 import LeanAide.TranslatorParams
 import Cli
 import LeanAide.Actor
+import LeanAide.StructToLean
 open Lean Cli LeanAide.Meta LeanAide Translator
 
 set_option maxHeartbeats 10000000
@@ -35,7 +36,8 @@ unsafe def launchProcess (p : Parsed) : IO UInt32 := do
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate}] {}
+    {module:= `LeanCodePrompts.Translate},
+    {module:= `LeanAide.StructToLean}] {}
   withUnpickle (← picklePath "docString")
     <|fun (docStringData : EmbedData) => do
   withUnpickle (← picklePath "description")

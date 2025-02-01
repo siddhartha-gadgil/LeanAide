@@ -25,6 +25,13 @@ def process_reader(process, output_queue):
             break  # Process terminated
         output_queue.put(line.strip())
 
+def process_error_reader(process):  # New function for stderr
+    while True:
+        line = process.stderr.readline()
+        if not line:
+            break  # Process terminated
+        print(f"Process stderr: {line.strip()}", file=sys.stderr)  # Print to server's stderr
+
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         global process, process_lock
@@ -44,6 +51,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                             bufsize=1 # Line buffering
                         )
                         threading.Thread(target=process_reader, args=(process, output_queue), daemon=True).start()
+                        threading.Thread(target=process_error_reader, args=(process,), daemon=True).start()  # Start stderr thread
                     except FileNotFoundError:
                         self.send_response(500)
                         self.send_header('Content-type', 'text/plain')
@@ -56,7 +64,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 process.stdin.flush()
 
                 try:
-                    output = output_queue.get(timeout=120)  # Timeout after 120 seconds
+                    output = output_queue.get(timeout=6000)  # Timeout after 6000 seconds
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()

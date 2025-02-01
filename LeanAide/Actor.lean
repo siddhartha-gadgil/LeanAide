@@ -151,7 +151,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no theorem or proof found")]
   | Except.ok "lean_from_json_structured" => do
-    match data.getObjValAs? String "json_structured" with
+    match data.getObjValAs? Json "json_structured" with
     | Except.ok js => do
       try
         let qp := translator.codeGenerator
@@ -167,7 +167,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | Except.ok code, Except.ok names => do
       try
         let describeSorries := data.getObjValAs? Bool "describe_sorries" |>.toOption |>.getD false
-        let (exprs, logs) ← elabFrontDefsExprM (topCode ++ code) names
+        let (exprs, logs) ← elabFrontDefsExprM (code) names
         let hasErrors := logs.toList.any
           (fun lg => lg.severity == MessageSeverity.error)
         let result := if hasErrors then "fallback" else "success"
