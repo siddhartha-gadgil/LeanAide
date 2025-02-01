@@ -288,12 +288,14 @@ def structuralTerm (stx: Syntax) : MetaM Bool := do
 
 def openAIKey? : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
-#eval openAIKey?
-
 def openAIKey : IO String := do
   match ← openAIKey? with
       | some k => return k
       | none =>
+          let path : System.FilePath := "private" / "OPENAI_API_KEY"
+          if (← path.pathExists) then
+            return (← IO.FS.readFile path).trim
+          else
           let path : System.FilePath := "rawdata" / "OPENAI_API_KEY"
           if (← path.pathExists) then
             return (← IO.FS.readFile path).trim

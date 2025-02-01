@@ -82,3 +82,4 @@ target/
 .scala-build/
 venv/
 leanaide_logs/
+private/

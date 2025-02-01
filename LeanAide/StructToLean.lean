@@ -593,7 +593,7 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
 
 def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
     mvarId.withContext do
-  IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
+  -- IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
   let lctx ← getLCtx
   let mut vars : Array Syntax.Term := #[]
   for decl in lctx do
@@ -604,7 +604,7 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
     else
       `(_)
     vars := vars.push term
-    IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
+    -- IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
   -- vars := vars[1:]
   let targetType ← relLCtx' mvarId
   let typeView ← PrettyPrinter.ppExpr targetType
@@ -615,25 +615,9 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
   let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
   let (_, msgs') ← runFrontendM egCode
-  IO.eprintln s!"Ran frontend, Messages:"
-  for msg in msgs'.toList do
-    IO.eprintln s!"{← msg.data.toString}"
-  -- let msgs ← Core.getAndEmptyMessageLog
-  -- try
-  --   let ctx ← read
-  --   let (gs, s) ←
-  --     withoutErrToSorry do
-  --     Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode}
-  --       {}  (s:= ← get)
-  --   set s
-  --   let msgs'' ← Core.getMessageLog
-  --   IO.eprintln s!"Ran tactics successfully to get messages; remaining goals: {gs.length}; messages: {msgs''.toList.length}; proof: {← PrettyPrinter.ppExpr <| mkMVar mvarId}"
-  -- catch e =>
-  --   logWarning m!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
-  --   IO.eprintln s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
-  -- IO.eprintln s!"Ran tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages"
-  -- let msgs' ← Core.getMessageLog
-  -- Core.setMessageLog msgs
+  -- IO.eprintln s!"Ran frontend, Messages:"
+  -- for msg in msgs'.toList do
+  --   IO.eprintln s!"{← msg.data.toString}"
   return msgs'
 
 def getTacticsFromMessage? (msg: Message) :
@@ -646,7 +630,7 @@ def getTacticsFromMessage? (msg: Message) :
     | Except.ok term => do
       match term with
       | `(by $[$t]*) =>
-        IO.eprintln "Parsed tactics:"
+        -- IO.eprintln "Parsed tactics:"
         return t
       | _ =>
         IO.eprintln s!"Message: {s} starts with Try this:, but failed to parse {"by\n  " ++ s'} as a tactic sequence"
@@ -655,7 +639,7 @@ def getTacticsFromMessage? (msg: Message) :
       IO.eprintln s!"Message: {s} starts with Try this:, but failed to parse {s'} with error {e}"
       return none
   else
-    IO.eprintln s!"Message: {s} does not start with Try this:"
+    -- IO.eprintln s!"Message: {s} does not start with Try this:"
     return none
 
 def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic): TermElabM <| Option (Array Syntax.Tactic) :=
@@ -663,9 +647,9 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic): Term
   let mvar ← mkFreshExprMVar goal
   let msgs ←
     runTacticsAndGetMessages mvar.mvarId! tactics
-  IO.eprintln "Messages:"
-  for msg in msgs.toList do
-    IO.eprintln s!"Message: {← msg.data.toString}"
+  -- IO.eprintln "Messages:"
+  -- for msg in msgs.toList do
+  --   IO.eprintln s!"Message: {← msg.data.toString}"
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 
@@ -739,9 +723,9 @@ def haveForAssertion (goal: Expr)
     IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr goal} while running "
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
   let head ← `(tactic| have $name : $type := by $headTacs*)
-  IO.eprintln s!"Tactics found for {← PrettyPrinter.ppExpr goal}"
-  for tac in headTacs do
-    IO.eprintln s!"Tactic: {← ppTactic tac}"
+  -- IO.eprintln s!"Tactics found for {← PrettyPrinter.ppExpr goal}"
+  -- for tac in headTacs do
+  --   IO.eprintln s!"Tactic: {← ppTactic tac}"
   return #[head] ++ existsTacs
 
 def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
@@ -828,7 +812,7 @@ mutual
             | Except.error _ =>
               mkNoteCmd s!"Failed to translate theorem {claim}"
             | Except.ok thm => do
-              IO.eprintln s!"Theorem: {← PrettyPrinter.ppExpr thm}"
+              -- IO.eprintln s!"Theorem: {← PrettyPrinter.ppExpr thm}"
               let mvar ← mkFreshExprMVar thm
               let mvarId := mvar.mvarId!
               let vars ← getVars thm

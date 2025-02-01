@@ -162,7 +162,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
   | Except.ok "elaborate" => do
-    let topCode := data.getObjValAs? String "top_code" |>.toOption |>.getD ""
+    -- let topCode := data.getObjValAs? String "top_code" |>.toOption |>.getD ""
     match data.getObjValAs? String "lean_code", data.getObjValAs? (List Name) "declarations" with
     | Except.ok code, Except.ok names => do
       try
