@@ -27,7 +27,7 @@ def Translator.ofCli (p: Parsed) : Translator :=
   let pb := match pb? with
     | some pb => pb
     | none =>
-      let pb₁ := pb?.getD <|
+      let pb₁ :=
         PromptExampleBuilder.mkEmbedBuilder embedUrl? numSim numConcise numDesc
       let pb₂ := PromptExampleBuilder.searchBuilder numLeanSeach numMoogle |>.simplify
       if numLeanSeach + numMoogle > 0 then
@@ -41,7 +41,7 @@ def Translator.ofCli (p: Parsed) : Translator :=
   let temp : JsonNumber := ⟨temp10, 1⟩
   let gemini := p.hasFlag "gemini"
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD (if gemini then "gemini-1.5-pro-001" else "gpt-4o")
+    |>.getD (if gemini then "gemini-2.0-flash-exp" else "gpt-4o")
   let azure := p.hasFlag "azure"
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
     |>.getD 1600
@@ -58,6 +58,59 @@ def Translator.ofCli (p: Parsed) : Translator :=
   let chatParams : ChatParams :=
     {temp := temp, n := queryNum, maxTokens := maxTokens}
   let translator : Translator := {pb := pb, server := chatServer, params := chatParams}
+  translator
+
+def Translator.configure (translator: Translator) (config: Json) : Translator :=
+  let n := config.getObjValAs? Nat "n" |>.toOption.getD translator.params.n
+  let translator := {translator with params := {translator.params with n := n}}
+  let temp? :=
+    config.getObjValAs? Float "temperature" |>.toOption.map
+      JsonNumber.fromFloat?
+  let temp := match temp? with
+    | some (.inr temp) => temp
+    | _ => translator.params.temp
+  let translator := {translator with params := {translator.params with temp := temp}}
+  let maxTokens := config.getObjValAs? Nat "max_tokens" |>.toOption
+    |>.getD translator.params.maxTokens
+  let translator := {translator with params := {translator.params with maxTokens := maxTokens}}
+  let server := match config.getObjValAs? Json "server" with
+    | Except.ok server =>
+        let model := server.getObjValAs? String "model" |>.toOption
+          |>.getD translator.server.model
+        let url? := server.getObjValAs? String "url" |>.toOption
+        let gemini := server.getObjValAs? Bool "gemini" |>.toOption
+          |>.getD (model.startsWith "gemini")
+        let azure := server.getObjValAs? Bool "azure" |>.toOption
+          |>.getD false
+        let sysLess := server.getObjValAs? Bool "no_sysprompt" |>.toOption
+          |>.getD false
+        if azure then ChatServer.azure else
+        if gemini then ChatServer.google model else
+            match url? with
+            | some url => ChatServer.generic model url none !sysLess
+            | none => ChatServer.openAI model
+    | _ => translator.server
+  let authKey? :=
+    config.getObjValAs? String "auth_key" |>.toOption
+  let chatServer := server.addKeyOpt authKey?
+  let translator := {translator with server := chatServer}
+  let translator := match config.getObjValAs? Bool "reasoning" with
+    | Except.ok true => translator.reasoning
+    | _ => translator
+  let translator := match config.getObjValAs? Json "embedding" with
+    | Except.ok js =>
+      let numSim := js.getObjValAs? Nat "prompts" |>.toOption.getD 20
+      let numConcise := js.getObjValAs? Nat "concise_descriptions"
+        |>.toOption.getD 2
+      let numDesc := js.getObjValAs? Nat "descriptions"
+        |>.toOption.getD 2
+      let embedUrl? := js.getObjValAs? String "url" |>.toOption
+      let pb₁ := PromptExampleBuilder.mkEmbedBuilder embedUrl? numSim numConcise numDesc
+      let pb₂ := PromptExampleBuilder.searchBuilder 0 0 |>.simplify
+      let pb := pb₁ ++ pb₂
+      let pb := pb.simplify
+      {translator with pb := pb}
+    | _ => translator
   translator
 
 end LeanAide

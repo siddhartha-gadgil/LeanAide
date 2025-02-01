@@ -208,5 +208,5 @@ def checkStatementTranslationM (s: String) (typeString: String) (translator: Tra
     let triple? ←  getTypeDescriptionM type translator
     triple?.mapM fun (transl, _, defBlob?) => do
       IO.eprintln s!"translation: {transl}"
-      let checks ← ChatServer.checkEquivalence s transl defBlob?
+      let checks ← ChatServer.checkEquivalence s transl defBlob? (server:= translator.reasoningServer)
       return (transl,  checks)

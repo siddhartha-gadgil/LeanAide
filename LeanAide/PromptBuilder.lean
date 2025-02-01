@@ -463,6 +463,7 @@ structure Translator where
   roundTrip : Bool := false
   /-- Whether to select the first elaboration that passes a roundtrip-/
   roundTripSelect : Bool := false -- selecting first to pass roundtrip
+  reasoningServer : ChatServer := .openAI "o3-mini"
 deriving Repr, FromJson, ToJson
 
 def Translator.forDef (t: Translator)  : Translator :=
@@ -471,6 +472,9 @@ def Translator.forDef (t: Translator)  : Translator :=
   | .detailed => .detailedDoc
   | x => x
   {t with toChat := chat}
+
+def Translator.reasoning (t: Translator) : Translator :=
+  {t with params := {t.params with n := 1, temp := 1.0}}
 
 /--
 Structure collecting together parameters used in code generation.
