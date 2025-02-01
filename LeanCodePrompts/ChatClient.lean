@@ -485,7 +485,7 @@ def solve (server: ChatServer)
   ChatServer.mathCompletions server queryString n params examples
 
 def checkEquivalence
-  (thm1 thm2 : String) (defBlob? : Option String) (server: ChatServer := ChatServer.openAI "o1-mini")
+  (thm1 thm2 : String) (defBlob? : Option String) (server: ChatServer := ChatServer.openAI "o3-mini")
   (params: ChatParams := {})
   (examples: Array ChatExample := #[]): CoreM (Array <| Bool × String) := do
   let queryString ←
