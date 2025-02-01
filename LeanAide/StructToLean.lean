@@ -477,32 +477,6 @@ def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.
   let head ← `(tactic| have $orAllId : $orAll := by $union_pfs*)
   return #[head] ++ casesTacs
 
-def conclusionTactic (conclusion: String)(context: Array Json) (qp: CodeGenerator)
-     : TranslateM Syntax.Tactic := do
-  let conclusionTerm? ← qp.theoremExprInContext? context conclusion
-  let conclusionTerm :=
-    conclusionTerm? |>.toOption.getD (mkConst ``True)
-  let conclusionTerm' : Syntax.Term ← delabDetailed conclusionTerm
-  let hash := hash conclusion
-  let conclusionId := mkIdent <| Name.mkSimple s!"conclusion_{hash}"
-  let tac ← `(tacticSeq| auto?)
-  `(tactic| first | done |have $conclusionId : $conclusionTerm':term := by $tac:tacticSeq)
-
-def contradictionTactics (statement: String)
-    (pf: Array Syntax.Tactic)(context: Array Json) (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := do
-  let statementTerm? ← qp.theoremExprInContext? context statement
-  let statementTerm :=
-    statementTerm? |>.toOption.getD (mkConst ``True)
-  let statementTerm' : Syntax.Term ← delabDetailed statementTerm
-  let falseId := mkIdent `False
-  let assId := mkIdent `assumption
-  let assumeTactic ← `(tactic| intro $assId:ident)
-  let fullPf := #[assumeTactic] ++ pf
-  let hash := hash statement
-  let statementId := mkIdent <| Name.mkSimple s!"statement_{hash}"
-  return #[←
-    `(tactic| have $statementId : $statementTerm':term → $falseId := by $fullPf*), ← `(tactic| auto?)]
-
 
 -- Does not work for multiple variables together
 partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term) := do
@@ -684,7 +658,7 @@ def getTacticsFromMessage? (msg: Message) :
     IO.eprintln s!"Message: {s} does not start with Try this:"
     return none
 
-def runTacticsAndGetTryThis (goal : Expr) (tactics : Array Syntax.Tactic): TermElabM <| Option (Array Syntax.Tactic) :=
+def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
   let mvar ← mkFreshExprMVar goal
   let msgs ←
@@ -695,10 +669,42 @@ def runTacticsAndGetTryThis (goal : Expr) (tactics : Array Syntax.Tactic): TermE
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 
+def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): TermElabM <|  (Array Syntax.Tactic) := do
+  let tacs? ← runTacticsAndGetTryThis? goal tactics
+  return tacs?.getD #[(←  `(tactic| sorry))]
+
+def conclusionTactic (conclusion: String)(context: Array Json) (qp: CodeGenerator)
+     : TranslateM Syntax.Tactic := do
+  let conclusionTerm? ← qp.theoremExprInContext? context conclusion
+  let conclusionTerm :=
+    conclusionTerm? |>.toOption.getD (mkConst ``True)
+  let conclusionTerm' : Syntax.Term ← delabDetailed conclusionTerm
+  let hash := hash conclusion
+  let conclusionId := mkIdent <| Name.mkSimple s!"conclusion_{hash}"
+  let tacs ←
+    runTacticsAndGetTryThisI conclusionTerm #[← `(tactic| auto?)]
+  `(tactic| first | done |have $conclusionId : $conclusionTerm':term := by $tacs*)
+
+def contradictionTactics (statement: String)
+    (pf: Array Syntax.Tactic)(context: Array Json) (qp: CodeGenerator) : TranslateM <| Array Syntax.Tactic := do
+  let statementTerm? ← qp.theoremExprInContext? context statement
+  let statementTerm :=
+    statementTerm? |>.toOption.getD (mkConst ``True)
+  let statementTerm' : Syntax.Term ← delabDetailed statementTerm
+  let falseId := mkIdent `False
+  let assId := mkIdent `assumption
+  let assumeTactic ← `(tactic| intro $assId:ident)
+  let fullPf := #[assumeTactic] ++ pf
+  let hash := hash statement
+  let statementId := mkIdent <| Name.mkSimple s!"statement_{hash}"
+  return #[←
+    `(tactic| have $statementId : $statementTerm':term → $falseId := by $fullPf*), ← `(tactic| auto?)]
+
+
 elab "#tactic_trythis" goal:term "by" tacticCode:tactic "log" : command =>
   Command.liftTermElabM do
   let goal ← elabType goal
-  let tacs? ← runTacticsAndGetTryThis goal #[tacticCode]
+  let tacs? ← runTacticsAndGetTryThis? goal #[tacticCode]
   match tacs? with
     | some tacs => do
       logInfo "Tactics found:"
@@ -728,7 +734,7 @@ def haveForAssertion (goal: Expr)
     (existsVarTypeIdents.zip rhsIdents).mapM fun ((name, tId), rhs) =>
       `(tactic| have ⟨$name, $tId⟩  := $rhs:term)
   let headTacs? ←
-    runTacticsAndGetTryThis goal #[← `(tactic| auto? [$ids,*])]
+    runTacticsAndGetTryThis? goal #[← `(tactic| auto? [$ids,*])]
   if headTacs?.isNone then
     IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr goal} while running "
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
@@ -752,7 +758,7 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
         let hash := hash statement
         let name := mkIdent <| Name.mkSimple s!"calculation_{hash}"
         let headTacs? ←
-          runTacticsAndGetTryThis type #[← `(tactic| auto?)]
+          runTacticsAndGetTryThis? type #[← `(tactic| auto?)]
         if headTacs?.isNone then
           IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr type} while running "
         let headTacs := headTacs?.getD #[← `(tactic| sorry)]
@@ -776,7 +782,7 @@ def conditionCases (cond₁ cond₂ : String)
   let hash := hash cond₂
   let condId₂ := mkIdent <| Name.mkSimple s!"cond_{hash}"
   let headTacs? ←
-    runTacticsAndGetTryThis condProp₂ #[← `(tactic| auto?)]
+    runTacticsAndGetTryThis? condProp₂ #[← `(tactic| auto?)]
   if headTacs?.isNone then
     IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr condProp₂} while running "
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
@@ -857,7 +863,7 @@ mutual
       match input with
       | [] => do
         let headTacs? ←
-          runTacticsAndGetTryThis (← goal.getType) #[← `(tactic| auto?)]
+          runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| auto?)]
         if headTacs?.isNone then
           IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr <| ← goal.getType} while running "
         let headTacs := headTacs?.getD #[← `(tactic| sorry)]
@@ -883,8 +889,9 @@ mutual
                       | Except.ok e =>
                         let stx ← delabDetailed e
                         let name := mkIdent <| Name.mkSimple s
+                        let tacs ← runTacticsAndGetTryThisI e #[← `(tactic| auto?)]
                         prevTacs := prevTacs.push <| ← `(tactic| have $name : $stx := by
-                          auto?)
+                          $tacs*)
                       | _ => pure ()
                     | _, _ => pure ()
                 | _ => pure ()
@@ -971,7 +978,7 @@ mutual
                   | Except.ok pfSource =>
                     let mvar ← mkFreshExprMVar exType
                     structToTactics mvar.mvarId! #[] context pfSource qp
-                  | _ => pure #[← `(tactic| auto?)]
+                  | _ => runTacticsAndGetTryThisI exType #[← `(tactic| auto?)]
                 groupCases context conditionProofs.toList union_pf qp none
               | some "condition" =>
                 match conditionProofs with
@@ -980,8 +987,9 @@ mutual
                 | _ => pure #[]
               | _ => /- treat like a group but with conditions as claims;
                       works for `iff` -/
+                let exType ← exhaustiveType goal context conds.toList qp
                 let union_pf : Array Syntax.Tactic ←
-                  pure #[← `(tactic| auto?)]
+                  runTacticsAndGetTryThisI exType #[← `(tactic| auto?)]
                 groupCases context conditionProofs.toList union_pf qp none
             | _ =>
               pure #[]
@@ -1012,8 +1020,11 @@ mutual
             | Except.ok s, Except.ok pf => do
               let fe := mkIdent ``False.elim
               let newGoals ← runAndGetMVars goal #[← `(tactic|apply $fe)] 1
-              let proof ← structToTactics newGoals[0]! #[] context pf qp
-              contradictionTactics s proof context qp
+              let proof? ← newGoals.head?.mapM fun goal =>
+                structToTactics goal #[] context pf qp
+              let proof := proof?.getD #[]
+              let tacs ← contradictionTactics s proof context qp
+              runTacticsAndGetTryThisI (← goal.getType) tacs
             | _, _ => pure #[]
           | some ("conclude", head) =>
             match head.getObjValAs? String "claim" with
