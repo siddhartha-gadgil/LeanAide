@@ -493,7 +493,7 @@ elab "detailed" t:term : term => do
   logInfo m!"{← ppExpr e}"
   return e
 
-#check detailed (fun (n : Nat) => n + 1)
+-- #check detailed (fun (n : Nat) => n + 1)
 
 def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
                     -- let o₂ := pp.motives.all.set o₁ true

@@ -248,4 +248,4 @@ syntax (name := askCommand) "#ask" (num)? str : command
     else
       logWarning "To make a query, end the string with a `.` or `?`."
 
-#check TryThis.Suggestion
+-- #check TryThis.Suggestion

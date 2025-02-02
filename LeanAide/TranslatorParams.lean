@@ -64,11 +64,8 @@ def Translator.configure (translator: Translator) (config: Json) : Translator :=
   let n := config.getObjValAs? Nat "n" |>.toOption.getD translator.params.n
   let translator := {translator with params := {translator.params with n := n}}
   let temp? :=
-    config.getObjValAs? Float "temperature" |>.toOption.map
-      JsonNumber.fromFloat?
-  let temp := match temp? with
-    | some (.inr temp) => temp
-    | _ => translator.params.temp
+    config.getObjValAs? JsonNumber "temperature" |>.toOption
+  let temp := temp? |>.getD translator.params.temp
   let translator := {translator with params := {translator.params with temp := temp}}
   let maxTokens := config.getObjValAs? Nat "max_tokens" |>.toOption
     |>.getD translator.params.maxTokens
@@ -97,14 +94,14 @@ def Translator.configure (translator: Translator) (config: Json) : Translator :=
   let translator := match config.getObjValAs? Bool "reasoning" with
     | Except.ok true => translator.reasoning
     | _ => translator
-  let translator := match config.getObjValAs? Json "embedding" with
+  let translator := match config.getObjValAs? Json "examples" with
     | Except.ok js =>
-      let numSim := js.getObjValAs? Nat "prompts" |>.toOption.getD 20
+      let numSim := js.getObjValAs? Nat "docstrings" |>.toOption.getD 20
       let numConcise := js.getObjValAs? Nat "concise_descriptions"
         |>.toOption.getD 2
       let numDesc := js.getObjValAs? Nat "descriptions"
         |>.toOption.getD 2
-      let embedUrl? := js.getObjValAs? String "url" |>.toOption
+      let embedUrl? := js.getObjValAs? String "embed_url" |>.toOption
       let pb₁ := PromptExampleBuilder.mkEmbedBuilder embedUrl? numSim numConcise numDesc
       let pb₂ := PromptExampleBuilder.searchBuilder 0 0 |>.simplify
       let pb := pb₁ ++ pb₂
@@ -121,6 +118,6 @@ structure Eg where
   y? : Option Nat
 deriving ToJson, FromJson, Repr
 
-#eval fromJson? (α := Eg) (toJson ({ x := 1, y? := none } : Eg))
+-- #eval fromJson? (α := Eg) (toJson ({ x := 1, y? := none } : Eg))
 
-#eval fromJson? (α := Eg) (Json.mkObj [("x", toJson 1), ("extra", 7)])
+-- #eval fromJson? (α := Eg) (Json.mkObj [("x", toJson 1), ("extra", 7)])
