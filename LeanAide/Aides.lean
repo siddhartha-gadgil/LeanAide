@@ -551,7 +551,8 @@ def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do
 def relLCtx (mvarId : MVarId) : MetaM Expr :=
   mvarId.withContext do
     let decls := (← getLCtx).decls.toArray |>.filterMap id
-    let decls := decls[1:].toArray
+    let decls := decls.filter fun decl =>
+      !decl.isImplementationDetail
     relLCtxAux (← mvarId.getType) decls.toList
 
 def relLCtx' (mvarId : MVarId) : MetaM Expr :=
