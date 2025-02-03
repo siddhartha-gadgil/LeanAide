@@ -1301,7 +1301,6 @@ def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
     fmt := fmt ++ "\n-/\n"
     return topCode ++ fmt
 
-
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format  := do
     let xs ← qp.server.structuredProofFromStatement s
