@@ -143,7 +143,7 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
   let stopJs := Json.mkObj <| if params.stopTokens.isEmpty then [] else
     [("stop", Json.arr <| params.stopTokens |>.map Json.str)]
   let dataJs := Json.mkObj [("model", server.model), ("messages", messages)
-  , ("temperature", Json.num params.temp), ("n", params.n), ("max_completion_tokens", params.maxTokens)]
+  , ("temperature", Json.num params.temp), ("n", params.n)]
   let dataJs := dataJs.mergeObj stopJs
   let data := dataJs.pretty
   trace[Translate.info] "Model query: {data}"
