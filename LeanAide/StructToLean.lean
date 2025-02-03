@@ -597,13 +597,14 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
   let lctx ← getLCtx
   let mut vars : Array Syntax.Term := #[]
   for decl in lctx do
-    let name := decl.userName
-    let term ← if !name.isInternal then
-      let id := mkIdent name
-      `($id)
-    else
-      `(_)
-    vars := vars.push term
+    unless decl.isImplementationDetail || decl.isLet do
+      let name := decl.userName
+      let term ← if !name.isInternal then
+        let id := mkIdent name
+        `($id)
+      else
+        `(_)
+      vars := vars.push term
     -- IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
   -- vars := vars[1:]
   let targetType ← relLCtx' mvarId
