@@ -138,9 +138,31 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
       | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
       | some pf => do
         return Json.mkObj [("result", "success"), ("proof", toJson pf)]
+  | Except.ok "prove_prop" => do
+    match data.getObjValAs? String "prop" with
+    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no `prop` found: {e}")]
+    | Except.ok prop => do
+      match Parser.runParserCategory (← getEnv) `term prop with
+      | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"error in parsing `prop`: {e}")]
+      | Except.ok propStx => do
+        try
+          let prop ← Elab.Term.elabType propStx
+          match ← translator.getTypeProofM prop with
+          | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
+          | some (proof, _, _) => do
+            return Json.mkObj [("result", "success"), ("theorem_proof", toJson proof)]
+        catch e =>
+          return Json.mkObj [("result", "error"), ("error", s!"error in proving `prop`: {← e.toMessageData.format}")]
   | Except.ok "structured_json_proof" => do
-    match data.getObjValAs? String "theorem", data.getObjValAs? String "proof" with
-    | Except.ok statement, Except.ok pf => do
+    match data.getObjValAs? String "theorem", data.getObjValAs? String "proof", data.getObjValAs? String "theorem_proof" with
+    | _, _, Except.ok block => do
+      let jsons ←
+        translator.server.structuredProof block 1 translator.params
+      match jsons.get? 0 with
+      | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
+      | some json => do
+        return Json.mkObj [("result", "success"), ("json_structured", json)]
+    | Except.ok statement, Except.ok pf, _ => do
       let block := s!"## Theorem : {statement}\n##Proof: {pf}"
       let jsons ←
         translator.server.structuredProof block 1 translator.params
@@ -148,7 +170,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
       | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
       | some json => do
         return Json.mkObj [("result", "success"), ("json_structured", json)]
-    | _, _ =>
+    | _, _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no theorem or proof found")]
   | Except.ok "lean_from_json_structured" => do
     match data.getObjValAs? Json "json_structured" with

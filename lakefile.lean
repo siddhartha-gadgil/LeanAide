@@ -52,6 +52,7 @@ lean_exe preload_translate {
   supportInterpreter := true
 }
 
+@[default_target]
 lean_exe leanaide_process {
   supportInterpreter := true
 }
