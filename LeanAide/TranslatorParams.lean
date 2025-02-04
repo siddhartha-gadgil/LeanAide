@@ -23,7 +23,7 @@ def Translator.ofCli (p: Parsed) : Translator :=
     (fun s => s.as! Nat) |>.getD 0
   let numMoogle := p.flag? "moogle_prompts" |>.map
     (fun s => s.as! Nat) |>.getD 0
-  let embedUrl? := p.flag? "embed_url" |>.map (fun s => s.as! String)
+  let embedUrl? := p.flag? "examples_url" |>.map (fun s => s.as! String)
   let pb := match pb? with
     | some pb => pb
     | none =>
@@ -101,7 +101,7 @@ def Translator.configure (translator: Translator) (config: Json) : Translator :=
         |>.toOption.getD 2
       let numDesc := js.getObjValAs? Nat "descriptions"
         |>.toOption.getD 2
-      let embedUrl? := js.getObjValAs? String "embed_url" |>.toOption
+      let embedUrl? := js.getObjValAs? String "examples_url" |>.toOption
       let pb₁ := PromptExampleBuilder.mkEmbedBuilder embedUrl? numSim numConcise numDesc
       let pb₂ := PromptExampleBuilder.searchBuilder 0 0 |>.simplify
       let pb := pb₁ ++ pb₂

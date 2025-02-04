@@ -120,7 +120,7 @@ unsafe def ctranslate : Cmd := `[Cli|
     m, model : String ; "Model to be used (default `gpt-4o`)"
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
-    embed_url : String; "URL to query for nearby embeddings (for a generic server)."
+    examples_url : String; "URL to query for nearby embeddings (for a generic server)."
     auth_key : String; "Authentication key (for a local or generic server)."
     show_prompt; "Output the prompt to the LLM."
     show_elaborated; "Output the elaborated terms"

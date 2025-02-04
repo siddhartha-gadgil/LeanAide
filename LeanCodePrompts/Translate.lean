@@ -80,7 +80,7 @@ register_option lean_aide.translate.authkey? : String :=
     group := "lean_aide.translate"
     descr := "Authentication key for OpenAI or generic model" }
 
-register_option lean_aide.translate.embed_url? : String :=
+register_option lean_aide.translate.examples_url? : String :=
   { defValue := ""
     group := "lean_aide.translate"
     descr := "Local or generic url to query for embeddings. Empty string for none" }
@@ -678,7 +678,7 @@ open PrettyPrinter Tactic
   match stx with
   | `(l! $s:str) =>
   let s := s.getString
-  let embedUrl := lean_aide.translate.embed_url?.get (← getOptions)
+  let embedUrl := lean_aide.translate.examples_url?.get (← getOptions)
   let embedUrl? := if embedUrl.isEmpty then none else some embedUrl
   let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.mkEmbedBuilder embedUrl? (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams}
   let (js, _) ←

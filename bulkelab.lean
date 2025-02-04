@@ -143,7 +143,7 @@ unsafe def bulkElab : Cmd := `[Cli|
     repeats : Nat; "Number of times to repeat the request (default 0)."
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
-    embed_url : String; "URL to query for nearby embeddings (for a generic server)."
+    examples_url : String; "URL to query for nearby embeddings (for a generic server)."
     tag; "Include the git hash in the results filepath"
     no_stop; "Don't use `:=` as a stop token."
     max_tokens : Nat; "Maximum tokens to use in the translation."
