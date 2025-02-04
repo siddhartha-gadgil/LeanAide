@@ -192,7 +192,8 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     | Except.error e =>
       IO.eprintln s!"Error parsing JSON: {e}; source: {output}"
       let result ←  queryAux server messages params
-      IO.FS.writeFile file result.pretty
+      unless (result.getObjVal? "error").toOption.isSome do
+        IO.FS.writeFile file result.pretty
       return result
   else
     -- IO.eprintln s!"Querying server"
