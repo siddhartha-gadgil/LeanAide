@@ -102,6 +102,35 @@ import LeanAideTools
 #theorem "There are infinitely many primes"
 ```
 
+### Hosting a server
+
+The server is by default launched at `http://localhost:7654`. This can be customized by setting the variables `HOST` and `LEANAIDE_PORT`. To use a shared server, simply set `HOST` to the IP of the hosting machine. In the client, i.e., the project with `LeanAideTools` as a dependency, add the configuration:
+
+```lean
+set_option leanaide.url <hosts IP address>:7654
+```
+
+to use the host. Further, unless you want all clients to use the hosts authentication for OpenAI or whatever is the model used, the host should not specify an authentication key (better still, start the server with `--auth_key "A key that will not work"`). The client should then supply the authentication key with
+
+```lean
+set_option leanaide.authkey? "<authentication-key>"
+```
+
+There are many other configurations at the server and client end.
+
+### Avoiding OpenAI embeddings
+
+For those who want a fully open-source solution, you can provide an "examples server" and set the parameter `examples_url` to point to it. We will soon provide an implementation of this.
+
+The example server should be as follows:
+
+* A server should be running with a port to which we can POST in Json.
+* The post will have three (relevant) fields: 
+  * **input**: The statement of a theorem or definition.
+  * **prompt_type**: One of `docString`, `description` and `concise-description`. What field to match.
+  *  **n**: The number of *nearest embeddings* to return.
+* The response gives selected "nearest" examples based on *docString*s from `resources/mathlib4-prompts.jsonl` or *description*s and *concise-description*s from `resources/mathlib4-descs.jsonl`
+* The response should be a Json array with the data from the resource files with one modification: the appropriate text should be returned as a field one of "docString", "doc" and "doc_string" (so for the nearest "description" add a "doc" field which is the description).
 
 
 ## Contributions and details
