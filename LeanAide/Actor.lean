@@ -173,7 +173,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | _, _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no theorem or proof found")]
   | Except.ok "lean_from_json_structured" => do
-    match data.getObjValAs? Json "json_structured" with
+    match data.getObjVal? "json_structured" with
     | Except.ok js => do
       try
         let qp := translator.codeGenerator

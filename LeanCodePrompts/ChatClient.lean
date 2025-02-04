@@ -179,6 +179,7 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
     return .null
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
+  IO.eprintln s!"Querying: {toJson server |>.compress}"
   -- logInfo s!"Querying {server.model}"
   let file : System.FilePath :=
     (← cachePath) / "chat" /
@@ -449,7 +450,7 @@ def completions (server: ChatServer)
   (examples: Array ChatExample := #[]): CoreM (Array String) := do
   let messages ←  mkMessages queryString examples sysPrompt !(server.hasSysPrompt)
   let data ← ChatServer.query server messages params
-  match data.getObjValAs? Json "choices" with
+  match data.getObjVal? "choices" with
   | Except.error _ =>
     throwError m!"no choices field in {data}"
   | Except.ok data =>

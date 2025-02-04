@@ -33,6 +33,7 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
 unsafe def launchProcess (p : Parsed) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let translator : Translator := Translator.ofCli p
+  IO.eprintln <| toJson translator
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},

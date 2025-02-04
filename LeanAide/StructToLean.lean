@@ -806,7 +806,7 @@ mutual
         let hypothesis :=
           v.getObjValAs? (Array Json) "hypothesis"
             |>.toOption.getD #[]
-        match v.getObjValAs? String "conclusion", v.getObjValAs? Json "proof" with
+        match v.getObjValAs? String "conclusion", v.getObjVal? "proof" with
         | Except.ok claim, Except.ok (.arr steps) =>
             let thm? ← theoremExprInContext?  (context ++ hypothesis) claim qp
             match thm? with
@@ -861,7 +861,7 @@ mutual
             | Except.ok claim =>
               let mut useResults: Array String := #[]
               let mut prevTacs : Array Syntax.Tactic := #[]
-              match head.getObjValAs? Json "deduced_from_results"  with
+              match head.getObjVal? "deduced_from_results"  with
               | Except.ok known =>
                 match known.getKV? with
                 | some ("deduced_from", .arr results) =>
@@ -881,7 +881,7 @@ mutual
                     | _, _ => pure ()
                 | _ => pure ()
               | _ => pure ()
-              match head.getObjValAs? Json "calculate" with
+              match head.getObjVal? "calculate" with
               | Except.ok js =>
                 let tac ← calculateTactics js context qp
                 prevTacs := prevTacs ++ tac
@@ -1046,7 +1046,7 @@ mutual
         let hypothesis :=
           v.getObjValAs? (Array Json) "hypothesis"
             |>.toOption.getD #[]
-        match v.getObjValAs? String "conclusion", v.getObjValAs? Json "proof" with
+        match v.getObjValAs? String "conclusion", v.getObjVal? "proof" with
         | Except.ok claim, Except.ok (.arr steps) =>
             let thm? ← theoremExprInContext?  (context ++ hypothesis) claim qp
             match thm? with
@@ -1091,7 +1091,7 @@ mutual
             | Except.ok claim =>
               let mut useResults: Array String := #[]
               let mut prevTacs : Array Syntax.Tactic := #[]
-              match head.getObjValAs? Json "deduced_from_results"  with
+              match head.getObjVal? "deduced_from_results"  with
               | Except.ok known =>
                 match known.getKV? with
                 | some ("deduced_from", .arr results) =>
@@ -1110,7 +1110,7 @@ mutual
                     | _, _ => pure ()
                 | _ => pure ()
               | _ => pure ()
-              match head.getObjValAs? Json "calculate" with
+              match head.getObjVal? "calculate" with
               | Except.ok js =>
                 let tac ← calculateTactics js context qp
                 prevTacs := prevTacs ++ tac

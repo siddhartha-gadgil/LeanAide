@@ -52,7 +52,8 @@ def Translator.ofCli (p: Parsed) : Translator :=
     if azure then ChatServer.azure else
     if gemini then ChatServer.google model else
         match url? with
-        | some url => ChatServer.generic model url none !sysLess
+        | some url =>
+          ChatServer.generic model url none !sysLess
         | none => ChatServer.openAI model
   let chatServer := chatServer.addKeyOpt authKey?
   let chatParams : ChatParams :=
@@ -70,7 +71,7 @@ def Translator.configure (translator: Translator) (config: Json) : Translator :=
   let maxTokens := config.getObjValAs? Nat "max_tokens" |>.toOption
     |>.getD translator.params.maxTokens
   let translator := {translator with params := {translator.params with maxTokens := maxTokens}}
-  let server := match config.getObjValAs? Json "server" with
+  let server := match config.getObjVal?  "server" with
     | Except.ok server =>
         let model := server.getObjValAs? String "model" |>.toOption
           |>.getD translator.server.model
@@ -94,7 +95,7 @@ def Translator.configure (translator: Translator) (config: Json) : Translator :=
   let translator := match config.getObjValAs? Bool "reasoning" with
     | Except.ok true => translator.reasoning
     | _ => translator
-  let translator := match config.getObjValAs? Json "examples" with
+  let translator := match config.getObjVal? "examples" with
     | Except.ok js =>
       let numSim := js.getObjValAs? Nat "docstrings" |>.toOption.getD 20
       let numConcise := js.getObjValAs? Nat "concise_descriptions"

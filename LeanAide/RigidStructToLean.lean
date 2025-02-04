@@ -337,7 +337,7 @@ mutual
         let hypothesis :=
           input.getObjValAs? (Array Json) "hypothesis"
             |>.toOption.getD #[]
-        match input.getObjValAs? String "conclusion", input.getObjValAs? Json "proof" with
+        match input.getObjValAs? String "conclusion", input.getObjVal? "proof" with
         | Except.ok claim, Except.ok pfSource =>
           match pfSource.getObjValAs? (List Json) "steps" with
           | Except.ok steps =>
@@ -377,7 +377,7 @@ mutual
             match head.getObjValAs? String "claim" with
             | Except.ok claim =>
               let useResults: List String :=
-                match head.getObjValAs? Json "deduced_from"  with
+                match head.getObjVal? "deduced_from"  with
                 | Except.ok known =>
                   match known.getObjValAs? (List String) "known_results" with
                   | Except.ok results => results

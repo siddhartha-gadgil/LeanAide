@@ -63,7 +63,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
             let doc := (json.getObjValAs? String "docString" |>.toOption.orElse
             (fun _ => json.getObjValAs? String "doc_string" |>.toOption)
             ).get!
-            let out := json.getObjValAs? Json "choices" |>.toOption.get!
+            let out := json.getObjVal? "choices" |>.toOption.get!
             qdMap := qdMap.insert doc out
             IO.println doc
           | Except.error e => do

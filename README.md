@@ -73,8 +73,13 @@ The simplest (and we expect the most common) way to set up LeanAide to use in yo
 ```bash
 python3 leanaide_server.py
 ```
+We assume you have Python 3 installed but we only use builtin packages. If you wish to use a different model supporting the OpenAI API, you can pass parameters as in the following example where we use the Mistral API. To use a local model, you can run with the OpenAI Chat API using, for example `vLLM` and give a local url.
 
-We assume you have Python 3 installed but we only use builtin packages. Next, add `LeanAideTools` as a dependency to your project. This can be done by adding the following line to your `lakefile.toml` file:
+```bash
+ python3 leanaide_server.py --url https://api.mistral.ai/v1/chat/completions --auth_key <Mistral API key> --model  "mistral-small-latest"
+```
+
+Next, add `LeanAideTools` as a dependency to your project. This can be done by adding the following line to your `lakefile.toml` file:
 
 ```toml
 [[require]]
