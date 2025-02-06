@@ -1,11 +1,12 @@
 import LeanAide.PromptBuilder
+import LeanAide.TomlConfig
 import Cli
 
 namespace LeanAide
 
 open Cli Translator Lean
 
-def Translator.ofCli (p: Parsed) : Translator :=
+def Translator.ofCli (p: Parsed) : IO Translator :=
   let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
     |>.getD 20
   let numConcise := p.flag? "concise_descriptions" |>.map (fun s => s.as! Nat)
@@ -59,7 +60,7 @@ def Translator.ofCli (p: Parsed) : Translator :=
   let chatParams : ChatParams :=
     {temp := temp, n := queryNum, maxTokens := maxTokens}
   let translator : Translator := {pb := pb, server := chatServer, params := chatParams}
-  translator
+  translator.configureToml
 
 def Translator.configure (translator: Translator) (config: Json) : Translator :=
   let n := config.getObjValAs? Nat "n" |>.toOption.getD translator.params.n

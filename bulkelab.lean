@@ -45,7 +45,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     let params: ChatParams :=
       {temp := temp, n := queryNum, maxTokens := maxTokens}
     params.withoutStop (p.hasFlag "no_stop")
-  let translator : Translator := Translator.ofCli p
+  let translator : Translator ←  Translator.ofCli p
   let tag := p.hasFlag "tag"
   let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
     |>.getD 20

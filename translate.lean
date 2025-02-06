@@ -17,7 +17,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
-  let translator := Translator.ofCli p
+  let translator ←  Translator.ofCli p
   let model := translator.server.model
   let showPrompt := p.hasFlag "show_prompt"
   let tag := p.hasFlag "tag"
