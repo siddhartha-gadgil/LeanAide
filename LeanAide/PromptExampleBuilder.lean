@@ -60,9 +60,9 @@ def searchBuilder (numLeanSearch numMoogle: Nat) : PromptExampleBuilder :=
 
 def genericEmbedBuilder (url: String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
   .blend [
-    .generic url (Json.mkObj [("prompt_field", "docString")]) headers numSim,
-    .generic url (Json.mkObj [("prompt_field", "concise-description")]) headers numConcise,
-    .generic url (Json.mkObj [("prompt_field", "description")]) headers numDesc,
+    .generic url (Json.mkObj [("prompt_type", "docString")]) headers numSim,
+    .generic url (Json.mkObj [("prompt_type", "concise-description")]) headers numConcise,
+    .generic url (Json.mkObj [("prompt_type", "description")]) headers numDesc,
   ]
 
 def mkEmbedBuilder (url?: Option String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=

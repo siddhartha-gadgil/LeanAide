@@ -11,3 +11,8 @@ set_option lean_aide.translate.greedy true
 #ask "Prove that there are infinitely many even numbers"
 
 #def "A group is said to be sane if every proper normal subgroup is cyclic"
+
+open LeanAide
+def pb := PromptExampleBuilder.mkEmbedBuilder "http://localhost:5000/find_closest" 8 0 0
+
+#eval pb.getPromptPairsOrdered "There are infinitely many odd  numbers."

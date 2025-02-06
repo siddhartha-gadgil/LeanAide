@@ -52,7 +52,7 @@ def find_closest_embeddings():
 
     results = closest_embeddings(sentence, 'all-MiniLM-L6-v2', embeddings, data, n)
 
-    return jsonify({"results": results})
+    return jsonify({"data": results})
 
 if __name__ == "__main__":
     app.run(debug=True)

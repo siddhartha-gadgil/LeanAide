@@ -65,7 +65,7 @@ def getMoogleQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Arr
   let apiUrl := "https://www.moogle.ai/api/search"
   let data := Json.arr
     #[Json.mkObj [("isFind", false), ("contents", s)]]
-  let s ← IO.Process.output {cmd := "curl", args := #[apiUrl, "-H", "content-type: application/json",  "--user-agent", useragent, "--data", data.pretty]}
+  let s ← IO.Process.output {cmd := "curl", args := #[apiUrl, "-H", "Content-Type: application/json",  "--user-agent", useragent, "--data", data.pretty]}
   match Json.parse s.stdout with
   | Except.error e =>
     IO.eprintln s!"Could not parse JSON from Moogle output: {s.stdout}; error: {e}"
@@ -207,16 +207,18 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
   | generic url baseData headers n =>
     let data := Json.mkObj [("input", Json.str query), ("n", n)]
     let data := data.mergeObj baseData
-    let mut httpHeaders := #["-H", "content-type: application/json"]
+    let mut httpHeaders := #["-X", "POST", "-H", "Content-Type: application/json"]
     for header in headers do
       httpHeaders := httpHeaders ++ #["-H", header]
     let s ← IO.Process.output {cmd := "curl", args := #[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}
     match Json.parse s.stdout with
     | Except.error e =>
       IO.eprintln s!"Could not parse JSON from generic output: {s.stdout}; error: {e}"
+      IO.eprintln s!"curl {#[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}"
       return #[]
     | Except.ok js =>
-      let result? := js.getObjValAs?  Json "data"
+      -- IO.eprintln s!"curl {#[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}"
+      let result? := js.getObjVal?  "data"
       match result? with
       | Except.ok result =>
         match result.getArr? with
