@@ -118,19 +118,19 @@ set_option leanaide.authkey? "<authentication-key>"
 
 There are many other configurations at the server and client end.
 
-### Avoiding OpenAI embeddings
+### Using different (non OpenAI) embeddings
 
-For those who want a fully open-source solution, you can provide an "examples server" and set the parameter `examples_url` to point to it. We will soon provide an implementation of this.
+If you wish to use embeddings different from the OpenAI embeddings, for example for a fully open-source solution, you can run an "examples server" and set the parameter `examples_url` to point to it. We provide a basic implementation of this in the `example_server` directory. To start this, run the following:
 
-The example server should be as follows:
+```bash
+cd example_server
+python3 prebuild_embeddings
+flask run
+```
 
-* A server should be running with a port to which we can POST in Json.
-* The post will have three (relevant) fields: 
-  * **input**: The statement of a theorem or definition.
-  * **prompt_type**: One of `docString`, `description` and `concise-description`. What field to match.
-  *  **n**: The number of *nearest embeddings* to return.
-* The response gives selected "nearest" examples based on *docString*s from `resources/mathlib4-prompts.jsonl` or *description*s and *concise-description*s from `resources/mathlib4-descs.jsonl`
-* The response should be a Json array with the data from the resource files with one modification: the appropriate text should be returned as a field one of "docString", "doc" and "doc_string" (so for the nearest "description" add a "doc" field which is the description).
+The second command should be run only the first time you set up. Once you start the server, set `examples_url = "localhost:5000/find_nearest"` to use the embedding server.
+
+The file `example_server/README.md` sketches the configuration options and also the protocol in case you wish to make a fully customized embedding database.
 
 
 ## Contributions and details

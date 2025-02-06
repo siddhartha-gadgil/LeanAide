@@ -40,6 +40,7 @@ def save_embeddings(filename, field, model):
         filename = filename[:-5]
     if filename.endswith('.jsonl'):
         filename = filename[:-6]
+    model = model.replace('/', '-')    
     np.save(filename + '-' + field + '-' + model + '.npy', embs)
 
 def load_embeddings(filename, field, model):
@@ -56,6 +57,7 @@ def load_embeddings(filename, field, model):
             short_filename = filename[:-5]
         if filename.endswith('.jsonl'):
             short_filename = filename[:-6]
+        model = model.replace('/', '-')
         return np.load(short_filename + '-' + field + '-' + model + '.npy'), data
     except OSError:
         print ('Computing embeddings...')
