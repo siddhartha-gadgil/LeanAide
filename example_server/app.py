@@ -42,7 +42,7 @@ def find_closest_embeddings():
     n = int(content.get("n"))
 
     if not sentence or prompt_type not in ['docString', 'description', 'concise-description'] or n <= 0:
-        return jsonify({"error": "Invalid input"}), 400
+        return jsonify({"error": "Invalid input", "content": content}), 400
 
     if prompt_type == 'docString':
         filename = 'mathlib4-prompts.json'    

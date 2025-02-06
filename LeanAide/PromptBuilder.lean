@@ -205,6 +205,7 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
     pairsFromSearchResults srs descFields preferDocs
   | fixed ps => return ps
   | generic url baseData headers n =>
+    if n = 0 then return #[]
     let data := Json.mkObj [("input", Json.str query), ("n", n)]
     let data := data.mergeObj baseData
     let mut httpHeaders := #["-X", "POST", "-H", "Content-Type: application/json"]
