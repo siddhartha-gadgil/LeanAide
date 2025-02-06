@@ -1,6 +1,7 @@
 from sentence_transformers import SentenceTransformer
-model = 'all-MiniLM-L6-v2'
 import os
+
+model = os.environ.get("LEANAIDE_EXAMPLES_MODEL", 'all-MiniLM-L6-v2')
 
 resources_dir = "resources"
 
@@ -30,7 +31,7 @@ def sentences(filename):
 def embeddings(filename, field, model):
     blob = sentences(filename)
     sents = [sent[field] for sent in blob]
-    return models[model].encode(sents, normalize_embeddings=True)
+    return models.get(model, SentenceTransformer(model)).encode(sents, normalize_embeddings=True)
 
 def save_embeddings(filename, field, model):
     embs = embeddings(filename, field, model)
@@ -65,7 +66,7 @@ from numpy import dot
 from numpy.linalg import norm
 
 def closest_embeddings(sentence, model, embeddings, data, n):
-    sentence_embedding = models[model].encode(sentence)
+    sentence_embedding = models.get(model, SentenceTransformer(model)).encode(sentence)
     distances = np.dot(embeddings, sentence_embedding)
     indices = np.argsort(distances)[-n:][::-1]
     return [data[i] for i in indices]
