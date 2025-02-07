@@ -46,7 +46,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   match io?' with
   | Except.ok (translation?, output, prompt) =>
     IO.eprintln "Ran successfully"
-    if showPrompt then
+    if showPrompt tgemini
       IO.eprintln "Prompt:"
       IO.eprintln prompt.pretty
       IO.eprintln "---"

@@ -49,7 +49,7 @@ def Translator.configureToml (translator: Translator)
               let azure ←  server.tryDecodeD `azure false
               let sysLess ←  server.tryDecodeD `no_sysprompt false
               if azure then pure <| ChatServer.azure else
-              if gemini then pure <| ChatServer.google model else
+              if gemini then pure <| .gemini model else
                   match url? with
                   | some url =>
                     pure <| ChatServer.generic model url none !sysLess
@@ -108,4 +108,4 @@ def loadHello : IO <| String × Nat × String:= do
   | some (_, hello, n, name) => return (hello, n, name)
   | none => return ("IO world", 12, "missing name")
 
-#eval loadHello
+-- #eval loadHello

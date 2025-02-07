@@ -65,7 +65,7 @@ inductive ChatServer where
   | openAI (model: String := "gpt-4o") (authHeader? : Option String := none)
   | azure (deployment: String := "GPT4TestDeployment")
       (model: String := "GPT-4") (authHeader? : Option String := none)
-  | google (model: String := "gemini-1.5-pro-001") (location: String := "asia-south1")
+  | gemini (model: String := "gemini-1.5-pro-001")  (key? : Option String := none)
   | generic (model: String) (url: String) (authHeader? : Option String) (hasSysPropmpt : Bool := false)
   deriving Repr, FromJson, ToJson, DecidableEq, Hashable
 
@@ -86,8 +86,8 @@ def url : ChatServer → IO String
       return "https://api.openai.com/v1/chat/completions"
   | azure deployment _ _ =>
       azureURL deployment
-  | google _ location => do
-      let url ←  pure s!"https://{location}-aiplatform.googleapis.com/v1beta1/projects/{← projectID}/locations/{location}/endpoints/openapi/chat/completions"
+  | gemini _ key? => do
+      let url ←  pure s!"https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
       -- IO.eprintln s!"Google URL: {url}"
       return url
   | generic _ url .. =>
@@ -97,13 +97,13 @@ def model : ChatServer → String
   | openAI model _ => model
   | azure _ model _ => model
   | generic model .. => model
-  | google model _ => "google/" ++ model
+  | gemini model _ => model
 
 def hasSysPrompt : ChatServer → Bool
   | openAI model _ => !(model.startsWith "o")
   | azure _ _ _ => true
   | generic _ _ _ b => b
-  | google _ _ => true
+  | gemini _ _=> true
 
 
 def authHeader? : ChatServer → IO (Option String)
@@ -123,15 +123,17 @@ def authHeader? : ChatServer → IO (Option String)
     return some <| "api-key: " ++ key
   | generic _ _ h? _ =>
     return h?
-  | google _ _ => do
-    let key ← IO.Process.run {cmd := "gcloud", args := #["auth", "print-access-token"]}
-    return some <|"Authorization: Bearer " ++ key.trim
+  | gemini _ h? => match h? with
+    | some h => pure h
+    | none =>  do
+    let key ←  geminiAPIKey
+    return some <|"Authorization: Bearer " ++ key
 
 def addKey (key: String) : ChatServer → ChatServer
 | .generic model url _ p => .generic model url (some <|"Authorization: Bearer " ++ key) p
 | .openAI model _ => .openAI model <| some <|"Authorization: Bearer " ++ key
 | .azure deployment model _ => .azure deployment model <| some <| "api-key: " ++ key
-| x => x
+| .gemini model _ => .gemini model <| some <|"Authorization: Bearer " ++ key
 
 
 def addKeyOpt (key?: Option String) (cs : ChatServer) : ChatServer :=
