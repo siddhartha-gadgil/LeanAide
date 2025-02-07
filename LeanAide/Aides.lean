@@ -386,6 +386,9 @@ def codeBlock? (code: String) (s: String) : Option String := do
     s.splitOn "```" |>.get? 1
   split.splitOn "```" |>.get? 0
 
+def extractLean (s: String) : String :=
+  codeBlock? "lean" s |>.getD s
+
 def extractJson (s: String) : Json :=
   let code := codeBlock? "json" s |>.getD s
   let code := code.trim

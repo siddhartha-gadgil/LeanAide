@@ -613,6 +613,7 @@ def translateDefCmdM? (s: String) (translator : Translator)
   let context? ← getContext
   let mut checks : Array (CmdElabError) := #[]
   for s in output do
+    let s := extractLean s
     let s := s.replace "\n" " "
     let s := if s.startsWith "definition " then s.replace "definition " "def " else s
     let cmd? := runParserCategory (← getEnv) `command s

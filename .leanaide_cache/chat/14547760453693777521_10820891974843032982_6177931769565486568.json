@@ -1,0 +1,36 @@
+{"usage":
+ {"total_tokens": 2617, "prompt_tokens": 2358, "completion_tokens": 259},
+ "object": "chat.completion",
+ "model": "gemini-2.0-flash",
+ "created": 1738927763,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "content":
+    "∀ (n : ℕ) (k : ℤ), ↑n = 2 * k → 2 * k * (↑n + 1) = 2 * (k * (↑n + 1))"},
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "theorem exercise (n : ℕ) (k : ℤ) (h : n = 2 * k) : 2 * k * (n + 1) = 2 * (k * (n + 1)) := by\n  rw [h]\n  ring\n"},
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "∀ (n : ℕ) (k : ℤ), n = 2 * k → 2 * k * (n + 1) = 2 * (k * (n + 1))"},
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "∀ (n : ℕ) (k : ℤ), (n = 2 * k) → 2 * k * (n + 1) = 2 * (k * (n + 1))"},
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "theorem example (n : ℕ) (k : ℤ) (hn : n = 2 * k) : 2 * k * (n + 1) = 2 * (k * (n + 1)) := by\n  rw [hn]\n  ring\n"},
+   "index": 4,
+   "finish_reason": "stop"}]}
