@@ -13,7 +13,7 @@ homedir = Path(".")
 prompts_dir = os.path.join(homedir, "prompts")
 sys.path.append(prompts_dir)
 
-SERVER_IP = os.getenv("SERVER_IP", "10.134.13.102:7654")
+SERVER_IP = os.getenv("SERVER_IP", "https://10.134.13.102:7654")
 
 # Streamlit App
 st.title("LeanAide - AutoTA")
@@ -95,14 +95,15 @@ if st.session_state.theorem:
     if st.button("Copy to Clipboard", key="copy_theorem"):
         copy_to_clipboard(st.session_state.theorem)
 
-# Lean Checker Tasks
 tasks = {
     "echo": {
         "input": {"data": "Json"},
+        "placeholder": "Enter JSON data here...",
         "output": {"data": "Json"}
     },
     "translate_thm": {
         "input": {"text": "String"},
+        "placeholder": "Enter theorem text here...",
         "output": {"theorem": "String"},
         "parameters": {
             "greedy": "Bool (default: true)",
@@ -111,6 +112,7 @@ tasks = {
     },
     "translate_def": {
         "input": {"text": "String"},
+        "placeholder": "Enter definition text here...",
         "output": {"definition": "String"},
         "parameters": {
             "fallback": "Bool (default: true)"
@@ -118,26 +120,32 @@ tasks = {
     },
     "theorem_doc": {
         "input": {"name": "String", "command": "String"},
+        "placeholder": "Enter theorem here...",
         "output": {"doc": "String"}
     },
     "def_doc": {
         "input": {"name": "String", "command": "String"},
+        "placeholder": "Enter definition here...",
         "output": {"doc": "String"}
     },
     "theorem_name": {
         "input": {"text": "String"},
+        "placeholder": "Enter theorem text here...",
         "output": {"name": "String"}
     },
     "prove": {
         "input": {"theorem": "String"},
+        "placeholder": "Enter theorem here...",
         "output": {"proof": "String"}
     },
     "structured_json_proof": {
         "input": {"theorem": "String", "proof": "String"},
+        "placeholder": "Enter theorem here...",
         "output": {"json_structured": "Json"}
     },
     "lean_from_json_structured": {
         "input": {"json_structured": "String"},
+        "placeholder": "Enter JSON structured proof here...",
         "output": {
             "lean_code": "String",
             "declarations": "List String",
@@ -146,6 +154,7 @@ tasks = {
     },
     "elaborate": {
         "input": {"lean_code": "String", "declarations": "List Name"},
+        "placeholder": "Enter Lean code here...",
         "output": {
             "logs": "List String",
             "sorries": "List Json"
@@ -158,40 +167,31 @@ tasks = {
 }
 
 st.header("Drongo Magica")
-st.expander("Get Your Theorem Checked here. Don't miss this chance to meet Mr. Drongo!", expanded=False)
-
-
-st.markdown(
-    """
-    <style>
-    .stMultiSelect [data-baseweb="tag"] {
-        background-color: green;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 st.subheader("Step 1: Select Input Tasks")
 selected_inputs = st.multiselect("Select Input Tasks:", list(tasks.keys()))
 
-inputs = {}
-parameters = {}
-if st.button("Give Input"):
-    for task in selected_inputs:
-        inputs[task] = {}
-        for key, value in tasks[task].get("input", {}).items():
-            inputs[task][key] = st.text_input(f"{task.capitalize()} - {key} ({value}):")
-        for param, param_type in tasks[task].get("parameters", {}).items():
-            parameters[param] = st.checkbox(f"{task} - {param} ({param_type})")
+# Initialize session state for inputs
+if "inputs" not in st.session_state:
+    st.session_state.inputs = {}
+if "parameters" not in st.session_state:
+    st.session_state.parameters = {}
 
+for task in selected_inputs:
+    if task not in st.session_state.inputs:
+        st.session_state.inputs[task] = {}
+    
+    for key, value in tasks[task].get("input", {}).items():
+        st.session_state.inputs[task][key] = st.text_input(f"{task} - {key} ({value}):", st.session_state.inputs[task].get(key, ""), placeholder=tasks[task]["input"]["placeholder"])
+    
+    for param, param_type in tasks[task].get("parameters", {}).items():
+        st.session_state.parameters[param] = st.checkbox(f"{param} ({param_type})", st.session_state.parameters.get(param, False))
 
 st.subheader("Step 2: Select Processing Tasks")
 selected_tasks = [task for task in tasks.keys() if task not in selected_inputs]
 selected_tasks = st.multiselect("Select Processing Tasks:", selected_tasks)
 
-
 if st.button("Submit Request"):
-    request_payload = {"tasks": selected_tasks, **inputs, **parameters}
+    request_payload = {"tasks": selected_tasks, **st.session_state.inputs, **st.session_state.parameters}
     response = requests.post(SERVER_IP, json=request_payload)
     
     if response.status_code == 200:
@@ -207,7 +207,6 @@ if st.button("Submit Request"):
                         st.code(result.get(key, "No data available."), language="plaintext")
     else:
         st.error(f"Error: {response.status_code}, {response.text}")
-
 
 if os.path.exists(temp_dir):
     for file in os.listdir(temp_dir):
