@@ -15,5 +15,20 @@ pip install -r requirements.txt
 Or using `uv`:
 
 ```bash
+uv init
 uv pip install -r requirements.txt
 ```
+
+## Usage
+
+1. Rename the `.env.example` to `.env` and fill in the required details.(No need for API Keys for this commit atleast)
+2. Run the following command to start the server:
+
+```bash
+streamlit run slt_ui.py
+```
+
+## Future Tasks
+
+- Support interactive feature with theorems and proofs, where user can change text and submit with it.
+- Support OpenAI Structured Proof Generations(implemented, will be added if needed).
