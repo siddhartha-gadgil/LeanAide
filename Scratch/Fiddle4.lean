@@ -330,3 +330,7 @@ example : True := by
 
 #check Lake.getRootPackage
 #check Lake.MonadWorkspace
+
+example : 1 + 1 = 2 := by
+  symm
+  norm_num

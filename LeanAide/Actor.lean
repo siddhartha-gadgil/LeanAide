@@ -121,9 +121,10 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no name or command found")]
   | Except.ok "theorem_name" => do
-    match data.getObjValAs? String "text" with
-    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
-    | Except.ok text => do
+    match data.getObjValAs? String "text" |>.toOption
+      |>.orElse fun _ => (data.getObjValAs? String "theorem" |>.toOption) with
+    | none => return Json.mkObj [("result", "error"), ("error", s!"no text/theorem found")]
+    | some text => do
       try
         let name ← translator.server.theoremName text
         return Json.mkObj [("result", "success"), ("name", toJson name)]
