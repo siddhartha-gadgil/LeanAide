@@ -98,6 +98,8 @@ elab "show_sorries#" n:ident : term => do
     logInfo s!"{← ppExpr s}"
   return value'
 
+
+
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in
 def withSorry (n: Nat) : Nat := match n with
@@ -111,6 +113,7 @@ def withSorry' (n m: Nat) : n + m = m + n := by
   | zero => simp
   | succ n ih => sorry
 
+#check show_sorries# LeanAide.Meta.withSorry'
 
 /-- names that are offspring of the constant with a given name -/
 def offSpring? (name: Name) : MetaM (Option (Array Name)) := do
