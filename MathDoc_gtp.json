@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "mathDocument": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/step" }
+    },
+    "step": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "propertyNames": {
+        "enum": [
+          "let",
+          "some",
+          "assume",
+          "def",
+          "assert",
+          "theorem",
+          "problem",
+          "cases",
+          "induction",
+          "contradiction",
+          "calculate",
+          "conclude",
+          "remark"
+        ]
+      },
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": ["let"],
+          "properties": { "let": { "$ref": "#/$defs/let" } }
+        },
+        {
+          "required": ["some"],
+          "properties": { "some": { "$ref": "#/$defs/some" } }
+        },
+        {
+          "required": ["assume"],
+          "properties": { "assume": { "type": "string" } }
+        },
+        {
+          "required": ["def"],
+          "properties": { "def": { "$ref": "#/$defs/def" } }
+        },
+        {
+          "required": ["assert"],
+          "properties": { "assert": { "$ref": "#/$defs/assert" } }
+        },
+        {
+          "required": ["theorem"],
+          "properties": { "theorem": { "$ref": "#/$defs/theorem" } }
+        },
+        {
+          "required": ["problem"],
+          "properties": { "problem": { "$ref": "#/$defs/problem" } }
+        },
+        {
+          "required": ["cases"],
+          "properties": { "cases": { "$ref": "#/$defs/cases" } }
+        },
+        {
+          "required": ["induction"],
+          "properties": { "induction": { "$ref": "#/$defs/induction" } }
+        },
+        {
+          "required": ["contradiction"],
+          "properties": { "contradiction": { "$ref": "#/$defs/contradiction" } }
+        },
+        {
+          "required": ["calculate"],
+          "properties": { "calculate": { "$ref": "#/$defs/calculate" } }
+        },
+        {
+          "required": ["conclude"],
+          "properties": { "conclude": { "$ref": "#/$defs/conclude" } }
+        },
+        {
+          "required": ["remark"],
+          "properties": { "remark": { "type": "string" } }
+        }
+      ]
+    },
+    "let": {
+      "type": "object",
+      "properties": {
+        "variable": { "type": "string" },
+        "value": { "type": "string" },
+        "kind": { "type": "string" },
+        "properties": { "type": "string" }
+      },
+      "required": ["variable"],
+      "additionalProperties": false
+    },
+    "some": {
+      "type": "object",
+      "properties": {
+        "variable": { "type": "string" },
+        "kind": { "type": "string" },
+        "properties": { "type": "string" }
+      },
+      "required": ["variable"],
+      "additionalProperties": false
+    },
+    "def": {
+      "type": "object",
+      "properties": {
+        "statement": { "type": "string" },
+        "term": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["statement", "term"],
+      "additionalProperties": false
+    },
+    "deduced_from": {
+      "type": "object",
+      "properties": {
+        "result_used": { "type": "string" },
+        "proved_earlier": { "type": "boolean" }
+      },
+      "required": ["result_used", "proved_earlier"],
+      "additionalProperties": false
+    },
+    "calculation_step": {
+      "type": "string"
+    },
+    "calculate": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "oneOf": [
+        {
+          "required": ["inline_calculation"],
+          "properties": {
+            "inline_calculation": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "required": ["calculation_sequence"],
+          "properties": {
+            "calculation_sequence": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/calculation_step" }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "assert": {
+      "type": "object",
+      "properties": {
+        "claim": { "type": "string" },
+        "proof_method": { "type": "string" },
+        "deduced_from_results": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/deduced_from" }
+        },
+        "calculate": { "$ref": "#/$defs/calculate" },
+        "missing_proofs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/error" }
+        }
+      },
+      "required": ["claim"],
+      "additionalProperties": false
+    },
+    "theorem": {
+      "type": "object",
+      "properties": {
+        "hypothesis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 1,
+            "propertyNames": {
+              "enum": ["let", "some", "assume"]
+            },
+            "additionalProperties": false,
+            "oneOf": [
+              {
+                "required": ["let"],
+                "properties": { "let": { "$ref": "#/$defs/let" } }
+              },
+              {
+                "required": ["some"],
+                "properties": { "some": { "$ref": "#/$defs/some" } }
+              },
+              {
+                "required": ["assume"],
+                "properties": { "assume": { "type": "string" } }
+              }
+            ]
+          }
+        },
+        "conclusion": { "type": "string" },
+        "proved": { "type": "boolean" },
+        "name": { "type": "string" },
+        "proof": { "$ref": "#/$defs/mathDocument" },
+        "ref": { "type": "string" },
+        "cite": { "type": "string" },
+        "missing_proofs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/error" }
+        }
+      },
+      "required": ["hypothesis", "conclusion", "proved"],
+      "additionalProperties": false
+    },
+    "problem": {
+      "type": "object",
+      "properties": {
+        "statement": { "type": "string" },
+        "solved": { "type": "boolean" },
+        "answer": { "type": "string" },
+        "proof": { "$ref": "#/$defs/mathDocument" },
+        "missing_proofs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/error" }
+        }
+      },
+      "required": ["statement", "solved"],
+      "additionalProperties": false
+    },
+    "case": {
+      "type": "object",
+      "properties": {
+        "condition": { "type": "string" },
+        "proof": { "$ref": "#/$defs/mathDocument" },
+        "missing_proofs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/error" }
+        }
+      },
+      "required": ["condition", "proof"],
+      "additionalProperties": false
+    },
+    "cases": {
+      "type": "object",
+      "properties": {
+        "split_kind": {
+          "type": "string",
+          "enum": [
+            "implication_direction",
+            "match",
+            "condition",
+            "groups"
+          ]
+        },
+        "on": { "type": "string" },
+        "proof_cases": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/case" }
+        },
+        "exhaustiveness": { "$ref": "#/$defs/mathDocument" },
+        "missing_proofs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/error" }
+        }
+      },
+      "required": ["split_kind", "on", "proof_cases"],
+      "additionalProperties": false
+    },
+    "induction": {
+      "type": "object",
+      "properties": {
+        "on": { "type": "string" },
+        "proof_cases": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/case" }
+        }
+      },
+      "required": ["on", "proof_cases"],
+      "additionalProperties": false
+    },
+    "contradiction": {
+      "type": "object",
+      "properties": {
+        "assumption": { "type": "string" },
+        "proof": { "$ref": "#/$defs/mathDocument" },
+        "missing_proofs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/error" }
+        }
+      },
+      "required": ["assumption", "proof"],
+      "additionalProperties": false
+    },
+    "conclude": {
+      "type": "object",
+      "properties": {
+        "claim": { "type": "string" },
+        "missing_proofs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/error" }
+        }
+      },
+      "required": ["claim"],
+      "additionalProperties": false
+    },
+    "missing": {
+      "type": "string"
+    },
+    "error": {
+      "type": "string"
+    }
+  },
+  "type": "array",
+  "$ref": "#/$defs/mathDocument"
+}
