@@ -1280,7 +1280,7 @@ set_option linter.unusedVariables false in
 def eg_drop (n m: Nat)  := dl! (∀ n m: Nat, n = n + 1 → False)
 
 def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
-    TranslateM <| Format := do
+    TranslateM <| Format × Name := do
     let mut fmt : Format := s!"/-!\n## Theorem\n{thm}"
     fmt := fmt ++ "\n## Proof\n" ++ pf ++ "\n"
     fmt := fmt ++ "\n## JSON structured proof\n" ++ js.pretty ++ "-/\n"
@@ -1288,7 +1288,8 @@ def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
     let (code, names) ← mathDocumentCode js qp
     fmt := fmt ++ code
     -- IO.println fmt
-    let (exprs, msgLogs) ← elabFrontDefsExprM code.pretty names.toList
+    let (exprs, msgLogs) ←
+      elabFrontDefsExprM code.pretty names.toList
     fmt := fmt ++ "\n\n/-!\n## Elaboration logs\n"
     for msg in msgLogs.toList do
       fmt := fmt ++ (← msg.data.format) ++ "\n"
@@ -1299,10 +1300,10 @@ def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
       for s in sorries do
         fmt := fmt ++ "\n "++ s!"* `{← PrettyPrinter.ppExpr s}`".replace "\n" " "
     fmt := fmt ++ "\n-/\n"
-    return topCode ++ fmt
+    return (topCode ++ fmt, names[0]!)
 
 def statementToCode (s: String) (qp: CodeGenerator) :
-  TranslateM <| Format  := do
+  TranslateM <| Format × Name := do
     let xs ← qp.server.structuredProofFromStatement s
     match xs.get? 0 with
     | some (pf, #[js]) =>
@@ -1310,7 +1311,7 @@ def statementToCode (s: String) (qp: CodeGenerator) :
     | _ =>
       let fmt := s!"/-!\n## Theorem\n{s}" ++ "No structured proof found"
       IO.println fmt
-      return fmt
+      return (fmt, s!"failure_{hash s}".toName)
 
 -- #check MVarId.introN
 

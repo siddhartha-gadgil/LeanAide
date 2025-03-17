@@ -36,13 +36,12 @@ unsafe def main (args: List String) : IO UInt32 := do
     {env := env}
   let io?' ← io?.toIO'
   match io?' with
-  | Except.ok (result, s) =>
+  | Except.ok ((result, name), s) =>
     let messages := s.messages
     IO.eprintln "Ran successfully, with messages:"
     for msg in messages.toList do
       IO.eprintln (← msg.data.toString)
-    let hashCode := hash result.pretty
-    let outFile := System.mkFilePath <| ["CodeGen", s!"from_statement_{hashCode}.lean"]
+    let outFile := System.mkFilePath <| ["CodeGen", s!"{name}.lean"]
     IO.FS.writeFile outFile result.pretty
     IO.eprintln s!"Ran successfully, written to {outFile}"
     return 0
