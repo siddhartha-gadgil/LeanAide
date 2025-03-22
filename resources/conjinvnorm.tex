@@ -1,0 +1,394 @@
+\documentclass{amsart}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsbsy}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{color}
+\usepackage{bm}
+%\usepackage{setspace}\spacing{1.67}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem*{quotthm}{Theorem}
+\newtheorem{question}{Question}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem*{acknowledgements}{Acknowledgements}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\renewcommand{\L}{\mathcal{L}}
+\renewcommand{\S}{\mathcal{S}}
+\renewcommand{\H}{{\mathbb{H}}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\Zp}{\mathbb{Z}/p\mathbb{Z}}
+\newcommand{\Zq}{\mathbb{Z}/q\mathbb{Z}}
+\newcommand{\Zz}{\mathbb{Z}/2\mathbb{Z}}
+\newcommand{\Zn}{\mathbb{Z}/n\mathbb{Z}}
+\newcommand{\sm}{\setminus}
+\newcommand{\tr}{\triangle}
+\renewcommand{\i}{\bm{i}}
+\renewcommand{\j}{\bm{j}}
+\renewcommand{\k}{\bm{k}}
+\newcommand{\co}{\colon\thinspace}
+\newcommand{\del}{\partial}
+
+
+\renewcommand{\a}{\alpha}
+\renewcommand{\b}{\beta}
+\newcommand{\ba}{\bar{\alpha}}
+\newcommand{\bb}{\bar{\beta}}
+
+\begin{document} 
+
+\title[Conjugacy invariant  norms and RNA]{Conjugacy invariant   pseudo-norms, representability and RNA secondary structures}
+
+\author{Siddhartha Gadgil}
+
+\address{	Department of Mathematics\\
+		Indian Institute of Science\\
+		Bangalore 560003, India}
+
+\email{gadgil@math.iisc.ernet.in}
+
+\thanks{Partially supported by DST (under grant DSTO773) and UGC
+(under SAP-DSA Phase IV)}
+
+\date{\today}
+
+\keywords{RNA secondary structure; stem-loop; Free groups; Milnor
+invariants; lower central series}
+
+%\subjclass{Primary 57N10; Secondary 53A10}
+
+\begin{abstract}
+To a reasonable approximation, a secondary structures of RNA is determined by Watson-Crick pairing without  pseudo-knots in such a way as to minimise the number of unpaired bases. We show that this minimal number is determined by the maximal conjugacy-invariant pseudo-norm on the free group on two generators subject to bounds on the generators. This allows us to construct lower bounds on the minimal number of unpaired bases by constructing conjugacy invariant   pseudo-norms.
+
+We show that one such construction, based on isometric actions on metric spaces, gives a sharp lower bound. A major goal here is to formulate a purely mathematical question, based on considering orthogonal representations, which we believe is of some interest independent of its biological roots.   
+
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Consider the free group $F$ on two generators $\alpha$ and$\beta$, with$\bar{\alpha}$ and$\bar{\beta}$ the inverses of $\alpha$ and$\beta$ respectively. Elements of $F$ are words in $\alpha$,$\beta$, $bar{\alpha}$ and $\bar{\beta}$. We shall consider the problem of finding lower bounds on the number of unpaired letters in a word in $\alpha$,$\beta$, $bar{\alpha}$ and $\bar{\beta}$, which is a problem arising in the study of RNA secondary structures.
+
+\begin{definition}
+For $g=l_1\dots l_n$, we say that the pairs of letter $(l_i,l_j),i<j$ and $(l_k,l_m), k<m$, are \emph{linked} if either $i<k<j<m$ or $k<i<m<j$.
+\end{definition}
+
+\begin{definition}\label{deffold}
+A \emph{folding}  of a word $g=l_1l_2\dots l_n$ in $\a$, $\b$, $\ba$ and $\bb$ is a collection of
+\emph{disjoint} pairs $\F\subset\{(i,j):1\leq i<j\leq n\}$
+such that
+\begin{enumerate}
+\item For $(i,j)\in \F$, 
+$$(l_i,l_j)\in\{(\a,\ba),(\ba,\a), (\b,\bb),(\bb,\b)\}$$ 
+\item Any two pairs $(i_1,j_1)\in \F$ and $(i_2,j_2)\in\F$ are not linked.
+
+\end{enumerate}
+\end{definition}
+The number of unpaired bases in a folding $\F$ as above is $u(g;\F)=n-2\vert \F\vert$. As a reasonable approximation, we may assume that RNA folds so as to minimise the number of unpaired bases. We shall denote the minimum number of unpaired bases in an RNA strand corresponding to a word $g$ in $\a$, $\b$, $\ba$ and $\bb$ by $N(g)$, i.e.,
+$$N(g)=\min\{u(g;\F) : \text{$\F$ is a folding of $g$}\}$$
+
+A central problem in understanding the secondary structures of RNA is to find lower bounds on the number of unpaired bases in a secondary structure -- any technique giving such a bound is also likely to lead to insights on the structure of the \emph{energy landscape} for secondary structures. In this note, we show that the minimum number of unpaired bases can be viewed as the maximal conjugacy invariant  pseudo-norm on the free group $F$ subject to bounds on the generators. This gives a general method for obtaining lower bounds.
+
+\begin{remark}
+In considering the function $N$ defined in terms of foldings, we have made two major simplifying assumptions -- we have assumed that there are no  pseudo-knots and we have ignored the stereochemical restriction that there are no small loops. 
+
+However, the lower bounds continue to hold even if we include the no small loop restriction, as introducing the restriction means that we are minimising $u(g;\F)$ over a subset of foldings (those satisfying the restriction), so the corresponding minimum is at least as large as $N(g)$, and thus satisfies lower bounds satisfied by $N(g)$. We remark that the number of unpaired bases in an optimal folding satisfying the no small loops restriction is no longer a well-defined function on $F$.
+
+Further, while  pseudo -knots are present in nature, they account for a small fraction of all bonds. Thus our model agrees to a reasonable extent with molecular biology.
+\end{remark}
+
+Our first observation is that $N(g)$  gives a well-defined function on the free group $F$. We prove this in Section~\ref{cancel}.
+
+\begin{theorem}\label{welldef}
+If $g_1$ and $g_2$ are strings in $\a$, $\b$, $\ba$ and $\bb$ representing the same word in the free group $F$, then $N(g_1)=N(g_2)$.
+\end{theorem}
+
+Thus, we can regard  the number of unpaired bases in an optimal folding as a function $N:F\to \R$ on the free group $F$. We show that $N:F\to\R$
+is the maximal conjugacy-invariant   pseudo-norm  on the free group so that the generators and their inverses have   pseudo-norm  (at most) $1$. 
+
+\begin{definition}\label{cnjinvnrm}
+A conjugacy invariant   pseudo-norm  on the free group $F$ is a function $n:F\to\R$ such that
+\begin{enumerate}
+\item $n(g)\geq 0$ for all $g\in F$.
+\item $n(1)=0$.
+\item $n(gh)\leq n(g)+n(h)$  for all $g,h\in F$.
+\item $n(\overline{h}gh)=n(g)$ for all $g,h\in F$.
+\end{enumerate}
+\end{definition}
+
+We use here and throughout the notation $\bar{h}$ to denote inverse of $h\in F$.
+
+\begin{remark}
+One may also wish to add the symmetry condition $n(g)=n(\bar g)$ as part of the definition of conjugacy invariant   pseudo-norms. All the   pseudo-norms we consider automatically satisfy this, so such a change in definition would not affect any of our results.
+\end{remark}
+
+It is easy to see that $N(\a)=N(\ba)=N(\b)=N(\bb)=1$.
+
+\begin{theorem}\label{maxconj}
+The function $N:F\to \R$ is a conjugacy-invariant   pseudo-norm  on $F$. Furthermore, if $M:F\to \R$ is a conjugacy-invariant   pseudo-norm  satisfying the bounds $M(\a)\leq 1$, $M(\ba)\leq 1$, $M(\b)\leq 1$ and $M(\bb)\leq 1$, then $N(g)\geq M(g)$ for all $g\in F$.
+\end{theorem}
+
+The main technical lemma in the proof is Lemma~\ref{prodconj}, which gives a representation of a word $g$ as a product of conjugates, corresponding to a folding of $g$. Applying this to an optimal folding gives an effective description of $N(g)$, which is pivotal in this paper.
+
+Theorem~\ref{maxconj}  gives us a general method to construct lower bounds -- we construct  pseudo-norms $M$ that are conjugacy invariant and  normalise to achieve the conditions $M(\a)\leq 1$, $M(\ba)\leq 1$, $M(\b)\leq 1$ and $M(\bb)\leq 1$. We shall consider two methods to construct such  pseudo-norms. We show that the first -- isometric actions on metric spaces, gives sharp bounds (Section~\ref{S:metric}). The second -- orthogonal representations, which is more practically implementable, is also sharp in some important cases. Whether this is sharp in general is a purely mathematical question which we formulate (Section~\ref{S:ortho}).
+
+The formulation of RNA folding we consider is a special case of an estimate for the c-conjugating norm, as in~\cite{GIP}. This suggests that mathematical work in~\cite{GIP} and related papers may shed light on RNA folding.
+
+\section{Foldings and cancellations}\label{cancel}
+
+In this section we prove Theorem~\ref{welldef}, which says that $N$ is a well-defined function on the free group $F$. As words representing the same element in the free group are related by insertion or deletion of cancelling pairs of letters, Theorem~\ref{welldef} follows from the following lemma and analogous results for other pairs of generators.
+
+\begin{lemma}
+For words $g=\lambda_1\dots \lambda_k$ and $h=\mu_1\dots \mu_m$ in $\a$, $\b$, $\ba$ and $\bb$, 
+$$N(gh)=N(g\a\ba h)$$
+\end{lemma}
+\begin{proof}
+First, we see that $N(gh)\geq N(g\a\ba h)$. Namely, let $\F$ be an optimal folding of $gh$, i.e., $N(gh)=u(gh;\F)$. Consider the word $g\a\ba h=l_1\dots l_{k+m+2}=\lambda_1\dots \lambda_k\a\ba\mu_1\dots \mu_m$. As the cancelling pair of letters $l_{k+1}=\a$ and $l_{k+2}=\ba$ are adjacent, they are not linked with any other pair. It follows that the union of $\F$ with the cancelling pair $(l_{k+1},l_{k+2})$ is a folding $\F'$. Further, $u(g\a\ba h;\F')=u(gh;\F)$. By the optimality of $\F$, the result follows.
+
+Conversely, let $\F'$ be an optimal folding for $g\a \ba h$. We shall show that there is a folding $\F$ of $gh$ with $\vert \F\vert\geq\vert\F'\vert-1$. This implies that $u(gh;\F)\leq u(g_1\a \ba h;\F')$, giving the claim. 
+
+Firstly, if  $(l_{k+1},l_{k+2})\in\F'$, then we delete this pair to obtain $\F$. Next, if at most one of the cancelling letters is in a pair of $\F'$, we delete this pair (if there is one such) to obtain $\F$. In both these cases we obtain a folding $\F$ with $\vert \F\vert\geq\vert\F'\vert-1$.
+Hence we are reduced to the case where the cancelling letters $l_{k+1}$ and $l_{k+2}$ are paired with different letters $l_i$ and $l_j$.
+
+We claim that we can delete both the pairs involving the cancelling letters $l_{k+1}$ and $l_{k+2}$ and introduce the pair $(l_i,l_j)$ (or $(l_j,l_i)$) to obtain a folding $\F$ with $\vert \F\vert=\vert\F'\vert-1$. Observe that $\vert\F\vert\geq\vert\F'\vert-1$. To show $\F$ is a folding, it suffices to verify that no pair of $\F$ is linked with $(l_i,l_j)$. This can be seen topologically as an arc intersecting $(l_i,l_j)$ transversally in a single point must also intersect either the segment from $l_{k+1}$ to $l_{k+2}$ or arcs joining one of the points $l_i$ and $l_j$ to the vertex in $\{l_{k+1},l_{k+2}\}$ with which it is paired. However we give an elementary argument below. 
+
+Suppose to the contrary, i.e., assume that a pair $(l_p,l_q)$ of $\F$ is linked with $(l_i,l_j)$. We assume without loss of generality that $i<p<j<q$, as the proof in the other case is obtained similarly by reversing all inequalities. We shall consider different cases depending on the relation of $k+1$ to $p$ and $q$, and in each case contradict the assumption that $\F'$ is a folding.
+
+\begin{enumerate}
+\item If $k+1<p$, then as $k+1\neq p$, $k+2<p$. Thus, $k+1<k+2<p<j<q$, so both $l_{k+1}-l_j$ and $l_{k+2}-l_j$  are linked with $l_p-l_q$. At least one of $(l_{k+1},l_j)$ and $(l_{k+2},l_j)$ must be in $\F'$, contradicting the hypothesis that $\F'$ is a folding as $(l_p,l_q)\in\F'$.
+\item If $p<k+1<q$, then $i<p<k+1<k+2<q$, so both $l_i-l_{k+1}$ and $l_i-l_{k+2}$  are linked with $l_p-l_q$. At least one of $(l_i,l_{k+1})$ and $(l_i,l_{k+2})$ must be in $\F'$, contradicting the hypothesis that $\F'$ is a folding as $(l_p,l_q)\in\F'$.
+\item If $q<k+1$, then $p<j<q<k+1<k+2$, so both $l_j-l_{k+1}$ and $l_j-l_{k+2}$  are linked with $l_p-l_q$. At least one of $(l_j,l_{k+1})$ and $(l_j,l_{k+2})$ must be in $\F'$, contradicting the hypothesis that $\F'$ is a folding as $(l_p,l_q)\in\F'$.
+\end{enumerate}
+
+Thus, it must be that $\F$ is a folding with $\vert \F\vert=\vert\F'\vert-1$, completing the proof.
+ 
+\end{proof}
+
+\section{Conjugacy invariance}
+
+By Theorem~\ref{welldef}, proved in the previous section, we have a well-defined function $N:F\to\R$. In this section, we show that $N:F\to\R$ is a conjugacy invariant   pseudo-norm . First, observe that subadditivity follows as foldings $\F_1$ of $g_1$ and $\F_2$ of $g_2$ give a folding $\F=\F_1\cup \F_2$ of $g_1g_2$ with  $u(g_1g_2;\F)=u(g_1;\F_1)+u(g_2;\F_2)$. Further, by construction $N(1)=0$ and $N(g)\geq 0$ for all $g\in F$. It only remains to prove conjugacy invariance.
+
+\begin{lemma}
+For $g,h\in F$, $N(g)=N(\overline{h}gh)$
+\end{lemma}
+\begin{proof}
+As $N$ is well-defined on $F$ and conjugacy gives an equivalence relation on a group, it suffices to show that $N(g)\geq N(\overline{h}gh)$. Furthermore, given words $g=\lambda_1\dots \lambda_k$ and $h=\mu_1\dots \mu_m$ representing the elements $g$ and $h$, it suffices to consider the word 
+$$w=l_1\dots l_{k+2m}=\overline{\mu_m}\dots \overline{\mu_1}\lambda_1\dots \lambda_k\mu_1\dots \mu_m$$
+representing $\bar{h}gh$ obtained by concatenation. 
+
+Let $\F$ be an optimal folding for $g$. We may regard $\F$ as a folding of $w=\bar{h}gh$ with each pair of the form $(l_i,l_j)$ with $m<i<j\leq k+m$. We can extend $\F$ to a folding $\F'$ of $\overline{h}gh$ given by
+$$\F'=\F\cup \{(l_i,l_{k+2m-i}):1\leq i\leq m \}$$
+
+By construction, the letters $l_i=\overline{\mu}_{m-i}$ and $l_{k+2m-i}=\mu_{m-i}$ are inverses and no two pairs of $\F'$ are linked, so $\F'$ is a folding. The unpaired letters of $g$ for $\F$ are the same as those of $\overline{h}gh$ for $\F'$, hence $u(g;\F)=u(\bar{h}gh;\F')$. By the optimality of $\F$, it follows that $N(g)\geq N(\bar{h}gh)$ as required.
+\end{proof}
+
+\section{Products of conjugates and Maximality}
+
+We show that foldings of a word $g$ give, in an appropriate sense, representations of $g$ as a product of conjugates. This allows us to deduce maximality of $N:F\to\R$. 
+
+For an element $g\in F$, let $\vert g\vert$ denote its length in the word metric.
+
+\begin{lemma}\label{prodconj}
+Let $\F$ be a folding of $g$. Then there is a representation of $g$ as 
+$$g=\prod_i \overline{\nu_i}\lambda_i\nu_i,$$
+with $\nu_i$ and $\lambda_i$ words in $\a$, $\b$, $\ba$ and $\bb$ (hence elements of $F$), so that  
+$$u(g;\F)=\sum_i \vert \lambda_i\vert$$
+\end{lemma}
+\begin{proof}
+We proceed by induction on the length of the word $g$. If $\F$ is empty the result is clear. Otherwise, choose a pair  $(l_i,l_j)\in\F$ with $i$ minimal. Without loss of generality, we assume $(l_i,l_j)=(\ba,\a)$, so we obtain
+$$g=g(1)\ba g(2)\a g(3)$$
+
+As $i$ is minimal and pairs in $\F$ are not linked, and hence no other pair is linked with $(l_i,l_j)$, for each pair $(l_k,l_m)$ both $l_k$ and $l_m$ are in the subword $g(i)$ for  $i=2$ or $i=3$.  It follows that $\F$ is the disjoint union
+$$\F=\F(2)\cup \F(3)\cup \{(l_i,l_j)\}$$
+of sets with $F(j)$ a folding of $g(j)$ for $j=2,3$. Hence we see that
+$$u(g;\F)=\vert g(1)\vert+ u(g(2);\F(2))+u(g(3);\F(3))$$
+
+By induction hypothesis, it follows that we can express 
+$$g(j)=\prod_i \overline{\nu_i(j)}\lambda_i(j)\nu_i(j)$$ for $j=2,3$
+so that 
+$$u(g(j);\F)=\sum_i \vert \lambda_i(j)\vert$$
+
+It follows that
+$$g=g(1)\cdot
+\prod_i \overline{( \nu_i(2)\a)}\lambda_i(2)(\nu_i(2)\a)
+\cdot \prod_i \overline{\nu_i(3)}\lambda_i(3)\nu_i(3)$$
+and 
+$$u(g;\F)=\vert g(1)\vert+\sum_i \vert \lambda_i(2)\vert+\sum_i \vert \lambda_i(3)\vert$$
+which gives the required representation.
+\end{proof}
+
+We deduce another characterisation of the function $N$.
+
+\begin{corollary}
+For $g\in F$, $N(g)$ is given by 
+$$N(g)=\inf\left\{\sum_i \vert \lambda_i\vert: g=\prod_i \overline{\nu_i}\lambda_i\nu_i\right\}$$
+\end{corollary}
+\begin{proof}
+By Lemma~\ref{prodconj}, it is immediate that 
+$$N(g)\geq \inf\left\{\sum_i \vert \lambda_i\vert: g=\prod_i \overline{\nu_i}\lambda_i\nu_i\right\}$$
+Conversely, it suffices to show that if $g=\prod_i \overline{\nu_i}\lambda_i\nu_i$, then $N(g)\leq \sum_i\vert\lambda_i\vert$. As $N(\a)=N(\ba)=N(\b)=N(\bb)=1$ and $N$ is subadditive, $N(\lambda_i)\leq \vert\lambda_i\vert$. By conjugacy invariance, $N(\overline{\nu_i}\lambda_i\nu_i)=N(\lambda_i)$. Hence, using subadditivy once more, we obtain
+$$N(g)=N(\prod_i \overline{\nu_i}\lambda_i\nu_i)\leq \sum_i N(\overline{\nu_i}\lambda_i\nu_i)= \sum_i N(\lambda_i)
+\leq\sum_i\vert\lambda_i\vert$$
+as required.
+\end{proof}
+
+We now deduce the maximality of $N$.
+
+\begin{lemma}\label{max}
+If $M:F\to \R$ is a conjugacy invariant  pseudo-norm  such that $M(\a)\leq 1$, $M(\ba)\leq 1$, $M(\b)\leq 1$ and $M(\bb)\leq 1$, then $N(g)\geq M(g)$ for all $g\in F$.
+\end{lemma}
+\begin{proof}
+Let $M$ be as above and $g\in F$. Let $\F$ be an optimal folding for $g$. Then we have a representation
+$$g=\prod_i \overline{\nu_i}\lambda_i\nu_i$$
+so that 
+$$N(g)=u(g;\F)=\sum_i \vert \lambda_i\vert$$
+
+As $M$ is a  pseudo-norm  with $M(\a)\leq 1$, $M(\ba)\leq 1$, $M(\b)\leq 1$ and $M(\bb)\leq 1$, it follows that $M(h)\leq\vert h\vert$ for all $h\in F$. As $M$ is conjugacy invariant and sub-additive, we get
+$$M(g)=M(\prod_i \overline{\nu_i}\lambda_i\nu_i)\leq \sum_i M(\overline{\nu_i}\lambda_i\nu_i)= \sum_i M(\lambda_i)
+\leq \sum_i\vert\lambda_i\vert=N(g).$$
+\end{proof}
+
+\section{Metric representability}\label{S:metric}
+
+In this section, we consider a method of constructing conjugacy invariant  pseudo-norms on the free group. Our methods apply to an arbitrary group $G$.
+
+Let $(X,d)$ be a metric space with an isometric left action of the free group $F$. We define the (possibly infinite) \emph{displacement} of an element $g\in F$ by
+$$disp_X(g)=sup\{d(x,gx):x\in X\}.$$
+
+This is analogous to the translation length except that we have replaced the infimum by the supremum. 
+ 
+The following lemma is straightforward.
+
+\begin{lemma}\label{subadd}
+We have
+\begin{enumerate}
+\item For $g,h\in F$, if $disp_X(g)<\infty$ and $disp_X(h)<\infty$, then  $disp_X(gh)<\infty$ and 
+$$disp_X(gh)\leq disp_X(g)+disp_X(h).$$ 
+\item For all $g\in F$, $disp_X(\bar{g})=disp_X(g)$.
+\end{enumerate}
+
+\end{lemma}
+\begin{proof}
+By the triangle inequality and the definition of displacement, for $x\in X$,
+$$d(x,ghx)\leq d(x,hx)+d((hx),g(hx))\leq disp_X(h)+disp_X(g).$$
+By taking the supremum, the first part follows.
+
+By symmetry, the second statement follows if we show that $disp_X(\bar{g})\leq disp_X(g)$. Observe that for $x\in X$,
+$$d(x,\bar gx)=d(g(\bar g x) ,(\bar gx))\leq disp_X(g).$$
+Once more, taking the supremum gives the desired inequality.
+\end{proof}
+
+In particular, if the displacements of the generators are finite, then so are the displacements of all elements of $F$. Assume that the displacements of the generators on $X$ are finite and non-zero. We consider the function $M:F\to \R$ given by
+$$M_X(g)=\frac{disp_X(g)}{\max(disp_X(\a),disp_X(\b))}.$$
+
+\begin{lemma}
+The function $M_X$ is a conjugacy invariant  pseudo-norm  satisfying $M_X(\a)\leq 1$, $M_X(\ba)\leq 1$, $M_X(\b)\leq 1$ and $M_X(\bb)\leq 1$. Hence $N(g)\geq M_X(g)$ for all $g\in F$.
+\end{lemma}
+\begin{proof}
+The subadditivity of $M_X$ follows from the first part of Lemma~\ref{subadd}. To show conjugacy invariance, it suffices by symmetry to show that for $g,h\in F$, $disp_X(\bar{h}gh)\leq disp_X(g)$. As the action on $X$ is by isometries, we see that for $x\in X$,
+$$d(x,\bar{h}ghx)=d((hx),g(hx))\leq disp_X(g)$$
+where the first equality was obtained by a multiplying both terms by $h$. By taking the supremum, we get the desired inequality.
+
+By construction $M_X(1)=0$ and $M_X(g)\geq 0$ for all $g\in F$, completing the proof that $M_X$ is a conjugacy-invariant norm. Finally, by construction and the second part of Lemma~\ref{subadd}, $M_X(\ba)=M_X(\a)\leq 1$ and $M_X(\bb)=M_X(\b)\leq 1$.
+
+\end{proof}
+
+Thus, a space $X$ with an isometric action of $F$, gives a lower bound on the  pseudo-norm  $N:F\to \R$. It is natural to ask whether this is sharp. We see that this is indeed the case.
+
+\begin{theorem}\label{sharp}
+There is a space $X$ with an isometric action of $F$ so that $N(g)=M_X(g)$ for all $g\in F$.
+\end{theorem} 
+\begin{proof}
+We take $X$ to be the space which as a set is $F$ and with the metric
+$$d(g,h)=N(\bar{g}h)$$
+
+This is similar to the construction of the word metric. As in the case of the word metric, the triangle inequality follows from the subadditivity of $N$. Left invariance follows (as in the case of the word metric) as for $x,y\in F$
+$$d(gx,gy)=N(\overline{gx}gy)=N(\bar{x}y)=d(x,y)$$
+
+Observe that the displacement of an element $g$ is given by
+$$disp_X(g)= sup\{d(x,gx):x\in X\}=sup\{N(\bar{x}gx):x\in X\}=N(g),$$
+as $N(\bar{x}gx)=N(g)$ for all $x\in F$ by conjugacy invariance. It follows that $N(g)=M_F(g)$ for all $g\in F$.
+\end{proof}
+
+\section{Orthogonal representability}\label{S:ortho}
+
+The construction of Theorem~\ref{sharp} is not directly useful, as the metric on space $(X,d)$ is defined in terms of the  pseudo-norm  $N$. Here we consider another construction of spaces with left actions, namely those given by orthogonal representations of the free group.
+
+Let $n>0$ be an integer and $\rho:F\to O(n)$ be an orthogonal representation of the free group. Then we have a corresponding action of $F$ on $S^{n-1}$. We define $M_\rho$ to be the  pseudo-norm  $M_{S^{n-1}}$ obtained from this action. We shall denote the corresponding displacements on the sphere by $disp_\rho$.
+
+A natural question in this context is whether the bounds obtained from such representations are sharp. We formulate a weak version of this question.
+
+\begin{question}
+Given $g\in F$, is there a representation $\rho:F\to O(n)$ such that $N(g)=M_\rho(g)$?
+\end{question}
+
+This appears to be an interesting mathematical question, when $N$ is taken to be defined as a maximal conjugacy-invariant  pseudo-norm , independent of its biological roots. We observe an interesting example that suggests a possibly positive answer.
+
+The commutator $g=[\a^k,\b^l]$, $k,l\geq 2$ is in many ways a pivotal example for the study of $N$ (and RNA folding, see~\cite{Ga}). We determine $N(g)$ in this case.
+
+\begin{proposition}\label{comm}
+$N([\a^k,\b^l])=\min(2k,2l)$. 
+\end{proposition}
+\begin{proof}
+Assume without loss of generality that $k\leq l$. We have a folding of $\F$ obtained by $l$ pairs of the form ($\b, \bb$) given by $(l_{k+j},l_{2k+2l-j})$, $1\leq j\leq l$, where $l_m$ denotes the $m$th letter of $g$.  
+As $u(g;\F)=2k+2l-\vert F\vert=2k+2l-2l=2k$, we see that $N(g)\leq 2k=\min(2k,2l)$.
+
+Conversely, observe that all pairs $(l_i,l_j)$, $i<j$ are of the form $(\a,\ba)$ or $(\b,\bb)$ and any pair of the form $(\a,\ba)$ is linked with any pair of the form $(\b,\bb)$. It follows that for any folding $\F$, either all letters that are $\a$ and $\ba$ are unpaired or all letters of the form $\b$ and $\bb$ are unpaired. Thus, for any folding $\F$, $u(g;\F)\geq \min(2k,2l)$. It follows that $N(g)\geq \min(2k,2l)$. Thus, $N(g)=\min(2k,2l)=M_\rho(g)$.
+\end{proof}
+
+
+We observe that a representation does give a sharp lower bound for $N(g)$ for $g=[\a^k,\b^l]$.
+
+\begin{proposition}
+For $g=[\a^k,\b^l]$, there is a representation $\rho:F\to O(n)$ such that $N(g)=M_\rho(g)$.
+\end{proposition}
+\begin{proof}
+We construct a representation into the group of unit quaternions (which is a subgroup of $O(4)$) by left multiplication. Namely, consider the representation such that 
+$$\rho(\a)=\cos(\pi/2k)+\sin(\pi/2k)\widehat{i}$$
+and 
+$$\rho(\b)=\cos(\pi/2l)+\sin(\pi/2l)\widehat{j}$$
+Then it is easy to see that $disp_\rho(\a)=\pi/2l$ and $disp_\rho(\b)=\pi/2k$.
+Further, $\a^k=\widehat{i}$ and $\b^l=\widehat{j}$. Hence
+$$\rho(g)=[\widehat{i},\widehat{j}]=-1$$
+which has displacement $\pi$. It follows that 
+$$M_\rho(g)=\frac{\pi}{\max(\pi/2k,\pi/2l)}=\min(2k,2l).$$
+The proof now follows from Proposition~\ref{comm}.
+ 
+\end{proof}
+
+\bibliographystyle{amsplain}
+\begin{thebibliography}{10}
+
+\bibitem{GIP} Burago, D; Ivanov, S.; Polterovich, L.
+\textit{Conjugation-invariant norms on groups of geometric origin.} (English summary) Groups of diffeomorphisms, 221--250, 
+Adv. Stud. Pure Math., \textbf{52}, Math. Soc. Japan, Tokyo, 2008.
+
+
+\bibitem{Ga} Gadgil, S \textit{Watson-Crick pairing, the Heisenberg group and Milnor invariants}, J. Math. Biol. \textbf{59} (2009),  123--142.
+
+\bibitem{RNA} Gesteland, R.F.; Atkins J.F. \textit{The RNA world: the
+nature of modern RNA suggests a prebiotic RNA world} Cold
+Spring Harbor Laboratory Press, 1993.
+
+
+\end{thebibliography}
+
+\end{document}
+
