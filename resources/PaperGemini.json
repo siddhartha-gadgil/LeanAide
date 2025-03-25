@@ -1,0 +1,238 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Mathematical Document",
+    "description": "JSON schema for a structured mathematical document.",
+    "type": "array",
+    "items": {
+      "oneOf": [
+        { "$ref": "#/components/schemas/Title" },
+        { "$ref": "#/components/schemas/Abstract" },
+        { "$ref": "#/components/schemas/Section" },
+        { "$ref": "#/components/schemas/Theorem" },
+        { "$ref": "#/components/schemas/Definition" },
+        { "$ref": "#/components/schemas/Remark" },
+        { "$ref": "#/components/schemas/Block" },
+        { "$ref": "#/components/schemas/Proof" },
+        { "$ref": "#/components/schemas/Case" }
+      ]
+    },
+    "components": {
+      "schemas": {
+        "Title": {
+          "type": "object",
+          "description": "The title of the document.",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title text."
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "additionalProperties": false
+        },
+        "Abstract": {
+          "type": "object",
+          "description": "The abstract of the document.",
+          "properties": {
+            "abstract": {
+              "type": "string",
+              "description": "The abstract text."
+            }
+          },
+          "required": [
+            "abstract"
+          ],
+          "additionalProperties": false
+        },
+        "Section": {
+          "type": "object",
+          "description": "A section at some  level (chapter, section, subsection, etc.). NOT a theorem, definition, proof or other mathematical environment. Use the appropriate schema for those.",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The identifier of the section following Mathlib conventions (e.g., `group_theory.definitions`)."
+            },
+            "header": {
+              "type": "string",
+              "description": "The header type of the section (e.g., 'chapter', 'section', 'subsection'). It is AN ERROR if the header type is 'proof', 'lemma', 'definition' etc. Use the appropriate schema such as THEOREM, DEFINITION, PROOF for those."
+            },
+            "environment_type" : {
+              "type": "string",
+              "description": "MUST BE 'section'."
+            },
+            "content": {
+              "type": "array",
+              "description": "The content of the section, which can contain other environments.",
+              "items": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/Section" },
+                  { "$ref": "#/components/schemas/Theorem" },
+                  { "$ref": "#/components/schemas/Definition" },
+                  { "$ref": "#/components/schemas/Remark" },
+                  { "$ref": "#/components/schemas/Block" },
+                  { "$ref": "#/components/schemas/Proof" },
+                  { "$ref": "#/components/schemas/Case" }
+                ]
+              }
+            }
+          },
+          "required": [
+            "name",
+            "header",
+            "content",
+            "environment_type"
+          ],
+          "additionalProperties": false
+        },
+        "Theorem": {
+          "type": "object",
+          "description": "A mathematical theorem, lemma, claim, etc. (corresponding to AMSLaTeX 'plain' style).",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The identifier of the theorem following Mathlib conventions (e.g., `group.abelian`)."
+            },
+            "header": {
+              "type": "string",
+              "description": "The header type of the theorem (e.g., 'theorem', 'lemma', 'proposition', 'corollary', 'claim')."
+            },
+            "environment_type" : {
+                "type": "string",
+                "description": "MUST BE 'theorem'."
+              },  
+            "content": {
+              "type": "string",
+              "description": "The statement of the theorem."
+            }
+          },
+          "required": [
+            "name",
+            "header",
+            "content",
+            "environment_type"
+          ],
+          "additionalProperties": false
+        },
+        "Definition": {
+          "type": "object",
+          "description": "A mathematical definition (corresponding to AMSLaTeX 'definition' style).",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The identifier of the definition following Mathlib conventions (e.g., `group.is_abelian`)."
+            },
+            "header": {
+              "type": "string",
+              "description": "The header type of the definition (e.g., 'definition', 'def')."
+            },
+            "environment_type" : {
+                "type": "string",
+                "description": "MUST BE 'definition'."
+              },  
+            "content": {
+              "type": "string",
+              "description": "The content of the definition."
+            }
+          },
+          "required": [
+            "name",
+            "header",
+            "content",
+            "environment_type"
+          ],
+          "additionalProperties": false
+        },
+        "Remark": {
+          "type": "object",
+          "description": "A remark, example, note, etc. (corresponding to AMSLaTeX 'remark' style).",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The identifier of the remark following Mathlib conventions (e.g., `group.example_cyclic`)."
+            },
+            "header": {
+              "type": "string",
+              "description": "The header type of the remark (e.g., 'remark', 'example', 'note')."
+            },
+            "environment_type" : {
+                "type": "string",
+                "description": "MUST BE 'remark'."
+              },  
+            "content": {
+              "type": "string",
+              "description": "The content of the remark."
+            }
+          },
+          "required": [
+            "name",
+            "header",
+            "content",
+            "environment_type"
+          ],
+          "additionalProperties": false
+        },
+        "Block": {
+          "type": "string",
+          "description": "A block of text that is not partitioned further, even into subsections or theorems, proofs etc.",
+          "additionalProperties": false
+        },
+        "Proof": {
+          "type": "object",
+          "description": "A proof environment.",
+          "properties": {
+            "proof": {
+              "type": "array",
+              "description": "The content of the proof, which is a document itself.",
+              "items": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/Section" },
+                  { "$ref": "#/components/schemas/Theorem" },
+                  { "$ref": "#/components/schemas/Definition" },
+                  { "$ref": "#/components/schemas/Remark" },
+                  { "$ref": "#/components/schemas/Block" },
+                  { "$ref": "#/components/schemas/Proof" },
+                  { "$ref": "#/components/schemas/Case" }
+                ]
+              }
+            }
+          },
+          "required": [
+            "proof"
+          ],
+          "additionalProperties": false
+        },
+        "Case": {
+          "type": "object",
+          "description": "A section of a proof that corresponds to a case.",
+          "properties": {
+            "condition": {
+              "type": "string",
+              "description": "The condition defining this case."
+            },
+            "proof": {
+              "type": "array",
+              "description": "The proof for this case, which is a document.",
+              "items": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/Section" },
+                  { "$ref": "#/components/schemas/Theorem" },
+                  { "$ref": "#/components/schemas/Definition" },
+                  { "$ref": "#/components/schemas/Remark" },
+                  { "$ref": "#/components/schemas/Block" },
+                  { "$ref": "#/components/schemas/Proof" },
+                  { "$ref": "#/components/schemas/Case" }
+                ]
+              }
+            }
+          },
+          "required": [
+            "condition",
+            "proof"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  }
