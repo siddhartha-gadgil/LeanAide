@@ -1,21 +1,30 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Mathematical Document",
+    "title": "Mathematical Document Wrapper",
     "description": "JSON schema for a structured mathematical document.",
-    "type": "array",
-    "items": {
-      "oneOf": [
-        { "$ref": "#/components/schemas/Title" },
-        { "$ref": "#/components/schemas/Abstract" },
-        { "$ref": "#/components/schemas/Section" },
-        { "$ref": "#/components/schemas/Theorem" },
-        { "$ref": "#/components/schemas/Definition" },
-        { "$ref": "#/components/schemas/Remark" },
-        { "$ref": "#/components/schemas/Block" },
-        { "$ref": "#/components/schemas/Proof" },
-        { "$ref": "#/components/schemas/Case" }
-      ]
+    "type": "object",
+    "properties": {
+      "document": {
+        "type": "array",
+        "description": "The root of the mathematical document, containing a sequence of environments.",
+        "items": {
+          "oneOf": [
+            { "$ref": "#/components/schemas/Title" },
+            { "$ref": "#/components/schemas/Abstract" },
+            { "$ref": "#/components/schemas/Section" },
+            { "$ref": "#/components/schemas/Theorem" },
+            { "$ref": "#/components/schemas/Definition" },
+            { "$ref": "#/components/schemas/Remark" },
+            { "$ref": "#/components/schemas/Block" },
+            { "$ref": "#/components/schemas/Proof" },
+            { "$ref": "#/components/schemas/Case" }
+          ]
+        }
+      }
     },
+    "required": [
+      "document"
+    ],
     "components": {
       "schemas": {
         "Title": {
@@ -48,26 +57,21 @@
         },
         "Section": {
           "type": "object",
-          "description": "A section at some  level (chapter, section, subsection, etc.). NOT a theorem, definition, proof or other mathematical environment. Use the appropriate schema for those.",
+          "description": "A section at some level (chapter, section, subsection, etc.).",
           "properties": {
             "name": {
               "type": "string",
-              "description": "The identifier of the section following Mathlib conventions (e.g., `group_theory.definitions`)."
+              "description": "The identifier of the section following Mathlib conventions (e.g., `group_theory.definitions`). NOT a theorem, definition, proof or other mathematical environment. Use the appropriate schema for those. If the `header` is a `proof`, this is an ERROR and a `Proof` environment should be used instead."
             },
             "header": {
               "type": "string",
-              "description": "The header type of the section (e.g., 'chapter', 'section', 'subsection'). It is AN ERROR if the header type is 'proof', 'lemma', 'definition' etc. Use the appropriate schema such as THEOREM, DEFINITION, PROOF for those."
-            },
-            "environment_type" : {
-              "type": "string",
-              "description": "MUST BE 'section'."
+              "description": "The header type of the section (e.g., 'chapter', 'section', 'subsection')."
             },
             "content": {
               "type": "array",
-              "description": "The content of the section, which can contain other environments.",
+              "description": "The content of the section, which can contain other environments (but not direct nested sections in this version).",
               "items": {
                 "oneOf": [
-                  { "$ref": "#/components/schemas/Section" },
                   { "$ref": "#/components/schemas/Theorem" },
                   { "$ref": "#/components/schemas/Definition" },
                   { "$ref": "#/components/schemas/Remark" },
@@ -81,8 +85,7 @@
           "required": [
             "name",
             "header",
-            "content",
-            "environment_type"
+            "content"
           ],
           "additionalProperties": false
         },
@@ -92,17 +95,13 @@
           "properties": {
             "name": {
               "type": "string",
-              "description": "The identifier of the theorem following Mathlib conventions (e.g., `group.abelian`)."
+              "description": "The identifier of the theorem following Lean Prover's Mathlib conventions (e.g., `group.abelian`). NOT just a reference number, but a unique identifier for the theorem."
             },
             "header": {
               "type": "string",
               "description": "The header type of the theorem (e.g., 'theorem', 'lemma', 'proposition', 'corollary', 'claim')."
             },
-            "environment_type" : {
-                "type": "string",
-                "description": "MUST BE 'theorem'."
-              },  
-            "content": {
+            "claim": {
               "type": "string",
               "description": "The statement of the theorem."
             }
@@ -110,8 +109,7 @@
           "required": [
             "name",
             "header",
-            "content",
-            "environment_type"
+            "claim"
           ],
           "additionalProperties": false
         },
@@ -127,11 +125,7 @@
               "type": "string",
               "description": "The header type of the definition (e.g., 'definition', 'def')."
             },
-            "environment_type" : {
-                "type": "string",
-                "description": "MUST BE 'definition'."
-              },  
-            "content": {
+            "definition": {
               "type": "string",
               "description": "The content of the definition."
             }
@@ -139,8 +133,7 @@
           "required": [
             "name",
             "header",
-            "content",
-            "environment_type"
+            "content"
           ],
           "additionalProperties": false
         },
@@ -156,11 +149,7 @@
               "type": "string",
               "description": "The header type of the remark (e.g., 'remark', 'example', 'note')."
             },
-            "environment_type" : {
-                "type": "string",
-                "description": "MUST BE 'remark'."
-              },  
-            "content": {
+            "remark": {
               "type": "string",
               "description": "The content of the remark."
             }
@@ -168,21 +157,24 @@
           "required": [
             "name",
             "header",
-            "content",
-            "environment_type"
+            "content"
           ],
           "additionalProperties": false
         },
         "Block": {
           "type": "string",
-          "description": "A block of text that is not partitioned further, even into subsections or theorems, proofs etc.",
+          "description": "A block of text that is not partitioned further, even into subsections.",
           "additionalProperties": false
         },
         "Proof": {
           "type": "object",
           "description": "A proof environment.",
           "properties": {
-            "proof": {
+            "claim_name": {
+              "type": "string",
+              "description": "The name of the theorem being proved."
+            },
+            "proof_steps": {
               "type": "array",
               "description": "The content of the proof, which is a document itself.",
               "items": {
@@ -199,7 +191,8 @@
             }
           },
           "required": [
-            "proof"
+            "proof_steps",
+            "claim_name"
           ],
           "additionalProperties": false
         },
