@@ -1,0 +1,22 @@
+{
+    "document": [
+        {
+            "title": "RANDOM WORDS IN FREE GROUPS, NON-CROSSING MATCHINGS AND RNA SECONDARY STRUCTURES"
+        },
+        {
+            "abstract": "Consider a random word $X_n = (X_1, \\dots, X_n)$ in an alphabet consisting of 4 letters..."
+        },
+        {
+            "content": [
+                {
+                    "definition": "Let $G = (G, \\cdot, e,(\\cdot)^{-1})$ be a group..."
+                ,
+                    "name": "Definition5",
+                    "header": "Definition 5"
+                }
+            ],
+            "name": "sec1",
+            "header": "Section"
+        }
+    ]
+}
