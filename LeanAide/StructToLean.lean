@@ -279,8 +279,6 @@ import LeanAide.Syntax
 universe u v u_1
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
-
-
 "
 
 def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator): TranslateM (Except (Array ElabError) Expr) := do
