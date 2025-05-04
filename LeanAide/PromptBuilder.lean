@@ -47,10 +47,10 @@ def blended (gps: List (List α)) : List α :=
 def useragent : String := "LeanAide"
 
 def getLeanSearchQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Array Json := do
-  let apiUrl := "https://leansearch.net/api/search"
-  let s' := System.Uri.escapeUri s
-  let q := apiUrl ++ s!"?query={s'}&num_results={num_results}"
-  let s ← IO.Process.output {cmd := "curl", args := #["-X", "GET", "--user-agent", useragent, q]}
+  let apiUrl := "https://leansearch.net/search"
+  let js := Json.mkObj [("query", Json.arr #[toJson s]), ("num_results", num_results)]
+  let s ← IO.Process.output {cmd := "curl", args := #["-X", "POST", apiUrl, "--user-agent", useragent, "-H", "accept: application/json", "-H", "Content-Type: application/json", "--data", js.pretty]}
+  IO.eprintln s!"LeanSearch output: {s.stdout}"
   match Json.parse s.stdout with
   | Except.error e =>
       IO.eprintln s!"Could not parse JSON from leansearch output: {s.stdout}; error: {e}"
