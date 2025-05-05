@@ -1,4 +1,4 @@
-import LeanAide.PremiseData
+import DataGenAide.PremiseData
 open Lean Json Data LeanAide.Meta
 
 

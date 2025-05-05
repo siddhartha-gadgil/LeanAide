@@ -1,0 +1,54 @@
+{"usage":
+ {"total_tokens": 4416, "prompt_tokens": 4100, "completion_tokens": 316},
+ "object": "chat.completion",
+ "model": "gemini-2.0-flash",
+ "created": 1738927695,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "content":
+    "```lean\ndef CubeFree (n : ℕ) : Prop :=\n  ¬ ∃ p : ℕ, Nat.Prime p ∧ p ^ 3 ∣ n\n```"},
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "```lean\ndef CubeFree (n : ℕ) : Prop := ∀ p : ℕ, Nat.Prime p → ¬ (p ^ 3 ∣ n)\n```"},
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "```lean\ndef CubeFree (n : ℕ) : Prop :=\n  ∀ p : ℕ, Nat.Prime p → ¬ (p ^ 3 ∣ n)\n```"},
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "```lean\ndef CubeFree (n : ℕ) : Prop :=\n  ¬∃ p : ℕ, Nat.Prime p ∧ p ^ 3 ∣ n\n```"},
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "```lean\ndef CubeFree (n : Nat) : Prop :=\n  ¬ ∃ p : Nat, Nat.Prime p ∧ p ^ 3 ∣ n\n```"},
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "```lean\ndef CubeFree (n : ℕ) : Prop :=\n  ∀ p : ℕ, Nat.Prime p → ¬ (p ^ 3 ∣ n)\n```"},
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "```lean\ndef CubeFree (n : ℕ) : Prop :=\n  ¬ ∃ p : ℕ, Nat.Prime p ∧ p ^ 3 ∣ n\n```"},
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "```lean\ndef CubeFree (n : ℕ) : Prop :=\n  ¬ ∃ p : ℕ, Nat.Prime p ∧ p ^ 3 ∣ n\n```"},
+   "index": 7,
+   "finish_reason": "stop"}]}

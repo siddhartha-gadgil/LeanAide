@@ -2,8 +2,7 @@ import Lean
 import LeanAide.Aides
 import Batteries.Util.Pickle
 import LeanAide.SimpleFrontend
--- import LeanAide.ConstDeps
-import LeanAide.PremiseData
+import LeanAide.DefData
 import LeanAide.PromptExampleBuilder
 import LeanCodePrompts.ChatClient
 
@@ -18,11 +17,6 @@ structure DefSource where
   isProp : Bool
 deriving ToJson, FromJson, Repr
 
-/--
-Data for a definition, in particular *syntax* of components, together with a documentation string.
--/
-structure DefWithDoc extends DefData where
-  doc : String
 
 /--
 Error during elaboration.
@@ -32,6 +26,10 @@ inductive ElabError : Type where
 | parsed (text elabError : String) (cmdErrors : List String)
     (context? : Option String) : ElabError
 deriving Repr, ToJson, FromJson
+
+def ElabError.text : ElabError → String
+  | .unparsed text _ _ => text
+  | .parsed text _ _ _ => text
 
 instance : ToMessageData (ElabError) where
   toMessageData (err) := match err with
@@ -57,13 +55,29 @@ inductive CmdElabError : Type where
     (context? : Option String) : CmdElabError
 deriving Repr, ToJson, FromJson
 
+def CmdElabError.text : CmdElabError → String
+  | .unparsed text _ _ => text
+  | .parsed text _ _ => text
+
+def CmdElabError.fallback (errs : Array CmdElabError) :
+    MetaM String := do
+  let bestParsed? := errs.findSome? (fun e => do
+    match e with
+    | CmdElabError.parsed e .. => some e
+    | _ => none)
+  match bestParsed? with
+  | some e => return e
+  | none => match errs.get? 0 with
+    | some e => return e.text
+    | _ => throwError "no outputs found"
+
 /--
 Result of translating a definition.
 -/
 inductive DefTranslateResult : Type where
-  | success (dfns : Array DefWithDoc) : DefTranslateResult
+  | success (dfns : Array DefData) : DefTranslateResult
   | failure
-    (progress : Array DefWithDoc) (error : Array CmdElabError) : DefTranslateResult
+    (progress : Array DefData) (error : Array CmdElabError) : DefTranslateResult
 
 /--
 Result of translating back a definition and comparing.
@@ -121,7 +135,7 @@ structure Translate.State where
   descriptionMap : Std.HashMap Name Json := Std.HashMap.empty
   cmdPrelude : Array String := #[]
   /-- Relevant definitions to include in a prompt -/
-  defs : Array (DefWithDoc) := #[]
+  defs : Array (DefData) := #[]
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
 deriving Inhabited
@@ -163,7 +177,7 @@ def getErrors : TranslateM <| Array ElabErrorData := do
 
 def printKeys : TranslateM Unit := do
   let em := (← getEmbedMap)
-  IO.println s!"Embeddings: {em.toList.map Prod.fst}"
+  IO.eprintln s!"Loaded embeddings: {em.toList.map Prod.fst}"
 
 def getDescMap : TranslateM (Std.HashMap Name Json) := do
   return (← get).descriptionMap
@@ -189,8 +203,8 @@ def uploadDesciptions (file: System.FilePath) : TranslateM Unit := do
     | Except.error _ => continue
 
 def preloadDescriptions : TranslateM Unit := do
-  uploadDesciptions <| "resources" / "mathlib4-prompts.jsonl"
-  uploadDesciptions <| "resources" / "mathlib4-descs.jsonl"
+  uploadDesciptions <| (← resourcesDir) / "mathlib4-prompts.jsonl"
+  uploadDesciptions <| (← resourcesDir) / "mathlib4-descs.jsonl"
 
 def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   let m ← getDescMap
@@ -208,7 +222,7 @@ def runCommand (cmd: String) : TranslateM Unit := do
   discard <|  runFrontendM cmd true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
-def addDefn (dfn: DefWithDoc) : TranslateM Unit := do
+def addDefn (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statement
   modify fun s => {s with defs := s.defs.push dfn}
 
@@ -217,11 +231,11 @@ def clearDefs : TranslateM Unit := do
 
 def defsBlob : TranslateM <| Array String := do
   let defs := (← get).defs
-  defs.mapM <| fun dfn => dfn.statementWithDoc dfn.doc
+  defs.mapM <| fun dfn => dfn.statement
 
 def defsNameBlob : TranslateM <| Array <| Name × String := do
   let defs := (← get).defs
-  defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statementWithDoc dfn.doc)
+  defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statement)
 end Translate
 
 namespace TranslateM
@@ -230,7 +244,7 @@ def runWithEmbeddings (em : EmbedMap)
     (x: TranslateM α) : CoreM α := do
   let x :=
     withEmbeddings em do
-      printKeys
+      -- printKeys
       x
   x.run' {} |>.run'.run'
 

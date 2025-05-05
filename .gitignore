@@ -80,3 +80,6 @@ target/
 *.xopp
 *.swp
 .scala-build/
+venv/
+leanaide_logs/
+private/

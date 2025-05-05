@@ -35,6 +35,16 @@ def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr
     | none => throwError "Definition has no value"
     | some val => return val
 
+def elabFrontDefTypeValExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM <| Expr × Expr := do
+  let (env, _) ← runFrontendM s modifyEnv
+  let seek? : Option ConstantInfo :=  env.find? n
+  match seek? with
+  | none => throwError "Definition not found"
+  | some seek => match seek.value? with
+    | none => throwError "Definition has no value"
+    | some val => return (seek.type, val)
+
+
 def elabFrontThmExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr := do
   let (env, msgs) ← runFrontendM s modifyEnv
   logInfo "Messages"

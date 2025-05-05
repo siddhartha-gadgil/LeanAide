@@ -25,7 +25,7 @@ elab "add_aesop_power_tactics" tacs:tactic,* : command => do
 An API based on Aesop. Should use a refined conguration for `aesop` to make it more effective.
 -/
 
-def provedEqual (e₁ e₂ : Expr) : TermElabM Bool :=
+def provedEqual (e₁ e₂ : Expr) : MetaM Bool :=
   if e₁ == e₂ then return true else
  withoutModifyingState do
   let type ← mkEq e₁ e₂
@@ -45,9 +45,7 @@ def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool :=
   let mvarId := mvar.mvarId!
   let stx ← `(tactic| aesop)
   mvarId.withContext do
-  let res ←  runTactic mvarId stx
-  let (remaining, _) := res
-  return remaining.isEmpty
+    checkTacticSafe mvarId stx
   catch _ => pure false
 
 def provedSufficient (e₁ e₂ : Expr) : TermElabM Bool :=
@@ -57,9 +55,8 @@ def provedSufficient (e₁ e₂ : Expr) : TermElabM Bool :=
   let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
   let stx ← `(tactic| aesop)
-  let res ←  runTactic mvarId stx
-  let (remaining, _) := res
-  return remaining.isEmpty
+  mvarId.withContext do
+    checkTacticSafe mvarId stx
 
 def compareThms(s₁ s₂ : String)
   (levelNames : List Lean.Name := levelNames)
@@ -164,4 +161,4 @@ example : (∀ (a b c: Nat),
   aesop
 
 
--- #eval compareThms "(a b c: Nat): a + (b + c) = (a + b) + c" "(a b c: Nat): (a + b) + c = a + (b + c)"
+-- #eval compareThms "(s: String)(a b c: Nat): a + (b + c) = (a + b) + c" "(b a c: Nat): (a + b) + c = a + (b + c)"

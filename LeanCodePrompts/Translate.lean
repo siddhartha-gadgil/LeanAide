@@ -13,7 +13,6 @@ import LeanCodePrompts.ChatClient
 import LeanAide.StatementSyntax
 import LeanAide.TranslateM
 import LeanAide.PromptBuilder
--- import LeanAide.ConstDeps
 import LeanAide.SimpleFrontend
 import LeanAide.Descriptions
 
@@ -22,6 +21,13 @@ open LeanAide.Meta
 
 namespace LeanAide
 open Translate
+
+@[default_instance]
+instance : Add ℤ := inferInstance
+@[default_instance]
+instance : Semiring ℤ := inferInstance
+
+-- example : {n | Odd n}.Infinite := by sorry
 
 register_option lean_aide.translate.prompt_size : Nat :=
   { defValue := 10
@@ -32,6 +38,11 @@ register_option lean_aide.translate.concise_desc_size : Nat :=
   { defValue := 0
     group := "lean_aide.translate"
     descr := "Number of concise descriptions in a prompt (default 0)" }
+
+register_option lean_aide.translate.desc_size : Nat :=
+  { defValue := 0
+    group := "lean_aide.translate"
+    descr := "Number of descriptions in a prompt (default 0)" }
 
 
 register_option lean_aide.translate.choices : Nat :=
@@ -62,7 +73,17 @@ register_option lean_aide.translate.azure : Bool :=
 register_option lean_aide.translate.url? : String :=
   { defValue := ""
     group := "lean_aide.translate"
-    descr := "Local url to query. Empty string for none" }
+    descr := "Local or generic url to query. Empty string for none" }
+
+register_option lean_aide.translate.authkey? : String :=
+  { defValue := ""
+    group := "lean_aide.translate"
+    descr := "Authentication key for OpenAI or generic model" }
+
+register_option lean_aide.translate.examples_url? : String :=
+  { defValue := ""
+    group := "lean_aide.translate"
+    descr := "Local or generic url to query for embeddings. Empty string for none" }
 
 register_option lean_aide.translate.greedy : Bool :=
   { defValue := false
@@ -73,6 +94,11 @@ register_option lean_aide.translate.has_sysprompt : Bool :=
   { defValue := true
     group := "lean_aide.translate"
     descr := "Whether the server has a system prompt." }
+
+register_option lean_aide.translate.temperature10 : Int :=
+  { defValue := 8
+    group := "lean_aide.translate"
+    descr := "temperature * 10." }
 
 /--
 Number of similar sentences to query in interactive mode
@@ -86,6 +112,8 @@ Number of similar concise descriptions to query in interactive mode
 def conciseDescSize : CoreM Nat := do
   return  lean_aide.translate.concise_desc_size.get (← getOptions)
 
+def descSize : CoreM Nat := do
+  return  lean_aide.translate.desc_size.get (← getOptions)
 
 /--
 Parameters for a chat query in interactive mode
@@ -94,7 +122,7 @@ def chatParams : CoreM ChatParams := do
   let opts ← getOptions
   return {
     n := lean_aide.translate.choices.get opts,
-    temp := 0.8
+    temp := {mantissa:= lean_aide.translate.temperature10.get opts, exponent :=1}
   }
 
 def greedy : CoreM Bool := do
@@ -107,16 +135,19 @@ def hasSysPrompt : CoreM Bool := do
 Chat server to use in interactive mode
 -/
 def chatServer : CoreM ChatServer := do
-  let model := lean_aide.translate.model.get (← getOptions)
   let opts ← getOptions
+  let model := lean_aide.translate.model.get opts
   if lean_aide.translate.azure.get opts then
     return ChatServer.azure
   else
+    let authkeyString := lean_aide.translate.authkey?.get opts
+    let authKey? :=
+      if authkeyString = "" then none else some authkeyString
     let url := lean_aide.translate.url?.get opts
     if url.isEmpty then
-      return ChatServer.openAI model
+      return ChatServer.openAI model |>.addKeyOpt authKey?
     else
-      return ChatServer.generic model url (← hasSysPrompt)
+      return ChatServer.generic model url none (← hasSysPrompt)
 
 
 /-!
@@ -191,11 +222,11 @@ def Translator.getMessages (s: String) (translator : Translator)
 def Translator.getLeanCodeJson (s: String)
     (translator : Translator)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with  examples"
-  IO.eprintln s!"translating string `{s}` with  examples"
+  -- IO.eprintln s!"translating string `{s}` with  examples"
   setContext s
   match ← getCachedJson? s with
   | some js =>
-    IO.eprintln s!"cached json found"
+    -- IO.eprintln s!"cached json found"
     return js
   | none =>
     let pending ←  pendingJsonQueries.get
@@ -207,7 +238,7 @@ def Translator.getLeanCodeJson (s: String)
       let (messages, docPairs) ← translator.getMessages s header
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       logTimed "querying server"
-      IO.eprintln s!"querying server"
+      -- IO.eprintln s!"querying server"
       let fullJson ← translator.server.query messages translator.params
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -324,7 +355,7 @@ def greedyBestExpr? (output: Array String) : TranslateM (Option Expr) := do
 /--
 Pick the first elaboration that succeeds, accumulating errors.
 -/
-def greedyStrictBestExpr? (output: Array String) :
+def greedyBestExprWithErr? (output: Array String) :
     TranslateM (Except (Array ElabError) Expr) := do
   let mut errs : Array ElabError := #[]
   for out in output do
@@ -449,6 +480,36 @@ def jsonToExpr' (json: Json)(greedy: Bool)(splitOutput := false) : TranslateM Ex
   else
     bestElab output
 
+def ElabError.fallback (errs : Array ElabError) :
+    TranslateM String := do
+  let bestParsed? := errs.findSome? (fun e => do
+    match e with
+    | ElabError.parsed e .. => some e
+    | _ => none)
+  match bestParsed? with
+  | some e => return e
+  | none => match errs.get? 0 with
+    | some e => return e.text
+    | _ => throwError "no outputs found"
+
+/-- given json returned by open-ai obtain the best translation -/
+def jsonToExprFallback (json: Json)(greedy: Bool)(splitOutput := false) : TranslateM <|Except String Expr := do
+  let output ← getMessageContents json
+  let output := if splitOutput
+    then
+      splitColEqSegments output
+    else output
+  let res? ← if greedy then
+    greedyBestExprWithErr? output
+    else
+    match ← bestElab? output with
+    | Except.ok res => pure <| .ok res.term
+    | Except.error e => pure <| Except.error e
+  match res? with
+  | Except.ok e => return .ok e
+  | Except.error e => return .error (←  ElabError.fallback e)
+
+
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal
@@ -532,11 +593,12 @@ def translateToProp? (s: String)(translator : Translator)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   -- let output := params.splitOutputs output
-  match ← greedyStrictBestExpr? output with
+  match ← greedyBestExprWithErr? output with
   | Except.ok res => return Except.ok res
   | Except.error e =>
     logError s prompt e
     return Except.error e
+
 
 /--
 Translating a definition greedily by parsing as a command
@@ -545,13 +607,15 @@ def translateDefCmdM? (s: String) (translator : Translator)
   (isProp: Bool := false): TranslateM <| Except (Array CmdElabError) Syntax.Command := do
   logTimed "starting translation"
   let header := if isProp then "Theorem" else "Definition"
-  let (js, _) ← translator.getLeanCodeJson  s (header:= header)
+  let (js, _) ← translator.forDef.getLeanCodeJson  s (header:= header)
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
   let context? ← getContext
   let mut checks : Array (CmdElabError) := #[]
   for s in output do
+    let s := extractLean s
     let s := s.replace "\n" " "
+    let s := if s.startsWith "definition " then s.replace "definition " "def " else s
     let cmd? := runParserCategory (← getEnv) `command s
     match cmd? with
     | Except.error e =>
@@ -586,7 +650,7 @@ def translateDefViewM? (s: String)
   return fmt?.map (·.pretty)
 
 def translateDefList (dfns : List DefSource)
- (translator : Translator) (progress : Array DefWithDoc := #[]) (initial : Bool := true): TranslateM DefTranslateResult := do
+ (translator : Translator) (progress : Array DefData := #[]) (initial : Bool := true): TranslateM DefTranslateResult := do
   if initial then clearDefs
   match dfns with
   | [] => return .success progress
@@ -594,12 +658,12 @@ def translateDefList (dfns : List DefSource)
     let head? ← translator.translateDefData? x.doc x.isProp
     match head? with
     | Except.error e => do
-      return .failure (progress : Array DefWithDoc) e
+      return .failure (progress : Array DefData) e
     | Except.ok dd => do
       let progress :=
-        progress.push <| {dd with doc := x.doc, isProp := x.isProp}
+        progress.push <| {dd with doc? := x.doc, isProp := x.isProp}
       let progBlob ← progress.mapM <|
-        fun dfn => do pure (dfn.name, ← dfn.statementWithDoc dfn.doc)
+        fun dfn => do pure (dfn.name, ← dfn.statement)
       let relDefs := translator.relDefs ++ progBlob
       let translator : Translator :=
         {translator with relDefs := relDefs}
@@ -615,7 +679,9 @@ open PrettyPrinter Tactic
   match stx with
   | `(l! $s:str) =>
   let s := s.getString
-  let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams}
+  let embedUrl := lean_aide.translate.examples_url?.get (← getOptions)
+  let embedUrl? := if embedUrl.isEmpty then none else some embedUrl
+  let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.mkEmbedBuilder embedUrl? (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams}
   let (js, _) ←
     translator.getLeanCodeJson  s |>.run' {}
   let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq |>.run' {}
@@ -707,8 +773,8 @@ Translate a string to a Lean expression using the GPT model, returning three com
 * The prompt used for the LLM.
 -/
 def translateViewVerboseM (s: String)(translator : Translator) :   TranslateM ((Option TranslateSuccessResult) × Array String × Json) := do
-  let dataMap ← getEmbedMap
-  IO.println s!"dataMap keys: {dataMap.toList.map Prod.fst}"
+  -- let dataMap ← getEmbedMap
+  -- IO.eprintln s!"dataMap keys: {dataMap.toList.map Prod.fst}"
   let (js,prompt, _) ←
     translator.getLeanCodeJson s
   let output ← getMessageContents js

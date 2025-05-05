@@ -20,7 +20,16 @@ partial def showSyntax : Syntax → String
 | Lean.Syntax.ident _ _ val _ => val.toString
 | _ => ""
 
-def leanAidePath : System.FilePath := ".lake/packages/leanaide/"
+def leanAidePath : System.FilePath := ".lake" /"packages" /"leanaide"
+
+def cachePath : IO System.FilePath := do
+  let path : System.FilePath :=  ".leanaide_cache"
+  if ← path.pathExists then
+    return path
+  else
+    return leanAidePath / path
+
+#eval cachePath
 
 def reroutePath (fp : System.FilePath) : IO System.FilePath := do
   if ← fp.pathExists then
@@ -151,7 +160,7 @@ def leanToolchain : IO String := do
 
 def picklePath (descField : String) : IO System.FilePath := do
   let name := if descField == "docString" then "prompts" else descField
-  return ".lake"/ "build" / "lib" /
+  return (← baseDir)/".lake"/ "build" / "lib" /
     s!"mathlib4-{name}-embeddings-{← leanToolchain}.olean"
 
 
@@ -280,17 +289,32 @@ def structuralTerm (stx: Syntax) : MetaM Bool := do
 
 def openAIKey? : IO (Option String) := IO.getEnv "OPENAI_API_KEY"
 
-#eval openAIKey?
-
 def openAIKey : IO String := do
   match ← openAIKey? with
       | some k => return k
       | none =>
+          let path : System.FilePath := "private" / "OPENAI_API_KEY"
+          if (← path.pathExists) then
+            return (← IO.FS.readFile path).trim
+          else
           let path : System.FilePath := "rawdata" / "OPENAI_API_KEY"
           if (← path.pathExists) then
             return (← IO.FS.readFile path).trim
           else
             panic! "OPENAI_API_KEY not set"
+
+def geminiAPIKey? : IO (Option String) := IO.getEnv "GEMINI_API_KEY"
+
+def geminiAPIKey : IO String := do
+  match ← geminiAPIKey? with
+      | some k => return k
+      | none =>
+          let path : System.FilePath := "private" / "GEMINI_API_KEY"
+          if (← path.pathExists) then
+            return (← IO.FS.readFile path).trim
+          else
+            panic! "GEMINI_API_KEY not set"
+
 
 def azureKey : IO (Option String) := IO.getEnv "AZURE_OPENAI_KEY"
 
@@ -318,12 +342,19 @@ def appendFile (fname : FilePath) (content : String) : IO Unit := do
   h.putStrLn content
   h.flush
 
-def appendLog (logFile: String) (content : Json) : IO Unit := do
-  let dir : FilePath := "rawdata"
-  if !(← dir.pathExists) then
-        IO.FS.createDirAll dir
-  let fname : FilePath := "rawdata/" / ("log_" ++ logFile ++ ".jsonl")
-  appendFile fname content.compress
+def appendLog (logFile: String) (content : Json) (force: Bool := false) : IO Unit := do
+  if force then go logFile content
+  else
+    match (← leanAideLogging?) with
+    | some "0" => return ()
+    | some _ => go logFile content
+    | none => return ()
+  where go (logFile: String) (content: Json) : IO Unit := do
+    let dir : FilePath := "leanaide_logs"
+    if !(← dir.pathExists) then
+      IO.FS.createDirAll dir
+    let fname : FilePath := "leanaide_logs" / (logFile ++ ".jsonl")
+    appendFile fname content.compress
 
 def gitHash : IO String := do
   let hash ← IO.Process.output { cmd := "git", args := #["rev-parse", "--short", "HEAD"] }
@@ -355,6 +386,9 @@ def codeBlock? (code: String) (s: String) : Option String := do
   let split ←   s.splitOn s!"```{code}" |>.get? 1 |>.orElse fun _ =>
     s.splitOn "```" |>.get? 1
   split.splitOn "```" |>.get? 0
+
+def extractLean (s: String) : String :=
+  codeBlock? "lean" s |>.getD s
 
 def extractJson (s: String) : Json :=
   let code := codeBlock? "json" s |>.getD s
@@ -476,7 +510,7 @@ elab "detailed" t:term : term => do
   logInfo m!"{← ppExpr e}"
   return e
 
-#check detailed (fun (n : Nat) => n + 1)
+-- #check detailed (fun (n : Nat) => n + 1)
 
 def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
                     -- let o₂ := pp.motives.all.set o₁ true
@@ -490,6 +524,20 @@ def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
                     let o' := pp.fullNames.set o₉ false
                     pp.unicode.fun.set o' true) do
               PrettyPrinter.delab e
+
+def delabDetailed (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
+                    -- let o₂ := pp.motives.all.set o₁ true
+                    let o₃ := pp.fieldNotation.set o₁ false
+                    let o₄ := pp.proofs.set o₃ true
+                    let o₅ := pp.deepTerms.set o₄ true
+                    let o₆ := pp.funBinderTypes.set o₅ true
+                    let o₇ := pp.piBinderTypes.set o₆ true
+                    let o₈ := pp.letVarTypes.set o₇ true
+                    let o₉ := pp.coercions.types.set o₈ true
+                    let o' := pp.motives.nonConst.set o₉ true
+                    pp.unicode.fun.set o' true) do
+              PrettyPrinter.delab e
+
 
 def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.FS.Handle := do
     let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
@@ -520,7 +568,13 @@ def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do
 def relLCtx (mvarId : MVarId) : MetaM Expr :=
   mvarId.withContext do
     let decls := (← getLCtx).decls.toArray |>.filterMap id
-    let decls := decls[1:].toArray
+    let decls := decls.filter fun decl =>
+      !decl.isImplementationDetail
+    relLCtxAux (← mvarId.getType) decls.toList
+
+def relLCtx' (mvarId : MVarId) : MetaM Expr :=
+  mvarId.withContext do
+    let decls := (← getLCtx).decls.toArray |>.filterMap id
     relLCtxAux (← mvarId.getType) decls.toList
 
 def groups := ["train", "test", "valid"]
@@ -665,3 +719,24 @@ def evalTacticSafe (tacticCode: Syntax): TacticM (Bool × Nat) := do
     state.restore
     logWarning e.toMessageData
     return (false, 1)
+
+def checkTacticSafe (mvarId: MVarId)(tacticCode: Syntax):
+    TermElabM Bool := withoutModifyingState do
+  let ctx ← readThe Term.Context
+  let s ← getThe Term.State
+  let mctx ← readThe Meta.Context
+  let s' ← getThe Meta.State
+  let state ← saveState
+  let res ← Core.tryCatchRuntimeEx (do
+      let res ← runTacticToCore mvarId tacticCode ctx s mctx s'
+      pure <| Except.ok res
+      ) (fun e => pure <| Except.error e)
+  match res with
+  | Except.ok ((mvarIds, s), ms) => do
+    set ms
+    set s
+    return mvarIds.isEmpty
+  | Except.error e =>
+    state.restore
+    logWarning e.toMessageData
+    return false

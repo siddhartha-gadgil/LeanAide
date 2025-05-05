@@ -14,6 +14,8 @@ lean_lib LeanAide {
 lean_lib LeanCodePrompts {
 }
 
+lean_lib DataGenAide
+
 lean_lib StatementAutoformalisation {
 }
 
@@ -46,7 +48,12 @@ lean_exe translate {
   supportInterpreter := true
 }
 
-lean_exe ctranslate {
+lean_exe preload_translate {
+  supportInterpreter := true
+}
+
+@[default_target]
+lean_exe leanaide_process {
   supportInterpreter := true
 }
 
@@ -81,9 +88,9 @@ lean_exe batchcheck{
   supportInterpreter := true
 }
 
+@[default_target]
 lean_exe nearest_embeddings
 
-@[default_target]
 lean_exe nearest_embeddings_full
 
 lean_exe fetch_embeddings
@@ -189,5 +196,4 @@ lean_exe extras.depnames{
 
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"@"933ad54"
-  -- using newer version because of proofwidgets fix
+  "https://github.com/leanprover-community/mathlib4.git"@"v4.15.0"

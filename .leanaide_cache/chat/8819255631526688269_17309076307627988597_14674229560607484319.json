@@ -1,0 +1,18 @@
+{"usage":
+ {"total_tokens": 2058, "prompt_tokens": 2004, "completion_tokens": 54},
+ "object": "chat.completion",
+ "model": "gemini-2.0-flash-lite-preview-02-05",
+ "created": 1738927334,
+ "choices":
+ [{"message":
+   {"role": "assistant", "content": "∃ᶠ (n : ℕ) in Filter.atTop, Odd n\n"},
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "content": "∃ᶠ (n : ℕ) in Filter.atTop, Odd n\n"},
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "content": "∃ᶠ (n : ℕ) in Filter.atTop, Odd n"},
+   "index": 2,
+   "finish_reason": "stop"}]}

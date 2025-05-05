@@ -1,0 +1,36 @@
+{"usage":
+ {"total_tokens": 2699, "prompt_tokens": 2394, "completion_tokens": 305},
+ "object": "chat.completion",
+ "model": "gemini-2.0-flash",
+ "created": 1738927788,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "content":
+    "theorem bla (n : ℕ) (k : ℤ) (h : n = 2 * k + 1) : n * (2 * (k + 1)) = 2 * (n * (k + 1)) := by\n  sorry\n"},
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "theorem : ∀ (n : ℕ) (k : ℤ), n = 2 * k + 1 → n * (2 * (k + 1)) = 2 * (n * (k + 1)) :=\nby\n  intro n k h\n  rw [h]\n  ring\n"},
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "theorem MyThm (n : ℕ) (k : ℤ) (h : n = 2 * k + 1) : n * (2 * (k + 1)) = 2 * (n * (k + 1)) := by\n  sorry\n"},
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "theorem MyThm (n : ℕ) (k : ℤ) (h : n = 2 * k + 1) : n * (2 * (k + 1)) = 2 * (n * (k + 1)) := by\n  sorry\n"},
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "content":
+    "theorem bla (n : ℕ) (k : ℤ) (h : n = 2 * k + 1) : n * (2 * (k + 1)) = 2 * (n * (k + 1)) := by\n  sorry\n"},
+   "index": 4,
+   "finish_reason": "stop"}]}

@@ -1,0 +1,97 @@
+{"usage":
+ {"total_tokens": 5645,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 4378,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 1267},
+ "system_fingerprint": "fp_0f8c83e59b",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Atf5q0CoIZmegq1QauqrpY9FrD1Ke",
+ "created": 1737829366,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] {p1 p2 p3 : V},\n  p1 ≠ 0 →\n    p2 ≠ 0 →\n      p3 ≠ 0 →\n        InnerProductGeometry.angle p1 p2 + InnerProductGeometry.angle p2 p3 + InnerProductGeometry.angle p3 p1 = Real.pi"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [inst_4 : Module.Oriented ℝ V (Fin 2)]\n  [inst_5 : Fact (FiniteDimensional.finrank ℝ V = 2)] {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 + EuclideanGeometry.angle p2 p3 p1 + EuclideanGeometry.angle p3 p1 p2 = Real.pi"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  p2 ≠ p1 →\n    p3 ≠ p2 →\n      p1 ≠ p3 →\n        EuclideanGeometry.angle p1 p2 p3 + EuclideanGeometry.angle p2 p3 p1 + EuclideanGeometry.angle p3 p1 p2 = Real.pi"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 + EuclideanGeometry.angle p2 p3 p1 + EuclideanGeometry.angle p3 p1 p2 = Real.pi"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [inst_4 : Module.Oriented ℝ V (Fin 2)] [inst_5 : Fact (Module.finrank ℝ V = 2)]\n  {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 + EuclideanGeometry.angle p2 p3 p1 + EuclideanGeometry.angle p3 p1 p2 = Real.pi"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 + EuclideanGeometry.angle p2 p3 p1 + EuclideanGeometry.angle p3 p1 p2 = Real.pi"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 + EuclideanGeometry.angle p2 p3 p1 + EuclideanGeometry.angle p3 p1 p2 = Real.pi"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] [inst_4 : Module.Oriented ℝ V (Fin 2)] [inst_5 : Fact (Module.finrank ℝ V = 2)]\n  {p1 p2 p3 : P},\n  p2 ≠ p1 →\n    p3 ≠ p2 →\n      p1 ≠ p3 →\n        EuclideanGeometry.oangle p1 p2 p3 + EuclideanGeometry.oangle p2 p3 p1 + EuclideanGeometry.oangle p3 p1 p2 =\n          ↑Real.pi"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  EuclideanGeometry.angle p1 p2 p3 + EuclideanGeometry.angle p2 p3 p1 + EuclideanGeometry.angle p3 p1 p2 = Real.pi"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P]\n  [inst_3 : NormedAddTorsor V P] {p1 p2 p3 : P},\n  p1 ≠ p2 →\n    p2 ≠ p3 →\n      p3 ≠ p1 →\n        EuclideanGeometry.angle p1 p2 p3 + EuclideanGeometry.angle p2 p3 p1 + EuclideanGeometry.angle p3 p1 p2 = Real.pi"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

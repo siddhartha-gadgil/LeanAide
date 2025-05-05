@@ -4,6 +4,7 @@ import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
 import LeanAide.TranslateM
 import LeanAide.PromptBuilder
+import LeanAide.TranslatorParams
 import Cli
 open Lean Cli LeanAide.Meta LeanAide Translator Translate
 
@@ -16,44 +17,10 @@ def runTranslate (p : Parsed) : IO UInt32 := do
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
-  let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
-    |>.getD 20
-  let numConcise := p.flag? "concise_descriptions" |>.map (fun s => s.as! Nat)
-    |>.getD 2
-  let numDesc := p.flag? "descriptions" |>.map
-    (fun s => s.as! Nat) |>.getD 2
-  let pbSource? := p.flag? "prompt_examples" |>.map
-    (fun s => s.as! String)
-  let pbJs? := pbSource?.bind fun pb =>
-    (Json.parse pb |>.toOption)
-  let pb? : Option PromptExampleBuilder := pbJs?.bind
-    fun js =>
-      fromJson? js |>.toOption
-  let pb := pb?.getD <|
-    PromptExampleBuilder.embedBuilder numSim numConcise numDesc
-  let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
-    |>.getD 10
-  let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
-    |>.getD 8
-  let temp : JsonNumber := ⟨temp10, 1⟩
-  let gemini := p.hasFlag "gemini"
-  let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD (if gemini then "gemini-1.5-pro-001" else "gpt-4o")
-  let azure := p.hasFlag "azure"
-  let tag := p.hasFlag "tag"
-  let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
-    |>.getD 1600
-  let sysLess := p.hasFlag "no_sysprompt"
-  let url? := p.flag? "url" |>.map (fun s => s.as! String)
+  let translator ←  Translator.ofCli p
+  let model := translator.server.model
   let showPrompt := p.hasFlag "show_prompt"
-  let chatServer :=
-    if azure then ChatServer.azure else
-    if gemini then ChatServer.google model else
-        match url? with
-        | some url => ChatServer.generic model url !sysLess
-        | none => ChatServer.openAI model
-  let chatParams : ChatParams :=
-    {temp := temp, n := queryNum, maxTokens := maxTokens}
+  let tag := p.hasFlag "tag"
   let gitHash ← gitHash
   let dir :=
     if tag then System.mkFilePath <| ["results", model, gitHash]
@@ -64,7 +31,6 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
-  let translator : Translator := {pb := pb, server := chatServer, params := chatParams}
   let core :=
     translator.translateViewVerboseM type   |>.runToCore
   let io? :=
@@ -143,13 +109,17 @@ def translateCmd : Cmd := `[Cli|
     p, prompts : Nat;      "Number of example prompts (default 10)."
     concise_descriptions : Nat; "Number of example concise descriptions (default 2)."
     descriptions : Nat; "Number of example descriptions (default 2)."
-    r, responses : Nat;    "Number of responses to ask for (default 10)."
+    leansearch_prompts: Nat; "Number of examples from LeanSearch"
+    moogle_prompts: Nat; "Number of examples from Moogle"
+    n, num_responses : Nat;    "Number of responses to ask for (default 10)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     m, model : String ; "Model to be used (default `gpt-4o`)"
     roundtrip; "Roundtrip the translation."
     azure; "Use Azure instead of OpenAI."
     gemini; "Use Gemini instead of OpenAI."
-    url : String; "URL to query (for a local server)."
+    url : String; "URL to query (for a local or generic server)."
+    examples_url : String; "URL to query for nearby embeddings (for a generic server)."
+    auth_key : String; "Authentication key (for a local or generic server)."
     show_prompt; "Output the prompt to the LLM."
     show_elaborated; "Output the elaborated terms"
     max_tokens : Nat; "Maximum tokens to use in the translation."

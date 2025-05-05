@@ -1,0 +1,5 @@
+{"type": "invalid_model",
+ "param": null,
+ "object": "error",
+ "message": "Invalid model: gpt-4o",
+ "code": "1500"}

@@ -32,8 +32,8 @@ def main : IO Unit := do
   let env ←
     importModules #[
     {module := `Mathlib},
-    {module := `LeanAide.ConstDeps}] {}
-  let dataPath : System.FilePath := ("resources"/ "mathlib4-descs.jsonl")
+    {module := `DataGenAide.ConstDeps}] {}
+  let dataPath : System.FilePath := (← resourcesDir)/ "mathlib4-descs.jsonl"
   let jsData ←
       IO.FS.lines dataPath
   let data :=  jsData.filterMap (fun js => Json.parse js |>.toOption)
@@ -46,8 +46,8 @@ def main : IO Unit := do
   let mp ← core.run' coreContext {env := env} |>.runToIO'
   IO.println s!"{mp.size} module pairs"
   IO.println s!"{dataMap.size} descriptions"
-  let head ← IO.FS.readFile (System.mkFilePath ["resources", "desc_head.html"])
-  let tail ← IO.FS.readFile (System.mkFilePath ["resources", "desc_tail.html"])
+  let head ← IO.FS.readFile ((← resourcesDir) / "desc_head.html")
+  let tail ← IO.FS.readFile ((← resourcesDir) / "desc_tail.html")
   IO.FS.writeFile (System.mkFilePath ["rawdata", "docs", "index.html"]) head
   let indexHandle ← IO.FS.Handle.mk (System.mkFilePath ["rawdata", "docs", "index.html"]) IO.FS.Mode.append
   indexHandle.putStrLn "<ul class=\"lead\">"

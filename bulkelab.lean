@@ -2,6 +2,7 @@ import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
+import LeanAide.TranslatorParams
 import Cli
 open Lean Cli LeanAide.Meta LeanAide Translator Translate
 
@@ -31,33 +32,25 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   let pb :=
     if includeFixed then pb₁ ++ pb₂ ++ PromptExampleBuilder.proofNetPromptBuilder
     else pb₁ ++ pb₂
-  let queryNum := p.flag? "responses" |>.map (fun s => s.as! Nat)
+  let queryNum := p.flag? "num_responses" |>.map (fun s => s.as! Nat)
     |>.getD 5
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
     |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
   let model := p.flag? "model" |>.map (fun s => s.as! String)
     |>.getD "gpt-4o"
-  let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
-    |>.getD 20
-  let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
-    |>.getD 0
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
     |>.getD 1600
-  let azure := p.hasFlag "azure"
-  let tag := p.hasFlag "tag"
-  let roundtrip := p.hasFlag "roundtrip"
-  let url? := p.flag? "url" |>.map (fun s => s.as! String)
-  let sysLess := p.hasFlag "no_sysprompt"
-  let chatServer :=
-    if azure then ChatServer.azure (model := model) else
-        match url? with
-        | some url => ChatServer.generic model url !sysLess
-        | none => ChatServer.openAI model
   let chatParams : ChatParams :=
     let params: ChatParams :=
       {temp := temp, n := queryNum, maxTokens := maxTokens}
     params.withoutStop (p.hasFlag "no_stop")
+  let translator : Translator ←  Translator.ofCli p
+  let tag := p.hasFlag "tag"
+  let delay := p.flag? "delay" |>.map (fun s => s.as! Nat)
+    |>.getD 20
+  let repeats := p.flag? "repeats" |>.map (fun s => s.as! Nat)
+    |>.getD 0
   let queryData? : Option (Std.HashMap String Json) ←
     p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM
       fun filename => do
@@ -70,7 +63,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
             let doc := (json.getObjValAs? String "docString" |>.toOption.orElse
             (fun _ => json.getObjValAs? String "doc_string" |>.toOption)
             ).get!
-            let out := json.getObjValAs? Json "choices" |>.toOption.get!
+            let out := json.getObjVal? "choices" |>.toOption.get!
             qdMap := qdMap.insert doc out
             IO.println doc
           | Except.error e => do
@@ -107,7 +100,6 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
   let dataMap :
     EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   IO.eprintln "Loaded hashmap"
-  let translator : Translator := {pb := pb, server := chatServer, params := chatParams, roundTrip := roundtrip}
   let core :=
     translator.checkTranslatedThmsM input_file  delay repeats
     queryData? tag |>.runWithEmbeddings dataMap
@@ -142,7 +134,7 @@ unsafe def bulkElab : Cmd := `[Cli|
     descriptions : Nat; "Number of example descriptions (default 2)."
     leansearch_prompts: Nat; "Number of examples from LeanSearch"
     moogle_prompts: Nat; "Number of examples from Moogle"
-    r, responses : Nat;    "Number of responses to ask for (default 5)."
+    n, num_responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     roundtrip; "Translate back to natural language and compare."
     m, model : String ; "Model to be used (default `gpt-4o`)"
@@ -151,6 +143,7 @@ unsafe def bulkElab : Cmd := `[Cli|
     repeats : Nat; "Number of times to repeat the request (default 0)."
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
+    examples_url : String; "URL to query for nearby embeddings (for a generic server)."
     tag; "Include the git hash in the results filepath"
     no_stop; "Don't use `:=` as a stop token."
     max_tokens : Nat; "Maximum tokens to use in the translation."

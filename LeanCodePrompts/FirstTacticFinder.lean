@@ -1,4 +1,4 @@
-import LeanAide.FirstTacticData
+import DataGenAide.FirstTacticData
 
 import LeanCodePrompts.Translate
 import Lean
@@ -204,7 +204,7 @@ def getTacticPrompts(s: String)(numSim : Nat)
         ("field", "core-prompt"),
         ("core-prompt", s),
         ("n", numSim),
-        ("model_name", "all-mpnet-base-v2")
+        ("model", "all-mpnet-base-v2")
       ]
       let simJsonOut ←
         IO.Process.output {cmd:= "curl", args:=

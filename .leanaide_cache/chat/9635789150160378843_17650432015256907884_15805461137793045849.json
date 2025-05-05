@@ -1,0 +1,80 @@
+{"usage":
+ {"total_tokens": 298,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 128,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 170},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AsTCMD5qU72bIowOeSNHCTIGEalEB",
+ "created": 1737545314,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "For every integer $n$, there exists an integer $k$ such that $n = 2k$."},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "For every integer $n$, there exists an integer $k$ such that $n = 2k$."},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "For every integer $n$, there exists an integer $k$ such that $n = 2k$."},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "For every integer $n$, there exists an integer $k$ such that $n = 2k$."},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "Every integer $n$ can be expressed as twice some integer $k$."},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "For every integer $n$, there exists an integer $k$ such that $n = 2k$."},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "Every integer $n$ can be expressed as twice another integer $k$."},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "For any integer $n$, there exists an integer $k$ such that $n = 2k$."},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"}]}

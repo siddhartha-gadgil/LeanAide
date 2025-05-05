@@ -65,10 +65,10 @@ def caseNames : MetaM (Std.HashMap String String) := do
         let mut m : Std.HashMap String String := Std.HashMap.empty
         for js in arr do
           let snakeCase? :=
-            (js.getObjVal? "snakecase").toOption.flatMap (fun s =>
+            (js.getObjVal? "snakecase").toOption.bind (fun s =>
                 s.getStr?.toOption)
           let camelCase? :=
-            (js.getObjVal? "camelcase").toOption.flatMap (fun s =>
+            (js.getObjVal? "camelcase").toOption.bind (fun s =>
                 s.getStr?.toOption)
           m := match (snakeCase?, camelCase?) with
             | (some sc, some cc) =>  m.insert sc cc
@@ -199,7 +199,7 @@ def binName?(s : String) : MetaM <| Option String := do
   let splitNoIs? := withoutIs? split
   let res := ((map.get? split).orElse
               (fun _ => mapNoIs.get? split)).orElse
-              (fun _ => splitNoIs?.flatMap (
+              (fun _ => splitNoIs?.bind (
                   fun splitNoIs => map.get? splitNoIs))
   return res
 

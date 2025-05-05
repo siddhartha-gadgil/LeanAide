@@ -1,4 +1,4 @@
-import LeanAide.Premises
+import DataGenAide.Premises
 import Lean.Meta
 import LeanAide.Config
 open Lean Meta LeanAide.Meta
@@ -15,14 +15,14 @@ def environment : IO Environment := do
     {module:= `LeanAide.TheoremElab},
 
     {module:= `LeanAide.VerboseDelabs},
-    {module:= `LeanAide.Premises},
+    {module:= `DataGenAide.Premises},
     {module := `Mathlib}] {}
 
 def environment' : IO Environment := do
   importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
 
-    {module:= `LeanAide.ConstDeps},
+    {module:= `DataGenAide.ConstDeps},
     {module := `Mathlib}] {}
 
 def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]
@@ -38,7 +38,7 @@ def main (args: List String) : IO Unit := do
   let propMap ← if ← path.pathExists then
         let lines ←  IO.FS.lines path
         let lines := lines.filterMap (fun l => (Lean.Json.parse l).toOption)
-        let dfns : Array DefnTypes :=
+        let dfns : Array DefDataRepr :=
           lines.filterMap (fun l=>  (fromJson? l).toOption)
         let propList := dfns.toList.filter (·.isProp) |>.map (fun d => (d.name.toString, (d.type, d.statement)))
         pure <| Std.HashMap.ofList propList

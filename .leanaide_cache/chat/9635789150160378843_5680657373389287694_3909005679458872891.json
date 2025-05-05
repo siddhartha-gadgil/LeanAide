@@ -1,0 +1,97 @@
+{"usage":
+ {"total_tokens": 1122,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 786,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 336},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AsimPYWKP2h7XYjzf7n8NVZl8lwoO",
+ "created": 1737605209,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Group.Perfect G ↔ Abelianization G ≃* PUnit"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Group.Perfect G ↔ Abelianization G ≃* (⊤ : Subgroup G)"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Group.Perfect G ↔ Abelianization G ≃* PUnit"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Group.IsPerfect G ↔ Abelianization G ≃* ⊥"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → PerfectGroup G ↔ Abelianization G ≃* (TrivialGroup : Type u_1)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Group.IsPerfect G := Abelianization G ≃* PUnit"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → PerfectGroup G ↔ Abelianization G ≃* punit"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Group.IsPerfect G ↔ Abelianization G ≃* (⊥ : Subgroup G)"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → Group.IsPerfect G := Abelianization G ≃* PUnit"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{G : Type u_1} → [inst : Group G] → PerfectGroup G ↔ Abelianization G ≃* PUnit"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

@@ -3,7 +3,7 @@ import Lean.Parser
 import Lean.Data.Json.Parser
 import Mathlib
 import LeanAide.VerboseDelabs
-import LeanAide.Premises
+import DataGenAide.Premises
 import LeanAide.SimpleFrontend
 open Lean Meta Elab Parser Json.Parser
 -- open Mathlib.Prelude.Rename

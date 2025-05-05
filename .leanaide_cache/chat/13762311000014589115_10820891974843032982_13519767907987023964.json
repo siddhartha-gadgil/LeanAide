@@ -1,0 +1,42 @@
+{"usage":
+ {"total_tokens": 2398,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2321,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 77},
+ "system_fingerprint": "fp_50cad350e4",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Awk53TMZixzC9SaAN2wUjBncw82XQ",
+ "created": 1738563521,
+ "choices":
+ [{"message":
+   {"role": "assistant", "refusal": null, "content": "∀ {n : ℕ}, 2 ∣ n ^ 2"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "∀ {n : ℕ}, 2 ∣ n ^ 2"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "∀ {n : ℕ}, Even (n ^ 2)"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "∀ {n : ℕ}, Even (n ^ 2)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "∀ {n : ℕ}, Even (n ^ 2)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"}]}

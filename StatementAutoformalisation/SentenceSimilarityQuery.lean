@@ -27,7 +27,7 @@ deriving Repr
 /-- Render a `Request` in `JSON` format. -/
 def Request.toJson (req : SentenceSimilarity.Request) : Lean.Json := .mkObj [
   ("filename", req.source),
-  ("model_name", req.sentenceTransformersModel),
+  ("model", req.sentenceTransformersModel),
   ("kind", req.kind),
   ("field", req.field),
   ("n", req.nSim),
@@ -35,13 +35,13 @@ def Request.toJson (req : SentenceSimilarity.Request) : Lean.Json := .mkObj [
 ]
 
 /-- Retrieve relevant declarations from `mathlib` via similarity of sentence embeddings. -/
-def Request.similarDecls (req : SentenceSimilarity.Request) : IO <| Array DeclarationWithDocstring := 
+def Request.similarDecls (req : SentenceSimilarity.Request) : IO <| Array DeclarationWithDocstring :=
   match req.nSim with
     | .zero => return #[]
     | _ => do
     let out ← IO.Process.output {cmd:= "curl", args:= #[
-      "-X", "POST", 
-      "-H", "Content-Type: application/json", 
+      "-X", "POST",
+      "-H", "Content-Type: application/json",
       "--data", req.toJson.pretty, s!"{← leanAideIP}/nearest_prompts"]}
     IO.ofExcept <| do
       let result ← Lean.Json.parse out.stdout
@@ -52,7 +52,7 @@ def Request.similarDecls (req : SentenceSimilarity.Request) : IO <| Array Declar
 def mergeRequests (reqs : Array SentenceSimilarity.Request) : IO <| Array DeclarationWithDocstring := do
   let decls ← reqs.mapM Request.similarDecls
   -- for now, the merging is done by just appending the data received from each request
-  -- TODO eventually use similarity scores to rank the declarations 
+  -- TODO eventually use similarity scores to rank the declarations
   return decls.foldl .append .empty
 
 end SentenceSimilarity

@@ -1,0 +1,97 @@
+{"usage":
+ {"total_tokens": 2189,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 1664,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 525},
+ "system_fingerprint": "fp_0f8c83e59b",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AuDFe53HjKpUBeSbo7iXvxl3dFjdc",
+ "created": 1737960670,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition IsSaneGroup : {G : Type u_1} → [inst : Group G] → Prop := fun {G} [Group G] => ∀ (H : Subgroup G), H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition SaneGroup : (G : Type u_1) → [Group G] → Prop := fun G [Group G] => ∀ H : Subgroup G, H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition IsSaneGroup : (G : Type u_1) → [inst : Group G] → Prop := fun G [Group G] => ∀ H : Subgroup G, H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition SaneGroup : (G : Type u_1) → [inst : Group G] → Prop := fun G [Group G] => ∀ (H : Subgroup G), H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition IsSaneGroup : {G : Type u_1} → [Group G] → Prop := fun {G} [Group G] => ∀ H : Subgroup G, H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition IsSaneGroup : {G : Type u_1} → [Group G] → Prop := fun {G} [Group G] => ∀ (H : Subgroup G), H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition IsSaneGroup : (G : Type u_1) → [inst : Group G] → Prop := fun G [Group G] => ∀ H : Subgroup G, H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition IsSaneGroup : (G : Type u_1) → [inst : Group G] → Prop := fun G [Group G] => ∀ H : Subgroup G, H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition IsSaneGroup : {G : Type u_1} → [inst : Group G] → Prop := fun {G} [Group G] => ∀ (H : Subgroup G), H.Normal → H < ⊤ → IsCyclic H"},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

@@ -1,0 +1,44 @@
+{"usage":
+ {"total_tokens": 1914,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 1828,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 86},
+ "system_fingerprint": "fp_4691090a87",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-AvdUM0E72WD9ngxCnYcScKlRNT5mG",
+ "created": 1738299854,
+ "choices":
+ [{"message":
+   {"role": "assistant", "refusal": null, "content": "∀ (n : ℕ), n * (n + 1)"},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ (n : ℕ), n * (n + 1) = n * n + n"},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "∀ (n : ℕ), n * (n + 1)"},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "∀ (n : ℕ), n * (n + 1)"},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "∀ (n : ℕ), n * (n + 1)"},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"}]}

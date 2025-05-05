@@ -1,0 +1,303 @@
+{
+  "document": [
+    {
+      "title": "RANDOM WORDS IN FREE GROUPS, NON-CROSSING MATCHINGS\nAND RNA SECONDARY STRUCTURES\nSIDDHARTHA GADGIL AND MANJUNATH KRISHNAPUR"
+    },
+    {
+      "abstract": "Consider a random word $X^n = (X_1, ..., X_n)$ in an alphabet consisting of 4 letters, with the letters viewed either as A, U, G and C (i.e., nucleotides in an RNA sequence) or $a, \\bar{a}, \\beta$ and $\\bar{\\beta}$ (i.e., generators of the free group $\\langle \\alpha, \\beta \\rangle$ and their inverses). We show that the expected fraction $p(n)$ of unpaired bases in an optimal RNA secondary structure (with only Watson-Crick bonds and no pseudoknots) converges to a constant $\\lambda_2$ with $0 < \\lambda_2 < 1$ as $n \\to \\infty$. Thus, a positive proportion of the bases of a random RNA string do not form hydrogen bonds. We do not know the exact value of $\\lambda_2$, but we derive upper and lower bounds for it.\nIn terms of free groups, $p(n)$ is the ratio of the length of the shortest word representing $X$ in the generating set consisting of conjugates of generators and their inverses to the word length of $X$ with respect to the standard generators and their inverses. Thus for a typical word the word length in the (infinite) generating set consisting of the conjugates of standard generators grows linearly with the word length in the standard generators. In fact, we show that a similar result holds for all non-abelian finitely generated free groups $\\langle \\alpha_1,..., \\alpha_k \\rangle, k \\ge 2$."
+    },
+    {
+      "name": "1",
+      "header": "INTRODUCTION",
+      "content": [
+        {
+          "block": "Consider a word $X$ in an alphabet consisting of 4 letters, with the letters viewed either as $a, \\bar{a}, \\beta$ and $\\bar{\\beta}$ (i.e., generators of the free group $\\langle \\alpha, \\beta \\rangle$ and their inverses, where we use the notation $\\bar{g}$ for $g^{-1}$) or A, U, G and C (i.e., nucleotides in an RNA sequence). There is a natural notion of a length $l(X)$ associated to such a word, which can be defined in several equivalent ways (see [1] and [2] for more details). We give three descriptions of $l$, two of which (as we indicate below) generalize to random words in $2k$ letters, for $k \\ge 2$.\n\n(1) If $X$ is viewed as a word in $\\langle a, \\beta \\rangle$ then $l$ is the maximal conjugacy-invariant length function on $\\langle a, \\beta \\rangle$ which satisfies $l(\\alpha) \\le 1$ and $l(\\beta) \\le 1$. Equivalently, $l$ is the word length in the generating set given by all conjugates $gag^{-1}, g\\bar{a}g^{-1}, g\\beta g^{-1}$ and $g\\bar{\\beta}g^{-1}$ of the generators of $\\langle \\alpha, \\beta \\rangle$ and their inverses (where $\\bar{\\alpha} = \\alpha^{-1}$ and $\\bar{\\beta} = \\beta^{-1}$). More generally, an arbitrary word in $2k$ letters gives an element of $\\langle \\alpha_1, ..., \\alpha_k \\rangle$, and $l$ can be defined as a maximal conjugacy-invariant length function (or word length in conjugates of generators and their inverses) in this case too.\n(2) If $X$ is viewed as a nucleotide sequence, then we can consider so called secondary structures of RNA [3], i.e., bonds between nucleotides of the RNA, with bonds being Watson-Crick pairs, i.e. hydrogen bonds between Adenine and Uracil and between Guanine and Cytosine, and stereo-chemical forces modelled by not allowing so called pseudo-knots (for details we refer to [1]). Then $l(X)$ is the minimum number of non-bonded nucleotides for secondary structures of $X$. This is a biologically reasonable notion of energy.\n(3) Again viewing $X = X^{(n)}$ as a word of length $n$ in the alphabet $\\alpha, \\bar{\\alpha}, \\beta$ and $\\bar{\\beta}$, we consider incomplete non-crossing matchings of the (indices of) letters in $X$ so that letters are matched with their inverses. Here a non-crossing matching is a set $P$ of pairs of indices $(i, j)$, $1 \\le i < j \\le n$, such that\n    (a) each $i$ belongs to at most one element of $P$,\n    (b) if $i < j < k < l$, then at most one of $(i, k)$ and $(j, l)$ belong to $P$,\n    (c) if $(i, j) \\in P$ then $X_i = \\bar{X}_j$.\nThe length $l(X)$ is the minimum number of unmatched letters over all non-crossing matchings. More generally we can take a random word in the alphabet with $2k$ letters $\\alpha_1, \\bar{\\alpha}_1, ..., \\alpha_k, \\bar{\\alpha}_k$ (where $\\bar{g}$ denotes $g^{-1}$) and consider non-crossing matchings with letters paired with their inverses, and define $l$ as the minimum number of unmatched letters over all non-crossing matchings."
+        },
+        {
+          "block": "Henceforth, fix $k \\ge 2$ and consider a random string $X = X^{(n)}$ of length $n$ in $2k$ letters as above (i.e., a random word). The case $k=2$ corresponds to RNA secondary structures, but most of our results and proofs are uniform in $k$. Let $L_k(n) = E [l(X^{(n)})]$ where the expectation is over uniform distribution on strings of length $n$. Let $p_k(n) = L_k(n)/n$ denote the average proportion of unpaired letters."
+        },
+        {
+          "block": "Our main result is that this fraction converges to a positive constant."
+        },
+        {
+          "name": "Theorem 1",
+          "header": "Theorem 1",
+          "claim": "With the above notations, $p_k(n) \\to \\lambda_k$ for some constant $0 < \\lambda_k < 1$. Thus, the average proportion of unpaired bases in an optimal secondary structure for a random RNA string converges to a positive constant as the length of the RNA string approaches infinity. Equivalently, for a word $X$ in the free group $\\langle \\alpha, \\beta \\rangle$ (or more generally in the free group $\\langle \\alpha_1,..., \\alpha_k \\rangle$ for $k \\ge 2$), the average ratio of the word length of $X$ in the (infinite) generating set consisting of conjugates of generators and their inverses to the word length of $X$ in the standard generators and their inverses converges to a positive constant. We remark that this result is also true, but essentially trivial, for the free group $\\mathbb{Z}$ on 1 generator (for the group $\\mathbb{Z}$, the two generating sets, hence the corresponding word lengths, coincide)."
+        },
+        {
+          "block": "We also show that $l(X^n)/n$ has exponential concentration in a window of length $1/\\sqrt{n}$ around its expectation $p_k(n)$, and hence around $\\lambda_k$."
+        },
+        {
+          "name": "Proposition 2",
+          "header": "Proposition 2",
+          "claim": "$P \\{ | l(X^{(n)}) - np_k(n) | > t\\sqrt{n}\\} \\le 2e^{-\\frac{t^2}{2}}$ for any $t > 0$."
+        },
+        {
+          "block": "An immediate corollary is that the standard deviation of $l(X^n)$ is $O(\\sqrt{n})$.\nAs for proofs, the existence of the limit $\\lambda_k$ and the exponential concentration are proved using sub-additivity and Hoeffding's inequality respectively, which are standard methods in combinatorial optimization problems. Showing that $\\lambda_k$ is strictly positive, and getting bounds for its value require more involved arguments. It would be interesting to find the exact value of $\\lambda_k$, particularly $\\lambda_2$. We are only able to get bounds.\nFor $k = 2$, we prove the explicit bounds $0.034 < \\lambda_2 < 0.231$. The proof of Theorem 1 given in Section 3 gives the lower bound of 0.03, which is then refined to get the slightly better lower bound of 0.034. Elementary arguments in Section 4 give an upper bound of 0.289 which is improved to $\\frac{3}{13} \\approx 0.2307 \\dots$ in Section 6. This is achieved by analysing a specific algorithm for producing a non-crossing matching described below."
+        },
+        {
+          "block": "**The one-sided greedy algorithm.** Scan the letters $X_1, X_2, \\dots$ in that order and when the turn of $X_t$ comes (starting from $t=1$), match it to $X_s$ with the largest value of $s < t$, if possible (i.e., $X_s = \\bar{X}_t$, and there is no $u \\in (s, t)$ such that $X_u = \\bar{X}_t$, and the non-crossing condition is maintained).\nFor example, if $k=2$ and the word is $\\alpha \\beta \\alpha \\bar{\\beta} \\alpha \\alpha \\beta \\bar{\\beta}$, then the matching is $3 \\to 5$, $2 \\to 7$ (here 3, 5, 2, 7 represent the indices in the word, of course)."
+        },
+        {
+          "name": "Proposition 3",
+          "header": "Proposition 3",
+          "claim": "In the one-sided greedy algorithm, the proportion of unmatched letters converges to\n$$ (1) \\qquad \\bar{\\lambda}_k = 1 - \\frac{\\sum_{r=1}^k r 2^r \\binom{k}{r} \\prod_{j=1}^r \\frac{j(j+1)}{j(2k-j)-1}}{\\sum_{r=0}^k \\binom{k}{r} 2^r \\prod_{j=1}^r \\frac{j(j+1)}{j(2k-j)-1}} $$ Therefore $\\lambda_k \\le \\bar{\\lambda}_k$."
+        },
+        {
+          "block": "The numerical values of upper bound for the first few $k$ are\n\n| k | 2 | 3 | 4 | 5 |\n|---|---|---|---|---|\n| $\\bar{\\lambda}_k$ | $\\frac{3}{13} = 0.231...$ | $\\frac{33}{100} = 0.33$ | $\\frac{297}{455} \\approx 0.393...$ | $\\frac{3126}{7115} \\approx 0.439...$ |\n\nProposition 3 is proved by analysing an associated Markov chain on the space of words. This Markov chain is described in Section 6, where we also find its stationary distribution explicitly. It may be of independent interest, as there are not many examples of chains that are neither reversible nor have a doubly stochastic transition matrix for which we can solve for the stationary distribution exactly.\nThere is some slack in our proofs, so our bounds can be sharpened. However our goal here is to give a simple and transparent proof. In fact certain enumerative algorithms suggest that $\\lambda_2 < 0.11$ but we are unable to analyse these algorithms rigorously."
+        },
+        {
+          "block": "**Dependence of $\\lambda_k$ on k.** One may also ask about the behaviour of $\\lambda_k$ as a function of $k$. We claim that $\\lambda_k \\le \\lambda_{k+1}$. This is easiest seen by coupling. Consider a random word $X^n$ using symbols $\\alpha_i, \\bar{\\alpha}_i, 1 \\le i \\le k+1$. Let $X_{(j)}$ denote the word got by deleting all occurrences of $\\alpha_j, \\bar{\\alpha}_j$ in $X^{(n)}$, and let $N_j$ be the length of $X_{(j)}$. Let $l_{(j)}$ denote the number of unmatched letters when the optimal matching on $X^n$ is restricted to $X_{(j)}$. Then $l_{(1)} + ... + l_{(k+1)} = kl(X^n)$ and hence taking expectations and using symmetry,\n$$ (2) \\qquad (k+1)E[L_k(N_1)] \\le k L_{k+1}(n). $$ The expectation on the left is over the randomness in $N_1$ which has Binomial distribution with parameters $(n, k/(k+1))$. By Chebyshev's inequality, $P\\{n_{-} \\le N_1 \\le n_{+}\\} \\ge 1 - O(n^{-\\frac{1}{2}})$, where $n_{\\pm} = \\frac{kn}{k+1} \\pm n^{\\frac{3}{4}}$. As $n \\to L_k(n)$ is obviously increasing in $n$,\n$$ E[L_k(N_1)] \\ge (1 - O(n^{-\\frac{1}{2}})) L_k(n_{-}). $$ Combine this with (2), divide by $n$, and let $n \\to \\infty$ to get $\\lambda_k \\le \\lambda_{k+1}$.\nFurther, we show in Proposition 15 that $\\lambda_k \\to 1$ as $k \\to \\infty$."
+        },
+        {
+          "name": "Remark 4",
+          "header": "Remark 4",
+          "remark": "As a consequence of the convergence of the fraction unmatched to a positive constant and the concentration result, it follows that there is some scale $N$ so that, for a generic RNA strand, optimal structures on pieces of length $N$ can be concatenated to give a near-optimal structure on the whole strand. As bonds at long distances are less likely to form, it follows that RNA folding can be localized to this scale, which makes foldings easier to analyse."
+        },
+        {
+          "block": "**Outline of the paper.** In Section 2 we show that the different ways of defining the length $l$ outlined above give the same function. In Section 3 we prove Theorem 1 and the above-stated lower bounds for $\\lambda_2$. In Section 4 we present an elementary argument to obtain the upper bound of 0.289 for $\\lambda_2$. In Section 5, we prove Proposition 2. In Section 6 we introduce the Markov chain associated to the one-sided greedy algorithm, and explicitly analyse it prove Proposition 3. In particular, this leads to the improved upper bound for $\\lambda_2$."
+        }
+      ]
+    },
+    {
+      "name": "2",
+      "header": "PRELIMINARIES",
+      "content": [
+        {
+          "block": "For the convenience of the reader, we define length functions on groups and show that three definitions of the length $l$ on $\\langle \\alpha_1,...,\\alpha_k \\rangle$ given above give the same function. The results in this section are elementary."
+        },
+        {
+          "name": "Definition 5",
+          "header": "Definition 5",
+          "definition": "Let $G = (G, \\cdot, e, (\\cdot)^{-1})$ be a group (written multiplicatively, with identity element $e$). A length function on $G$ is a map $l : G \\to [0, +\\infty)$ that obeys the properties\n\n*   $l(e) = 0$,\n*   $l(x) > 0$, for all $x \\in G \\setminus \\{e\\}$,\n*   $l(x^{-1}) = l(x)$, for all $x, y \\in G$.\n*   $l(xy) \\le l(x) + l(y)$, for all $x, y \\in G$."
+        },
+        {
+          "name": "Definition 6",
+          "header": "Definition 6",
+          "definition": "We say that a length function $l$ is conjugacy-invariant if $l(xyx^{-1}) = l(y)$ for all $x, y \\in G$."
+        },
+        {
+          "block": "We shall see here that three definitions of a length $l : \\langle \\alpha_1,..., \\alpha_k \\rangle \\to [0, \\infty)$ coincide. We also give more details of these definitions."
+        },
+        {
+          "block": "**2.1. Maximal length.** Consider the set $\\mathcal{L}$ consisting of conjugacy-invariant length functions $l: \\langle \\alpha_1,..., \\alpha_k \\rangle \\to [0, +\\infty)$ satisfying $l(\\alpha_i) \\le 1$ for all $1 \\le i \\le k$. We have a partial order on length functions on $\\langle \\alpha_1, ..., \\alpha_k \\rangle$ given by $l_1 \\le l_2$ if and only if $l_1(g) \\le l_2(g)$ for all $g \\in \\langle \\alpha_1, . . ., \\alpha_k \\rangle$. For this order, it is well known that there is a (necessarily unique, by properties of posets) maximal element. Namely, define\n$$ l_{max}(g) = \\sup\\{l(g) : l \\in \\mathcal{L}\\}. $$ Note that the set $\\{l(g) : l \\in \\mathcal{L}\\}$ is bounded by the word length of $g$, so has a supremum. It is easy to see that $l_{max}$ is a conjugacy-invariant length function, and that $l(\\alpha_i) \\le 1$ for all $1 \\le i \\le k$. Thus $l_{max} \\in \\mathcal{L}$. Further, by construction, if $l \\in \\mathcal{L}$, then $l \\le l_{max}$. Thus $l_{max}$ is the maximum of the set $\\mathcal{L}$."
+        },
+        {
+          "block": "**2.2. Word length in conjugates of generators.** Let $l_{cw}: \\langle \\alpha_1,..., \\alpha_k \\rangle \\to [0,+\\infty)$ be the function given by the word length in the generating set consisting of all conjugates of the generators $\\alpha_i$, $1 \\le i \\le k$. Thus, for $g \\in \\langle \\alpha_1,..., \\alpha_k \\rangle$, $l_{cw}(g)$ is the smallest value $r \\ge 0$ so that $g$ can be expressed as\n$$ g = \\prod_{j=1}^r \\beta_j \\alpha_{i_j}^{\\epsilon_j} \\beta_j^{-1}, $$ where $\\beta_j \\in \\langle \\alpha_1,..., \\alpha_k \\rangle$ and $\\epsilon_j = \\pm 1$, for $1 \\le j \\le r$."
+        },
+        {
+          "name": "Proposition 7",
+          "header": "Proposition 7",
+          "claim": "We have $l_{cw} = l_{max}$."
+        },
+        {
+          "proof": {
+            "claim_name": "Proposition 7",
+            "proof_steps": [
+              {
+                "block": "We see that $l_{cw} \\in \\mathcal{L}$. This is because the word length in a conjugacy-invariant set is a conjugacy-invariant length function, and $l_{cw}(\\alpha_i) = 1$ for $1 \\le i \\le k$.\nFurther, we see that $l_{cw}$ is maximal. Namely, let $l \\in \\mathcal{L}$, $g \\in G$ and let $r = l_{cw}(g)$. Then we can express $g$ as $g = \\prod_{j=1}^r \\beta_j \\alpha_{i_j}^{\\epsilon_j} \\beta_j^{-1}$. By the triangle inequality, conjugacy-invariance, symmetry, and using $l(\\alpha_i) \\le 1$ for $1 \\le i \\le k$,\n$$ l(g) \\le \\sum_{j=1}^r l(\\beta_j \\alpha_{i_j}^{\\epsilon_j} \\beta_j^{-1}) \\le \\sum_{j=1}^r l(\\alpha_{i_j}^{\\epsilon_j}) \\le \\sum_{j=1}^r 1 = r = l_{cw}(g), $$ as required\nAs $l_{cw} \\in \\mathcal{L}$ is maximal, $l_{cw} = l_{max}$. $\\square$"
+              }
+            ]
+          }
+        },
+        {
+          "block": "**2.3. Length from non-crossing matchings.** Let $X^{(n)} = (X_1, ..., X_n)$ be a word in the alphabet with $2k$ letters $\\alpha_1, \\bar{\\alpha}_1, ..., \\alpha_k, \\bar{\\alpha}_k$. Let $NC$ stand for incomplete non-crossing matchings of $[n] = \\{1, 2, ..., n\\}$. Let $NC_k(X)$ be the subset of $M \\in NC$ such that for each matched pair $(i, j) \\in M$ we have $\\{X_i, X_j\\} = \\{\\alpha_\\ell, \\bar{\\alpha}_\\ell\\}$ for some $l \\le k$.\nlet $l_{NC}(X)$ be the minimum number of unmatched pairs in all non-crossing matchings so that letters are paired with their inverses. We sketch the proofs that this is well-defined on $\\langle \\alpha_1, ..., \\alpha_k \\rangle$, a conjugacy invariant length function and that $l_{NC} = l_{max}$. For more details, see [2] (which however has different terminology, and considers proofs for the case of two generators, though the proofs work just the same for general $k$)."
+        },
+        {
+          "name": "Lemma 8",
+          "header": "Lemma 8",
+          "claim": "Suppose $X_1$ and $X_2$ represent the same element in the group $\\langle \\alpha_1,..., \\alpha_k \\rangle$, then $l_{NC}(X_1) = l_{NC}(X_2)$."
+        },
+        {
+          "proof": {
+            "claim_name": "Lemma 8",
+            "proof_steps": [
+              {
+                "block": "It suffices to consider the case where $X_1$ and $X_2$ are related by a single cancellation. Without loss of generality, assume that there exist words $W_1$ and $W_2$ and an index $1 \\le j \\le k$ such that $X_1 = W_1 \\alpha_j \\bar{\\alpha}_j W_2$ and $X_2 = W_1 W_2$. Let $\\mu_p$ be the length of $W_p$ for $p = 1, 2$. Note that the cancelling pair corresponds to the pair $(\\mu_1 + 1, \\mu_1 + 2)$ of indices.\nWe show that $l_{NC}(X_1) = l_{NC}(X_2)$. First, fix a non-crossing matching $M_1$ of $X_1$ with $l_{NC}(X_1)$ unmatched letters and with letters paired with their inverses. Let $\\sigma : \\mathbb{N} \\to \\mathbb{N}$ be defined by\n$$ \\sigma(m) = \\begin{cases} m & \\text{if } m \\le \\mu_1, \\\\ m+2 & \\text{if } m > \\mu_1 \\end{cases} $$ Then $M_2 := \\sigma(M_1) \\cup \\{(\\mu_1 + 1, \\mu_1 + 2)\\} \\in NC_k(X_2)$ and has $l_{NC}(X_1)$ unmatched letters (i.e., the same as $M_1$). Hence $l_{NC}(X_2) \\le l_{NC}(X_1)$.\nConversely, fix a non-crossing matching $M_2 \\in NC_k(X_2)$ with $l_{NC}(X_2)$ unmatched letters. Suppose at most one of $\\mu + 1$ and $\\mu + 2$ is matched in $M'$, and $(i, j) \\in M$ is the corresponding pair with $j \\in \\{\\mu + 1, \\mu + 2\\}$. Then $M_1 := M_2 \\setminus \\{(i, j)\\} \\in NC_k(X_1)$ and $M_1$ has at most $l_{NC}(X_2)$ unmatched letters.\nNext, if $(\\mu + 1, \\mu + 2) \\in M_2$, then $M_1 := M_2 \\setminus \\{(\\mu + 1, \\mu + 2)\\} \\in NC_k(X_1)$ and $M_1$ has $l_{NC}(X_2)$ unmatched letters.\nFinally, if for some indices $i$ and $j$ we have $(i, \\mu + 1) \\in M_2$ and $(j, \\mu + 2) \\in M_2$ (after possibly flipping some pairs), we can see that\n$$ M_1 := M_2 \\cup \\{(\\mu + 1, \\mu + 2)\\} \\setminus \\{(i, \\mu + 1), (j, \\mu + 2)\\} \\in NC_k(X_1) $$ and $M_1$ has $l_{NC}(X_2)$ unmatched letters.\nIn all cases, we conclude that $l_{NC}(X_1) \\le l_{NC}(X_2)$. $\\square$"
+              }
+            ]
+          }
+        },
+        {
+          "block": "It follows that $l_{NC}$ induces a well-defined function on $\\langle \\alpha_1,..., \\alpha_k \\rangle$, which we also denote as $l_{NC}$. It is easy to see that it is a length function. The proof of the following is very similar to that of Lemma 8."
+        },
+        {
+          "name": "Lemma 9",
+          "header": "Lemma 9",
+          "claim": "Suppose $g, h \\in \\langle \\alpha_1, ..., \\alpha_k \\rangle$, then $l_{NC}(hgh^{-1}) = l_{NC}(g)$. $\\square$"
+        },
+        {
+          "block": "It is easy to see that $l_{NC}(\\alpha_i) = 1$ for all $1 \\le i \\le k$, and that $l_{NC}$ is symmetric. Thus $l_{NC} \\in \\mathcal{L}$. Hence, to show that $l_{NC} = l_{max}$ it suffices to prove maximality, which we prove next."
+        },
+        {
+          "name": "Lemma 10",
+          "header": "Lemma 10",
+          "claim": "Suppose $l \\in \\mathcal{L}$ and $g \\in \\langle \\alpha_1, ..., \\alpha_k \\rangle$. Then $l(g) \\le l_{NC}(g)$."
+        },
+        {
+          "proof": {
+            "claim_name": "Lemma 10",
+            "proof_steps": [
+              {
+                "block": "Let $X$ be a word representing $g$. We prove the lemma by (strong) induction on the length $n$ of $X$. The case when the length is zero is clear. Consider a non-crossing matching $M \\in NC_k(X)$ with $l_{NC}(X)$ unmatched letters. First, suppose the index 1 is unmatched in $M$, let $\\hat{X}$ be obtained from $X$ by deleting the first letter. Then $M \\in NC_k(\\hat{X})$, so by induction hypothesis, $l(\\hat{X}) \\le l_{NC}(\\hat{X})$. Further, as $M$ restricted to $\\hat{X}$ has one less unmatched letter than $M$, we conclude that $l_{NC}(X) = l_{NC}(\\hat{X}) + 1$. As the first letter of $X$ is a generator or the inverse of a generator, using the triangle inequality\n$$ l(X) \\le 1 + l(\\hat{X}) \\le 1 + l_{NC}(\\hat{X}) = l_{NC}(X). $$ Next, if the pair $(1, j) \\in M$ with $j < n$, we split the word $X$ as $X = X_1 * X_2$ with $X_1$ of length $j$. Observe that the non-crossing condition implies that $M$ decomposes as $M_1 \\cup M_2$ with $M_1 \\in NC_k(X_1)$ and $M_2 \\in NC_k(X_2)$. Again, we use the induction hypothesis and the triangle inequality to conclude that $l(X) \\le l_{NC}(X)$.\nFinally, if $(1, n) \\in M$, let $\\hat{X}$ be obtained from $X$ by deleting the first and last letter. By conjugacy invariance of $l$ and $l_{NC}$, $l(X) = l(\\hat{X})$ and $l_{NC}(X) = l_{NC}(\\hat{X})$. Applying the induction hypothesis to $\\hat{X}$ gives the claim. $\\square$"
+              }
+            ]
+          }
+        },
+        {
+          "block": "Thus, we can conclude the following."
+        },
+        {
+          "name": "Proposition 11",
+          "header": "Proposition 11",
+          "claim": "We have $l_{NC} = l_{max}$."
+        }
+      ]
+    },
+    {
+      "name": "3",
+      "header": "THE PROPORTION OF UNMATCHED INDICES",
+      "content": [
+        {
+          "block": "In this section, we prove Theorem 1 and get lower bounds on $\\lambda_2$. At first, $k$ is fixed, hence we drop it in the subscripts of $L(n)$ and $p(n)$."
+        },
+        {
+          "block": "The first observation is that $L(n)$ is sub-additive."
+        },
+        {
+          "name": "Lemma 12",
+          "header": "Lemma 12",
+          "claim": "For $m, n > 0$, $L(m + n) \\le L(m) + L(n)$."
+        },
+        {
+          "proof": {
+            "claim_name": "Lemma 12",
+            "proof_steps": [
+              {
+                "block": "A string $X^{(m+n)}$ of i.i.d. random variables of length $m + n$ is obtained by taking the concatenation $X^{(n)}_1 * X^{(m)}_2$ of two strings $X^{(n)}_1$ and $X^{(m)}_2$ of i.i.d. random variables of lengths $n$ and $m$ respectively. As the union of elements $M_1 = NC_k(X_1)$ and $M_2 = NC_k(X_2)$ gives a matching $M \\in NC_k(X)$, it is easy to see that $l(X) \\le l(X_1) + l(X_2)$. By taking expectations the lemma follows. $\\square$"
+              }
+            ]
+          }
+        },
+        {
+          "block": "As a well known consequence of sub-additivity (Fekete's lemma), we obtain the following."
+        },
+        {
+          "name": "Corollary 13",
+          "header": "Corollary 13",
+          "claim": "The sequence $p(n) = L(n)/n$ converges to $\\lambda_k := \\inf_n p(n)$."
+        },
+        {
+          "block": "As $0 \\le p(n) \\le 1$, we get $0 \\le \\lambda_k \\le 1$. It is easy to get some upper bounds for $\\lambda_k$ by computing $p(n)$ for small $n$ (as $\\lambda_k$ is the infimum of $p(n)$). For instance, for $k=2$ and $n=4$, $l(X)$ takes values 0, 2 and 4 with probabilities 28/256, 168/256 and 60/256, respectively, hence $\\lambda_2 \\le \\rho(4) = 9/16$. The harder thing is to get lower bounds. Our main result is that $\\lambda_k$, which is the asymptotic proportion of unpaired bases, is positive."
+        },
+        {
+          "name": "Lemma 14",
+          "header": "Lemma 14",
+          "claim": "We have $\\lambda_k > 0$."
+        },
+        {
+          "proof": {
+            "claim_name": "Lemma 14",
+            "proof_steps": [
+              {
+                "block": "Fix $\\delta > 0$. Observe that\n$$ L(n) \\ge n \\delta \\cdot P(l(X^{(n)}) \\ge n \\delta), $$ and hence\n$$ \\rho(n) \\ge \\delta P(l(X^{(n)}) \\ge n \\delta). $$ Thus, if we have $P(l(X^{(n)}) \\ge n \\delta) \\to 1$ as $n \\to \\infty$, then $\\lambda_k \\ge \\delta$. Thus it suffices to find a $\\delta > 0$ for which we can show that $P(l(X^{(n)}) \\ge n \\delta) \\to 1$, or equivalently show that\n$$ P(l(X^{(n)}) < n \\delta) \\to 0 $$ as $n \\to \\infty$.\nWe shall now bound $P(l(X^{(n)}) < n \\delta)$ for small enough $\\delta$. Note that if $W(n, \\delta)$ is the number of words $X$ of length $n$ with $l(X) < n \\delta$, then\n$$ P(l(X^{(n)}) < n \\delta) = \\frac{W(n, \\delta)}{(2k)^n} $$"
+              },
+              {
+                "block": "Let $m = [\\frac{n-n\\delta}{2}]$ and let $r = n - 2m$. Observe that if $l(X^{(n)}) < n \\delta$, then $X = X^{(n)}$ has a non-crossing matching with at least $2m$ pairs, and hence a non-crossing matching $M$ with exactly $2m$ pairs (by simply dropping a few pairs). Given such an $M$, we can associate to $X$ a triple $(Y, Z, s)$ where\n\n*   $Y$ is the word (of length $r$) consisting of the letters of $X$ that are unmatched in $M$, in the same order as in $X$,\n*   $Z$ is the word (of length $2m$) consisting of the letters of $X$ that are matched in $M$, in the same order as in $X$, and,\n*   $s$ is the set of indices $i$, $1 \\le i \\le n$, that are unmatched.\nNote that $M$ gives a complete non-crossing matching on $Z$, and hence $Z$ represents the trivial word in $\\langle \\alpha_1, ..., \\alpha_k \\rangle$. As the triple $(Y, Z, s)$ determines $X$, it follows that the number $W(n, \\delta)$ of words $X$ of length $n$ with $l(X) < n \\delta$ is bounded above by the number of triples $(Y, Z, s)$, with\n\n*   $Y$ a word of length $r$,\n*   $Z$ a word of length $2m$ that represents the trivial element in the free group, and\n*   $s$ a subset of size $r$ of $\\{1, 2, ..., n\\}$.\nLet $T_p$ denote the set of words of length $p$ that represent the trivial element in the group $\\langle \\alpha_1,..., \\alpha_k \\rangle$. It follows that\n$$ (3) \\qquad |W(n, \\delta)| \\le \\binom{n}{r} (2k)^r |T_{2m}| $$ The main step remaining is to bound $|T_{2m}|$. Let $\\tau_p = |T_p|/(2k)^p$ represent the probability that a random word of length $p$ represents the trivial element in $\\langle \\alpha_1, . . ., \\alpha_k \\rangle$. We observe that this is the probability that the standard symmetric random walk on the Cayley graph of the free group (with the canonical generators and their inverses) starting at the identity returns to the identity in $p$ steps. It is clear that $\\tau_p \\tau_q \\le \\tau_{p+q}$, and hence by the Fekete lemma (applied to $\\log \\tau_p$), we see that $\\tau_p^{1/p} \\to \\theta_k := \\sup_p \\tau_p^{1/p}$. This means that $\\tau_p \\le \\theta_k^p$ for each $p \\ge 1$. Of course $\\tau_p = 0$ for odd $p$. It is a known fact that $\\theta_k = \\frac{\\sqrt{2k-1}}{k}$ (for example Kesten [4]). To see this, observe that the graph distance of the random walk to the identity element is itself a random walk on $\\mathbb{N} = \\{0, 1, 2, . . .\\}$ that goes from $i \\to i + 1$ with probability $(2k-1)/2k$ and $i \\to i - 1$ with probability $1/2k$, for $i \\ge 1$, and from 0 to 1 with probability 1. The number of walks of length $p = 2m$ that return to the origin in $\\mathbb{N}$ is the Catalan number $\\frac{1}{m+1} \\binom{2m}{m}$, and each such path (since it has $m$ up-steps and $m$ down-steps) has probability $(2k - 1)^m / (2k)^{2m}$. Therefore,\n$$ \\tau_{2m} = \\frac{(2k-1)^m}{(2k)^{2m}} \\frac{1}{(m+1)} \\binom{2m}{m} \\sim \\frac{1}{\\sqrt{\\pi} m^{3/2}} \\frac{(2k - 1)^m}{k^{2m}} $$ by Stirling's formula, where $a_m \\sim b_m$ means that $a_m/b_m$ converges to 1 as $m \\to \\infty$. In particular, we see that $\\tau_{2m}^{1/2m} \\to \\frac{\\sqrt{2k-1}}{k}$. Hence $\\theta_k = \\frac{\\sqrt{2k-1}}{k}$. In particular, $\\theta_2 = \\sqrt{3}/2$, which we use for explicit estimates on $\\lambda_2$.\nIt is now straightforward to complete the proof. For simplicity of notation, we ignore the error in rounding off to an integer and assume $r = n \\delta$. Using the elementary fact that $\\binom{n}{r} \\le e^{n h(\\delta)}$ where $h(\\delta) = -\\delta \\log(\\delta) - (1 - \\delta) \\log(1 - \\delta)$ in (3), we get\n$$ P(l(X^{(n)}) < n \\delta) \\le \\exp \\{n (h(\\delta) + \\log \\theta_k))\\} $$ Hence $P(l(X^{(n)}) < n \\delta) \\to 0$ as $n \\to \\infty$ provided $h(\\delta) + \\log \\theta_k < 0$.\nWhen $k = 2$, as $\\theta_2 = \\sqrt{3}/2$, this happens, for example, for $\\delta = 0.03$. Thus, we have $\\lambda_2 \\ge 0.03$, i.e. at least 3% of the letters are unmatched for the best non-crossing matching for most words.\nNext, suppose $k \\to \\infty$. We see that $\\lambda_k \\to \\infty$. $\\square$"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Proposition 15",
+          "header": "Proposition 15",
+          "claim": "We have $\\lim_{k\\to\\infty} \\lambda_k = 1$."
+        },
+        {
+          "proof": {
+            "claim_name": "Proposition 15",
+            "proof_steps": [
+              {
+                "block": "Observe that $\\theta_k = \\frac{\\sqrt{2k-1}}{k} \\to 0$ as $k \\to \\infty$, hence $\\log(\\theta_k) \\to -\\infty$. It follows that for any fixed $\\delta \\in (0, 1)$, if $k$ is sufficiently large we have $h(\\delta) + \\log \\theta_k < 0$, hence $\\lambda_k > \\delta$. As $\\lambda_k < 1$ for all $k$, $\\lim_{k\\to\\infty} \\lambda_k = 1$. $\\square$"
+              }
+            ]
+          }
+        },
+        {
+          "block": "Thus, we have shown that the limit $\\lambda_k$ of the sequence $p(n)$ exists and is positive. This completes the proof of Theorem 1, with the effective bound $\\lambda_2 \\ge 0.03$ for $k=2$ (other effective bounds can be computed similarly). $\\square$"
+        },
+        {
+          "block": "**3.1. Refinement of the lower bound for $\\lambda_2$ using maximal triples.** We can refine the bound we obtained by choosing the triple $(Y, Z, s)$ in a canonical way (note that we do not, however, choose a canonical non-crossing matching on $Z$). Namely we try to match letters with as low indices as possible among all minimal non-crossing matchings. We fix $k=2$ (so $(\\alpha_1,..., \\alpha_k) = (\\alpha, \\beta)$) in this subsection."
+        },
+        {
+          "block": "First, observe that for fixed $X$, the words $Y$ and $Z$ are determined by $s$. More generally, given $X$, any subset $s \\subset [n]$ determines words $Y = Y(X, s)$ and $Z = Z(X, s)$, but in general the word $Z(X, s)$ may not represent the trivial element in $(\\alpha_1,..., \\alpha_k)$. We shall say the triple $(Y(s), Z(s), s)$ determined by $s$ (and $X$) is admissible provided $Z$ represents the trivial element.\nThe set $s$ can be viewed as a finite sequence by ordering its elements lexicographically, and two such sets can be compared using the lexicographic ordering on finite sequences, which is a total ordering. We order admissible triples $(Y, Z, s)$ by the component $s$ and choose the maximal admissible triple for each fixed $X$.\nWe can decompose $s$ as $s = s_1 \\cup s_2$, with $s_2$ (the tail) consisting of those elements $i \\in s$ such that if $j \\in [n] \\setminus s$, then $j < i$. Conversely, given an element $i \\in s_1$ there exists $j \\in [n] \\setminus s$ such that $j > i$. For $i \\in s_1$, let $\\hat{i}$ be the smallest element in $[n] \\setminus s$ such that $\\hat{i} > i$, i.e., $\\hat{i}$ is the first matched index after the unmatched index $i$. Geometrically, the unmatched indices $s$ are in general interspersed with the matched indices, with a (possibly empty) tail $s_2$ of unmatched indices which are larger than all matched indices.\nWe claim that if $(X, Y, s)$ is maximal and $i \\in s_1$, then $X_i \\ne \\bar{X}_{\\hat{i}}$. For, if $X_i = \\bar{X}_{\\hat{i}}$, let $s' = s \\setminus \\{i\\} \\cup \\{\\hat{i}\\}$, $Y' = Y(X, s')$ and $Z' = Z(X, s')$. Then $Z' = Z$ as words in the free group, as the letter $X_{\\hat{i}}$ in $Z$ has been replaced by $X_i = \\bar{X}_{\\hat{i}}$ in $Z'$, and in the order on indices, $i$ has the same position in $Z'$ as $\\hat{i}$ has in $Z$ (this is because, if $j \\in [n] \\setminus (s \\cup s')$ is an index in both $Z$ and $Z'$, then $j < i$ if and only if $j < \\hat{i}$ by definition of $\\hat{i}$). Hence $Z'$ represents the trivial word. Hence the triple $(Y', Z', s')$ is admissible, and $s$ and $s'$ have the same cardinality. But $s < s'$, contradicting maximality of $s$.\nThus, writing $Y = Y_1 * Y_2$ with $Y_1$ the word with letters $X_j, j \\in s_i$, and letting $r_i$ be the cardinality of $s_i$, we see that there are only $3^{r_1} 4^{r_2}$ possibilities for the word $Y$ (corresponding to a maximal triple). On the other hand, the set $s_2$ is determined by $r_2$ as it consists of the last $r_2$ elements, and $s_1$ is a subset of size $r_1$ of the first $n-r_2 = n-r+r_1$ elements.\nHence, using (3) once more and recalling that $\\theta_2 = \\sqrt{3}/2$, we see that\n$$ W(n, \\delta) \\le \\sum_{r_1=0}^r \\binom{n-r+r_1}{r_1} 3^{r_1} 4^{r-r_1} \\left(\\frac{\\sqrt{3}}{2}\\right)^{n-r} 4^{n-r}. $$ We use $\\binom{n-r+r_1}{r_1} \\le \\binom{n}{r_1}$ and the Chernoff bound for the tail of the binomial distribution to get\n$$ \\sum_{r_1=0}^r \\binom{n}{r_1} 3^{r_1} 4^{r-r_1} \\le 7^r \\exp \\left\\{ -n \\left( \\delta \\log\\left(\\frac{\\delta}{3/7}\\right) + (1-\\delta) \\log\\left(\\frac{1-\\delta}{4/7}\\right) \\right) \\right\\} $$ \n$$ = \\exp\\{n[h(\\delta) + \\delta \\log 3 + (1-\\delta) \\log 4]\\}. $$ Therefore, we get the improved bound\n$$ P(l(X^{(n)}) < n \\delta) \\le |W(n, \\delta)| 4^{-n} $$ \n$$ \\le \\exp\\{n[h(\\delta) + \\delta \\log(3/4) + (1-\\delta) \\log(\\sqrt{3}/2)]\\}. $$ However the improved lower bound only gives a marginal improvement to 0.034, i.e., at least 3.4% of the letters are unmatched on average."
+        }
+      ]
+    },
+    {
+      "name": "4",
+      "header": "AN ELEMENTARY UPPER BOUND ON $\\lambda_2$",
+      "content": [
+        {
+          "block": "We claim that $\\lambda_2 \\le 0.29$ (we shall use more sophisticated methods to obtain a better bound in Section 6). This is achieved as follows. Let $U_1, V_1, U_2, V_2, \\dots$ be i.i.d. Geometric(1/2) random variables, i.e., $P[U_1 = j] = 2^{-j}$ for $j \\ge 1$. Then $E[U_1] = 2$, and hence with $m = [n/4]$ we get $N_n := U_1+V_1+...+U_m+V_m = n+O(\\sqrt{n})$ with high probability. We create a string $S \\in \\{\\alpha, \\bar{\\alpha}, \\beta, \\bar{\\beta}\\}^N$ by setting down a random string of $\\{\\alpha, \\bar{\\alpha}\\}$ of length $U_1$, then a random string of $\\{\\beta, \\bar{\\beta}\\}$ of length $V_1$, etc. Thus, $U_i, V_i$ are the length of runs of the two species of symbols. This makes the length of the string random but since it is in a $\\sqrt{n}$ length window of $n$, this should not change anything much (as regards the proportion of unpaired sites). Consider the following matching algorithm."
+        },
+        {
+          "block": "Fix any maximal noncrossing matching of all the $\\beta, \\bar{\\beta}$ symbols. Then we make the best possible non-crossing matching of each run of $\\alpha, \\bar{\\alpha}$ within itself. Thus, if the first run happens to be $\\alpha, \\bar{\\alpha}, \\alpha$, then, we could match up the first two sites and leave the third one unpaired.\nIn this matching scheme, in the first stage there are $O(\\sqrt{n})$ unpaired sites (the difference between the number of $\\beta$ and the number of $\\bar{\\beta}$ symbols in $S$). For the second stage, note that in the $j$th run (the one that has length $U_j$), the number of $\\alpha$-symbols is $\\xi_j \\sim \\text{Binomial}(U_j, \\frac{1}{2})$, and hence the number of left overs is $|2\\xi_j - U_j|$. The total number of left over sites has expectation $m E[|2\\xi_1 - U_1|] + O(\\sqrt{n})$ which gives us the bound\n$$ \\lambda_2 \\le \\frac{1}{4} E[|2\\xi_1 - U_1|]. $$ Numerical evaluation of the expectation (expressed as an infinite sum) gives the bound $\\lambda_2 \\le 0.2886....$"
+        }
+      ]
+    },
+    {
+      "name": "5",
+      "header": "CONCENTRATION AROUND EXPECTED BEHAVIOUR",
+      "content": [
+        {
+          "block": "We prove Proposition 2 in this section. The tool is the well-known Hoeffding's inequality for sums of martingale differences (see section 4.1 of Ledoux [5] for a proof and the book of Steele [6] for its use in many combinatorial optimization problems similar to ours). It says that if $d_1, d_2, ..., d_n$ is a martingale difference sequence, that is $E[d_j | d_1, . . . d_{j-1}] = 0$ for each $j$ (for $j=1$ this is to be interpreted as $E[d_1] = 0$) and $|d_j| \\le B_j$ with probability 1 for some constant $B_j$, then for any $t > 0$, we have\n$$ (4) \\qquad P \\left[ \\left| \\sum_{j=1}^n d_j \\right| > t \\right] \\le 2 e^{-\\frac{t^2}{2(B_1^2+...+B_n^2)}}. $$"
+        },
+        {
+          "proof": {
+            "claim_name": "Proposition 2",
+            "proof_steps": [
+              {
+                "block": "Let $X = X^{(n)} = (X_1, ..., X_n)$. Define for $j = 1, . . . n$,\n$$ d_j = E [L(X_1, ..., X_n) | X_1, ..., X_j] - E [L(X_1, ..., X_n) | X_1, ..., X_{j-1}] . $$ Then $d_j$ is a martingale difference sequence by the tower property\n$$ E[E[U | V, W] | W] = E[U | W]. $$ Further, $L(X) - E[L(X)] = d_1 + . . . + d_n$. If we show that $|d_j| \\le 2$, then by applying Hoeffding's inequality (4), we get the statement in the lemma.\nTo prove that $|d_j| \\le 2$, fix $j$ and let $Y = (X_1, . . ., X_{j-1}, X'_j, X_{j+1}, . . ., X_n)$ where $X'_j$ is an independent copy of $X_j$ that is also independent of all $X_j$s. Then,\n$$ E[L(Y) | X_1, ..., X_j] = E[L(Y) | X_1,...,X_{j-1}] = E[L(X) | X_1,..., X_{j-1}], $$ where the first equality holds because $X'_j$ is independent of $Y$ and the second equality holds because $X_1, . . . X_{j-1}$ bear the same relationship to $X$ as to $Y$. Thus, we conclude that\n$$ d_j = E [L(X) - L(Y) | X_1, . . . X_j] . $$ But $X$ and $Y$ differ only in one co-ordinate. From any non-crossing matching of $X$, by deleting the edge (if any) matching the $j$th co-ordinate, we obtain a non-crossing matching for $Y$ with at most two more unmatched indices. Therefore $L(Y) \\le L(X) + 2$ and by symmetry between $X$ and $Y$, we get $|L(X) - L(Y)| \\le 2$. Therefore $|d_j| \\le E [|L(X) - L(Y)| | X_1, . . . X_j] \\le 2$. $\\square$"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6",
+      "header": "GREEDY ALGORITHMS AND UPPER BOUNDS",
+      "content": [
+        {
+          "block": "The goal of this section is to prove Proposition 3. First we introduce a Markov chain related to this algorithm. Recall the description of the algorithm from the introduction."
+        },
+        {
+          "block": "**6.1. The associated Markov chain and its stationary distribution.** For simplicity of notation, we write the alphabet set as $A = \\{1, \\bar{1}, ..., k, \\bar{k}\\}$. Let $w[t]$ be the word formed by all the *accessible* letters at “time” $t$ – these are the letters among $X_1, ..., X_t$ that are still available for matching in future in the above greedy algorithm. Then $w[t]$ is a Markov chain whose state space is $\\Omega = A^0 \\cup A^1 \\cup A^2 \\cup ...$, the set of all finite strings in the alphabet $A$ (including the empty string) and whose dynamics are as follows:\nIf $w[t] = (w_1, ..., w_p)$ and $X_{t+1} = x$, then $w[t+1] = (w_1, . . ., w_p, x)$ if $\\bar{x}$ does not occur in $w[t]$. Otherwise $w[t+1] = (w_1, . . ., w_{j-1})$ where $j$ is the largest index such that $w_j = \\bar{x}$. Two letters get matched each time the length of $w[t]$ reduces. Hence the number left unmatched after $n$ steps is $n - 2 \\sum_{t=2}^n \\mathbf{1}_{\\text{length}(w[t]) < \\text{length}(w[t-1])}$.\nThe Markov chain is not irreducible. From any state it is possible to go to $\\emptyset$ but from $\\emptyset$ the chain can only go to states in\n$$ \\Omega_0 = \\{w \\in \\Omega \\text{ : at most one of } x, \\bar{x} \\in w \\text{ for each } x \\in A \\} $$ which makes $\\Omega_0$ the unique irreducible class. As we shall show next, this Markov chain has a stationary probability distribution $\\pi$. By the general theory of Markov chains, the stationary distribution is unique. To give the formula for $\\pi$, we need some notation.\nFor a word $w \\in \\Omega_0$, define $a_i(w)$ inductively by declaring $a_1(w) + . . . + a_j(w)$ to be the length of the maximal initial segment in $w$ (reading from the left) containing at most $j$ distinct symbols. Note that if $w$ has only $j$ different symbols from $A$, it follows that $a_i(w) = 0$ for $i \\ge j$. In particular, as $w \\in \\Omega_0$, it has at most $k$ distinct symbols. For example, if $k = 3$ and $w = 11212212311232$, then $(a_1, a_2, a_3) = (2, 8, 6)$. If $w = 22212$ then $(a_1, a_2, a_3) = (3, 2, 0)$. For the empty word, $a_i(w) = 0$ for all $i$."
+        },
+        {
+          "name": "Proposition 16",
+          "header": "Proposition 16",
+          "claim": "Fix $k \\ge 2$. Let $\\tau_j = \\frac{j}{j(2k+1)-1}$ for $1 \\le j \\le k$. Then the unique stationary probability distribution is given by\n$$ \\pi(w) = \\frac{1}{Z} \\tau_1^{a_1(w)} \\tau_2^{a_2(w)} ... \\tau_k^{a_k(w)} $$ where $Z = \\sum_{r=0}^k \\binom{k}{r} 2^r \\prod_{j=1}^r \\frac{j \\tau_j}{1-j \\tau_j} = \\sum_{r=0}^k \\binom{k}{r} 2^r \\prod_{j=1}^r \\frac{j(j+1)}{j(2k-j)-1}$."
+        },
+        {
+          "block": "Assuming this proposition, we prove Proposition 3."
+        },
+        {
+          "block": "**6.2. Proof of Proposition 3.** From the earlier observation, the expected proportion of matched letters after $n$ steps is\n$$ \\frac{2}{n} \\sum_{t=1}^n P\\{\\text{length}(w[t]) < \\text{length}(w[t-1])\\} \\to 2 P_\\pi\\{\\text{length}(w[1]) < \\text{length}(w[0])\\} $$ where the subscript $\\pi$ is to indicate that $w[0]$ is sampled from $\\pi$ (in the actual chain, we start with $w[0] = \\emptyset$) and the convergence follows from the general theory of Markov chains which asserts that the distribution of $(w[t-1], w[t])$ (from any starting point) converges to the distribution of $(w[0], w[1])$ when $w[0]$ has distribution $\\pi$. As a consequence, we arrive at the upper bound\n$$ (5) \\qquad \\lambda_k \\le 1 - 2 P_\\pi\\{\\text{length}(w[1]) < \\text{length}(w[0])\\}. $$ If $w$ has $r$ distinct symbols, then $a_r(w) > 0 (= a_{r+1}(w))$ and its length gets reduced if and only if the next arriving letter can match up with one of them, i.e., with probability $\\frac{r}{2k}$. Further, for a given choice of strictly positive integers $a_1, . . ., a_r$, the number of words $w$ with $a_i(w) = a_i$ is precisely\n$$ (6) \\qquad 2^r k(k-1)...(k-r+1) 2^{a_2-1} 3^{a_3-1} ... r^{a_r-1}. $$ Here $2k - 2i + 2$ is for the choice of $i$th new symbol (the locations are determined by $a_1, ..., a_r$) and the $a_j - 1$ letters between the $j$th new symbol and $(j+1)$st new symbol each have $j$ choices, hence the factor of $j^{a_j-1}$. Thus,\n$$ P_\\pi\\{\\text{length}(w[1]) < \\text{length}(w[0])\\} = \\frac{1}{2kZ} \\sum_{r=1}^k \\frac{r}{2k} \\sum_{a_i \\ge 1: i \\le r} 2^r \\binom{k}{r} \\prod_{j=1}^r (j \\tau_j)^{a_j} $$ \n$$ = \\frac{1}{2kZ} \\sum_{r=1}^k r 2^r \\binom{k}{r} \\sum_{a_i \\ge 1: i \\le r} \\prod_{j=1}^r (j \\tau_j)^{a_j} = \\frac{1}{2kZ} \\sum_{r=1}^k r 2^r \\binom{k}{r} \\prod_{j=1}^r \\frac{j \\tau_j}{1-j \\tau_j} $$ Substituting the value of $\\tau_j$ given in the statement of the proposition,\n$$ (7) \\qquad \\bar{\\lambda}_k = 1 - \\frac{1}{kZ} \\sum_{r=1}^k r 2^r \\binom{k}{r} \\prod_{j=1}^r \\frac{j(j+1)}{j(2k-j)-1}. $$ Plugging in the expression for $Z$ given in Proposition 16 completes the proof of Proposition 3. $\\square$"
+        },
+        {
+          "block": "**Case k=2:** This is the case we care most about. We see that $\\tau_1 = \\frac{1}{2}$ and $\\tau_2 = \\frac{1}{3}$ and $Z = 13$. Hence $\\pi(w) = \\frac{1}{13} (\\frac{1}{2})^{a_1(w)} (\\frac{1}{3})^{\\text{length}(w)}$ where $a_1(w)$ is the length of the first run (i.e., the maximum $j$ such that $w_1 = w_2 = ... = w_j$). Therefore, (7) becomes\n$$ \\bar{\\lambda}_2 = 1 - \\frac{1}{2 \\times 13} (4 + 16) = \\frac{3}{13} = 0.2307... $$"
+        },
+        {
+          "block": "**6.3. Proof of Proposition 16.** Let $\\sigma(w) = \\tau_1^{a_1(w)} ... \\tau_k^{a_k(w)}$. If $w$ has $r$ distinct symbols, then $a_j \\ge 1$ for $j \\le r$ and $a_j = 0$ for $j > r$. The number of words $w$ with given $a_1, ..., a_r$ is given in (6). Hence the sum of $\\sigma(w)$ over such $w$ is\n$$ 2^r \\binom{k}{r} \\sum_{a_1,...,a_r \\ge 1} \\prod_{j=1}^r (j \\tau_j)^{a_j} = 2^r \\binom{k}{r} \\prod_{j=1}^r \\frac{j \\tau_j}{1-j \\tau_j} $$ Sum over $r$ (including $r=0$) to get the given expression for $Z$. It suffices to check that $\\sigma$ satisfies the equations for the stationary distribution, since we know the uniqueness (up to scalar multiples) of stationary distribution. The general equations are\n$$ \\sum_{w': w' \\to w} \\sigma(w') = 2k \\sigma(w) $$ where the notation $w' \\to w$ means that $w'$ can lead to $w$ in one step (in our Markov chain, a given $w'$ can lead to a given $w$ in at most one way, hence the transition probability is exactly $1/2k$). If $w = (w_1, ..., w_p)$ has exactly $r$ distinct symbols, then $a_r(w) > 0 = a_{r+1}(w)$, and $\\sigma(w) = \\tau_1^{a_1(w)} ... \\tau_r^{a_r(w)}$. The possible $w'$ are:\n(1) $w' = (w_1, ..., w_{p-1})$. Then $a_i(w') = a_i(w)$ for $i \\le r-1$ and $a_r(w') = a_r(w) - 1$.\n(2) $w' = wxy^1 t_1 y^2 ... t_j y^{j+1}$ where $x \\in A$ is a symbol that occurs in $w$ and $t_i \\in A$ are the new symbols that did not occur before and $y^i = (y_1, \\dots, y_{m_i})$ with $m_i \\ge 0$. Here $j$ can vary from $0$ to $k-r$. Further, $x$ should not occur in $y^1 t_1 y^2 ... t_j y^{j+1}$ so that $w'$ can lead to $w$ when an $\\bar{x}$ arrives (it is tacit that all our words are in $\\Omega_0$, so we do not write those conditions again). Then\n$$ a_i(w') = \\begin{cases} a_i(w) & \\text{if } i \\le r-1, \\\\ a_r(w) + m_1 + 1 & \\text{if } i = r, \\\\ m_{i-r+1} + 1 & \\text{if } r+1 \\le i \\le r+j. \\end{cases} $$ For given $j$ and $m_1, ..., m_j$, the number of choices of such $w'$ is\n$$ 2^j (k-r)(k-r-1)...(k-r-j+1) \\times r(r-1)^{m_1} r^{m_2} ... (r+j-1)^{m_{j+1}}. $$ This is because there are $2k - 2r - 2i + 2$ choices for $t_i$ and $r+i-2$ choices for each letter in $y^i$.\n(3) $w' = w t_1 y^1 t_2 y^2 ... t_j y^j$ where $y^i = (y_1, \\dots, y_{m_i})$ with $m_i \\ge 0$ and $t_i \\in A$ are the new symbols that did not occur before. Here $j$ can vary from 1 to $k-r$. Further, $t_1$ should not occur in $y^1 t_2 y^2 ... t_j y^j$. Then\n$$ a_i(w') = \\begin{cases} a_i(w) & \\text{if } i \\le r, \\\\ m_{i-r} + 1 & \\text{if } r+1 \\le i \\le r+j. \\end{cases} $$ For given $j$ and $m_1, ..., m_j$, the number of choices of such $w'$ is\n$$ 2^j (k-r)(k-r-1)...(k-r-j+1) \\times r^{m_1} (r+1)^{m_2} ... (r+j-1)^{m_j}. $$ Here $2k - 2r - 2i + 2$ is the number of choices for $t_i$ and $r+i-1$ is the number of choices for each letter in $y^i$.\nUsing these and cancelling common factors, the equation for stationary distribution becomes\n$$ 2k \\tau_r = 1 + \\frac{r \\tau_r^2}{1 - (r-1) \\tau_r} \\sum_{j=0}^{k-r} 2^j (k-r)_j \\prod_{i=r+1}^{r+j} \\frac{\\tau_i}{1 - (i-1) \\tau_i} $$ \n$$ + \\tau_r \\sum_{j=1}^{k-r} 2^j (k-r)_j \\prod_{i=r+1}^{r+j} \\frac{1}{1 - (i-1) \\tau_i} $$ \n$$ = 1 + \\frac{r \\tau_r^2}{1 - (r-1) \\tau_r} + \\left( \\frac{r \\tau_r^2}{1 - (r-1) \\tau_r} + \\tau_r \\right) \\sum_{j=1}^{k-r} 2^j (k-r)_j \\prod_{i=r+1}^{r+j} \\frac{\\tau_i}{1 - (i-1) \\tau_i} $$ which is the same as (empty products are interpreted as 1)\n$$ (2k+1)\\tau_r - 1 = \\frac{\\tau_r(\\tau_{r+1})}{1 - (r-1) \\tau_r} \\sum_{j=0}^{k-r} 2^j (k-r)_j \\prod_{i=r+1}^{r+j} \\frac{\\tau_i}{1 - (i-1) \\tau_i}, \\quad 0 \\le r \\le k. $$ Notice that the sum on the right is of the form $1 + u_{r+1} + u_{r+1}u_{r+2} + ... = 1 + u_{r+1} (1 + u_{r+2} + u_{r+2}u_{r+3} + ...)$, and the quantity in brackets on the right occurs in exactly that form in the equation for $r+1$. Therefore, the above equation can be re-written for $r < k$ as\n$$ \\frac{((2k+1)\\tau_r - 1)(1 - (r-1)\\tau_r)}{\\tau_r(\\tau_{r+1})} = 1 + \\frac{2(k-r)\\tau_{r+1}}{1-r\\tau_{r+1}} \\frac{((2k+1)\\tau_{r+1} - 1)(1 - r\\tau_{r+1})}{\\tau_{r+1}(\\tau_{r+1}+1)} $$ Plugging in the stated values of $\\tau_r$ and $\\tau_{r+1}$, a short calculation shows that both sides are equal to $(2k+2-r)/r$, hence equality holds.\nFor $r=k$, the original equation is $(2k+1)\\tau_k - 1 = \\frac{\\tau_k(\\tau_{k+1})}{1-(k-1)\\tau_k}$ which is easily seen to be satisfied by $\\tau_k = 1/(2k-1)$. This completes the proof. $\\square$"
+        },
+        {
+          "name": "Remark 17",
+          "header": "Remark 17",
+          "remark": "Although the proof is more or less straightforward checking with some calculations, it hinged on having the form of the stationary distribution. All features of the stationary distribution, namely the product form with exponents being $a_i$s and the values of $\\tau_i$s were arrived at by extensive checking on Mathematica software for several values of $k$, along with some guess work. On a computer, one must restrict to finite state space chains, and a natural restriction is to words of length at most $L$ (steps outside this are forbidden). If $\\pi_L$ is the stationary distribution of this Markov chain, then not only does $\\pi_L$ converge to $\\pi$, but curiously $\\pi_L(w) = \\pi(w)$ for all $w$ of length $L-1$ or less!"
+        }
+      ]
+    }
+  ]
+}

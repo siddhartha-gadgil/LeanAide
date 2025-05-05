@@ -24,10 +24,10 @@ def tactic_prompts():
     field = js_query["field"]
     prompt_core = js_query[field]
     filename = js_query["filename"]
-    model_name = js_query["model_name"]
+    model = js_query["model"]
     n = js_query["n"]
-    embs, data = load_embeddings('../' + filename, field, model_name)
-    choices = closest_embeddings(prompt_core, model_name, embs, data, n)
+    embs, data = load_embeddings('../' + filename, field, model)
+    choices = closest_embeddings(prompt_core, model, embs, data, n)
     log_json = {"query": js_query,  "choices": choices}
     log_string = json.dumps(log_json, ensure_ascii=False).replace('\n', '\\n')
     hostname = socket.gethostname()

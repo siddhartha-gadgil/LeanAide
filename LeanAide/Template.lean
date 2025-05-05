@@ -1,12 +1,12 @@
 import Lean
+import LeanAide.Config
 
 open Lean Meta System
 
 def llmDir := FilePath.mk "llm_data"
-def resources := FilePath.mk "resources"
 
 def promptTemplates : IO Json := do
-  let path := resources / "templates.json"
+  let path := (← resourcesDir) / "templates.json"
   let js ← IO.FS.readFile path
   match Json.parse js with
   | Except.ok j => return j
@@ -14,7 +14,7 @@ def promptTemplates : IO Json := do
     IO.throwServerError s!"Error parsing JSON: {e}; source: {js}"
 
 def componentTemplates : IO Json := do
-  let path := resources / "component_templates.json"
+  let path := (← resourcesDir) / "component_templates.json"
   let js ← IO.FS.readFile path
   match Json.parse js with
   | Except.ok j => return j
@@ -45,15 +45,15 @@ def fromTemplate (name: String)(args: List <| String × String) :
   return fillTemplate template args
 
 def proofJson : IO String := do
-  let path := resources / "ProofJson.md"
+  let path := (← resourcesDir) / "ProofJson.md"
   IO.FS.readFile path
 
 def jsonProofTemplateFull  : IO String := do
-  let path := resources / "JsonTemplate.md"
+  let path := (← resourcesDir) / "JsonTemplate.md"
   IO.FS.readFile path
 
 def jsonProofInstructions : IO String := do
-  let path := resources / "ProofJsonShorter.md"
+  let path := (← resourcesDir) / "ProofJsonShorter.md"
   IO.FS.readFile path
 
 def structuredProofQueryFull (pf: String) : IO String := do

@@ -12,13 +12,13 @@ def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", posi
     }
 
 def main : IO Unit := do
-  let names ← IO.FS.lines ("resources"/"doconly_names.txt")
+  let names ← IO.FS.lines ((← resourcesDir) / "doconly_names.txt")
   let names := names.map (fun s => s.trim)
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
     importModules #[
     {module := `Mathlib},
-    {module := `LeanAide.ConstDeps}] {}
+    {module := `DataGenAide.ConstDeps}] {}
   let outpath : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descriptions_docs.jsonl")
   let preread ← if ← outpath.pathExists then
       IO.FS.lines outpath

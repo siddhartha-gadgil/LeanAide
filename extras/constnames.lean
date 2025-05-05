@@ -1,7 +1,7 @@
 import Lean.Meta
 -- import LeanCodePrompts
 import LeanAide.Config
-import LeanAide.ConstDeps
+import DataGenAide.ConstDeps
 open Lean LeanAide.Meta
 
 set_option maxHeartbeats 10000000
@@ -13,7 +13,7 @@ def main : IO Unit := do
   let env ←
     importModules #[
     {module := `Mathlib},
-    {module := `LeanAide.ConstDeps}] {}
+    {module := `DataGenAide.ConstDeps}] {}
   let core := constantNamesCore
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}

@@ -1,0 +1,421 @@
+{
+  "title": "Math Document Wrapper",
+  "description": "A wrapper for a structured math document in a custom JSON format for OpenAI.",
+  "type": "object",
+  "properties": {
+    "document": {
+      "type": "array",
+      "description": "A structured math document in a custom JSON format.",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": { "let": { "$ref": "#/definitions/let_statement" } },
+            "required": ["let"],
+            "additionalProperties": false,
+            "description": "A statement introducing a new variable with given value, type and/or property."
+          },
+          {
+            "type": "object",
+            "properties": { "some": { "$ref": "#/definitions/some_statement" } },
+            "required": ["some"],
+            "additionalProperties": false,
+            "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement)."
+          },
+          {
+            "type": "object",
+            "properties": { "assume": { "type": "string" } },
+            "required": ["assume"],
+            "additionalProperties": false,
+            "description": "A mathematical assumption being made. In case this is a variable or structure being introduced, use a 'let' statement."
+          },
+          {
+            "type": "object",
+            "properties": { "def": { "$ref": "#/definitions/def_statement" } },
+            "required": ["def"],
+            "additionalProperties": false,
+            "description": "A mathematical term being defined. In case a definition is being used, use 'assert' or 'theorem' instead."
+          },
+          {
+            "type": "object",
+            "properties": { "assert": { "$ref": "#/definitions/assert_statement" } },
+            "required": ["assert"],
+            "additionalProperties": false,
+            "description": "A mathematical statement whose proof is a straightforward consequence of given and known results following some method."
+          },
+          {
+            "type": "object",
+            "properties": { "theorem": { "$ref": "#/definitions/theorem_statement" } },
+            "required": ["theorem"],
+            "additionalProperties": false,
+            "description": "A mathematical theorem, with a list of hypotheses and a conclusion."
+          },
+          {
+            "type": "object",
+            "properties": { "problem": { "$ref": "#/definitions/problem_statement" } },
+            "required": ["problem"],
+            "additionalProperties": false,
+            "description": "A mathematical problem, with a statement and an answer."
+          },
+          {
+            "type": "object",
+            "properties": { "cases": { "$ref": "#/definitions/cases_statement" } },
+            "required": ["cases"],
+            "additionalProperties": false,
+            "description": "A proof by cases or proof by induction, with a list of cases."
+          },
+          {
+            "type": "object",
+            "properties": { "induction": { "$ref": "#/definitions/induction_statement" } },
+            "required": ["induction"],
+            "additionalProperties": false,
+            "description": "A proof by induction, with a base case and an induction step."
+          },
+          {
+            "type": "object",
+            "properties": { "contradiction": { "$ref": "#/definitions/contradiction_statement" } },
+            "required": ["contradiction"],
+            "additionalProperties": false,
+            "description": "A proof by contradiction, with an assumption and a proof of the contradiction."
+          },
+          {
+            "type": "object",
+            "properties": { "calculate": { "$ref": "#/definitions/calculate_statement" } },
+            "required": ["calculate"],
+            "additionalProperties": false,
+            "description": "An equation, inequality, short calculation etc."
+          },
+          {
+            "type": "object",
+            "properties": { "conclude": { "$ref": "#/definitions/conclude_statement" } },
+            "required": ["conclude"],
+            "additionalProperties": false,
+            "description": "Conclude a claim obtained from the steps so far. This is typically the final statement of a proof giving the conclusion of the theorem."
+          },
+          {
+            "type": "object",
+            "properties": { "remark": { "type": "string" } },
+            "required": ["remark"],
+            "additionalProperties": false,
+            "description": "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc."
+          }
+        ]
+      }
+    }
+  },
+  "required": [
+    "document"
+  ],
+  "definitions": {
+    "let_statement": {
+      "type": "object",
+      "description": "A statement introducing a new variable with given value, type and/or property.",
+      "properties": {
+        "variable": { "type": "string", "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)" },
+        "value": { "type": "string", "description": "(OPTIONAL) The value of the variable being defined" },
+        "kind": { "type": "string", "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc." },
+        "properties": { "type": "string", "description": "(OPTIONAL) Specific properties of the variable beyond the type" }
+      },
+      "required": [
+        "variable"
+      ]
+    },
+    "some_statement": {
+      "type": "object",
+      "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'",
+      "properties": {
+        "variable": { "type": "string", "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)" },
+        "kind": { "type": "string", "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc." },
+        "properties": { "type": "string", "description": "(OPTIONAL) Specific properties of the variable beyond the type" }
+      },
+      "required": [
+        "variable"
+      ]
+    },
+    "assume_statement": {
+      "type": "string",
+      "description": "A mathematical assumption being made. In case this is a variable or structure being introduced, use a 'let' statement."
+    },
+    "def_statement": {
+      "type": "object",
+      "description": "A mathematical term being defined. In case a definition is being used, use 'assert' or 'theorem' instead.",
+      "properties": {
+        "statement": { "type": "string", "description": "The mathematical definition." },
+        "term": { "type": "string", "description": "The term being defined." },
+        "name": { "type": "string", "description": "(OPTIONAL) The name of the theorem, lemma or claim." }
+      },
+      "required": [
+        "statement",
+        "term"
+      ]
+    },
+    "assert_statement": {
+      "type": "object",
+      "description": "A mathematical statement whose proof is a straightforward consequence of given and known results following some method.",
+      "properties": {
+        "claim": { "type": "string", "description": "The mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained." },
+        "proof_method": { "type": "string", "description": "(OPTIONAL) The method used to prove the claim. This could be a direct proof, proof by contradiction, proof by induction, etc. this should be a single phrase or a fairly simple sentence; if a longer justification is needed break the step into smaller steps. If the method is deduction from a result, use the 'deduced_using' field" },
+        "deduced_from_results": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `deduced_from`.",
+          "items": { "$ref": "#/definitions/deduced_from" }
+        },
+        "calculate": { "$ref": "#/definitions/calculate_choice", "description": "(OPTIONAL) An equation, inequality, short calculation etc." },
+        "missing_proofs": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `missing`.",
+          "items": { "$ref": "#/definitions/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `error`.",
+          "items": { "$ref": "#/definitions/error" }
+        }
+      },
+      "required": [
+        "claim"
+      ]
+    },
+    "deduced_from": {
+      "type": "object",
+      "description": "A deduction of a mathematical result from assumptions or previously known results.",
+      "properties": {
+        "result_used": { "type": "string", "description": "An assumption or previously known results from which the deduction is made. If more than one result is used, list them in the 'deductions' field as separate `deduction` objects. If the result used needs justification, have a separate `assert` object earlier." },
+        "proved_earlier": { "type": "boolean", "description": "Whether the statement from which deduction has been proved earlier IN THIS DOCUMENT. Answer `true` or `false` (answer `false` if a result from the mathematical literature is being invoked)." }
+      },
+      "required": [
+        "result_used",
+        "proved_earlier"
+      ]
+    },
+    "calculate_choice": {
+      "type": "object",
+      "description": "An equation, inequality, short calculation etc.",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "inline_calculation": { "type": "string", "description": "A simple calculation or computation written as a single line." },
+        "calculation_sequence": {
+          "type": "array",
+          "description": "A list of elements of type `calculation_step`.",
+          "items": { "$ref": "#/definitions/calculation_step" }
+        }
+      }
+    },
+    "calculation_step": {
+      "type": "string",
+      "description": "A step, typically an equality or inequality, in a calculation or computation."
+    },
+    "missing": {
+      "type": "string",
+      "description": "A  problem that need to be solved or results that need to be proved to complete the proof. Standard results/criteria may be omitted from the proof: include them in the 'deduced_from' field."
+    },
+    "error": {
+      "type": "string",
+      "description": "An error in a proof or calculation. Report only actual errors, with missing steps reported in the 'missing' field."
+    },
+    "theorem_statement": {
+      "type": "object",
+      "description": "A mathematical theorem, with a list of hypotheses and a conclusion.",
+      "properties": {
+        "hypothesis": {
+          "type": "array",
+          "description": "a JSON list of data and assumptions, i.e., **let** and **assume** statements",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": { "let": { "$ref": "#/definitions/let_statement" } },
+                "required": ["let"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": { "some": { "$ref": "#/definitions/some_statement" } },
+                "required": ["some"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": { "assume": { "type": "string" } },
+                "required": ["assume"],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "conclusion": { "type": "string", "description": "The conclusion of the theorem." },
+        "proved": { "type": "boolean", "description": "Whether the theorem has been proved, either here or earlier or by citing the literature." },
+        "name": { "type": "string", "description": "(OPTIONAL) The name of the theorem, lemma or claim." },
+        "proof": { "$ref": "#/definitions/math_document", "description": "(OPTIONAL) A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`." },
+        "ref": { "type": "string", "description": "(OPTIONAL) A reference where the result has been previously proved." },
+        "cite": { "type": "string", "description": "(OPTIONAL) A citation of a result from the mathematical literature which gives the proof." },
+        "missing_proofs": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `missing`.",
+          "items": { "$ref": "#/definitions/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `error`.",
+          "items": { "$ref": "#/definitions/error" }
+        }
+      },
+      "required": [
+        "hypothesis",
+        "conclusion",
+        "proved"
+      ]
+    },
+    "problem_statement": {
+      "type": "object",
+      "description": "A mathematical problem, with a statement and an answer.",
+      "properties": {
+        "statement": { "type": "string", "description": "The statement of the problem." },
+        "solved": { "type": "boolean", "description": "Whether the problem has been solved." },
+        "answer": { "type": "string", "description": "(OPTIONAL) The answer to the problem." },
+        "proof": { "$ref": "#/definitions/math_document", "description": "(OPTIONAL) A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`." },
+        "missing_proofs": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `missing`.",
+          "items": { "$ref": "#/definitions/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `error`.",
+          "items": { "$ref": "#/definitions/error" }
+        }
+      },
+      "required": [
+        "statement",
+        "solved"
+      ]
+    },
+    "cases_statement": {
+      "type": "object",
+      "description": "A proof by cases or proof by induction, with a list of cases.",
+      "properties": {
+        "split_kind": {
+          "type": "string",
+          "description": "one of 'implication_direction' (for two sides of an 'iff' implication), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases).",
+          "enum": [
+            "implication_direction",
+            "match",
+            "condition",
+            "groups"
+          ]
+        },
+        "on": { "type": "string", "description": "The variable or expression on which the cases are being done. Write 'implication direction' for an 'iff' statement." },
+        "proof_cases": {
+          "type": "array",
+          "description": "A list of elements of type `case`.",
+          "items": { "$ref": "#/definitions/case" }
+        },
+        "exhaustiveness": { "$ref": "#/definitions/math_document", "description": "(OPTIONAL) Proof that the cases are exhaustive, similar to (the value for) 'math_document'." },
+        "missing_proofs": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `missing`.",
+          "items": { "$ref": "#/definitions/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `error`.",
+          "items": { "$ref": "#/definitions/error" }
+        }
+      },
+      "required": [
+        "split_kind",
+        "on",
+        "proof_cases"
+      ]
+    },
+    "case": {
+      "type": "object",
+      "description": "A case in a proof by cases or proof by induction.",
+      "properties": {
+        "condition": { "type": "string", "description": "The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`)." },
+        "proof": { "$ref": "#/definitions/math_document", "description": "A proof of a lemma, theorem or claim, having the same structure as (the value for) a `math_document`." },
+        "missing_proofs": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `missing`.",
+          "items": { "$ref": "#/definitions/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `error`.",
+          "items": { "$ref": "#/definitions/error" }
+        }
+      },
+      "required": [
+        "condition",
+        "proof"
+      ]
+    },
+    "induction_statement": {
+      "type": "object",
+      "description": "A proof by induction, with a base case and an induction step.",
+      "properties": {
+        "on": { "type": "string", "description": "The variable or expression on which induction is being done." },
+        "proof_cases": {
+          "type": "array",
+          "description": "A list of elements of type `case`.",
+          "items": { "$ref": "#/definitions/case" }
+        }
+      },
+      "required": [
+        "on",
+        "proof_cases"
+      ]
+    },
+    "contradiction_statement": {
+      "type": "object",
+      "description": "A proof by contradiction, with an assumption and a proof of the contradiction.",
+      "properties": {
+        "assumption": { "type": "string", "description": "The assumption being made to be contradicted." },
+        "proof": { "$ref": "#/definitions/math_document", "description": "The proof of the contradiction given the assumption." },
+        "missing_proofs": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `missing`.",
+          "items": { "$ref": "#/definitions/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `error`.",
+          "items": { "$ref": "#/definitions/error" }
+        }
+      },
+      "required": [
+        "assumption",
+        "proof"
+      ]
+    },
+    "calculate_statement": {
+      "$ref": "#/definitions/calculate_choice",
+      "description": "An equation, inequality, short calculation etc."
+    },
+    "conclude_statement": {
+      "type": "object",
+      "description": "Conclude a claim obtained from the steps so far. This is typically the final statement of a proof giving the conclusion of the theorem.",
+      "properties": {
+        "claim": { "type": "string", "description": "The conclusion of the proof." },
+        "missing_proofs": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `missing`.",
+          "items": { "$ref": "#/definitions/missing" }
+        },
+        "errors": {
+          "type": "array",
+          "description": "(OPTIONAL) A list of elements of type `error`.",
+          "items": { "$ref": "#/definitions/error" }
+        }
+      },
+      "required": [
+        "claim"
+      ]
+    },
+    "remark_statement": {
+      "type": "string",
+      "description": "A remark or comment that is NOT MATHEMATICAL, instead being for motivation, attention, sectioning etc."
+    }
+  }
+}

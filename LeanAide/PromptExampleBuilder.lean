@@ -20,6 +20,7 @@ inductive PromptExampleBuilder where
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
 | moogle (descFields : List String)
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
+| generic (url: String) (baseData : Json) (headers : Array String) (n: Nat) : PromptExampleBuilder
 | fixed (prompts : Array (String × Json)) : PromptExampleBuilder
 | sequence : List PromptExampleBuilder → PromptExampleBuilder
 | blend : List PromptExampleBuilder → PromptExampleBuilder
@@ -57,6 +58,18 @@ def searchBuilder (numLeanSearch numMoogle: Nat) : PromptExampleBuilder :=
   .blend [.leansearch ["concise-description", "description"] true numLeanSearch,
       .moogle ["concise-description", "description"] true numMoogle]
 
+def genericEmbedBuilder (url: String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
+  .blend [
+    .generic url (Json.mkObj [("prompt_type", "docString")]) headers numSim,
+    .generic url (Json.mkObj [("prompt_type", "concise-description")]) headers numConcise,
+    .generic url (Json.mkObj [("prompt_type", "description")]) headers numDesc,
+  ]
+
+def mkEmbedBuilder (url?: Option String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
+  match url? with
+  | some url => genericEmbedBuilder url numSim numConcise numDesc headers
+  | none => embedBuilder numSim numConcise numDesc
+
 /--
 Append two `PromptExampleBuilder`s together.
 -/
@@ -86,6 +99,17 @@ def classicDefault :=
   PromptExampleBuilder.embedBuilder 20 2 2
 
 instance : Inhabited PromptExampleBuilder := ⟨default⟩
+
+partial def purge? (pb: PromptExampleBuilder) : Option PromptExampleBuilder :=
+  match pb with
+  | .sequence [] => none
+  | .blend [] => none
+  | .embedSearch _ 0 _ => none
+  | .leansearch _ _ 0 => none
+  | .moogle _ _ 0 => none
+  | .sequence ps => some <| .sequence <| ps.filterMap purge?
+  | .blend ps => some <| .blend <| ps.filterMap purge?
+  | x => some x
 
 /--
 Prepend a fixed set of prompts to a `PromptExampleBuilder`.

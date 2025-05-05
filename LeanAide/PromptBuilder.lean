@@ -65,7 +65,7 @@ def getMoogleQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Arr
   let apiUrl := "https://www.moogle.ai/api/search"
   let data := Json.arr
     #[Json.mkObj [("isFind", false), ("contents", s)]]
-  let s ← IO.Process.output {cmd := "curl", args := #[apiUrl, "-H", "content-type: application/json",  "--user-agent", useragent, "--data", data.pretty]}
+  let s ← IO.Process.output {cmd := "curl", args := #[apiUrl, "-H", "Content-Type: application/json",  "--user-agent", useragent, "--data", data.pretty]}
   match Json.parse s.stdout with
   | Except.error e =>
     IO.eprintln s!"Could not parse JSON from Moogle output: {s.stdout}; error: {e}"
@@ -156,6 +156,7 @@ partial def num : PromptExampleBuilder →  Nat
 | embedSearch _ n _ => n
 | leansearch _ _ n => n
 | moogle _ _ n => n
+| generic _ _ _ n => n
 | fixed ps => ps.size
 | sequence ps => (ps.map num).sum
 | blend ps => (ps.map num).sum
@@ -203,6 +204,32 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
        SearchResult.ofMoogleJson? js
     pairsFromSearchResults srs descFields preferDocs
   | fixed ps => return ps
+  | generic url baseData headers n =>
+    if n = 0 then return #[]
+    let data := Json.mkObj [("input", Json.str query), ("n", n)]
+    let data := data.mergeObj baseData
+    let mut httpHeaders := #["-X", "POST", "-H", "Content-Type: application/json"]
+    for header in headers do
+      httpHeaders := httpHeaders ++ #["-H", header]
+    let s ← IO.Process.output {cmd := "curl", args := #[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}
+    match Json.parse s.stdout with
+    | Except.error e =>
+      IO.eprintln s!"Could not parse JSON from generic output: {s.stdout}; error: {e}"
+      IO.eprintln s!"curl {#[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}"
+      return #[]
+    | Except.ok js =>
+      -- IO.eprintln s!"curl {#[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}"
+      let result? := js.getObjVal?  "data"
+      match result? with
+      | Except.ok result =>
+        match result.getArr? with
+        | Except.ok arr =>
+          return arr.filterMap fun js =>
+            (js.getObjValAs? String "docString" |>.toOption
+            |>.orElse (fun _ => js.getObjValAs? String "doc_string" |>.toOption) |>.orElse (fun _ => js.getObjValAs? String "doc" |>.toOption))
+            |>.map fun doc => (doc, js)
+        | Except.error e => IO.throwServerError s!"Could not obtain array from {js}; error: {e}"
+      | _ => IO.throwServerError s!"Could not obtain data from {js}"
   | sequence ps => do
     let offspringGps ← ps.mapM fun pb => getPromptPairsOrderedAux pb query
     return offspringGps.toArray.flatten
@@ -214,9 +241,9 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
 def getPromptPairsOrdered (pb: PromptExampleBuilder)
   (query: String) : TranslateM ((Array (String × Json))) := do
     let file : System.FilePath :=
-      ".leanaide_cache"/ "prompt" / s!"{hash pb}_{hash query}.json"
+      (← cachePath) / "prompt" / s!"{hash pb}_{hash query}.json"
     if (← file.pathExists) then
-      IO.eprintln s!"Getting prompt pairs from cache: {file}"
+      -- IO.eprintln s!"Getting prompt pairs from cache: {file}"
       let js ← IO.FS.readFile file
       match Json.parse js with
       | Except.error e =>
@@ -236,7 +263,7 @@ def getPromptPairsOrdered (pb: PromptExampleBuilder)
         | Except.ok pairs  =>
           return pairs
     else do
-      IO.eprintln s!"Getting prompt pairs, no cache"
+      -- IO.eprintln s!"Getting prompt pairs, no cache"
       let pairs ← getPromptPairsOrderedAux pb query
       let js := toJson pairs
       IO.FS.writeFile file js.compress
@@ -263,6 +290,7 @@ match pb with
 | .leansearch _ _ n => if n > 0 then some pb else none
 | .moogle _ _ n => if n > 0 then some pb else none
 | .fixed ps => if ps.size > 0 then some pb else none
+| .generic  _ _ _ n => if n > 0 then some pb else none
 | .sequence pbs =>
   match pbs.filterMap simplify? with
   | [] => none
@@ -285,6 +313,8 @@ partial def signature (pb: PromptExampleBuilder) : String := match pb with
 | .leansearch _ _  n => s!"leansearch${n}"
 | .moogle _ _ n => s!"moogle${n}"
 | .fixed ps => s!"fixed${ps.size}"
+| .generic url _ _ n =>
+    s!"generic${url}_${n}"
 | .sequence pbs => (pbs.map signature).foldl (· ++ "-" ++ ·) "" |>.drop 1
 | .blend pbs => (pbs.map signature).foldl (· ++ "~" ++ ·) "" |>.drop 1
 
@@ -351,7 +381,7 @@ partial def RelevantDefs.names (nbd: RelevantDefs)(s: String) (pairs : Array (St
     bestDefsInConsts num searchNames.toList depth
   | RelevantDefs.env => do
     let env ← get
-    return env.defs.map (·.1.name)
+    return env.defs.map (·.name)
   | .data d => return d.map (·.1)
   | RelevantDefs.seq nbs => do
     let names ← nbs.mapM fun nb => nb.names s pairs
@@ -397,7 +427,7 @@ def translatePromptPairs (docPairs: Array (String × Json))
     (s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
 
 def translateMessages (s: String)(promptPairs: Array (String × Json))
-      (header: String) (dfns: Array String) (toChat : ChatExampleType := .simple)
+      (header: String) (dfns: Array String) (toChat : ChatExampleType)
       (sysPrompt: Bool) : TranslateM Json := do
   let examples ←  promptPairs.filterMapM fun pair =>
     toChat.map? pair
@@ -436,7 +466,18 @@ structure Translator where
   roundTrip : Bool := false
   /-- Whether to select the first elaboration that passes a roundtrip-/
   roundTripSelect : Bool := false -- selecting first to pass roundtrip
+  reasoningServer : ChatServer := .openAI "o3-mini"
 deriving Repr, FromJson, ToJson
+
+def Translator.forDef (t: Translator)  : Translator :=
+  let chat : ChatExampleType := match t.toChat with
+  | .simple => .doc
+  | .detailed => .detailedDoc
+  | x => x
+  {t with toChat := chat}
+
+def Translator.reasoning (t: Translator) : Translator :=
+  {t with params := {t.params with n := 1, temp := 1.0}}
 
 /--
 Structure collecting together parameters used in code generation.
@@ -447,6 +488,8 @@ structure CodeGenerator extends Translator where
   numLeanSearchDirect : Nat := 2
   numMoogleDirect : Nat := 2
 deriving Repr, FromJson, ToJson
+
+def Translator.codeGenerator (t: Translator) : CodeGenerator := {t with}
 
 -- #eval toJson <| ({} : CodeGenerator)
 -- #eval (fromJson? (toJson <| ({} : CodeGenerator)) : Except _ Translator)
