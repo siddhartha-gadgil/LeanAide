@@ -61,6 +61,8 @@ def getLeanSearchQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <|
         return arr[0:num_results]
       | Except.error e => IO.throwServerError s!"Could not obtain array from {js}; error: {e}"
 
+#eval getLeanSearchQueryJsonArray "prime numbers" 10
+
 def getMoogleQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Array Json := do
   let apiUrl := "https://www.moogle.ai/api/search"
   let data := Json.arr
@@ -78,6 +80,8 @@ def getMoogleQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Arr
         | Except.ok arr => return arr[0:num_results]
         | Except.error e => IO.throwServerError s!"Could not obtain array from {js}; error: {e}"
     | _ => IO.throwServerError s!"Could not obtain data from {js}"
+
+--#eval getMoogleQueryJsonArray "prime numbers are prime" 10
 
 structure SearchResult where
   name : String
