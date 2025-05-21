@@ -2,6 +2,7 @@ import Lean
 import Qq
 import LeanAide.Aides
 import LeanAide.TranslateM
+import LeanCodePrompts.Translate
 
 open Lean Meta Qq Elab
 
@@ -39,7 +40,7 @@ initialize registerBuiltinAttribute {
   add := fun decl stx kind => MetaM.run' do
     let declTy := (← getConstInfo decl).type
     let expectedType : Q(Type) :=
-    q((kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
+    q(Translator → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
     unless ← isDefEq declTy expectedType do
       logWarning -- replace with error
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
@@ -54,45 +55,30 @@ def codegenMatch (key: String) : CoreM Name := do
       s!"codegen: no function found for key {key}"
   return f
 
-def test : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| `term, js =>
-  match js.getStr? with
-  | .ok str => do
-    let name := Syntax.mkStrLit str
-    `($name)
-  | .error _ => do
-    `(sorry)
-| `tactic, _ => `(tactic|sorry)
-| _, _ => throwError
-    s!"codegen: test does not work"
-
-#eval test `term (Json.str "Nat.succ")
-
-def codeFromFunc (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
+def codeFromFunc (translator: Translator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   let expectedType : Q(Type) :=
-    q((kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
+    q(Translator → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
   let f := mkConst f
   let code ←
     unsafe evalExpr
-      ((kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
-  code kind source
+      (Translator → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
+  code translator kind source
 
 /--
 Given a JSON object, return the corresponding syntax by matching with `.getKVorType?` and then calling the function in the environment using `codeFromFunc`. The function is expected to return a `TranslateM (Option (TSyntax kind))`, where `kind` is the syntax category of the object.
 -/
-def getCode (kind: SyntaxNodeKinds) (source: Json) :
+def getCode (translator: Translator) (kind: SyntaxNodeKinds)
+  (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   match source.getKVorType? with
   | some (key, source) => do
     let f ←  codegenMatch key
-    let code ← codeFromFunc f kind source
+    let code ← codeFromFunc translator f kind source
     return code
   | none => do
     throwError
       s!"codegen: no key or type found in JSON object {source}"
-
-#eval codeFromFunc ``test `term (Json.null)
 
 end Codegen
 
