@@ -739,3 +739,43 @@ def checkTacticSafe (mvarId: MVarId)(tacticCode: Syntax):
     state.restore
     logWarning e.toMessageData
     return false
+
+/--
+Get a key-value pair from a JSON object which is a single key-value pair.
+-/
+def Lean.Json.getKV? (js : Json) : Option (String × Json) :=
+  match js with
+  | Json.obj m =>
+    match m.toArray with
+    | #[⟨k, v⟩] => some (k, v)
+    | _ => none
+  | _ => none
+
+/--
+Get a key-value pair from a JSON object which is a single key-value pair or has a field "type".
+-/
+def Lean.Json.getKVorType? (js : Json) : Option (String × Json) :=
+  match js with
+  | Json.obj m =>
+    match m.toArray with
+    | #[⟨k, v⟩] => some (k, v)
+    | jsArr =>
+      let keys := jsArr.map (fun ⟨k, _⟩ => k)
+      if keys.contains "type" then
+        let purged := jsArr.filter (fun ⟨k, _⟩ => k != "type")
+        let purged : Array (String × Json) :=
+          purged.map fun ⟨k, v⟩ => (k, v)
+        some ("type", Json.mkObj purged.toList)
+      else
+        none
+  | _ => none
+
+
+syntax commandSeq := sepBy1IndentSemicolon(command)
+
+def commands : TSyntax `commandSeq → Array (TSyntax `command)
+  | `(commandSeq| $cs*) => cs
+  | _ => #[]
+
+def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
+  | cs => `(commandSeq| $cs*)

@@ -47,26 +47,6 @@ def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
   | Except.ok s => some s
   | _ => none
 
-/--
-Get a key-value pair from a JSON object which is a single key-value pair.
--/
-def Lean.Json.getKV? (js : Json) : Option (String × Json) :=
-  match js with
-  | Json.obj m =>
-    match m.toArray with
-    | #[⟨k, v⟩] => some (k, v)
-    | _ => none
-  | _ => none
-
-syntax commandSeq := sepBy1IndentSemicolon(command)
-
-def commands : TSyntax `commandSeq → Array (TSyntax `command)
-  | `(commandSeq| $cs*) => cs
-  | _ => #[]
-
-def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
-  | cs => `(commandSeq| $cs*)
-
 
 namespace LeanAide
 
