@@ -309,4 +309,19 @@ unsafe def TranslateM.runWithLoadingEmbeddings (descFields : List String)
   x.run' {} |>.run'.run'
 
 
+structure Translate.SavedState where
+  cmdPrelude : Array String := #[]
+  defs : Array (DefData) := #[]
+  preludes : Array String := #[]
+  errorLog : Array ElabErrorData := #[]
+  context : Option String := none
+
+instance : MonadBacktrack Translate.SavedState TranslateM where
+  saveState := fun σ  =>
+    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context}
+    return (saved, σ)
+  restoreState := fun s => do
+    modify fun _ =>
+      {cmdPrelude := s.cmdPrelude, defs := s.defs, preludes := s.preludes, context := s.context}
+
 end LeanAide

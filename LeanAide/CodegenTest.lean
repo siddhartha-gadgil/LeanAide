@@ -29,6 +29,11 @@ def testJson : Json :=
 #eval getCode {} `term testJson
 #eval getCode {} `tactic testJson
 
+/-!
+## Micro schema
+This is a micro schema for testing and illustrating the code generation. This includes recursive calls to `getCode`.
+-/
+
 open Lean.Parser.Tactic
 @[codegen "thm_test"]
 def thmTest (translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
@@ -58,15 +63,25 @@ where typeStx (js: Json) : TranslateM Syntax.Term :=
 
 @[codegen "doc_test"]
 def docTest (translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| `commandSeq, js => do
+| `commandSeq, js => withoutModifyingState do
   let .ok statements := js.getArr? | throwError "document must be an array"
-  let mut stxs : Array (TSyntax `command) := #[]
+  let mut stxs : Array (TSyntax `commandSeq) := #[]
   for statement in statements do
-    let stx ← getCode translator `command statement
+    let stx ← getCode translator `commandSeq statement
     match stx with
     | some stx => stxs := stxs.push stx
     | none => pure ()
-  `(commandSeq| $stxs*)
+  flattenCommands stxs
+| ``tacticSeq, js => withoutModifyingState do
+  let .ok statements := js.getArr? | throwError "document must be an array"
+  let mut stxs : Array (TSyntax `tactic) := #[]
+  for statement in statements do
+    let stx ← getCode translator `tactic statement
+    match stx with
+    | some stx => stxs := stxs.push stx
+    | none => pure ()
+  `(tacticSeq| $stxs*)
+
 
 | _, _ => throwError
     s!"codegen: test does not work"
@@ -96,7 +111,10 @@ def showStx  (translator: Translator)
     ppCategory cat stx
 
 
-#eval showCommand {} thmJson
+#eval showCommand {} thmJson -- example : {n | Odd n}.Infinite := by sorry
 
+/-
+  example : {n | Odd n}.Infinite := by sorry
+  example : {p | Nat.Prime p}.Infinite := by sorry
+-/
 #eval showStx {} docJson `commandSeq
-#check MonadBacktrack
