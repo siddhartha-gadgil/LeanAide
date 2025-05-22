@@ -223,6 +223,7 @@ def Translator.getLeanCodeJson (s: String)
     (translator : Translator)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
   logTimed s!"translating string `{s}` with  examples"
   -- IO.eprintln s!"translating string `{s}` with  examples"
+  let s ← withPreludes s
   setContext s
   match ← getCachedJson? s with
   | some js =>

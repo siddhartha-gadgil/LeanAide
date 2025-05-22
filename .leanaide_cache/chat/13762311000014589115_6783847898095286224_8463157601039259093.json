@@ -1,0 +1,197 @@
+{"usage":
+ {"total_tokens": 3687,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2823,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 864},
+ "system_fingerprint": "fp_76544d79cb",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BZWjvvwTBeD3uxmrQvAqPkZomrGtt",
+ "created": 1747807031,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → IsCyclic ↥H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → H.Cyclic",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u) [Group G] : Prop :=\n  ∀ H : Subgroup G, H.Normal → H ≠ ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H < ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → H.Cyclic",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u) [Group G] : Prop := ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H < ⊤ → H.IsCyclic",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → ∃ a : G, H = Subgroup.closure {a}",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 10,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 11,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u) [Group G] : Prop :=\n  ∀ H : Subgroup G, H.Normal → H < ⊤ → H.IsCyclic",
+    "annotations": []},
+   "logprobs": null,
+   "index": 12,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop := ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → H.IsCyclic",
+    "annotations": []},
+   "logprobs": null,
+   "index": 13,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ H : Subgroup G, H.Normal → H ≠ ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 14,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u_1) [Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H < ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 15,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition IsSaneGroup (G : Type u_1) [inst : Group G] : Prop :=\n  ∀ (H : Subgroup G), H.Normal → H ≠ ⊤ → H.IsCyclic",
+    "annotations": []},
+   "logprobs": null,
+   "index": 16,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u) [Group G] : Prop :=\n  ∀ H : Subgroup G, H.Normal → H < ⊤ → IsCyclic H",
+    "annotations": []},
+   "logprobs": null,
+   "index": 17,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup {G : Type u} [Group G] : Prop := ∀ (H : Subgroup G), H.Normal → H < ⊤ → H.IsCyclic",
+    "annotations": []},
+   "logprobs": null,
+   "index": 18,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def IsSaneGroup (G : Type u) [Group G] : Prop :=\n  ∀ (N : Subgroup G), N.Normal → N ≠ ⊤ → IsCyclic N",
+    "annotations": []},
+   "logprobs": null,
+   "index": 19,
+   "finish_reason": "stop"}]}
