@@ -5,7 +5,7 @@ open Lean Meta Qq Elab
 namespace LeanAide.Codegen
 
 @[codegen "test"]
-def test (_translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def test (_ : Option (MVarId))(_translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | `term, js =>
   match js.getStr? with
   | .ok str => do
@@ -17,17 +17,17 @@ def test (_translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json →
 | _, _ => throwError
     s!"codegen: test does not work"
 
-#eval test {} `term (Json.str "Nat.succ")
+#eval test none {} `term (Json.str "Nat.succ")
 
-#eval codeFromFunc {} ``test `term (Json.null)
+#eval codeFromFunc none {} ``test `term (Json.null)
 
-#eval codeFromFunc {} ``test `term (Json.str "Hello")
+#eval codeFromFunc none {} ``test `term (Json.str "Hello")
 
 def testJson : Json :=
   Json.mkObj [ ("test" , Json.str "Hello") ]
 
-#eval getCode {} `term testJson
-#eval getCode {} `tactic testJson
+#eval getCode none {} `term testJson
+#eval getCode none {} `tactic testJson
 
 /-!
 ## Micro schema
@@ -36,7 +36,7 @@ This is a micro schema for testing and illustrating the code generation. This in
 
 open Lean.Parser.Tactic
 @[codegen "thm_test"]
-def thmTest (translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def thmTest (goal? : Option (MVarId))(translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | `command, js => do
   let stx ← typeStx js
   `(command| example : $stx := by sorry)
@@ -62,12 +62,12 @@ where typeStx (js: Json) : TranslateM Syntax.Term :=
       s!"codegen: no translation found for {js}"
 
 @[codegen "doc_test"]
-def docTest (translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def docTest (goal? : Option (MVarId)) (translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | `commandSeq, js => withoutModifyingState do
   let .ok statements := js.getArr? | throwError "document must be an array"
   let mut stxs : Array (TSyntax `commandSeq) := #[]
   for statement in statements do
-    let stx ← getCode translator `commandSeq statement
+    let stx ← getCode goal? translator `commandSeq statement
     match stx with
     | some stx => stxs := stxs.push stx
     | none => pure ()
@@ -76,7 +76,7 @@ def docTest (translator : Translator := {}) : (kind: SyntaxNodeKinds) → Json �
   let .ok statements := js.getArr? | throwError "document must be an array"
   let mut stxs : Array (TSyntax `tactic) := #[]
   for statement in statements do
-    let stx ← getCode translator `tactic statement
+    let stx ← getCode goal? translator `tactic statement
     match stx with
     | some stx => stxs := stxs.push stx
     | none => pure ()
@@ -99,14 +99,14 @@ open PrettyPrinter
 def showCommand (translator: Translator)
   (source: Json) :
     TranslateM (Format) := do
-    let some cmd ← getCode translator `command source | throwError
+    let some cmd ← getCode none translator `command source | throwError
       s!"codegen: no command"
     ppCommand cmd
 
-def showStx  (translator: Translator)
+def showStx  (goal? : Option (MVarId))(translator: Translator)
   (source: Json) (cat: Name) :
     TranslateM (Format) := do
-    let some stx ← getCode translator cat source | throwError
+    let some stx ← getCode goal? translator cat source | throwError
       s!"codegen: no command"
     ppCategory cat stx
 
@@ -117,4 +117,4 @@ def showStx  (translator: Translator)
   example : {n | Odd n}.Infinite := by sorry
   example : {p | Nat.Prime p}.Infinite := by sorry
 -/
-#eval showStx {} docJson `commandSeq
+#eval showStx none {} docJson `commandSeq
