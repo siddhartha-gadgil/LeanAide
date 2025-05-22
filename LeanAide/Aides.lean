@@ -779,3 +779,12 @@ def commands : TSyntax `commandSeq → Array (TSyntax `command)
 
 def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
   | cs => `(commandSeq| $cs*)
+
+def flattenCommands (cs: Array <| TSyntax `commandSeq) :
+  CoreM (TSyntax `commandSeq) :=
+  toCommandSeq (cs.map commands |>.flatten)
+
+def flattenTactics (tacs: Array <| TSyntax ``tacticSeq) :
+  CoreM (TSyntax ``tacticSeq) := do
+  let tacs := tacs.map getTactics |>.flatten
+  `(tacticSeq| $tacs*)

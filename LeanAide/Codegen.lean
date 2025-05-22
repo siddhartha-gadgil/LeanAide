@@ -17,7 +17,7 @@ Attribute for generating Lean code, more precisely Syntax of a given category, f
 
 As the same statement can generate different syntax categories (e.g. `def` and `let`) this is not specified in the attribute. Instead the target category is part of the signature of the function.
 -/
-syntax (name := codegen) "codegen" str : attr
+syntax (name := codegen) "codegen" str,* : attr
 
 /-- Environment extension storing code generation lemmas -/
 initialize codegenExt :
@@ -27,10 +27,13 @@ initialize codegenExt :
     initial := {}
   }
 
-def codegenKeyM (stx : Syntax) : CoreM String := do
+def codegenKeyM (stx : Syntax) : CoreM (Array String) := do
   match stx with
   | `(attr|codegen $x) => do
-    return x.getString
+    return #[x.getString]
+  | `(attr|codegen $xs,*) => do
+    let keys := xs.getElems
+    return keys.map (·.getString)
   | _ => throwUnsupportedSyntax
 
 
@@ -44,9 +47,10 @@ initialize registerBuiltinAttribute {
     unless ← isDefEq declTy expectedType do
       logWarning -- replace with error
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
-    let key ← codegenKeyM stx
-    logInfo m!"codegen: {decl}; key: {key}"
-    codegenExt.add (decl, key) kind
+    let keys ← codegenKeyM stx
+    logInfo m!"codegen: {decl}; keys: {keys}"
+    for key in keys do
+      codegenExt.add (decl, key) kind
 }
 
 def codegenMatch (key: String) : CoreM Name := do
