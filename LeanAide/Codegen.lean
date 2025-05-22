@@ -43,7 +43,7 @@ initialize registerBuiltinAttribute {
   add := fun decl stx kind => MetaM.run' do
     let declTy := (← getConstInfo decl).type
     let expectedType : Q(Type) :=
-    q(Option (MVarId) → Translator → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
+    q(Translator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
     unless ← isDefEq declTy expectedType do
       logWarning -- replace with error
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
@@ -62,17 +62,17 @@ def codegenMatch (key: String) : CoreM Name := do
 def codeFromFunc (goal? : Option MVarId) (translator: Translator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   let expectedType : Q(Type) :=
-    q(Option (MVarId) → Translator →  (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
+    q(Translator → Option MVarId  →  (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
   let f := mkConst f
   let code ←
     unsafe evalExpr
-      (Option (MVarId) → Translator → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
-  code goal? translator kind source
+      (Translator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
+  code translator goal? kind source
 
 /--
 Given a JSON object, return the corresponding syntax by matching with `.getKVorType?` and then calling the function in the environment using `codeFromFunc`. The function is expected to return a `TranslateM (Option (TSyntax kind))`, where `kind` is the syntax category of the object.
 -/
-def getCode (goal? : Option MVarId) (translator: Translator) (kind: SyntaxNodeKinds)
+def getCode  (translator: Translator) (goal? : Option MVarId) (kind: SyntaxNodeKinds)
   (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   match source.getKVorType? with
