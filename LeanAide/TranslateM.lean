@@ -136,6 +136,7 @@ structure Translate.State where
   cmdPrelude : Array String := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
+  preludes : Array String := #[]
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
 deriving Inhabited
@@ -233,6 +234,20 @@ def defsBlob : TranslateM <| Array String := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => dfn.statement
 
+def addPrelude (p: String) : TranslateM Unit := do
+  modify fun s => {s with preludes := s.preludes.push p}
+
+def clearPreludes : TranslateM Unit := do
+  modify fun s => {s with preludes := #[]}
+
+def preludesBlob : TranslateM <| Array String := do
+  let preludes := (← get).preludes
+  preludes.mapM <| fun p => do pure p
+
+def withPreludes (s: String) : TranslateM String := do
+  let prelude ← preludesBlob
+  return prelude.foldr (· ++ "\n" ++ · ) s
+
 def defsNameBlob : TranslateM <| Array <| Name × String := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statement)
@@ -293,5 +308,20 @@ unsafe def TranslateM.runWithLoadingEmbeddings (descFields : List String)
     x
   x.run' {} |>.run'.run'
 
+
+structure Translate.SavedState where
+  cmdPrelude : Array String := #[]
+  defs : Array (DefData) := #[]
+  preludes : Array String := #[]
+  errorLog : Array ElabErrorData := #[]
+  context : Option String := none
+
+instance : MonadBacktrack Translate.SavedState TranslateM where
+  saveState := fun σ  =>
+    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context}
+    return (saved, σ)
+  restoreState := fun s => do
+    modify fun _ =>
+      {cmdPrelude := s.cmdPrelude, defs := s.defs, preludes := s.preludes, context := s.context}
 
 end LeanAide
