@@ -3,6 +3,8 @@ import Qq
 import LeanAide.Aides
 import LeanAide.TranslateM
 import LeanCodePrompts.Translate
+import LeanAide.RunTactics
+import LeanAide.AutoTactic
 
 open Lean Meta Qq Elab
 
@@ -43,7 +45,7 @@ initialize registerBuiltinAttribute {
   add := fun decl stx kind => MetaM.run' do
     let declTy := (← getConstInfo decl).type
     let expectedType : Q(Type) :=
-    q(Translator → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
+    q(Translator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
     unless ← isDefEq declTy expectedType do
       logWarning -- replace with error
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
@@ -59,30 +61,73 @@ def codegenMatch (key: String) : CoreM Name := do
       s!"codegen: no function found for key {key}"
   return f
 
-def codeFromFunc (translator: Translator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
+def codeFromFunc (goal? : Option MVarId) (translator: Translator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   let expectedType : Q(Type) :=
-    q(Translator → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
+    q(Translator → Option MVarId  →  (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
   let f := mkConst f
   let code ←
     unsafe evalExpr
-      (Translator → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
-  code translator kind source
+      (Translator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
+  code translator goal? kind source
 
 /--
 Given a JSON object, return the corresponding syntax by matching with `.getKVorType?` and then calling the function in the environment using `codeFromFunc`. The function is expected to return a `TranslateM (Option (TSyntax kind))`, where `kind` is the syntax category of the object.
 -/
-def getCode (translator: Translator) (kind: SyntaxNodeKinds)
+def getCode  (translator: Translator) (goal? : Option MVarId) (kind: SyntaxNodeKinds)
   (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   match source.getKVorType? with
   | some (key, source) => do
     let f ←  codegenMatch key
-    let code ← codeFromFunc translator f kind source
+    let code ← codeFromFunc goal? translator f kind source
     return code
   | none => do
     throwError
       s!"codegen: no key or type found in JSON object {source}"
+
+open Lean.Parser.Tactic
+def emptyTacs : CoreM (TSyntax ``tacticSeq) := do
+  let xs: Array (TSyntax `tactic) := #[]
+  `(tacticSeq| $xs*)
+
+def getCodeTacticsAux (translator: Translator) (goal :  MVarId)
+  (sources: List Json) (accum: TSyntax ``tacticSeq) :
+    TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
+  goal.withContext do
+  match sources with
+  | [] => do
+    return (accum, goal)
+  | source::sources => do
+    let code? ← getCode translator (some goal) ``tacticSeq source
+    match code? with
+    | none => do -- error with obtaining tactics
+      getCodeTacticsAux translator goal sources accum
+    | some code => do
+      let goal? ← runForSingleGoal goal code
+      match goal? with
+      | none => do -- tactics closed the goal
+        return (accum, none)
+      | some newGoal => do
+        let newAccum ← appendTactics accum code
+        getCodeTacticsAux translator newGoal sources newAccum
+
+/--
+Main helper for generating tactics from a list of JSON objects.
+-/
+def getCodeTactics (translator: Translator) (goal :  MVarId)
+  (sources: List Json) :
+    TranslateM (TSyntax ``tacticSeq) := do
+  let accum ← emptyTacs
+  let (tacs, goal?) ←
+     getCodeTacticsAux translator goal sources accum
+  match goal? with
+  | none => do
+    return tacs
+  | some goal => do
+    let autoTacs ←
+      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
+    appendTactics tacs (← `(tacticSeq| $autoTacs*))
 
 end Codegen
 

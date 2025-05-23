@@ -313,7 +313,6 @@ structure Translate.SavedState where
   cmdPrelude : Array String := #[]
   defs : Array (DefData) := #[]
   preludes : Array String := #[]
-  errorLog : Array ElabErrorData := #[]
   context : Option String := none
 
 instance : MonadBacktrack Translate.SavedState TranslateM where
