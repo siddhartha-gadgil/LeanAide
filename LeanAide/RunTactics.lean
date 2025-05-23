@@ -6,6 +6,47 @@ open Lean Meta Elab Term PrettyPrinter
 
 namespace LeanAide
 
+open Parser.Tactic
+-- TODO: add errors and warnings
+def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : TermElabM <| Option MVarId :=
+    mvarId.withContext do
+  -- let tacticCode ← `(tacticSeq| skip)
+  let s₀ ← saveState
+  try
+    let ctx ← read
+    let (mvars, s) ←
+      withoutErrToSorry do
+      Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode}
+        {}  (s:= ← get)
+    match mvars with
+    | [] =>
+      set s
+      return none
+    | [mvar] =>
+      set s
+      return mvar
+    | _ =>
+      s₀.restore
+      return none
+  catch e =>
+    IO.eprintln s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
+    s₀.restore
+    return mvarId
+
+-- Actually not useful, need to integrate with `getCode`.
+def runTacticSeqList (mvarId : MVarId) (tacticCodeList : List <| TSyntax ``tacticSeq) : TermElabM <| Option MVarId :=
+    mvarId.withContext do
+  match tacticCodeList with
+  | [] =>
+    return none
+  | head :: tail =>
+    let mvar ← runForSingleGoal mvarId head
+    match mvar with
+    | none =>
+      return none
+    | some mvarId' =>
+      runTacticSeqList mvarId' tail
+
 def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId :=
     mvarId.withContext do

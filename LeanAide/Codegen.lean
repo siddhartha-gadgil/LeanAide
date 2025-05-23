@@ -3,6 +3,8 @@ import Qq
 import LeanAide.Aides
 import LeanAide.TranslateM
 import LeanCodePrompts.Translate
+import LeanAide.RunTactics
+import LeanAide.AutoTactic
 
 open Lean Meta Qq Elab
 
@@ -83,6 +85,49 @@ def getCode  (translator: Translator) (goal? : Option MVarId) (kind: SyntaxNodeK
   | none => do
     throwError
       s!"codegen: no key or type found in JSON object {source}"
+
+open Lean.Parser.Tactic
+def emptyTacs : CoreM (TSyntax ``tacticSeq) := do
+  let xs: Array (TSyntax `tactic) := #[]
+  `(tacticSeq| $xs*)
+
+def getCodeTacticsAux (translator: Translator) (goal :  MVarId)
+  (sources: List Json) (accum: TSyntax ``tacticSeq) :
+    TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
+  goal.withContext do
+  match sources with
+  | [] => do
+    return (accum, goal)
+  | source::sources => do
+    let code? ← getCode translator (some goal) ``tacticSeq source
+    match code? with
+    | none => do -- error with obtaining tactics
+      getCodeTacticsAux translator goal sources accum
+    | some code => do
+      let goal? ← runForSingleGoal goal code
+      match goal? with
+      | none => do -- tactics closed the goal
+        return (accum, none)
+      | some newGoal => do
+        let newAccum ← appendTactics accum code
+        getCodeTacticsAux translator newGoal sources newAccum
+
+/--
+Main helper for generating tactics from a list of JSON objects.
+-/
+def getCodeTactics (translator: Translator) (goal :  MVarId)
+  (sources: List Json) :
+    TranslateM (TSyntax ``tacticSeq) := do
+  let accum ← emptyTacs
+  let (tacs, goal?) ←
+     getCodeTacticsAux translator goal sources accum
+  match goal? with
+  | none => do
+    return tacs
+  | some goal => do
+    let autoTacs ←
+      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
+    appendTactics tacs (← `(tacticSeq| $autoTacs*))
 
 end Codegen
 
