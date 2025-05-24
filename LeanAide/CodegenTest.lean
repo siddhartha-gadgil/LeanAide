@@ -61,6 +61,32 @@ where typeStx (js: Json) : TranslateM Syntax.Term :=
     throwError
       s!"codegen: no translation found for {js}"
 
+@[codegen]
+def thmStringTest (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `command, js => do
+  let stx ← typeStx js
+  `(command| example : $stx := by sorry)
+| _, `commandSeq, js => do
+  let stx ← typeStx js
+  `(commandSeq| example : $stx := by sorry)
+| _, ``tacticSeq, js => do
+  let stx ← typeStx js
+  `(tacticSeq| have : $stx := bysorry)
+| _, `tactic, js => do
+  let stx ← typeStx js
+  `(tactic| have : $stx := bysorry)
+| _, _, _ => throwError
+    s!"codegen: test does not work"
+where typeStx (js: Json) : TranslateM Syntax.Term :=
+  match js.getStr? with
+  | .ok str => do
+    let .ok t ← translator.translateToProp? str | throwError
+      s!"codegen: no translation found for {str}"
+    PrettyPrinter.delab t
+  | .error _ => do
+    throwError
+      s!"codegen: no translation found for {js}"
+
 @[codegen "doc_test"]
 def docTest  (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | goal?, `commandSeq, js => withoutModifyingState do
@@ -93,7 +119,7 @@ def thmJson' : Json :=
   Json.mkObj [ ("thm_test" , Json.str "There are infinitely many prime numbers.") ]
 
 def docJson : Json :=
-  Json.mkObj [ ("doc_test" , Json.arr #[thmJson, thmJson'])]
+  Json.mkObj [ ("doc_test" , Json.arr #[thmJson, thmJson', Json.str "There are infinitely many odd numbers."])]
 
 open PrettyPrinter
 def showCommand (translator: Translator)

@@ -19,18 +19,24 @@ Attribute for generating Lean code, more precisely Syntax of a given category, f
 
 As the same statement can generate different syntax categories (e.g. `def` and `let`) this is not specified in the attribute. Instead the target category is part of the signature of the function.
 -/
-syntax (name := codegen) "codegen" str,* : attr
+syntax (name := codegen) "codegen" (str,*)? : attr
 
 /-- Environment extension storing code generation lemmas -/
 initialize codegenExt :
-    SimpleScopedEnvExtension (Name × String) (Std.HashMap String Name) ←
+    SimpleScopedEnvExtension (Name × (Option String)) (Std.HashMap String Name × Array Name) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun m (n, key) => m.insert key n
-    initial := {}
+    addEntry := fun (m, arr) (n, key?) =>
+     match key? with
+      | none => (m, arr.push n) -- no key, just add the name
+      | some key =>
+        (m.insert key n, arr)
+    initial := ({}, #[])
   }
 
-def codegenKeyM (stx : Syntax) : CoreM (Array String) := do
+def codegenKeyM (stx : Syntax) : CoreM <| Option (Array String) := do
   match stx with
+  | `(attr|codegen) => do
+    return none
   | `(attr|codegen $x) => do
     return #[x.getString]
   | `(attr|codegen $xs,*) => do
@@ -51,15 +57,24 @@ initialize registerBuiltinAttribute {
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
     let keys ← codegenKeyM stx
     logInfo m!"codegen: {decl}; keys: {keys}"
+    match keys with
+    | none => do
+      -- no keys, just add the name
+      codegenExt.add (decl, none) kind
+    | some keys =>
     for key in keys do
       codegenExt.add (decl, key) kind
 }
 
 def codegenMatch (key: String) : CoreM Name := do
   let some f :=
-    (codegenExt.getState (← getEnv)).get? key | throwError
+    (codegenExt.getState (← getEnv)).1.get? key | throwError
       s!"codegen: no function found for key {key}"
   return f
+
+def codegenKeyless : CoreM <| Array Name := do
+  let (_, arr) := (codegenExt.getState (← getEnv))
+  return arr
 
 def codeFromFunc (goal? : Option MVarId) (translator: Translator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
@@ -83,8 +98,18 @@ def getCode  (translator: Translator) (goal? : Option MVarId) (kind: SyntaxNodeK
     let code ← codeFromFunc goal? translator f kind source
     return code
   | none => do
+    let fs ← codegenKeyless
+    if fs.isEmpty then
+      throwError
+        s!"codegen: no key or type found in JSON object {source}, and no codegen functions registered"
+    for f in fs do
+      try
+        let code? ← codeFromFunc goal? translator f kind source
+        return code?
+      catch _ =>
+        continue -- try next function
     throwError
-      s!"codegen: no key or type found in JSON object {source}"
+      s!"codegen: no key or type found in JSON object {source} and no codegen functions returned a result"
 
 open Lean.Parser.Tactic
 def emptyTacs : CoreM (TSyntax ``tacticSeq) := do
