@@ -23,10 +23,14 @@ syntax (name := codegen) "codegen" str,* : attr
 
 /-- Environment extension storing code generation lemmas -/
 initialize codegenExt :
-    SimpleScopedEnvExtension (Name × String) (Std.HashMap String Name) ←
+    SimpleScopedEnvExtension (Name × (Option String)) (Std.HashMap String Name × Array Name) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun m (n, key) => m.insert key n
-    initial := {}
+    addEntry := fun (m, arr) (n, key?) =>
+     match key? with
+      | none => (m, arr.push n) -- no key, just add the name
+      | some key =>
+        (m.insert key n, arr)
+    initial := ({}, #[])
   }
 
 def codegenKeyM (stx : Syntax) : CoreM (Array String) := do
@@ -57,9 +61,13 @@ initialize registerBuiltinAttribute {
 
 def codegenMatch (key: String) : CoreM Name := do
   let some f :=
-    (codegenExt.getState (← getEnv)).get? key | throwError
+    (codegenExt.getState (← getEnv)).1.get? key | throwError
       s!"codegen: no function found for key {key}"
   return f
+
+def codegenKeyless : CoreM <| Array Name := do
+  let (_, arr) := (codegenExt.getState (← getEnv))
+  return arr
 
 def codeFromFunc (goal? : Option MVarId) (translator: Translator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
@@ -83,8 +91,18 @@ def getCode  (translator: Translator) (goal? : Option MVarId) (kind: SyntaxNodeK
     let code ← codeFromFunc goal? translator f kind source
     return code
   | none => do
+    let fs ← codegenKeyless
+    if fs.isEmpty then
+      throwError
+        s!"codegen: no key or type found in JSON object {source}, and no codegen functions registered"
+    for f in fs do
+      try
+        let code? ← codeFromFunc goal? translator f kind source
+        return code?
+      catch _ =>
+        continue -- try next function
     throwError
-      s!"codegen: no key or type found in JSON object {source}"
+      s!"codegen: no key or type found in JSON object {source} and no codegen functions returned a result"
 
 open Lean.Parser.Tactic
 def emptyTacs : CoreM (TSyntax ``tacticSeq) := do
