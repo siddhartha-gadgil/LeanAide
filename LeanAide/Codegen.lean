@@ -94,6 +94,7 @@ def getCode  (translator: Translator) (goal? : Option MVarId) (kind: SyntaxNodeK
     TranslateM (Option (TSyntax kind)) := do
   match source.getKVorType? with
   | some (key, source) => do
+    let key := key.toLower
     let f ←  codegenMatch key
     let code ← codeFromFunc goal? translator f kind source
     return code
