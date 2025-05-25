@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Mathematical Document Wrapper",
   "description": "JSON schema for a structured mathematical document.",
   "type": "object",
@@ -147,6 +148,23 @@
       "type": "object",
       "description": "A mathematical theorem, lemma, proposition, corollary, or claim.",
       "properties": {
+        "hypothesis" : {
+          "type": "array",
+          "description": "(OPTIONAL) The hypothesis or assumptions of the theorem, consisting of statements like 'let', 'assume', etc.",
+          "items": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/let_statement"
+          },
+          {
+            "$ref": "#/$defs/assume_statement"
+          },
+          {
+            "$ref": "#/$defs/some_statement"
+          }
+        ]
+      }
+        },
         "claim": { "type": "string", "description": "The statement." },
         "label": { "type": "string", "description": "Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping')." }, 
         "header": {
@@ -169,6 +187,10 @@
           "type": "array",
           "description": "(OPTIONAL) Explicit list of internal references mentioned in the statement.",
           "items": { "$ref": "#/$defs/InternalReference" }
+        },
+        "proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "(OPTIONAL) Proof of the theorem if available in the text."
         }
       },
       "required": ["label", "header", "claim"], 
@@ -334,38 +356,41 @@
     },
     "let_statement": {
       "type": "object",
-      "description": "A statement introducing a new variable with given value, type and/or property.",
+      "description": "A statement introducing a new variable, or asserting the existence/properties of a quantity.",
       "properties": {
-        "variable": {
+        "statement": {
           "type": "string",
-          "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
+          "description": "The full 'let' or existential statement, including variable, type, and/or properties."
         },
-        "value": {
+        "variable_name": {
           "type": "string",
-          "description": "(OPTIONAL) The value of the variable being defined"
+          "description": "(OPTIONAL) The variable being explicitly named (e.g., 'n', 'f', 'G'). Use if a specific name is introduced."
         },
-        "kind": {
+        "variable_type": {
           "type": "string",
-          "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
+          "description": "(OPTIONAL) The type of the variable, such as 'real number', 'function from S to T', 'element of G'."
         },
         "properties": {
           "type": "string",
-          "description": "(OPTIONAL) Specific properties of the variable beyond the type"
+          "description": "(OPTIONAL) Specific properties of the variable beyond its type (e.g., 'is a prime', 'is continuous')."
         }
       },
-      "required": [
-        "variable"
-      ]
+      "required": ["statement"],
+      "additionalProperties": false
     },
     "some_statement": {
       "type": "object",
       "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'",
       "properties": {
-        "variable": {
+        "statement": {
           "type": "string",
+          "description": "The full statement, including variable, kind, and/or properties."
+        },
+        "variable_name": {
+          "type": "string", 
           "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
         },
-        "kind": {
+        "variable_kind": {
           "type": "string",
           "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
         },
@@ -451,7 +476,7 @@
       ],
       "additionalProperties": false
     },
-    "calculate_choice": {
+    "calculate_statement": {
       "type": "object",
       "description": "An equation, inequality, short calculation etc.",
       "minProperties": 1,
@@ -589,10 +614,6 @@
         "proof"
       ]
     },
-    "calculate_statement": {
-      "$ref": "#/$defs/calculate_choice",
-      "description": "An equation, inequality, short calculation etc."
-    },
     "conclude_statement": {
       "type": "object",
       "description": "Conclude a claim obtained from the steps so far. This is typically the final statement of a proof giving the conclusion of the theorem.",
@@ -660,7 +681,7 @@
         }
       },
       "required": [
-        "label"
+        "name"
       ],
       "additionalProperties": false
     },
