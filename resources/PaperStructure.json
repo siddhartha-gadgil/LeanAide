@@ -187,6 +187,10 @@
           "type": "array",
           "description": "(OPTIONAL) Explicit list of internal references mentioned in the statement.",
           "items": { "$ref": "#/$defs/InternalReference" }
+        },
+        "proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "(OPTIONAL) Proof of the theorem if available in the text."
         }
       },
       "required": ["label", "header", "claim"], 
