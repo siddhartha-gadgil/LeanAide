@@ -53,10 +53,10 @@ initialize registerBuiltinAttribute {
     let expectedType : Q(Type) :=
     q(Translator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
     unless ← isDefEq declTy expectedType do
-      logWarning -- replace with error
+      throwError -- replace with error
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
     let keys ← codegenKeyM stx
-    logInfo m!"codegen: {decl}; keys: {keys}"
+    -- logInfo m!"codegen: {decl}; keys: {keys}"
     match keys with
     | none => do
       -- no keys, just add the name
@@ -154,6 +154,22 @@ def getCodeTactics (translator: Translator) (goal :  MVarId)
     let autoTacs ←
       runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
     appendTactics tacs (← `(tacticSeq| $autoTacs*))
+
+def getCodeCommands (translator: Translator) (goal? : Option MVarId)
+  (sources: List Json) :
+    TranslateM (TSyntax ``commandSeq) := do
+  let mut accum : Array <| TSyntax ``commandSeq := #[]
+  for source in sources do
+    let code? ← getCode translator goal? ``commandSeq source
+    match code? with
+    | none => do -- error with obtaining commands
+      continue
+    | some code => do
+      accum := accum.push code
+  if accum.isEmpty then
+    throwError
+      s!"codegen: no commands generated from {sources}"
+  flattenCommands accum
 
 end Codegen
 

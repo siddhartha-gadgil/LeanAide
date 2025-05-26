@@ -370,6 +370,10 @@
           "type": "string",
           "description": "(OPTIONAL) The type of the variable, such as 'real number', 'function from S to T', 'element of G'."
         },
+        "value" : {
+          "type": "string",
+          "description": "(OPTIONAL) The value of the variable if it is being defined or assigned a specific value."
+        },
         "properties": {
           "type": "string",
           "description": "(OPTIONAL) Specific properties of the variable beyond its type (e.g., 'is a prime', 'is continuous')."
