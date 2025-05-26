@@ -673,7 +673,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Full label of the author."
+          "description": "Full name of the author."
         },
         "affiliation": {
           "type": "string",
