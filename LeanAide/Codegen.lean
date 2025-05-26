@@ -157,4 +157,6 @@ def getCodeTactics (translator: Translator) (goal :  MVarId)
 
 end Codegen
 
+#check Fact
+
 end LeanAide
