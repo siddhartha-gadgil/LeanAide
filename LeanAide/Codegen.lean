@@ -23,14 +23,11 @@ syntax (name := codegen) "codegen" (str,*)? : attr
 
 /-- Environment extension storing code generation lemmas -/
 initialize codegenExt :
-    SimpleScopedEnvExtension (Name × (Option String)) (Std.HashMap String Name × Array Name) ←
+    SimpleScopedEnvExtension (Name × (Option String)) (Std.HashMap (Option String) (Array Name)) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun (m, arr) (n, key?) =>
-     match key? with
-      | none => (m, arr.push n) -- no key, just add the name
-      | some key =>
-        (m.insert key n, arr)
-    initial := ({}, #[])
+    addEntry := fun m (n, key?) =>
+        m.insert key? <| (m.getD key? #[] ).push n
+    initial := {}
   }
 
 def codegenKeyM (stx : Syntax) : CoreM <| Option (Array String) := do
@@ -66,15 +63,14 @@ initialize registerBuiltinAttribute {
       codegenExt.add (decl, key) kind
 }
 
-def codegenMatch (key: String) : CoreM Name := do
-  let some f :=
+def codegenMatches (key: String) : CoreM <| Array Name := do
+  let some fs :=
     (codegenExt.getState (← getEnv)).1.get? key | throwError
       s!"codegen: no function found for key {key}"
-  return f
+  return fs
 
 def codegenKeyless : CoreM <| Array Name := do
-  let (_, arr) := (codegenExt.getState (← getEnv))
-  return arr
+  return (codegenExt.getState (← getEnv)).1.get? none |>.getD #[]
 
 def codeFromFunc (goal? : Option MVarId) (translator: Translator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
@@ -95,15 +91,24 @@ def getCode  (translator: Translator) (goal? : Option MVarId) (kind: SyntaxNodeK
   match source.getKVorType? with
   | some (key, source) => do
     let key := key.toLower
-    let f ←  codegenMatch key
-    let code ← codeFromFunc goal? translator f kind source
-    return code
+    let fs ←  codegenMatches key
+    for f in fs.reverse do
+      try
+        -- logInfo m!"codegen: trying {f} for key {key}"
+        let code? ← codeFromFunc goal? translator f kind source
+        match code? with
+        | some code => return some code
+        | none => continue -- try next function
+      catch _ =>
+        continue -- try next function
+    throwError
+      s!"codegen: no valid function found for key {key} in JSON object {source}"
   | none => do
     let fs ← codegenKeyless
     if fs.isEmpty then
       throwError
         s!"codegen: no key or type found in JSON object {source}, and no codegen functions registered"
-    for f in fs do
+    for f in fs.reverse do
       try
         let code? ← codeFromFunc goal? translator f kind source
         return code?
