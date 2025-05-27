@@ -89,7 +89,6 @@ def someCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKind
   addPrelude statement
   return none
 
-
 open Lean.Parser.Tactic
 -- Very basic version; should add references to `auto?` as well as other modifications as in `StructToLean`
 @[codegen "assertion_statement"]
@@ -131,6 +130,23 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
   else
     IO.eprintln s!"Not a type: {type}"
     throwError s!"codegen: no translation found for {js}"
+
+def metaDataFields := ["author", "date", "title", "abstract", "keywords", "authors", "affiliations", "acknowledgements", "msc_codes", "publication_date", "doi", "arxiv_id", "url", "source", "header", "entries"]
+
+@[codegen]
+def metaNoCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, js => do
+  match js.getObj? with
+  | .ok obj =>
+    let keys := obj.toArray.map (fun ⟨ k, _⟩  => k)
+    let nonMetaKeys := keys.filter (fun k => !metaDataFields.contains k)
+    if nonMetaKeys.isEmpty then
+      return none
+    else
+      throwError s!"codegen: no metadata found in {js}, extra keys: {nonMetaKeys}"
+  | .error _ => do
+  throwError s!"codegen: no metadata found in {js}"
+
 
 
 -- Copied code

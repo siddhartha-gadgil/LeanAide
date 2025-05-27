@@ -176,7 +176,29 @@ def getCodeCommands (translator: Translator) (goal? : Option MVarId)
       s!"codegen: no commands generated from {sources}"
   flattenCommands accum
 
+def noCode : Translator → Option MVarId  →
+  (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
+  return none
+
+-- For instance, for the hypothesis in a theorem.
+def contextRun (translator: Translator) (goal? : Option MVarId)
+  (kind: SyntaxNodeKinds) (source: Json) :
+    TranslateM Unit := do
+  match source.getArr?  with
+  | .ok sources => do
+    for source in sources do
+      let code ← getCode translator goal? kind source
+      unless code.isNone do
+        throwError
+          s!"codegen: contextCode expected pure side effect, but got {code}"
+    return
+  | .error _ => do
+    throwError
+      s!"codegen: contextCode expected an array of JSON objects, but got {source}"
+
 end Codegen
+
+#eval [1, 2, 3].contains 2
 
 #check Fact
 
