@@ -131,6 +131,10 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
     IO.eprintln s!"Not a type: {type}"
     throwError s!"codegen: no translation found for {js}"
 
+@[codegen "title","abstract", "remark", "metadata", "author", "bibliography", "citation", "internalreference"]
+def noGenCode := noCode
+
+-- older code, should not be used
 def metaDataFields := ["author", "date", "title", "abstract", "keywords", "authors", "affiliations", "acknowledgements", "msc_codes", "publication_date", "doi", "arxiv_id", "url", "source", "header", "entries"]
 
 @[codegen]

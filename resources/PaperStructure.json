@@ -9,45 +9,19 @@
       "description": "The root of the mathematical document, containing a sequence of environments.",
       "items": {
         "anyOf": [
-          {
-            "$ref": "#/$defs/Title"
-          },
-          {
-            "$ref": "#/$defs/Abstract"
-          },
-          {
-            "$ref": "#/$defs/Metadata"
-          },
-          {
-            "$ref": "#/$defs/Section"
-          },
-          {
-            "$ref": "#/$defs/Theorem"
-          },
-          {
-            "$ref": "#/$defs/Definition"
-          },
-          {
-            "$ref": "#/$defs/Remark"
-          },
-          {
-            "$ref": "#/$defs/LogicalStepSequence"
-          },
-          {
-            "$ref": "#/$defs/Paragraph"
-          },
-          {
-            "$ref": "#/$defs/Proof"
-          },
-          {
-            "$ref": "#/$defs/Figure"
-          },
-          {
-            "$ref": "#/$defs/Table"
-          },
-          {
-            "$ref": "#/$defs/Bibliography"
-          }
+          { "$ref": "#/$defs/Title" },
+          { "$ref": "#/$defs/Abstract" },
+          { "$ref": "#/$defs/Metadata" },
+          { "$ref": "#/$defs/Section" },
+          { "$ref": "#/$defs/Theorem" },
+          { "$ref": "#/$defs/Definition" },
+          { "$ref": "#/$defs/Remark" },
+          { "$ref": "#/$defs/LogicalStepSequence" },
+          { "$ref": "#/$defs/Paragraph" },
+          { "$ref": "#/$defs/Proof" },
+          { "$ref": "#/$defs/Figure" },
+          { "$ref": "#/$defs/Table" },
+          { "$ref": "#/$defs/Bibliography" }
         ]
       }
     }
@@ -61,12 +35,18 @@
       "type": "object",
       "description": "The title of the document.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Title",
+          "description": "The type of this document element."
+        },
         "title": {
           "type": "string",
           "description": "The title text."
         }
       },
       "required": [
+        "type",
         "title"
       ],
       "additionalProperties": false
@@ -75,12 +55,18 @@
       "type": "object",
       "description": "The abstract of the document.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Abstract",
+          "description": "The type of this document element."
+        },
         "abstract": {
           "type": "string",
           "description": "The abstract text."
         }
       },
       "required": [
+        "type",
         "abstract"
       ],
       "additionalProperties": false
@@ -89,38 +75,25 @@
       "type": "object",
       "description": "A section of the document.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Section",
+          "description": "The type of this document element."
+        },
         "content": {
           "type": "array",
           "description": "The content of the section.",
           "items": {
             "anyOf": [
-              {
-                "$ref": "#/$defs/Section"
-              },
-              {
-                "$ref": "#/$defs/Theorem"
-              },
-              {
-                "$ref": "#/$defs/Definition"
-              },
-              {
-                "$ref": "#/$defs/Remark"
-              },
-              {
-                "$ref": "#/$defs/LogicalStepSequence"
-              },
-              {
-                "$ref": "#/$defs/Paragraph"
-              },
-              {
-                "$ref": "#/$defs/Proof"
-              },
-              {
-                "$ref": "#/$defs/Figure"
-              },
-              {
-                "$ref": "#/$defs/Table"
-              }
+              { "$ref": "#/$defs/Section" },
+              { "$ref": "#/$defs/Theorem" },
+              { "$ref": "#/$defs/Definition" },
+              { "$ref": "#/$defs/Remark" },
+              { "$ref": "#/$defs/LogicalStepSequence" },
+              { "$ref": "#/$defs/Paragraph" },
+              { "$ref": "#/$defs/Proof" },
+              { "$ref": "#/$defs/Figure" },
+              { "$ref": "#/$defs/Table" }
             ]
           }
         },
@@ -138,6 +111,7 @@
         }
       },
       "required": [
+        "type",
         "label",
         "header",
         "content"
@@ -148,25 +122,24 @@
       "type": "object",
       "description": "A mathematical theorem, lemma, proposition, corollary, or claim.",
       "properties": {
-        "hypothesis" : {
+        "type": {
+          "type": "string",
+          "const": "Theorem",
+          "description": "The type of this document element."
+        },
+        "hypothesis": {
           "type": "array",
           "description": "(OPTIONAL) The hypothesis or assumptions of the theorem, consisting of statements like 'let', 'assume', etc.",
           "items": {
-        "anyOf": [
-          {
-            "$ref": "#/$defs/let_statement"
-          },
-          {
-            "$ref": "#/$defs/assume_statement"
-          },
-          {
-            "$ref": "#/$defs/some_statement"
+            "anyOf": [
+              { "$ref": "#/$defs/let_statement" },
+              { "$ref": "#/$defs/assume_statement" },
+              { "$ref": "#/$defs/some_statement" }
+            ]
           }
-        ]
-      }
         },
         "claim": { "type": "string", "description": "The statement." },
-        "label": { "type": "string", "description": "Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping')." }, 
+        "label": { "type": "string", "description": "Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping')." },
         "header": {
           "type": "string",
           "description": "The type of theorem-like environment. Must be one of the predefined values.",
@@ -187,19 +160,20 @@
           "type": "array",
           "description": "(OPTIONAL) Explicit list of internal references mentioned in the statement.",
           "items": { "$ref": "#/$defs/InternalReference" }
-        },
-        "proof": {
-          "$ref": "#/$defs/Proof",
-          "description": "(OPTIONAL) Proof of the theorem if available in the text."
         }
       },
-      "required": ["label", "header", "claim"], 
+      "required": ["type", "label", "header", "claim"],
       "additionalProperties": false
-    },    
+    },
     "Definition": {
       "type": "object",
       "description": "A mathematical definition.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Definition",
+          "description": "The type of this document element."
+        },
         "definition": {
           "type": "string",
           "description": "Definition content."
@@ -234,6 +208,7 @@
         }
       },
       "required": [
+        "type",
         "label",
         "header",
         "definition"
@@ -244,6 +219,11 @@
       "type": "object",
       "description": "A remark or note.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Remark",
+          "description": "The type of this document element."
+        },
         "remark": {
           "type": "string",
           "description": "Remark content."
@@ -275,6 +255,7 @@
         }
       },
       "required": [
+        "type",
         "label",
         "header",
         "remark"
@@ -286,33 +267,15 @@
       "description": "A sequence of structured logical steps, typically used within a proof or derivation, consisting of statements like 'let', 'assert', 'assume', etc.",
       "items": {
         "anyOf": [
-          {
-            "$ref": "#/$defs/let_statement"
-          },
-          {
-            "$ref": "#/$defs/assert_statement"
-          },
-          {
-            "$ref": "#/$defs/assume_statement"
-          },
-          {
-            "$ref": "#/$defs/some_statement"
-          },
-          {
-            "$ref": "#/$defs/cases_statement"
-          },
-          {
-            "$ref": "#/$defs/induction_statement"
-          },
-          {
-            "$ref": "#/$defs/calculate_statement"
-          },
-          {
-            "$ref": "#/$defs/contradiction_statement"
-          },
-          {
-            "$ref": "#/$defs/conclude_statement"
-          }
+          { "$ref": "#/$defs/let_statement" },
+          { "$ref": "#/$defs/assert_statement" },
+          { "$ref": "#/$defs/assume_statement" },
+          { "$ref": "#/$defs/some_statement" },
+          { "$ref": "#/$defs/cases_statement" },
+          { "$ref": "#/$defs/induction_statement" },
+          { "$ref": "#/$defs/calculate_statement" },
+          { "$ref": "#/$defs/contradiction_statement" },
+          { "$ref": "#/$defs/conclude_statement" }
         ]
       }
     },
@@ -320,6 +283,11 @@
       "type": "object",
       "description": "A proof environment.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Proof",
+          "description": "The type of this document element."
+        },
         "claim_label": {
           "type": "string",
           "description": "Theorem label being proved."
@@ -329,26 +297,17 @@
           "description": "Steps in the proof.",
           "items": {
             "anyOf": [
-              {
-                "$ref": "#/$defs/Remark"
-              },
-              {
-                "$ref": "#/$defs/LogicalStepSequence"
-              },
-              {
-                "$ref": "#/$defs/Paragraph"
-              },
-              {
-                "$ref": "#/$defs/Figure"
-              },
-              {
-                "$ref": "#/$defs/Table"
-              }
+              { "$ref": "#/$defs/Remark" },
+              { "$ref": "#/$defs/LogicalStepSequence" },
+              { "$ref": "#/$defs/Paragraph" },
+              { "$ref": "#/$defs/Figure" },
+              { "$ref": "#/$defs/Table" }
             ]
           }
         }
       },
       "required": [
+        "type",
         "claim_label",
         "proof_steps"
       ],
@@ -356,45 +315,22 @@
     },
     "let_statement": {
       "type": "object",
-      "description": "A statement introducing a new variable, or asserting the existence/properties of a quantity.",
+      "description": "A statement introducing a new variable with given value, type and/or property.",
       "properties": {
-        "statement": {
+        "type": {
           "type": "string",
-          "description": "The full 'let' or existential statement, including variable, type, and/or properties."
+          "const": "let_statement",
+          "description": "The type of this logical step."
         },
-        "variable_name": {
+        "variable": {
           "type": "string",
-          "description": "(OPTIONAL) The variable being explicitly named (e.g., 'n', 'f', 'G'). Use if a specific name is introduced."
-        },
-        "variable_type": {
-          "type": "string",
-          "description": "(OPTIONAL) The type of the variable, such as 'real number', 'function from S to T', 'element of G'."
-        },
-        "value" : {
-          "type": "string",
-          "description": "(OPTIONAL) The value of the variable if it is being defined or assigned a specific value."
-        },
-        "properties": {
-          "type": "string",
-          "description": "(OPTIONAL) Specific properties of the variable beyond its type (e.g., 'is a prime', 'is continuous')."
-        }
-      },
-      "required": ["statement"],
-      "additionalProperties": false
-    },
-    "some_statement": {
-      "type": "object",
-      "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'",
-      "properties": {
-        "statement": {
-          "type": "string",
-          "description": "The full statement, including variable, kind, and/or properties."
-        },
-        "variable_name": {
-          "type": "string", 
           "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
         },
-        "variable_kind": {
+        "value": {
+          "type": "string",
+          "description": "(OPTIONAL) The value of the variable being defined"
+        },
+        "kind": {
           "type": "string",
           "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
         },
@@ -404,6 +340,35 @@
         }
       },
       "required": [
+        "type",
+        "variable"
+      ],
+      "additionalProperties": false
+    },
+    "some_statement": {
+      "type": "object",
+      "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "some_statement",
+          "description": "The type of this logical step."
+        },
+        "variable": {
+          "type": "string",
+          "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
+        },
+        "kind": {
+          "type": "string",
+          "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
+        },
+        "properties": {
+          "type": "string",
+          "description": "(OPTIONAL) Specific properties of the variable beyond the type"
+        }
+      },
+      "required": [
+        "type",
         "variable"
       ],
       "additionalProperties": false
@@ -412,11 +377,16 @@
       "type": "object",
       "description": "A mathematical assumption being made. Use 'let_statement' or 'some_statement' if introducing variables.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "assume_statement",
+          "description": "The type of this logical step."
+        },
         "assumption": {
           "type": "string",
           "description": "The assumption text."
         },
-        "label" : {
+        "label": {
           "type": "string",
           "description": "(OPTIONAL) The label of the assumption, if any."
         },
@@ -436,6 +406,7 @@
         }
       },
       "required": [
+        "type",
         "assumption"
       ],
       "additionalProperties": false
@@ -444,6 +415,11 @@
       "type": "object",
       "description": "A mathematical statement whose proof is a straightforward consequence of given and known results following some method.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "assert_statement",
+          "description": "The type of this logical step."
+        },
         "claim": {
           "type": "string",
           "description": "The mathematical claim being asserted, NOT INCLUDING proofs, justifications or results used. The claim should be purely a logical statement which is the *consequence* obtained."
@@ -454,7 +430,7 @@
         },
         "label": {
           "type": "string",
-          "description": "The label of the statement, if any."
+          "description": "The label of the statement, if any. If this statement is used in a proof or as justification for an assertion, it should be labeled so that it can be referenced later."
         },
         "citations": {
           "type": "array",
@@ -462,6 +438,11 @@
           "items": {
             "$ref": "#/$defs/Citation"
           }
+        },
+        "results_used": {
+          "type": "array",
+          "description": "(OPTIONAL) Explicit list of internal references used in the proof, for example where the assertion says \"using ...\".",
+          "items": { "$ref": "#/$defs/InternalReference" }
         },
         "internal_references": {
           "type": "array",
@@ -476,11 +457,12 @@
         }
       },
       "required": [
+        "type",
         "claim"
       ],
       "additionalProperties": false
     },
-    "calculate_statement": {
+    "calculate_choice": {
       "type": "object",
       "description": "An equation, inequality, short calculation etc.",
       "minProperties": 1,
@@ -507,6 +489,11 @@
       "type": "object",
       "description": "A proof by cases or proof by induction, with a list of cases.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "cases_statement",
+          "description": "The type of this logical step."
+        },
         "split_kind": {
           "type": "string",
           "description": "one of 'implication_direction' (for two sides of an 'iff' implication), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases).",
@@ -534,15 +521,22 @@
         }
       },
       "required": [
+        "type",
         "split_kind",
         "on",
         "proof_cases"
-      ]
+      ],
+      "additionalProperties": false
     },
     "case": {
       "type": "object",
       "description": "A case in a proof by cases or proof by induction.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "case",
+          "description": "The type of this logical step."
+        },
         "condition": {
           "type": "string",
           "description": "The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`)."
@@ -552,37 +546,32 @@
           "description": "Steps proving this case.",
           "items": {
             "anyOf": [
-              {
-                "$ref": "#/$defs/LogicalStepSequence"
-              },
-              {
-                "$ref": "#/$defs/Paragraph"
-              },
-              {
-                "$ref": "#/$defs/Proof"
-              },
-              {
-                "$ref": "#/$defs/Figure"
-              },
-              {
-                "$ref": "#/$defs/Table"
-              },
-              {
-                "$ref": "#/$defs/Remark"
-              }
+              { "$ref": "#/$defs/LogicalStepSequence" },
+              { "$ref": "#/$defs/Paragraph" },
+              { "$ref": "#/$defs/Proof" },
+              { "$ref": "#/$defs/Figure" },
+              { "$ref": "#/$defs/Table" },
+              { "$ref": "#/$defs/Remark" }
             ]
           }
         }
       },
       "required": [
+        "type",
         "condition",
         "proof"
-      ]
+      ],
+      "additionalProperties": false
     },
     "induction_statement": {
       "type": "object",
       "description": "A proof by induction, with a base case and an induction step.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "induction_statement",
+          "description": "The type of this logical step."
+        },
         "on": {
           "type": "string",
           "description": "The variable or expression on which induction is being done."
@@ -596,14 +585,21 @@
         }
       },
       "required": [
+        "type",
         "on",
         "proof_cases"
-      ]
+      ],
+      "additionalProperties": false
     },
     "contradiction_statement": {
       "type": "object",
       "description": "A proof by contradiction, with an assumption and a proof of the contradiction.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "contradiction_statement",
+          "description": "The type of this logical step."
+        },
         "assumption": {
           "type": "string",
           "description": "The assumption being made to be contradicted."
@@ -614,27 +610,60 @@
         }
       },
       "required": [
+        "type",
         "assumption",
         "proof"
-      ]
+      ],
+      "additionalProperties": false
+    },
+    "calculate_statement": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "calculate_statement",
+          "description": "The type of this logical step."
+        },
+        "calculation": {
+          "$ref": "#/$defs/calculate_choice",
+          "description": "An equation, inequality, short calculation etc."
+        }
+      },
+      "required": [
+        "type",
+        "calculation"
+      ],
+      "additionalProperties": false
     },
     "conclude_statement": {
       "type": "object",
       "description": "Conclude a claim obtained from the steps so far. This is typically the final statement of a proof giving the conclusion of the theorem.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "conclude_statement",
+          "description": "The type of this logical step."
+        },
         "claim": {
           "type": "string",
           "description": "The conclusion of the proof."
         }
       },
       "required": [
+        "type",
         "claim"
-      ]
+      ],
+      "additionalProperties": false
     },
     "Metadata": {
       "type": "object",
       "description": "Metadata about the document, such as authors, keywords, and classification.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Metadata",
+          "description": "The type of this document element."
+        },
         "authors": {
           "type": "array",
           "description": "List of authors.",
@@ -667,6 +696,7 @@
         }
       },
       "required": [
+        "type",
         "authors"
       ],
       "additionalProperties": false
@@ -693,6 +723,11 @@
       "type": "object",
       "description": "A block of plain text, potentially containing inline references.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Paragraph",
+          "description": "The type of this document element."
+        },
         "text": {
           "type": "string",
           "description": "The main text content of the paragraph. Inline citations (e.g., [1], [Knuth74]) and internal references (e.g., see Section 2, Theorem 3) might be embedded within this string or explicitly listed in 'citations'/'internal_references'."
@@ -713,6 +748,7 @@
         }
       },
       "required": [
+        "type",
         "text"
       ],
       "additionalProperties": false
@@ -721,6 +757,11 @@
       "type": "object",
       "description": "A figure or image.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Figure",
+          "description": "The type of this document element."
+        },
         "label": {
           "type": "string",
           "description": "Unique identifier/label for referencing (e.g., 'fig:flowchart')."
@@ -739,6 +780,7 @@
         }
       },
       "required": [
+        "type",
         "label",
         "source"
       ],
@@ -748,6 +790,11 @@
       "type": "object",
       "description": "A data table.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Table",
+          "description": "The type of this document element."
+        },
         "label": {
           "type": "string",
           "description": "Unique identifier/label for referencing (e.g., 'tab:results')."
@@ -773,6 +820,7 @@
         }
       },
       "required": [
+        "type",
         "label",
         "content"
       ],
@@ -782,6 +830,11 @@
       "type": "object",
       "description": "The bibliography or list of references section.",
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "Bibliography",
+          "description": "The type of this document element."
+        },
         "header": {
           "type": "string",
           "description": "The section header (e.g., 'References', 'Bibliography')."
@@ -795,6 +848,7 @@
         }
       },
       "required": [
+        "type",
         "header",
         "entries"
       ],
