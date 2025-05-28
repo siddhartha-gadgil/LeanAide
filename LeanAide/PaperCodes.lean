@@ -44,97 +44,18 @@ def assumptionCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNo
   addPrelude assumption
   return none
 
-@[codegen "let_statement"]
-def letCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, js => do
-  let statement :=
-    match js.getObjValAs? String "statement" with
-    | Except.ok s => s
-    | Except.error _ =>
-      let varSegment := match js.getObjString? "variable_name" with
-      | some "<anonymous>" => "We have "
-      | some v => s!"Let {v} be"
-      | _ => "We have "
-    let kindSegment := match js.getObjValAs? String "variable_type" with
-      | Except.ok k => s!"a {k}"
-      | Except.error _ => s!""
-    let valueSegment := match js.getObjString? "value" with
-      | some v => s!"{v}"
-      | _ => ""
-    let propertySegment := match js.getObjString? "properties" with
-      | some p => s!"(such that) {p}"
-      | _ => ""
-    s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
-  addPrelude statement
-  return none
-
-@[codegen "some_statement"]
-def someCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, js => do
-  let statement :=
-    match js.getObjValAs? String "statement" with
-    | Except.ok s => s
-    | Except.error _ =>
-      let varSegment := match js.getObjString? "variable_name" with
-      | some "<anonymous>" => "We have "
-      | some v => s!"Let {v} be"
-      | _ => "We have "
-    let kindSegment := match js.getObjValAs? String "variable_kind" with
-      | Except.ok k => s!"a {k}"
-      | Except.error _ => s!""
-    let propertySegment := match js.getObjString? "properties" with
-      | some p => s!"(such that) {p}"
-      | _ => ""
-    s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
-  addPrelude statement
-  return none
-
 open Lean.Parser.Tactic
--- Very basic version; should add references to `auto?` as well as other modifications as in `StructToLean`
-@[codegen "assertion_statement"]
-def assertionCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `command, js => do
-  let stx ← typeStx js
-  `(command| example : $stx := by sorry)
+
+@[codegen "document"]
+def documentCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
-  let stx ← typeStx js
-  `(commandSeq| example : $stx := by sorry)
-| _, ``tacticSeq, js => do
-  let stx ← typeStx js
-  `(tacticSeq| have : $stx := bysorry)
-| _, `tactic, js => do
-  let stx ← typeStx js
-  `(tactic| have : $stx := bysorry)
-| _, _, _ => throwError
-    s!"codegen: test does not work"
-where typeStx (js: Json) : TranslateM Syntax.Term := do
-  let .ok  claim := js.getObjValAs? String "claim" | throwError
-    s!"codegen: no claim found in {js}"
-  let .ok type ← translator.translateToProp? claim | throwError
-      s!"codegen: no translation found for {claim}"
-  let type ← instantiateMVars type
-  Term.synthesizeSyntheticMVarsNoPostponing
-  if type.hasSorry || type.hasExprMVar then
-    throwError s!"Failed to infer type {type} has sorry or mvar"
-  let univ ← try
-    withoutErrToSorry do
-    if type.hasSorry then
-      throwError "Type has sorry"
-    inferType type
-  catch e =>
-    throwError s!"Failed to infer type {type}, error {← e.toMessageData.format}"
-  if univ.isSort then
-    let type ←  dropLocalContext type
-    -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
-    PrettyPrinter.delab type
-  else
-    IO.eprintln s!"Not a type: {type}"
-    throwError s!"codegen: no translation found for {js}"
+  let .ok content := js.getArr? | throwError "document must be a JSON array"
+  getCodeCommands translator none  content.toList
+| _, kind, _ => throwError
+    s!"codegen: documentCode does not work for kind {kind}"
 
 @[codegen "title","abstract", "remark", "metadata", "author", "bibliography", "citation", "internalreference"]
 def noGenCode := noCode
-
-
 
 /- Section
 {
@@ -206,8 +127,8 @@ def noGenCode := noCode
 @[codegen "section"]
 def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
-  let .ok content := js.getArr? | throwError "section must have content"
-  getCodeCommands translator none  content.toList
+  let .ok content := js.getObjValAs? (List Json) "content" | throwError "section must have content"
+  getCodeCommands translator none  content
 | _, kind, _ => throwError
     s!"codegen: sectionCode does not work for kind {kind}"
 
@@ -247,6 +168,19 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
       "type": "string",
       "description": "Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping')."
     },
+    "proof_steps": {
+          "type": "array",
+          "description": "Steps in the proof, if the proof is present soon after the theorem.",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/$defs/Remark" },
+              { "$ref": "#/$defs/LogicalStepSequence" },
+              { "$ref": "#/$defs/Paragraph" },
+              { "$ref": "#/$defs/Figure" },
+              { "$ref": "#/$defs/Table" }
+            ]
+          }
+        },
     "header": {
       "type": "string",
       "description": "The type of theorem-like environment. Must be one of the predefined values.",
@@ -282,6 +216,63 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   "additionalProperties": false
 }
 -/
+@[codegen "theorem"]
+def theoremCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| some goal, `command, js => do
+  let (stx, name, pf) ← thmStxParts js goal
+  let n := mkIdent name
+  `(command| theorem $n : $stx := by $pf)
+| some goal, `commandSeq, js => do
+  let (stx, name, pf) ← thmStxParts js goal
+  let n := mkIdent name
+  `(commandSeq| theorem $n : $stx := by $pf)
+| some goal, ``tacticSeq, js => do
+  let (stx, name, pf) ← thmStxParts js goal
+  let n := mkIdent name
+  `(tacticSeq| have $n : $stx := by $pf)
+| some goal, `tactic, js => do
+  let (stx, name, pf) ← thmStxParts js goal
+  let n := mkIdent name
+  `(tactic| have $n : $stx := by $pf)
+| _, _, _ => throwError
+    s!"codegen: theorem does not work"
+where
+  thmStxParts (js: Json) (goal: MVarId) :
+    TranslateM <| Syntax.Term × Name × (TSyntax ``tacticSeq) := withoutModifyingState do
+    match js.getObjVal?  "hypothesis" with
+      | Except.ok h => contextRun translator none ``tacticSeq h
+      | Except.error _ => pure ()
+    let .ok  claim := js.getObjValAs? String "claim" | throwError
+      s!"codegen: no claim found in {js}"
+    let .ok proofSteps :=
+      js.getObjValAs? (List Json) "proof_steps" | throwError
+      s!"codegen: no proof_steps found in {js}; deferred proof not implemented"
+    let proofStx ← getCodeTactics translator goal proofSteps
+    let thm ← withPreludes claim
+    let .ok type ← translator.translateToProp? thm | throwError
+        s!"codegen: no translation found for {thm}"
+    let type ← instantiateMVars type
+    Term.synthesizeSyntheticMVarsNoPostponing
+    if type.hasSorry || type.hasExprMVar then
+      throwError s!"Failed to infer type {type} has sorry or mvar"
+    let univ ← try
+      withoutErrToSorry do
+      if type.hasSorry then
+        throwError "Type has sorry"
+      inferType type
+    catch e =>
+      throwError s!"Failed to infer type {type}, error {← e.toMessageData.format}"
+    if univ.isSort then
+      let type ←  dropLocalContext type
+      -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
+      let name ← translator.server.theoremName thm
+      let typeStx ← PrettyPrinter.delab type
+      return (typeStx, name, proofStx)
+    else
+      IO.eprintln s!"Not a type: {type}"
+      throwError s!"codegen: no translation found for {js}"
+
+#check commandToTactic
 
 /- Definition
 {
@@ -335,60 +326,38 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   "additionalProperties": false
 }
 -/
+@[codegen "definition"]
+def defCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `command, js => do
+  let stx ← defCmdStx js
+  `(command| $stx)
+| _, `commandSeq, js => do
+  let stx ← defCmdStx js
+  let stxs := #[stx]
+  `(commandSeq | $stxs*)
+| _, ``tacticSeq, js => do
+  let stx ← defCmdStx js
+  let tac ← commandToTactic stx
+  let tacs := #[tac]
+  `(tacticSeq| $tacs*)
+| _, `tactic, js => do
+  let stx ← defCmdStx js
+  let tac ← commandToTactic stx
+  `(tactic| $tac)
+| _, _, _ => throwError
+    s!"codegen: theorem does not work"
+where
+  defCmdStx (js: Json) :
+    TranslateM <| Syntax.Command :=
+    withoutModifyingState do
+    let .ok statement :=
+      js.getObjValAs? String "definition" | throwError
+        s!"codegen: no definition found in {js}"
+    let .ok cmd ←
+      translator.translateDefCmdM? statement | throwError
+        s!"codegen: no translation found for {statement}"
+    return cmd
 
-/- Remark
-{
-  "type": "object",
-  "description": "A remark or note.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "Remark",
-      "description": "The type of this document element."
-    },
-    "remark": {
-      "type": "string",
-      "description": "Remark content."
-    },
-    "label": {
-      "type": "string",
-      "description": "Remark identifier."
-    },
-    "header": {
-      "type": "string",
-      "description": "Remark type.",
-      "enum": [
-        "Remark",
-        "Example",
-        "Note",
-        "Observation",
-        "Warning"
-      ]
-    },
-    "citations": {
-      "type": "array",
-      "description": "(OPTIONAL) Explicit list of citations relevant to this statement.",
-      "items": {
-        "$ref": "#/$defs/Citation"
-      }
-    },
-    "internal_references": {
-      "type": "array",
-      "description": "(OPTIONAL) Explicit list of internal references mentioned in the statement.",
-      "items": {
-        "$ref": "#/$defs/InternalReference"
-      }
-    }
-  },
-  "required": [
-    "type",
-    "label",
-    "header",
-    "remark"
-  ],
-  "additionalProperties": false
-}
--/
 
 /- LogicalStepSequence
 {
@@ -427,6 +396,16 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   }
 }
 -/
+@[codegen "section"]
+def logicalStepCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `commandSeq, js => do
+  let .ok content := js.getArr? | throwError "logicalStepCode must be a JSON array"
+  getCodeCommands translator none  content.toList
+| some goal, ``tacticSeq, js => do
+  let .ok content := js.getArr? | throwError "logicalStepCode must be a JSON array"
+  getCodeTactics translator goal  content.toList
+| goal?, kind, _ => throwError
+    s!"codegen: logicalStepCode does not work for kind {kind}where goal present: {goal?.isSome}"
 
 /- Proof
 {
@@ -474,6 +453,18 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   "additionalProperties": false
 }
 -/
+@[codegen "section"]
+def proofCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| goal?, `commandSeq, js => do
+  let .ok _content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
+  throwError
+    s!"codegen: proofCode does not (yet) work for commandSeq where goal present: {goal?.isSome}"
+| some goal, ``tacticSeq, js => do
+  let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
+  getCodeTactics translator goal  content
+| goal?, kind, _ => throwError
+    s!"codegen: proofCode does not (yet) work for kind {kind}where goal present: {goal?.isSome}"
+
 
 /- let_statement
 {
@@ -509,6 +500,30 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   "additionalProperties": false
 }
 -/
+@[codegen "let_statement"]
+def letCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, js => do
+  let statement :=
+    match js.getObjValAs? String "statement" with
+    | Except.ok s => s
+    | Except.error _ =>
+      let varSegment := match js.getObjString? "variable_name" with
+      | some "<anonymous>" => "We have "
+      | some v => s!"Let {v} be"
+      | _ => "We have "
+    let kindSegment := match js.getObjValAs? String "variable_type" with
+      | Except.ok k => s!"a {k}"
+      | Except.error _ => s!""
+    let valueSegment := match js.getObjString? "value" with
+      | some v => s!"{v}"
+      | _ => ""
+    let propertySegment := match js.getObjString? "properties" with
+      | some p => s!"(such that) {p}"
+      | _ => ""
+    s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
+  addPrelude statement
+  return none
+
 
 /- some_statement
 {
@@ -540,6 +555,27 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   "additionalProperties": false
 }
 -/
+@[codegen "some_statement"]
+def someCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, js => do
+  let statement :=
+    match js.getObjValAs? String "statement" with
+    | Except.ok s => s
+    | Except.error _ =>
+      let varSegment := match js.getObjString? "variable_name" with
+      | some "<anonymous>" => "We have "
+      | some v => s!"Let {v} be"
+      | _ => "We have "
+    let kindSegment := match js.getObjValAs? String "variable_kind" with
+      | Except.ok k => s!"a {k}"
+      | Except.error _ => s!""
+    let propertySegment := match js.getObjString? "properties" with
+      | some p => s!"(such that) {p}"
+      | _ => ""
+    s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
+  addPrelude statement
+  return none
+
 
 /- assume_statement
 {
@@ -581,6 +617,14 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   "additionalProperties": false
 }
 -/
+@[codegen "assume_statement"]
+def assumeCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, js => do
+  let .ok statement :=
+      js.getObjValAs? String "assumption" | throwError ""
+  addPrelude statement
+  return none
+
 
 /- assert_statement
 {
@@ -637,6 +681,46 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   "additionalProperties": false
 }
 -/
+-- Very basic version; should add references to `auto?` as well as other modifications as in `StructToLean`
+@[codegen "assertion_statement"]
+def assertionCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `command, js => do
+  let stx ← typeStx js
+  `(command| example : $stx := by sorry)
+| _, `commandSeq, js => do
+  let stx ← typeStx js
+  `(commandSeq| example : $stx := by sorry)
+| _, ``tacticSeq, js => do
+  let stx ← typeStx js
+  `(tacticSeq| have : $stx := bysorry)
+| _, `tactic, js => do
+  let stx ← typeStx js
+  `(tactic| have : $stx := bysorry)
+| _, _, _ => throwError
+    s!"codegen: test does not work"
+where typeStx (js: Json) : TranslateM Syntax.Term := do
+  let .ok  claim := js.getObjValAs? String "claim" | throwError
+    s!"codegen: no claim found in {js}"
+  let .ok type ← translator.translateToProp? claim | throwError
+      s!"codegen: no translation found for {claim}"
+  let type ← instantiateMVars type
+  Term.synthesizeSyntheticMVarsNoPostponing
+  if type.hasSorry || type.hasExprMVar then
+    throwError s!"Failed to infer type {type} has sorry or mvar"
+  let univ ← try
+    withoutErrToSorry do
+    if type.hasSorry then
+      throwError "Type has sorry"
+    inferType type
+  catch e =>
+    throwError s!"Failed to infer type {type}, error {← e.toMessageData.format}"
+  if univ.isSort then
+    let type ←  dropLocalContext type
+    -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
+    PrettyPrinter.delab type
+  else
+    IO.eprintln s!"Not a type: {type}"
+    throwError s!"codegen: no translation found for {js}"
 
 /- calculate_choice
 {
@@ -867,112 +951,6 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
 }
 -/
 
-/- Metadata
-{
-  "type": "object",
-  "description": "Metadata about the document, such as authors, keywords, and classification.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "Metadata",
-      "description": "The type of this document element."
-    },
-    "authors": {
-      "type": "array",
-      "description": "List of authors.",
-      "items": {
-        "$ref": "#/$defs/Author"
-      }
-    },
-    "keywords": {
-      "type": "array",
-      "description": "List of keywords describing the document.",
-      "items": {
-        "type": "string"
-      }
-    },
-    "msc_codes": {
-      "type": "array",
-      "description": "Mathematics Subject Classification codes.",
-      "items": {
-        "type": "string"
-      }
-    },
-    "publication_date": {
-      "type": "string",
-      "description": "Date of publication or creation (ISO 8601 format recommended).",
-      "format": "date"
-    },
-    "source": {
-      "type": "string",
-      "description": "Publication source, e.g., Journal label, volume, pages, conference proceedings."
-    }
-  },
-  "required": [
-    "type",
-    "authors"
-  ],
-  "additionalProperties": false
-}
--/
-
-/- Author
-{
-  "type": "object",
-  "description": "An author of the document.",
-  "properties": {
-    "name": {
-      "type": "string",
-      "description": "Full name of the author."
-    },
-    "affiliation": {
-      "type": "string",
-      "description": "(OPTIONAL) Author's affiliation."
-    }
-  },
-  "required": [
-    "name"
-  ],
-  "additionalProperties": false
-}
--/
-
-/- Paragraph
-{
-  "type": "object",
-  "description": "A block of plain text, potentially containing inline references.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "Paragraph",
-      "description": "The type of this document element."
-    },
-    "text": {
-      "type": "string",
-      "description": "The main text content of the paragraph. Inline citations (e.g., [1], [Knuth74]) and internal references (e.g., see Section 2, Theorem 3) might be embedded within this string or explicitly listed in 'citations'/'internal_references'."
-    },
-    "citations": {
-      "type": "array",
-      "description": "(OPTIONAL) Explicit list of citations mentioned in this paragraph.",
-      "items": {
-        "$ref": "#/$defs/Citation"
-      }
-    },
-    "internal_references": {
-      "type": "array",
-      "description": "(OPTIONAL) Explicit list of internal references mentioned in this paragraph.",
-      "items": {
-        "$ref": "#/$defs/InternalReference"
-      }
-    }
-  },
-  "required": [
-    "type",
-    "text"
-  ],
-  "additionalProperties": false
-}
--/
 
 /- Figure
 {
@@ -1053,229 +1031,20 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
 }
 -/
 
-/- Bibliography
-{
-  "type": "object",
-  "description": "The bibliography or list of references section.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "Bibliography",
-      "description": "The type of this document element."
-    },
-    "header": {
-      "type": "string",
-      "description": "The section header (e.g., 'References', 'Bibliography')."
-    },
-    "entries": {
-      "type": "array",
-      "description": "List of bibliography entries.",
-      "items": {
-        "$ref": "#/$defs/BibliographyEntry"
-      }
-    }
-  },
-  "required": [
-    "type",
-    "header",
-    "entries"
-  ],
-  "additionalProperties": false
-}
--/
 
-/- BibliographyEntry
-{
-  "type": "object",
-  "description": "A single entry in the bibliography.",
-  "properties": {
-    "key": {
-      "type": "string",
-      "description": "Unique key used for citations (e.g., 'Knuth1974', '[1]')."
-    },
-    "formatted_entry": {
-      "type": "string",
-      "description": "The full bibliographic reference, formatted as text (e.g., APA, BibTeX style)."
-    }
-  },
-  "required": [
-    "key",
-    "formatted_entry"
-  ],
-  "additionalProperties": false
-}
--/
+-- -- older code, should not be used
+-- def metaDataFields := ["author", "date", "title", "abstract", "keywords", "authors", "affiliations", "acknowledgements", "msc_codes", "publication_date", "doi", "arxiv_id", "url", "source", "header", "entries"]
 
-/- Citation
-{
-  "type": "object",
-  "description": "An inline citation pointing to one or more bibliography entries.",
-  "properties": {
-    "cite_keys": {
-      "type": "array",
-      "description": "An array of bibliography keys being cited.",
-      "items": {
-        "type": "string"
-      },
-      "minItems": 1
-    }
-  },
-  "required": [
-    "cite_keys"
-  ],
-  "additionalProperties": false
-}
--/
-
-/- InternalReference
-{
-  "type": "object",
-  "description": "An inline reference to another labeled part of the document (e.g., Section, Theorem, Figure).",
-  "properties": {
-    "target_identifier": {
-      "type": "string",
-      "description": "The unique 'label' of the document element being referenced (e.g., 'sec:intro', 'thm:main', 'fig:diagram')."
-    }
-  },
-  "required": [
-    "target_identifier"
-  ],
-  "additionalProperties": false
-}
--/
-
-
-
-
-
--- older code, should not be used
-def metaDataFields := ["author", "date", "title", "abstract", "keywords", "authors", "affiliations", "acknowledgements", "msc_codes", "publication_date", "doi", "arxiv_id", "url", "source", "header", "entries"]
-
-@[codegen]
-def metaNoCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, js => do
-  match js.getObj? with
-  | .ok obj =>
-    let keys := obj.toArray.map (fun ⟨ k, _⟩  => k)
-    let nonMetaKeys := keys.filter (fun k => !metaDataFields.contains k)
-    if nonMetaKeys.isEmpty then
-      return none
-    else
-      throwError s!"codegen: no metadata found in {js}, extra keys: {nonMetaKeys}"
-  | .error _ => do
-  throwError s!"codegen: no metadata found in {js}"
-
-
-
--- Copied code
-
-open Lean.Parser.Tactic
-@[codegen "thm_test"]
-def thmTest (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `command, js => do
-  let stx ← typeStx js
-  `(command| example : $stx := by sorry)
-| _, `commandSeq, js => do
-  let stx ← typeStx js
-  `(commandSeq| example : $stx := by sorry)
-| _, ``tacticSeq, js => do
-  let stx ← typeStx js
-  `(tacticSeq| have : $stx := bysorry)
-| _, `tactic, js => do
-  let stx ← typeStx js
-  `(tactic| have : $stx := bysorry)
-| _, _, _ => throwError
-    s!"codegen: test does not work"
-where typeStx (js: Json) : TranslateM Syntax.Term :=
-  match js.getStr? with
-  | .ok str => do
-    let .ok t ← translator.translateToProp? str | throwError
-      s!"codegen: no translation found for {str}"
-    PrettyPrinter.delab t
-  | .error _ => do
-    throwError
-      s!"codegen: no translation found for {js}"
-
-@[codegen]
-def thmStringTest (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `command, js => do
-  let stx ← typeStx js
-  `(command| example : $stx := by sorry)
-| _, `commandSeq, js => do
-  let stx ← typeStx js
-  `(commandSeq| example : $stx := by sorry)
-| _, ``tacticSeq, js => do
-  let stx ← typeStx js
-  `(tacticSeq| have : $stx := bysorry)
-| _, `tactic, js => do
-  let stx ← typeStx js
-  `(tactic| have : $stx := bysorry)
-| _, _, _ => throwError
-    s!"codegen: test does not work"
-where typeStx (js: Json) : TranslateM Syntax.Term :=
-  match js.getStr? with
-  | .ok str => do
-    let .ok t ← translator.translateToProp? str | throwError
-      s!"codegen: no translation found for {str}"
-    PrettyPrinter.delab t
-  | .error _ => do
-    throwError
-      s!"codegen: no translation found for {js}"
-
-@[codegen "doc_test"]
-def docTest  (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| goal?, `commandSeq, js => withoutModifyingState do
-  let .ok statements := js.getArr? | throwError "document must be an array"
-  let mut stxs : Array (TSyntax `commandSeq) := #[]
-  for statement in statements do
-    let stx ← getCode translator goal? `commandSeq statement
-    match stx with
-    | some stx => stxs := stxs.push stx
-    | none => pure ()
-  flattenCommands stxs
-| goal?, ``tacticSeq, js => withoutModifyingState do
-  let .ok statements := js.getArr? | throwError "document must be an array"
-  let mut stxs : Array (TSyntax `tactic) := #[]
-  for statement in statements do
-    let stx ← getCode translator goal? `tactic statement
-    match stx with
-    | some stx => stxs := stxs.push stx
-    | none => pure ()
-  `(tacticSeq| $stxs*)
-
-
-| _, _, _ => throwError
-    s!"codegen: test does not work"
-
-def thmJson : Json :=
-  Json.mkObj [ ("thm_test" , Json.str "There are infinitely many odd numbers.") ]
-
-def thmJson' : Json :=
-  Json.mkObj [ ("thm_test" , Json.str "There are infinitely many prime numbers.") ]
-
-def docJson : Json :=
-  Json.mkObj [ ("doc_test" , Json.arr #[thmJson, thmJson', Json.str "There are infinitely many odd numbers."])]
-
-open PrettyPrinter
-def showCommand (translator: Translator)
-  (source: Json) :
-    TranslateM (Format) := do
-    let some cmd ← getCode translator none `command source | throwError
-      s!"codegen: no command"
-    ppCommand cmd
-
-def showStx  (translator: Translator)(goal? : Option (MVarId))
-  (source: Json) (cat: Name) :
-    TranslateM (Format) := do
-    let some stx ← getCode translator  goal? cat source | throwError
-      s!"codegen: no command"
-    ppCategory cat stx
-
-
-#eval showCommand {} thmJson -- example : {n | Odd n}.Infinite := by sorry
-
-/-
-  example : {n | Odd n}.Infinite := by sorry
-  example : {p | Nat.Prime p}.Infinite := by sorry
--/
-#eval showStx {} none docJson `commandSeq
+-- @[codegen]
+-- def metaNoCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+-- | _, js => do
+--   match js.getObj? with
+--   | .ok obj =>
+--     let keys := obj.toArray.map (fun ⟨ k, _⟩  => k)
+--     let nonMetaKeys := keys.filter (fun k => !metaDataFields.contains k)
+--     if nonMetaKeys.isEmpty then
+--       return none
+--     else
+--       throwError s!"codegen: no metadata found in {js}, extra keys: {nonMetaKeys}"
+--   | .error _ => do
+--   throwError s!"codegen: no metadata found in {js}"
