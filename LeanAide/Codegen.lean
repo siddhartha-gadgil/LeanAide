@@ -12,6 +12,16 @@ initialize registerTraceClass `LeanAide.Codegen
 
 namespace LeanAide
 
+instance : Repr SyntaxNodeKinds where
+  reprPrec kinds n :=
+    let names : List Name := kinds
+    Repr.reprPrec names n
+
+instance : ToString SyntaxNodeKinds where
+  toString kinds :=
+    let names : List Name := kinds
+    ToString.toString names
+
 namespace Codegen
 
 /--
@@ -148,7 +158,8 @@ Main helper for generating tactics from a list of JSON objects.
 -/
 def getCodeTactics (translator: Translator) (goal :  MVarId)
   (sources: List Json) :
-    TranslateM (TSyntax ``tacticSeq) := do
+    TranslateM (TSyntax ``tacticSeq) :=
+  withoutModifyingState do
   let accum ← emptyTacs
   let (tacs, goal?) ←
      getCodeTacticsAux translator goal sources accum
@@ -162,7 +173,7 @@ def getCodeTactics (translator: Translator) (goal :  MVarId)
 
 def getCodeCommands (translator: Translator) (goal? : Option MVarId)
   (sources: List Json) :
-    TranslateM (TSyntax ``commandSeq) := do
+    TranslateM (TSyntax ``commandSeq) := withoutModifyingState do
   let mut accum : Array <| TSyntax ``commandSeq := #[]
   for source in sources do
     let code? ← getCode translator goal? ``commandSeq source
