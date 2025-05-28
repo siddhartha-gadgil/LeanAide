@@ -1,33 +1,14 @@
 import LeanAide.Codegen
 import LeanAide.StructToLean
 /-!
-##Code generation for LeanAide "PaperStructure" schema
+# Code generation for LeanAide "PaperStructure" schema
 
-Need at top level generators for:
+To Do:
 
-* Section
-* Theorem
-* Definition
-* LogicalStepSequence
-* Proof
-* let_statement
-* some_statement
-* assume_statement
-* assert_statement
-* calculate_statement
-* calculation_step
-* cases_statement
-* case
-* induction_statement
-* contradiction_statement
-* conclude_statement
-* Paragraph
-
-We may need some more specific generators for:
-* Figure
-* Table
-
-
+* For existential types in `have` statements, use `rcases` to separate the variable and its properties.
+* Have a clear way to specify used results, and use them in the proof.
+* Handle theorems with deferred proofs, i.e., where the proof is not immediately after the theorem.
+* Refine `cases` to separate `if`, multiple `if`s and patterns.
 -/
 open Lean Meta Qq Elab Term
 
@@ -216,38 +197,66 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   "additionalProperties": false
 }
 -/
+
+#eval "Hello".toName ++ ("World".toName)
+
 @[codegen "theorem"]
 def theoremCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, `command, js => do
-  let (stx, name, pf) ← thmStxParts js goal
-  let n := mkIdent name
-  `(command| theorem $n : $stx := by $pf)
+  let (stx, name, pf?) ← thmStxParts js goal
+  match pf? with
+  | some pf =>
+    let n := mkIdent name
+    `(command| theorem $n : $stx := by $pf)
+  | none =>
+    let n := mkIdent (name ++ `prop)
+    let propIdent := mkIdent `Prop
+    `(command| abbrev $n : $propIdent := $stx)
 | some goal, `commandSeq, js => do
-  let (stx, name, pf) ← thmStxParts js goal
-  let n := mkIdent name
-  `(commandSeq| theorem $n : $stx := by $pf)
+  let (stx, name, pf?) ← thmStxParts js goal
+  match pf? with
+  | some pf =>
+    let n := mkIdent name
+    `(commandSeq| theorem $n : $stx := by $pf)
+  | none =>
+    let n := mkIdent (name ++ `prop)
+    let propIdent := mkIdent `Prop
+    `(commandSeq| abbrev $n : $propIdent := $stx)
+
 | some goal, ``tacticSeq, js => do
-  let (stx, name, pf) ← thmStxParts js goal
-  let n := mkIdent name
-  `(tacticSeq| have $n : $stx := by $pf)
+  let (stx, name, pf?) ← thmStxParts js goal
+  match pf? with
+  | some pf =>
+    let n := mkIdent name
+    `(tacticSeq| have $n : $stx := by $pf)
+  | none =>
+    let n := mkIdent (name ++ `prop)
+    let propIdent := mkIdent `Prop
+    `(tacticSeq| let $n : $propIdent := $stx)
 | some goal, `tactic, js => do
-  let (stx, name, pf) ← thmStxParts js goal
-  let n := mkIdent name
-  `(tactic| have $n : $stx := by $pf)
+  let (stx, name, pf?) ← thmStxParts js goal
+  match pf? with
+  | some pf =>
+    let n := mkIdent name
+    `(tactic| have $n : $stx := by $pf)
+  | none =>
+    let n := mkIdent (name ++ `prop)
+    let propIdent := mkIdent `Prop
+    `(tactic| let $n : $propIdent := $stx)
 | _, _, _ => throwError
     s!"codegen: theorem does not work"
 where
   thmStxParts (js: Json) (goal: MVarId) :
-    TranslateM <| Syntax.Term × Name × (TSyntax ``tacticSeq) := withoutModifyingState do
+    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq)  := withoutModifyingState do
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
       | Except.error _ => pure ()
     let .ok  claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no claim found in {js}"
-    let .ok proofSteps :=
-      js.getObjValAs? (List Json) "proof_steps" | throwError
-      s!"codegen: no proof_steps found in {js}; deferred proof not implemented"
-    let proofStx ← getCodeTactics translator goal proofSteps
+    let proofSteps? :=
+      js.getObjValAs? (List Json) "proof_steps" |>.toOption
+    let proofStx? ← proofSteps?.mapM fun
+      proofSteps => getCodeTactics translator goal proofSteps
     let thm ← withPreludes claim
     let .ok type ← translator.translateToProp? thm | throwError
         s!"codegen: no translation found for {thm}"
@@ -267,7 +276,9 @@ where
       -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
       let name ← translator.server.theoremName thm
       let typeStx ← PrettyPrinter.delab type
-      return (typeStx, name, proofStx)
+      let label := js.getObjString? "label" |>.getD name.toString
+      Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
+      return (typeStx, name, proofStx?)
     else
       IO.eprintln s!"Not a type: {type}"
       throwError s!"codegen: no translation found for {js}"
@@ -453,12 +464,22 @@ def logicalStepCode (translator : Translator := {}) : Option MVarId →  (kind: 
   "additionalProperties": false
 }
 -/
-@[codegen "section"]
+@[codegen "proof"]
 def proofCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| goal?, `commandSeq, js => do
-  let .ok _content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
-  throwError
-    s!"codegen: proofCode does not (yet) work for commandSeq where goal present: {goal?.isSome}"
+| _, `commandSeq, js => do
+  let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
+  let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
+    s!"codegen: no claim_label found in {js}"
+  let some labelledTheorem ← findTheorem? claimLabel | throwError
+    s!"codegen: no theorem found with label {claimLabel}"
+  let goalType := labelledTheorem.type
+
+  let goalExpr ← mkFreshExprMVar goalType
+  let goal := goalExpr.mvarId!
+  let pfStx ← getCodeTactics translator goal content
+  let n := mkIdent labelledTheorem.name
+  let typeStx ← PrettyPrinter.delab goalType
+  `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
   getCodeTactics translator goal  content
