@@ -140,6 +140,19 @@
         },
         "claim": { "type": "string", "description": "The statement." },
         "label": { "type": "string", "description": "Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping')." },
+        "proof_steps": {
+          "type": "array",
+          "description": "Steps in the proof, if the proof is present soon after the theorem.",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/$defs/Remark" },
+              { "$ref": "#/$defs/LogicalStepSequence" },
+              { "$ref": "#/$defs/Paragraph" },
+              { "$ref": "#/$defs/Figure" },
+              { "$ref": "#/$defs/Table" }
+            ]
+          }
+        },
         "header": {
           "type": "string",
           "description": "The type of theorem-like environment. Must be one of the predefined values.",
