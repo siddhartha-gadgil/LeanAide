@@ -75,12 +75,12 @@ initialize registerBuiltinAttribute {
 
 def codegenMatches (key: String) : CoreM <| Array Name := do
   let some fs :=
-    (codegenExt.getState (← getEnv)).1.get? key | throwError
+    (codegenExt.getState (← getEnv)).get? key | throwError
       s!"codegen: no function found for key {key}"
   return fs
 
 def codegenKeyless : CoreM <| Array Name := do
-  return (codegenExt.getState (← getEnv)).1.get? none |>.getD #[]
+  return (codegenExt.getState (← getEnv)).get? none |>.getD #[]
 
 def codeFromFunc (goal? : Option MVarId) (translator: Translator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
