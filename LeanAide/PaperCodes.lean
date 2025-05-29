@@ -149,18 +149,9 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
       "type": "string",
       "description": "Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping')."
     },
-    "proof_steps": {
-          "type": "array",
-          "description": "Steps in the proof, if the proof is present soon after the theorem.",
-          "items": {
-            "anyOf": [
-              { "$ref": "#/$defs/Remark" },
-              { "$ref": "#/$defs/LogicalStepSequence" },
-              { "$ref": "#/$defs/Paragraph" },
-              { "$ref": "#/$defs/Figure" },
-              { "$ref": "#/$defs/Table" }
-            ]
-          }
+    "proof" : {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the theorems, if it is present soon after the statement."
         },
     "header": {
       "type": "string",
@@ -253,10 +244,10 @@ where
       | Except.error _ => pure ()
     let .ok  claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no claim found in {js}"
-    let proofSteps? :=
-      js.getObjValAs? (List Json) "proof_steps" |>.toOption
-    let proofStx? ← proofSteps?.mapM fun
-      proofSteps => getCodeTactics translator goal proofSteps
+    let proof? :=
+      js.getObjVal? "proof" |>.toOption
+    let proofStx? ← proof?.bindM fun
+      pf => getCode translator (some goal) ``tacticSeq pf
     let thm ← withPreludes claim
     let .ok type ← translator.translateToProp? thm | throwError
         s!"codegen: no translation found for {thm}"
