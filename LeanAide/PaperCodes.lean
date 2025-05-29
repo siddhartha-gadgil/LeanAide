@@ -7,8 +7,6 @@ To Do:
 
 * For existential types in `have` statements, use `rcases` to separate the variable and its properties.
 * Have a clear way to specify used results, and use them in the proof.
-* Handle theorems with deferred proofs, i.e., where the proof is not immediately after the theorem.
-* Refine `cases` to separate `if`, multiple `if`s and patterns.
 -/
 open Lean Meta Qq Elab Term
 
@@ -763,131 +761,249 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
 }
 -/
 
-/- cases_statement
-{
-  "type": "object",
-  "description": "A proof by cases or proof by induction, with a list of cases.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "cases_statement",
-      "description": "The type of this logical step."
+/-     "pattern_cases_statement": {
+      "type": "object",
+      "description": "A proof by cases, with cases determined by matching a pattern.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "pattern_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "on": {
+          "type": "string",
+          "description": "The variable or expression which is being matched against patterns."
+        },
+        "proof_cases": {
+          "type": "array",
+          "description": "A list of elements of type `case`.",
+          "items": {
+            "$ref": "#/$defs/pattern_case"
+          }
+        },
+        "exhaustiveness": {
+          "$ref": "#/$defs/Proof",
+          "description": "(OPTIONAL) Proof that the cases are exhaustive, i.e., a contradiction if none of the cases match."
+        }
+      },
+      "required": [
+        "type",
+        "on",
+        "proof_cases"
+      ],
+      "additionalProperties": false
     },
-    "split_kind": {
-      "type": "string",
-      "description": "one of 'implication_direction' (for two sides of an 'iff' implication), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases).",
-      "enum": [
-        "implication_direction",
-        "match",
-        "condition",
-        "groups"
-      ]
-    },
-    "on": {
-      "type": "string",
-      "description": "The variable or expression on which the cases are being done. Write 'implication direction' for an 'iff' statement."
-    },
-    "proof_cases": {
-      "type": "array",
-      "description": "A list of elements of type `case`.",
-      "items": {
-        "$ref": "#/$defs/case"
-      }
-    },
-    "exhaustiveness": {
-      "$ref": "#/$defs/Proof",
-      "description": "(OPTIONAL) Proof that the cases are exhaustive."
+-/
+/- bi-implication_cases_statement
+    "bi-implication_cases_statement": {
+      "type": "object",
+      "description": "Proof of a statement `P ↔ Q`, i.e., P (the antecedent) if and only if Q (the consequent).",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "bi-implication_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "antecedent": {
+          "type": "string",
+          "description": "The antecedent `P` for the equivalence `P ↔ Q`."
+        },
+        "consequent": {
+          "type": "string",
+          "description": "The consequent `Q` for the equivalence `P ↔ Q`."
+        },
+        "if_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof that `P` implies `Q`."
+        },
+        "only_if_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof that `Q` implies `P`."
+        },
+      "required": [
+        "type",
+        "antecedent",
+        "consequent",
+        "if_proof",
+        "only_if_proof"
+      ],
+      "additionalProperties": false
     }
   },
-  "required": [
-    "type",
-    "split_kind",
-    "on",
-    "proof_cases"
-  ],
-  "additionalProperties": false
-}
+-/
+/- condition_cases_statement
+    "condition_cases_statement": {
+      "type": "object",
+      "description": "Proof of a statement based on splitting into cases where a condition is true and false, i.e., an if-then-else proof.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "condition_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "condition": {
+          "type": "string",
+          "description": "The condition based on which the proof is split."
+        },
+        "true_case_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the case where the condition is true."
+        },
+        "false_case_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the case where the condition is false."
+        },
+      "required": [
+        "type",
+        "condition",
+        "true_case_proof",
+        "false_case_proof"
+      ],
+      "additionalProperties": false
+    }
+  },
+-/
+/-
+    "multi-condition_cases_statement": {
+      "type": "object",
+      "description": "A proof by cases given by three or more conditions.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "multi-condtion_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "proof_cases": {
+          "type": "array",
+          "description": "The conditions and proofs in the different cases.",
+          "items": {
+            "$ref": "#/$defs/condtion_case"
+          }
+        },
+        "exhaustiveness": {
+          "$ref": "#/$defs/Proof",
+          "description": "(OPTIONAL) Proof that the cases are exhaustive."
+        }
+      },
+      "required": [
+        "type",
+        "proof_cases"
+      ],
+      "additionalProperties": false
+    },
+-/
+/- pattern_case
+
+  "pattern_case": {
+      "type": "object",
+      "description": "A case in a proof by cases with cases determined by matching patterns.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "pattern_case",
+          "description": "The type of this logical step."
+        },
+        "pattern": {
+          "type": "string",
+          "description": "The pattern determining this case."
+        },
+        "proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of this case."
+
+        }
+      },
+      "required": [
+        "type",
+        "pattern",
+        "proof"
+      ],
+      "additionalProperties": false
+    },
+-/
+/- condition_case
+    "condition_case": {
+      "type": "object",
+      "description": "A case in a proof by cases with cases determined by conditions.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "condition_case",
+          "description": "The type of this logical step."
+        },
+        "condition": {
+          "type": "string",
+          "description": "The pattern determining this case."
+        },
+        "proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of this case."
+
+        }
+      },
+      "required": [
+        "type",
+        "condition",
+        "proof"
+      ],
+      "additionalProperties": false
+    },
+
 -/
 
-/- case
-{
-  "type": "object",
-  "description": "A case in a proof by cases or proof by induction.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "case",
-      "description": "The type of this logical step."
-    },
-    "condition": {
-      "type": "string",
-      "description": "The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`)."
-    },
-    "proof": {
-      "type": "array",
-      "description": "Steps proving this case.",
-      "items": {
-        "anyOf": [
-          {
-            "$ref": "#/$defs/LogicalStepSequence"
-          },
-          {
-            "$ref": "#/$defs/Paragraph"
-          },
-          {
-            "$ref": "#/$defs/Proof"
-          },
-          {
-            "$ref": "#/$defs/Figure"
-          },
-          {
-            "$ref": "#/$defs/Table"
-          },
-          {
-            "$ref": "#/$defs/Remark"
-          }
-        ]
-      }
-    }
-  },
-  "required": [
-    "type",
-    "condition",
-    "proof"
-  ],
-  "additionalProperties": false
-}
--/
+example (n: Nat) : n = n := by
+  if c:n < 2 then _ else _
+  · simp
+  · simp
+
+example (n: Nat) : n = n := by
+  cases n with
+  | zero => _
+  | succ n => _
+  · simp
+  · simp
+
+example (n: Nat) : n = n := by
+  match n with
+  | 0 => _
+  | 1 => _
+  | 2 => _
+  | n+ 1 => _
+  · simp
+  · simp
+  · simp
+  · simp
 
 /- induction_statement
-{
-  "type": "object",
-  "description": "A proof by induction, with a base case and an induction step.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "induction_statement",
-      "description": "The type of this logical step."
+    "induction_statement": {
+      "type": "object",
+      "description": "A proof by induction, with a base case and an induction step.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "induction_statement",
+          "description": "The type of this logical step."
+        },
+        "on": {
+          "type": "string",
+          "description": "The variable or expression on which induction is being done."
+        },
+        "base_case_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the base case."
+        },
+        "induction_step_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the induction step, which typically shows that if the statement holds for `n`, it holds for `n+1`."
+        }},
+      "required": [
+        "type",
+        "on",
+        "base_case_proof",
+        "induction_step_proof"
+      ],
+      "additionalProperties": false
     },
-    "on": {
-      "type": "string",
-      "description": "The variable or expression on which induction is being done."
-    },
-    "proof_cases": {
-      "type": "array",
-      "description": "A list of elements of type `case`.",
-      "items": {
-        "$ref": "#/$defs/case"
-      }
-    }
-  },
-  "required": [
-    "type",
-    "on",
-    "proof_cases"
-  ],
-  "additionalProperties": false
-}
 -/
 
 /- contradiction_statement

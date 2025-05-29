@@ -339,7 +339,9 @@ def matchCasesSkeleton (discr: String)
   let discrTerm :=
     runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(_))
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
-  `(tactic| match $discrTerm':term with $alts':matchAlt*)
+  let hash := hash discrTerm.reprint
+  let c := mkIdent <| ("c" ++ s!"_{hash}").toName
+  `(tactic| match $c:ident : $discrTerm':term with $alts':matchAlt*)
 
 def ifSkeleton (context: Array Json) (discr: String) (qp: CodeGenerator) : TranslateM Syntax.Tactic := do
   let discrTerm? ←
@@ -349,7 +351,9 @@ def ifSkeleton (context: Array Json) (discr: String) (qp: CodeGenerator) : Trans
     mkNoteTactic s!"Failed to translate condition {discr}"
   | Except.ok discrTerm => do
     let discrTerm' : Syntax.Term ← delabDetailed discrTerm
-    `(tactic| if $discrTerm':term then _ else _)
+    let hash := hash discrTerm'.raw.reprint
+    let c := mkIdent <| ("c" ++ s!"_{hash}").toName
+    `(tactic| if $c:ident : $discrTerm':term then _ else _)
 
 
 example (n: Nat) : n = n := by
@@ -433,8 +437,9 @@ def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.
       let condTerm ← delabDetailed condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
       let tailTacs ← groupCasesAux context tail qp
-      return #[← `(tactic| if $condTerm':term then $pf* else  $tailTacs*)]
-
+      let hash := hash condTerm'.raw.reprint
+      let c := mkIdent <| ("c" ++ s!"_{hash}").toName
+      return #[← `(tactic| if $c:ident : $condTerm':term then $pf* else  $tailTacs*)]
 
 def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.Tactic)
     (union_pfs: Array Syntax.Tactic) (qp: CodeGenerator) (goal?: Option Expr) :
