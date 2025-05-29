@@ -58,7 +58,7 @@ initialize registerBuiltinAttribute {
   add := fun decl stx kind => MetaM.run' do
     let declTy := (← getConstInfo decl).type
     let expectedType : Q(Type) :=
-    q(Translator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
+    q(CodeGenerator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
     unless ← isDefEq declTy expectedType do
       throwError -- replace with error
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
@@ -82,20 +82,20 @@ def codegenMatches (key: String) : CoreM <| Array Name := do
 def codegenKeyless : CoreM <| Array Name := do
   return (codegenExt.getState (← getEnv)).get? none |>.getD #[]
 
-def codeFromFunc (goal? : Option MVarId) (translator: Translator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
+def codeFromFunc (goal? : Option MVarId) (translator: CodeGenerator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   let expectedType : Q(Type) :=
-    q(Translator → Option MVarId  →  (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
+    q(CodeGenerator → Option MVarId  →  (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)))
   let f := mkConst f
   let code ←
     unsafe evalExpr
-      (Translator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
+      (CodeGenerator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
   code translator goal? kind source
 
 /--
 Given a JSON object, return the corresponding syntax by matching with `.getKVorType?` and then calling the function in the environment using `codeFromFunc`. The function is expected to return a `TranslateM (Option (TSyntax kind))`, where `kind` is the syntax category of the object.
 -/
-def getCode  (translator: Translator) (goal? : Option MVarId) (kind: SyntaxNodeKinds)
+def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: SyntaxNodeKinds)
   (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   match source.getKVorType? with
@@ -132,7 +132,7 @@ def emptyTacs : CoreM (TSyntax ``tacticSeq) := do
   let xs: Array (TSyntax `tactic) := #[]
   `(tacticSeq| $xs*)
 
-def getCodeTacticsAux (translator: Translator) (goal :  MVarId)
+def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
   goal.withContext do
@@ -156,7 +156,7 @@ def getCodeTacticsAux (translator: Translator) (goal :  MVarId)
 /--
 Main helper for generating tactics from a list of JSON objects.
 -/
-def getCodeTactics (translator: Translator) (goal :  MVarId)
+def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) :=
   withoutModifyingState do
@@ -171,7 +171,7 @@ def getCodeTactics (translator: Translator) (goal :  MVarId)
       runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
     appendTactics tacs (← `(tacticSeq| $autoTacs*))
 
-def getCodeCommands (translator: Translator) (goal? : Option MVarId)
+def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``commandSeq) := withoutModifyingState do
   let mut accum : Array <| TSyntax ``commandSeq := #[]
@@ -187,12 +187,12 @@ def getCodeCommands (translator: Translator) (goal? : Option MVarId)
       s!"codegen: no commands generated from {sources}"
   flattenCommands accum
 
-def noCode : Translator → Option MVarId  →
+def noCode : CodeGenerator → Option MVarId  →
   (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
   return none
 
 -- For instance, for the hypothesis in a theorem.
-def contextRun (translator: Translator) (goal? : Option MVarId)
+def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   (kind: SyntaxNodeKinds) (source: Json) :
     TranslateM Unit := do
   match source.getArr?  with

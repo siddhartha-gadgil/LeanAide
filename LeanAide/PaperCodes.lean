@@ -15,7 +15,7 @@ namespace LeanAide
 open Codegen Translate
 
 @[codegen "assumption_statement"]
-def assumptionCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def assumptionCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
   let .ok assumption :=
     js.getObjValAs? String "assumption" | throwError
@@ -26,7 +26,7 @@ def assumptionCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNo
 open Lean.Parser.Tactic
 
 @[codegen "document"]
-def documentCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
   let .ok content := js.getArr? | throwError "document must be a JSON array"
   getCodeCommands translator none  content.toList
@@ -104,7 +104,7 @@ def noGenCode := noCode
 }
 -/
 @[codegen "section"]
-def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "content" | throwError "section must have content"
   getCodeCommands translator none  content
@@ -190,7 +190,7 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
 #eval "Hello".toName ++ ("World".toName)
 
 @[codegen "theorem"]
-def theoremCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, `command, js => do
   let (stx, name, pf?) ← thmStxParts js goal
   match pf? with
@@ -327,7 +327,7 @@ where
 }
 -/
 @[codegen "definition"]
-def defCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def defCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let stx ← defCmdStx js
   `(command| $stx)
@@ -397,7 +397,7 @@ where
 }
 -/
 @[codegen "section"]
-def logicalStepCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
   let .ok content := js.getArr? | throwError "logicalStepCode must be a JSON array"
   getCodeCommands translator none  content.toList
@@ -454,7 +454,7 @@ def logicalStepCode (translator : Translator := {}) : Option MVarId →  (kind: 
 }
 -/
 @[codegen "proof"]
-def proofCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
   let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
@@ -511,7 +511,7 @@ def proofCode (translator : Translator := {}) : Option MVarId →  (kind: Syntax
 }
 -/
 @[codegen "let_statement"]
-def letCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def letCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
   let statement :=
     match js.getObjValAs? String "statement" with
@@ -566,7 +566,7 @@ def letCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds
 }
 -/
 @[codegen "some_statement"]
-def someCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def someCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
   let statement :=
     match js.getObjValAs? String "statement" with
@@ -628,7 +628,7 @@ def someCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKind
 }
 -/
 @[codegen "assume_statement"]
-def assumeCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
   let .ok statement :=
       js.getObjValAs? String "assumption" | throwError ""
@@ -693,7 +693,7 @@ def assumeCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKi
 -/
 -- Very basic version; should add references to `auto?` as well as other modifications as in `StructToLean`
 @[codegen "assertion_statement"]
-def assertionCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let stx ← typeStx js
   `(command| example : $stx := by sorry)
@@ -1158,21 +1158,3 @@ example (n: Nat) : n = n := by
   "additionalProperties": false
 }
 -/
-
-
--- -- older code, should not be used
--- def metaDataFields := ["author", "date", "title", "abstract", "keywords", "authors", "affiliations", "acknowledgements", "msc_codes", "publication_date", "doi", "arxiv_id", "url", "source", "header", "entries"]
-
--- @[codegen]
--- def metaNoCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
--- | _, js => do
---   match js.getObj? with
---   | .ok obj =>
---     let keys := obj.toArray.map (fun ⟨ k, _⟩  => k)
---     let nonMetaKeys := keys.filter (fun k => !metaDataFields.contains k)
---     if nonMetaKeys.isEmpty then
---       return none
---     else
---       throwError s!"codegen: no metadata found in {js}, extra keys: {nonMetaKeys}"
---   | .error _ => do
---   throwError s!"codegen: no metadata found in {js}"
