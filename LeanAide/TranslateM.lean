@@ -123,6 +123,16 @@ def ElabSuccessResult.withView (er: ElabSuccessResult) : MetaM TranslateSuccessR
 
 abbrev TranslateResult := Except ElabErrorData ElabSuccessResult
 
+structure LabelledTheorem where
+  /-- Name of the theorem -/
+  name : Name
+  /-- LaTeX-style label for the theorem -/
+  label : String
+  /-- Statement of the theorem -/
+  type : Expr
+  /-- Whether the theorem is proved-/
+  isProved : Bool
+
 /--
 State for translation. The main motivation for this was to avoid repeatedly loading embeddings.
 -/
@@ -139,6 +149,7 @@ structure Translate.State where
   preludes : Array String := #[]
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
+  labelledTheorems : Array LabelledTheorem := #[]
 deriving Inhabited
 
 /-- Monad with environment for translation -/
@@ -251,6 +262,24 @@ def withPreludes (s: String) : TranslateM String := do
 def defsNameBlob : TranslateM <| Array <| Name × String := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statement)
+
+def addTheorem (thm: LabelledTheorem) : TranslateM Unit := do
+  modify fun s => {s with labelledTheorems := s.labelledTheorems.push thm}
+def getTheorems : TranslateM <| Array LabelledTheorem := do
+  return (← get).labelledTheorems
+
+def findTheorem? (label: String) : TranslateM <| Option LabelledTheorem := do
+  let thms := (← get).labelledTheorems
+  return thms.find? (fun thm => thm.label == label)
+
+def updateToProved (labelledTheorem : String) : TranslateM Unit := do
+  let newLabelledTheorems := (← get).labelledTheorems.map (fun thm =>
+    if thm.label == labelledTheorem then
+      {thm with isProved := true}
+    else
+      thm)
+  modify fun s => {s with labelledTheorems := newLabelledTheorems}
+
 end Translate
 
 namespace TranslateM

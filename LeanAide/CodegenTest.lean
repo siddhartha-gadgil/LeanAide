@@ -5,7 +5,7 @@ open Lean Meta Qq Elab
 namespace LeanAide.Codegen
 
 @[codegen "test"]
-def test (_translator : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def test (_translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | `term, js =>
   match js.getStr? with
   | .ok str => do
@@ -36,7 +36,7 @@ This is a micro schema for testing and illustrating the code generation. This in
 
 open Lean.Parser.Tactic
 @[codegen "thm_test"]
-def thmTest (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def thmTest (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let stx ← typeStx js
   `(command| example : $stx := by sorry)
@@ -62,7 +62,7 @@ where typeStx (js: Json) : TranslateM Syntax.Term :=
       s!"codegen: no translation found for {js}"
 
 @[codegen]
-def thmStringTest (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def thmStringTest (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let stx ← typeStx js
   `(command| example : $stx := by sorry)
@@ -88,7 +88,7 @@ where typeStx (js: Json) : TranslateM Syntax.Term :=
       s!"codegen: no translation found for {js}"
 
 @[codegen "doc_test"]
-def docTest  (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def docTest  (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | goal?, `commandSeq, js => withoutModifyingState do
   let .ok statements := js.getArr? | throwError "document must be an array"
   let mut stxs : Array (TSyntax `commandSeq) := #[]
@@ -122,14 +122,14 @@ def docJson : Json :=
   Json.mkObj [ ("doc_test" , Json.arr #[thmJson, thmJson', Json.str "There are infinitely many odd numbers."])]
 
 open PrettyPrinter
-def showCommand (translator: Translator)
+def showCommand (translator: CodeGenerator)
   (source: Json) :
     TranslateM (Format) := do
     let some cmd ← getCode translator none `command source | throwError
       s!"codegen: no command"
     ppCommand cmd
 
-def showStx  (translator: Translator)(goal? : Option (MVarId))
+def showStx  (translator: CodeGenerator)(goal? : Option (MVarId))
   (source: Json) (cat: Name) :
     TranslateM (Format) := do
     let some stx ← getCode translator  goal? cat source | throwError

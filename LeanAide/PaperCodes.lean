@@ -1,33 +1,12 @@
 import LeanAide.Codegen
 import LeanAide.StructToLean
 /-!
-##Code generation for LeanAide "PaperStructure" schema
+# Code generation for LeanAide "PaperStructure" schema
 
-Need at top level generators for:
+To Do:
 
-* Section
-* Theorem
-* Definition
-* LogicalStepSequence
-* Proof
-* let_statement
-* some_statement
-* assume_statement
-* assert_statement
-* calculate_statement
-* calculation_step
-* cases_statement
-* case
-* induction_statement
-* contradiction_statement
-* conclude_statement
-* Paragraph
-
-We may need some more specific generators for:
-* Figure
-* Table
-
-
+* For existential types in `have` statements, use `rcases` to separate the variable and its properties.
+* Have a clear way to specify used results, and use them in the proof.
 -/
 open Lean Meta Qq Elab Term
 
@@ -36,7 +15,7 @@ namespace LeanAide
 open Codegen Translate
 
 @[codegen "assumption_statement"]
-def assumptionCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def assumptionCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
   let .ok assumption :=
     js.getObjValAs? String "assumption" | throwError
@@ -47,7 +26,7 @@ def assumptionCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNo
 open Lean.Parser.Tactic
 
 @[codegen "document"]
-def documentCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
   let .ok content := js.getArr? | throwError "document must be a JSON array"
   getCodeCommands translator none  content.toList
@@ -125,7 +104,7 @@ def noGenCode := noCode
 }
 -/
 @[codegen "section"]
-def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "content" | throwError "section must have content"
   getCodeCommands translator none  content
@@ -168,18 +147,9 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
       "type": "string",
       "description": "Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping')."
     },
-    "proof_steps": {
-          "type": "array",
-          "description": "Steps in the proof, if the proof is present soon after the theorem.",
-          "items": {
-            "anyOf": [
-              { "$ref": "#/$defs/Remark" },
-              { "$ref": "#/$defs/LogicalStepSequence" },
-              { "$ref": "#/$defs/Paragraph" },
-              { "$ref": "#/$defs/Figure" },
-              { "$ref": "#/$defs/Table" }
-            ]
-          }
+    "proof" : {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the theorems, if it is present soon after the statement."
         },
     "header": {
       "type": "string",
@@ -216,38 +186,66 @@ def sectionCode (translator : Translator := {}) : Option MVarId →  (kind: Synt
   "additionalProperties": false
 }
 -/
+
+#eval "Hello".toName ++ ("World".toName)
+
 @[codegen "theorem"]
-def theoremCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, `command, js => do
-  let (stx, name, pf) ← thmStxParts js goal
-  let n := mkIdent name
-  `(command| theorem $n : $stx := by $pf)
+  let (stx, name, pf?) ← thmStxParts js goal
+  match pf? with
+  | some pf =>
+    let n := mkIdent name
+    `(command| theorem $n : $stx := by $pf)
+  | none =>
+    let n := mkIdent (name ++ `prop)
+    let propIdent := mkIdent `Prop
+    `(command| abbrev $n : $propIdent := $stx)
 | some goal, `commandSeq, js => do
-  let (stx, name, pf) ← thmStxParts js goal
-  let n := mkIdent name
-  `(commandSeq| theorem $n : $stx := by $pf)
+  let (stx, name, pf?) ← thmStxParts js goal
+  match pf? with
+  | some pf =>
+    let n := mkIdent name
+    `(commandSeq| theorem $n : $stx := by $pf)
+  | none =>
+    let n := mkIdent (name ++ `prop)
+    let propIdent := mkIdent `Prop
+    `(commandSeq| abbrev $n : $propIdent := $stx)
+
 | some goal, ``tacticSeq, js => do
-  let (stx, name, pf) ← thmStxParts js goal
-  let n := mkIdent name
-  `(tacticSeq| have $n : $stx := by $pf)
+  let (stx, name, pf?) ← thmStxParts js goal
+  match pf? with
+  | some pf =>
+    let n := mkIdent name
+    `(tacticSeq| have $n : $stx := by $pf)
+  | none =>
+    let n := mkIdent (name ++ `prop)
+    let propIdent := mkIdent `Prop
+    `(tacticSeq| let $n : $propIdent := $stx)
 | some goal, `tactic, js => do
-  let (stx, name, pf) ← thmStxParts js goal
-  let n := mkIdent name
-  `(tactic| have $n : $stx := by $pf)
+  let (stx, name, pf?) ← thmStxParts js goal
+  match pf? with
+  | some pf =>
+    let n := mkIdent name
+    `(tactic| have $n : $stx := by $pf)
+  | none =>
+    let n := mkIdent (name ++ `prop)
+    let propIdent := mkIdent `Prop
+    `(tactic| let $n : $propIdent := $stx)
 | _, _, _ => throwError
     s!"codegen: theorem does not work"
 where
   thmStxParts (js: Json) (goal: MVarId) :
-    TranslateM <| Syntax.Term × Name × (TSyntax ``tacticSeq) := withoutModifyingState do
+    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq)  := withoutModifyingState do
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
       | Except.error _ => pure ()
     let .ok  claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no claim found in {js}"
-    let .ok proofSteps :=
-      js.getObjValAs? (List Json) "proof_steps" | throwError
-      s!"codegen: no proof_steps found in {js}; deferred proof not implemented"
-    let proofStx ← getCodeTactics translator goal proofSteps
+    let proof? :=
+      js.getObjVal? "proof" |>.toOption
+    let proofStx? ← proof?.bindM fun
+      pf => getCode translator (some goal) ``tacticSeq pf
     let thm ← withPreludes claim
     let .ok type ← translator.translateToProp? thm | throwError
         s!"codegen: no translation found for {thm}"
@@ -267,7 +265,9 @@ where
       -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
       let name ← translator.server.theoremName thm
       let typeStx ← PrettyPrinter.delab type
-      return (typeStx, name, proofStx)
+      let label := js.getObjString? "label" |>.getD name.toString
+      Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
+      return (typeStx, name, proofStx?)
     else
       IO.eprintln s!"Not a type: {type}"
       throwError s!"codegen: no translation found for {js}"
@@ -327,7 +327,7 @@ where
 }
 -/
 @[codegen "definition"]
-def defCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def defCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let stx ← defCmdStx js
   `(command| $stx)
@@ -397,7 +397,7 @@ where
 }
 -/
 @[codegen "section"]
-def logicalStepCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
   let .ok content := js.getArr? | throwError "logicalStepCode must be a JSON array"
   getCodeCommands translator none  content.toList
@@ -453,12 +453,22 @@ def logicalStepCode (translator : Translator := {}) : Option MVarId →  (kind: 
   "additionalProperties": false
 }
 -/
-@[codegen "section"]
-def proofCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| goal?, `commandSeq, js => do
-  let .ok _content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
-  throwError
-    s!"codegen: proofCode does not (yet) work for commandSeq where goal present: {goal?.isSome}"
+@[codegen "proof"]
+def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `commandSeq, js => do
+  let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
+  let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
+    s!"codegen: no claim_label found in {js}"
+  let some labelledTheorem ← findTheorem? claimLabel | throwError
+    s!"codegen: no theorem found with label {claimLabel}"
+  let goalType := labelledTheorem.type
+
+  let goalExpr ← mkFreshExprMVar goalType
+  let goal := goalExpr.mvarId!
+  let pfStx ← getCodeTactics translator goal content
+  let n := mkIdent labelledTheorem.name
+  let typeStx ← PrettyPrinter.delab goalType
+  `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
   getCodeTactics translator goal  content
@@ -501,7 +511,7 @@ def proofCode (translator : Translator := {}) : Option MVarId →  (kind: Syntax
 }
 -/
 @[codegen "let_statement"]
-def letCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def letCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
   let statement :=
     match js.getObjValAs? String "statement" with
@@ -556,7 +566,7 @@ def letCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds
 }
 -/
 @[codegen "some_statement"]
-def someCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def someCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
   let statement :=
     match js.getObjValAs? String "statement" with
@@ -618,7 +628,7 @@ def someCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKind
 }
 -/
 @[codegen "assume_statement"]
-def assumeCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
   let .ok statement :=
       js.getObjValAs? String "assumption" | throwError ""
@@ -683,7 +693,7 @@ def assumeCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKi
 -/
 -- Very basic version; should add references to `auto?` as well as other modifications as in `StructToLean`
 @[codegen "assertion_statement"]
-def assertionCode (translator : Translator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let stx ← typeStx js
   `(command| example : $stx := by sorry)
@@ -751,131 +761,249 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
 }
 -/
 
-/- cases_statement
-{
-  "type": "object",
-  "description": "A proof by cases or proof by induction, with a list of cases.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "cases_statement",
-      "description": "The type of this logical step."
+/-     "pattern_cases_statement": {
+      "type": "object",
+      "description": "A proof by cases, with cases determined by matching a pattern.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "pattern_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "on": {
+          "type": "string",
+          "description": "The variable or expression which is being matched against patterns."
+        },
+        "proof_cases": {
+          "type": "array",
+          "description": "A list of elements of type `case`.",
+          "items": {
+            "$ref": "#/$defs/pattern_case"
+          }
+        },
+        "exhaustiveness": {
+          "$ref": "#/$defs/Proof",
+          "description": "(OPTIONAL) Proof that the cases are exhaustive, i.e., a contradiction if none of the cases match."
+        }
+      },
+      "required": [
+        "type",
+        "on",
+        "proof_cases"
+      ],
+      "additionalProperties": false
     },
-    "split_kind": {
-      "type": "string",
-      "description": "one of 'implication_direction' (for two sides of an 'iff' implication), 'match' (for pattern matching), 'condition' (if based on a condition being true or false) and 'groups' (for more complex cases).",
-      "enum": [
-        "implication_direction",
-        "match",
-        "condition",
-        "groups"
-      ]
-    },
-    "on": {
-      "type": "string",
-      "description": "The variable or expression on which the cases are being done. Write 'implication direction' for an 'iff' statement."
-    },
-    "proof_cases": {
-      "type": "array",
-      "description": "A list of elements of type `case`.",
-      "items": {
-        "$ref": "#/$defs/case"
-      }
-    },
-    "exhaustiveness": {
-      "$ref": "#/$defs/Proof",
-      "description": "(OPTIONAL) Proof that the cases are exhaustive."
+-/
+/- bi-implication_cases_statement
+    "bi-implication_cases_statement": {
+      "type": "object",
+      "description": "Proof of a statement `P ↔ Q`, i.e., P (the antecedent) if and only if Q (the consequent).",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "bi-implication_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "antecedent": {
+          "type": "string",
+          "description": "The antecedent `P` for the equivalence `P ↔ Q`."
+        },
+        "consequent": {
+          "type": "string",
+          "description": "The consequent `Q` for the equivalence `P ↔ Q`."
+        },
+        "if_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof that `P` implies `Q`."
+        },
+        "only_if_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof that `Q` implies `P`."
+        },
+      "required": [
+        "type",
+        "antecedent",
+        "consequent",
+        "if_proof",
+        "only_if_proof"
+      ],
+      "additionalProperties": false
     }
   },
-  "required": [
-    "type",
-    "split_kind",
-    "on",
-    "proof_cases"
-  ],
-  "additionalProperties": false
-}
+-/
+/- condition_cases_statement
+    "condition_cases_statement": {
+      "type": "object",
+      "description": "Proof of a statement based on splitting into cases where a condition is true and false, i.e., an if-then-else proof.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "condition_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "condition": {
+          "type": "string",
+          "description": "The condition based on which the proof is split."
+        },
+        "true_case_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the case where the condition is true."
+        },
+        "false_case_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the case where the condition is false."
+        },
+      "required": [
+        "type",
+        "condition",
+        "true_case_proof",
+        "false_case_proof"
+      ],
+      "additionalProperties": false
+    }
+  },
+-/
+/-
+    "multi-condition_cases_statement": {
+      "type": "object",
+      "description": "A proof by cases given by three or more conditions.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "multi-condtion_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "proof_cases": {
+          "type": "array",
+          "description": "The conditions and proofs in the different cases.",
+          "items": {
+            "$ref": "#/$defs/condtion_case"
+          }
+        },
+        "exhaustiveness": {
+          "$ref": "#/$defs/Proof",
+          "description": "(OPTIONAL) Proof that the cases are exhaustive."
+        }
+      },
+      "required": [
+        "type",
+        "proof_cases"
+      ],
+      "additionalProperties": false
+    },
+-/
+/- pattern_case
+
+  "pattern_case": {
+      "type": "object",
+      "description": "A case in a proof by cases with cases determined by matching patterns.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "pattern_case",
+          "description": "The type of this logical step."
+        },
+        "pattern": {
+          "type": "string",
+          "description": "The pattern determining this case."
+        },
+        "proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of this case."
+
+        }
+      },
+      "required": [
+        "type",
+        "pattern",
+        "proof"
+      ],
+      "additionalProperties": false
+    },
+-/
+/- condition_case
+    "condition_case": {
+      "type": "object",
+      "description": "A case in a proof by cases with cases determined by conditions.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "condition_case",
+          "description": "The type of this logical step."
+        },
+        "condition": {
+          "type": "string",
+          "description": "The pattern determining this case."
+        },
+        "proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of this case."
+
+        }
+      },
+      "required": [
+        "type",
+        "condition",
+        "proof"
+      ],
+      "additionalProperties": false
+    },
+
 -/
 
-/- case
-{
-  "type": "object",
-  "description": "A case in a proof by cases or proof by induction.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "case",
-      "description": "The type of this logical step."
-    },
-    "condition": {
-      "type": "string",
-      "description": "The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`)."
-    },
-    "proof": {
-      "type": "array",
-      "description": "Steps proving this case.",
-      "items": {
-        "anyOf": [
-          {
-            "$ref": "#/$defs/LogicalStepSequence"
-          },
-          {
-            "$ref": "#/$defs/Paragraph"
-          },
-          {
-            "$ref": "#/$defs/Proof"
-          },
-          {
-            "$ref": "#/$defs/Figure"
-          },
-          {
-            "$ref": "#/$defs/Table"
-          },
-          {
-            "$ref": "#/$defs/Remark"
-          }
-        ]
-      }
-    }
-  },
-  "required": [
-    "type",
-    "condition",
-    "proof"
-  ],
-  "additionalProperties": false
-}
--/
+example (n: Nat) : n = n := by
+  if c:n < 2 then _ else _
+  · simp
+  · simp
+
+example (n: Nat) : n = n := by
+  cases n with
+  | zero => _
+  | succ n => _
+  · simp
+  · simp
+
+example (n: Nat) : n = n := by
+  match n with
+  | 0 => _
+  | 1 => _
+  | 2 => _
+  | n+ 1 => _
+  · simp
+  · simp
+  · simp
+  · simp
 
 /- induction_statement
-{
-  "type": "object",
-  "description": "A proof by induction, with a base case and an induction step.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "induction_statement",
-      "description": "The type of this logical step."
+    "induction_statement": {
+      "type": "object",
+      "description": "A proof by induction, with a base case and an induction step.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "induction_statement",
+          "description": "The type of this logical step."
+        },
+        "on": {
+          "type": "string",
+          "description": "The variable or expression on which induction is being done."
+        },
+        "base_case_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the base case."
+        },
+        "induction_step_proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof of the induction step, which typically shows that if the statement holds for `n`, it holds for `n+1`."
+        }},
+      "required": [
+        "type",
+        "on",
+        "base_case_proof",
+        "induction_step_proof"
+      ],
+      "additionalProperties": false
     },
-    "on": {
-      "type": "string",
-      "description": "The variable or expression on which induction is being done."
-    },
-    "proof_cases": {
-      "type": "array",
-      "description": "A list of elements of type `case`.",
-      "items": {
-        "$ref": "#/$defs/case"
-      }
-    }
-  },
-  "required": [
-    "type",
-    "on",
-    "proof_cases"
-  ],
-  "additionalProperties": false
-}
 -/
 
 /- contradiction_statement
@@ -1030,21 +1158,3 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
   "additionalProperties": false
 }
 -/
-
-
--- -- older code, should not be used
--- def metaDataFields := ["author", "date", "title", "abstract", "keywords", "authors", "affiliations", "acknowledgements", "msc_codes", "publication_date", "doi", "arxiv_id", "url", "source", "header", "entries"]
-
--- @[codegen]
--- def metaNoCode (_ : Translator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
--- | _, js => do
---   match js.getObj? with
---   | .ok obj =>
---     let keys := obj.toArray.map (fun ⟨ k, _⟩  => k)
---     let nonMetaKeys := keys.filter (fun k => !metaDataFields.contains k)
---     if nonMetaKeys.isEmpty then
---       return none
---     else
---       throwError s!"codegen: no metadata found in {js}, extra keys: {nonMetaKeys}"
---   | .error _ => do
---   throwError s!"codegen: no metadata found in {js}"
