@@ -621,10 +621,6 @@
           "items": {
             "$ref": "#/$defs/pattern_case"
           }
-        },
-        "exhaustiveness": {
-          "$ref": "#/$defs/Proof",
-          "description": "(OPTIONAL) Proof that the cases are exhaustive, i.e., a contradiction if none of the cases match."
         }
       },
       "required": [
