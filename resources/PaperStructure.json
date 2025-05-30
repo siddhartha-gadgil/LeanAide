@@ -568,8 +568,8 @@
             "$ref": "#/$defs/InternalReference"
           }
         },
-        "calculate": {
-          "$ref": "#/$defs/calculate_choice",
+        "calculation": {
+          "$ref": "#/$defs/calculation",
           "description": "(OPTIONAL) An equation, inequality, short calculation etc."
         }
       },
@@ -579,7 +579,7 @@
       ],
       "additionalProperties": false
     },
-    "calculate_choice": {
+    "calculation": {
       "type": "object",
       "description": "An equation, inequality, short calculation etc.",
       "minProperties": 1,
@@ -636,20 +636,12 @@
     },
     "bi-implication_cases_statement": {
       "type": "object",
-      "description": "Proof of a statement `P ↔ Q`, i.e., P (the antecedent) if and only if Q (the consequent).",
+      "description": "Proof of a statement `P ↔ Q`.",
       "properties": {
         "type": {
           "type": "string",
           "const": "bi-implication_cases_statement",
           "description": "The type of this logical step."
-        },
-        "antecedent": {
-          "type": "string",
-          "description": "The antecedent `P` for the equivalence `P ↔ Q`."
-        },
-        "consequent": {
-          "type": "string",
-          "description": "The consequent `Q` for the equivalence `P ↔ Q`."
         },
         "if_proof": {
           "$ref": "#/$defs/Proof",
@@ -661,8 +653,6 @@
         },
         "required": [
           "type",
-          "antecedent",
-          "consequent",
           "if_proof",
           "only_if_proof"
         ],
@@ -865,7 +855,7 @@
           "description": "The type of this logical step."
         },
         "calculation": {
-          "$ref": "#/$defs/calculate_choice",
+          "$ref": "#/$defs/calculation",
           "description": "An equation, inequality, short calculation etc."
         }
       },
