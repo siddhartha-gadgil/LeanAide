@@ -795,11 +795,6 @@ where typeStx (js: Json) :
             "$ref": "#/$defs/pattern_case"
           }
         },
-        "exhaustiveness": {
-          "$ref": "#/$defs/Proof",
-          "description": "(OPTIONAL) Proof that the cases are exhaustive, i.e., a contradiction if none of the cases match."
-        }
-      },
       "required": [
         "type",
         "on",
@@ -808,6 +803,54 @@ where typeStx (js: Json) :
       "additionalProperties": false
     },
 -/
+open Lean.Parser.Term CodeGenerator Parser
+@[codegen "pattern_cases_statement"]
+def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| some goal, ``tacticSeq, js => do
+  let .ok discr := js.getObjValAs? String "on" | throwError
+    s!"codegen: no on found in {js}"
+  let .ok patternCases := js.getObjValAs? (Array Json) "proof_cases" | throwError
+    s!"codegen: no proof_cases found in {js}"
+  let pats := patternCases.filterMap fun
+    case =>
+      case.getObjValAs? String "pattern" |>.toOption
+  let proofData := patternCases.filterMap fun
+    case =>
+      case.getObjValAs? Json "proof" |>.toOption
+  let mut alts : Array <| TSyntax ``matchAltTac := #[]
+  let mut patTerms : Array Syntax.Term := #[]
+  for pat in pats do
+    let patTerm :=
+      runParserCategory (← getEnv) `term pat |>.toOption.getD (← `(_))
+    let patTerm' : Syntax.Term := ⟨patTerm⟩
+    patTerms := patTerms.push patTerm'
+    let m ← `(matchAltTac| | $patTerm' => _)
+    alts := alts.push m
+  let alts' : Array <| TSyntax ``matchAlt := alts.map fun alt => ⟨alt⟩
+  let discrTerm :=
+    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(_))
+  let discrTerm' : Syntax.Term := ⟨discrTerm⟩
+  let hash := hash discrTerm.reprint
+  let c := mkIdent <| ("c" ++ s!"_{hash}").toName
+  let tac ← `(tactic| match $c:ident : $discrTerm':term with $alts':matchAlt*)
+  let newGoals ←
+    runAndGetMVars goal #[tac] proofData.size
+  let proofStxs ← proofData.zip newGoals.toArray |>.mapM fun (proof, newGoal) => do
+    let some proofStx ← getCode translator (some newGoal) ``tacticSeq proof |
+      throwError s!"codegen: no translation found for {proof}"
+    return proofStx
+  let mut provedAlts : Array <| TSyntax ``matchAltTac := #[]
+  for (patTerm, pf) in patTerms.zip proofStxs do
+    let m ← `(matchAltTac| | $patTerm => $pf)
+    alts := alts.push m
+  let alts' : Array <| TSyntax ``matchAlt := provedAlts.map fun alt => ⟨alt⟩
+  let c := mkIdent <| ("c" ++ s!"_{hash}").toName
+  `(tacticSeq| match $c:ident : $discrTerm':term with $alts':matchAlt*)
+
+| goal?, kind ,_ => throwError
+    s!"codegen: biequivalenceCode does not work for kind {kind} with goal present: {goal?.isSome}"
+
+
 /- bi-implication_cases_statement
     "bi-implication_cases_statement": {
       "type": "object",
