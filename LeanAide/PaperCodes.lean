@@ -747,8 +747,9 @@ where typeStx (js: Json) :
         findTheorem? target
     let usedNames := labelledTheorems.map (·.name)
     let ids := (usedNames ++ names').map mkIdent
-    let tac ← `(tacticSeq| auto? [ $ids,* ])
-    return (← delabDetailed type, tac)
+    let tac ← `(tactic| auto? [ $ids,* ])
+    let tacs ← runTacticsAndGetTryThisI (type) #[tac]
+    return (← delabDetailed type, ← `(tacticSeq| $tacs*))
   else
     IO.eprintln s!"Not a type: {type}"
     throwError s!"codegen: no translation found for {js}"
