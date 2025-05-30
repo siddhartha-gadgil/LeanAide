@@ -199,6 +199,11 @@ def notImplementedCode (name: String) : CodeGenerator → Option MVarId  →
   logWarning m!"codegen: {name} not implemented"
   return none
 
+macro "#notImplementedCode" name:str : command => do
+  let thmName := mkIdent <| (name.getString ++ "Impl").toName
+  `(command | @[codegen $name]
+  def $thmName := notImplementedCode $name)
+
 -- For instance, for the hypothesis in a theorem.
 def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   (kind: SyntaxNodeKinds) (source: Json) :
