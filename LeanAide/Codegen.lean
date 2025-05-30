@@ -193,6 +193,17 @@ def noCode : CodeGenerator → Option MVarId  →
   (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
   return none
 
+def notImplementedCode (name: String) : CodeGenerator → Option MVarId  →
+  (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
+  IO.eprintln s!"codegen: {name} not implemented"
+  logWarning m!"codegen: {name} not implemented"
+  return none
+
+macro "#notImplementedCode" name:str : command => do
+  let thmName := mkIdent <| (name.getString ++ "Impl").toName
+  `(command | @[codegen $name]
+  def $thmName := notImplementedCode $name)
+
 -- For instance, for the hypothesis in a theorem.
 def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   (kind: SyntaxNodeKinds) (source: Json) :

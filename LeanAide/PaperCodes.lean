@@ -688,7 +688,7 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
   "additionalProperties": false
 }
 -/
--- Very basic version; should add references to `auto?` as well as other modifications as in `StructToLean`
+
 @[codegen "assertion_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
@@ -747,8 +747,9 @@ where typeStx (js: Json) :
         findTheorem? target
     let usedNames := labelledTheorems.map (·.name)
     let ids := (usedNames ++ names').map mkIdent
-    let tac ← `(tacticSeq| auto? [ $ids,* ])
-    return (← delabDetailed type, tac)
+    let tac ← `(tactic| auto? [ $ids,* ])
+    let tacs ← runTacticsAndGetTryThisI (type) #[tac]
+    return (← delabDetailed type, ← `(tacticSeq| $tacs*))
   else
     IO.eprintln s!"Not a type: {type}"
     throwError s!"codegen: no translation found for {js}"
@@ -795,11 +796,6 @@ where typeStx (js: Json) :
             "$ref": "#/$defs/pattern_case"
           }
         },
-        "exhaustiveness": {
-          "$ref": "#/$defs/Proof",
-          "description": "(OPTIONAL) Proof that the cases are exhaustive, i.e., a contradiction if none of the cases match."
-        }
-      },
       "required": [
         "type",
         "on",
@@ -808,6 +804,54 @@ where typeStx (js: Json) :
       "additionalProperties": false
     },
 -/
+open Lean.Parser.Term CodeGenerator Parser
+@[codegen "pattern_cases_statement"]
+def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| some goal, ``tacticSeq, js => do
+  let .ok discr := js.getObjValAs? String "on" | throwError
+    s!"codegen: no on found in {js}"
+  let .ok patternCases := js.getObjValAs? (Array Json) "proof_cases" | throwError
+    s!"codegen: no proof_cases found in {js}"
+  let pats := patternCases.filterMap fun
+    case =>
+      case.getObjValAs? String "pattern" |>.toOption
+  let proofData := patternCases.filterMap fun
+    case =>
+      case.getObjValAs? Json "proof" |>.toOption
+  let mut alts : Array <| TSyntax ``matchAltTac := #[]
+  let mut patTerms : Array Syntax.Term := #[]
+  for pat in pats do
+    let patTerm :=
+      runParserCategory (← getEnv) `term pat |>.toOption.getD (← `(_))
+    let patTerm' : Syntax.Term := ⟨patTerm⟩
+    patTerms := patTerms.push patTerm'
+    let m ← `(matchAltTac| | $patTerm' => _)
+    alts := alts.push m
+  let alts' : Array <| TSyntax ``matchAlt := alts.map fun alt => ⟨alt⟩
+  let discrTerm :=
+    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(_))
+  let discrTerm' : Syntax.Term := ⟨discrTerm⟩
+  let hash := hash discrTerm.reprint
+  let c := mkIdent <| ("c" ++ s!"_{hash}").toName
+  let tac ← `(tactic| match $c:ident : $discrTerm':term with $alts':matchAlt*)
+  let newGoals ←
+    runAndGetMVars goal #[tac] proofData.size
+  let proofStxs ← proofData.zip newGoals.toArray |>.mapM fun (proof, newGoal) => do
+    let some proofStx ← getCode translator (some newGoal) ``tacticSeq proof |
+      throwError s!"codegen: no translation found for {proof}"
+    return proofStx
+  let mut provedAlts : Array <| TSyntax ``matchAltTac := #[]
+  for (patTerm, pf) in patTerms.zip proofStxs do
+    let m ← `(matchAltTac| | $patTerm => $pf)
+    alts := alts.push m
+  let alts' : Array <| TSyntax ``matchAlt := provedAlts.map fun alt => ⟨alt⟩
+  let c := mkIdent <| ("c" ++ s!"_{hash}").toName
+  `(tacticSeq| match $c:ident : $discrTerm':term with $alts':matchAlt*)
+
+| goal?, kind ,_ => throwError
+    s!"codegen: biequivalenceCode does not work for kind {kind} with goal present: {goal?.isSome}"
+
+
 /- bi-implication_cases_statement
     "bi-implication_cases_statement": {
       "type": "object",
@@ -927,7 +971,7 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
   let tacs := #[← `(tactic| if $conditionStx then $trueCaseProofStx else $falseCaseProofStx)]
   `(tacticSeq| $tacs*)
 | goal?, kind ,_ => throwError
-    s!"codegen: biequivalenceCode does not work for kind {kind} with goal present: {goal?.isSome}"
+    s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
 /-
     "multi-condition_cases_statement": {
@@ -958,87 +1002,7 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
       "additionalProperties": false
     },
 -/
-/- pattern_case
-
-  "pattern_case": {
-      "type": "object",
-      "description": "A case in a proof by cases with cases determined by matching patterns.",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "pattern_case",
-          "description": "The type of this logical step."
-        },
-        "pattern": {
-          "type": "string",
-          "description": "The pattern determining this case."
-        },
-        "proof": {
-          "$ref": "#/$defs/Proof",
-          "description": "Proof of this case."
-
-        }
-      },
-      "required": [
-        "type",
-        "pattern",
-        "proof"
-      ],
-      "additionalProperties": false
-    },
--/
-/- condition_case
-    "condition_case": {
-      "type": "object",
-      "description": "A case in a proof by cases with cases determined by conditions.",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "condition_case",
-          "description": "The type of this logical step."
-        },
-        "condition": {
-          "type": "string",
-          "description": "The pattern determining this case."
-        },
-        "proof": {
-          "$ref": "#/$defs/Proof",
-          "description": "Proof of this case."
-
-        }
-      },
-      "required": [
-        "type",
-        "condition",
-        "proof"
-      ],
-      "additionalProperties": false
-    },
-
--/
-
-example (n: Nat) : n = n := by
-  if c:n < 2 then _ else _
-  · simp
-  · simp
-
-example (n: Nat) : n = n := by
-  cases n with
-  | zero => _
-  | succ n => _
-  · simp
-  · simp
-
-example (n: Nat) : n = n := by
-  match n with
-  | 0 => _
-  | 1 => _
-  | 2 => _
-  | n+ 1 => _
-  · simp
-  · simp
-  · simp
-  · simp
+#notImplementedCode "multi-condition_cases_statement"
 
 /- induction_statement
     "induction_statement": {
@@ -1071,6 +1035,39 @@ example (n: Nat) : n = n := by
       "additionalProperties": false
     },
 -/
+@[codegen "induction_statement"]
+def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| some goal, ``tacticSeq, js => do
+  let .ok discr := js.getObjValAs? String "on" | throwError
+    s!"codegen: no on found in {js}"
+  let discrTerm' :=
+    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(sorry))
+        let succId := mkIdent ``Nat.succ
+  let ihId := mkIdent `ih
+  let discrTerm : Syntax.Term := ⟨discrTerm'⟩
+  let zeroId := mkIdent ``Nat.zero
+  let tac ← `(tactic|
+    induction $discrTerm with
+    | $zeroId => _
+    | $succId:ident $ihId:ident => _)
+
+  let [baseGoal, stepGoal] ←
+    runAndGetMVars goal #[tac] 2 | throwError "codegen: biequivalenceCode failed to get two goals"
+  let .ok baseCaseProof := js.getObjValAs? Json "base_case_proof" | throwError
+    s!"codegen: no true_case_proof found in {js}"
+  let .ok inductionStepProof := js.getObjValAs? Json "induction_step_proof" | throwError
+    s!"codegen: no false_case_proof found in {js}"
+  let some baseCaseProofStx ← getCode translator (some baseGoal) ``tacticSeq baseCaseProof | throwError
+    s!"codegen: no translation found for base_case_proof {baseCaseProof}"
+  let some inductionStepProofStx ← getCode translator (some stepGoal) ``tacticSeq inductionStepProof | throwError
+    s!"codegen: no translation found for induction_step_proof {inductionStepProof}"
+  let tacs := #[← `(tactic|
+    induction $discrTerm with
+    | $zeroId => $baseCaseProofStx
+    | $succId:ident $ihId:ident => $inductionStepProofStx)]
+  `(tacticSeq| $tacs*)
+| goal?, kind ,_ => throwError
+    s!"codegen: induction does not work for kind {kind} with goal present: {goal?.isSome}"
 
 /- contradiction_statement
 {
@@ -1099,28 +1096,31 @@ example (n: Nat) : n = n := by
   "additionalProperties": false
 }
 -/
+#notImplementedCode "contradiction_statement"
 
-/- calculate_statement
-{
-  "type": "object",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "calculate_statement",
-      "description": "The type of this logical step."
-    },
-    "calculation": {
-      "$ref": "#/$defs/calculate",
-      "description": "An equation, inequality, short calculation etc."
+/-  calculation
+  {
+      "type": "object",
+      "description": "An equation, inequality, short calculation etc.",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "inline_calculation": {
+          "type": "string",
+          "description": "A simple calculation or computation written as a single line."
+        },
+        "calculation_sequence": {
+          "type": "array",
+          "description": "A list of elements of type `calculation_step`.",
+          "items": {
+            "$ref": "#/$defs/calculation_step"
+          }
+        }
+      }
     }
-  },
-  "required": [
-    "type",
-    "calculation"
-  ],
-  "additionalProperties": false
-}
+
 -/
+#notImplementedCode "calculation"
 
 /- conclude_statement
 {
@@ -1144,7 +1144,7 @@ example (n: Nat) : n = n := by
   "additionalProperties": false
 }
 -/
-
+#notImplementedCode "conclude_statement"
 
 /- Figure
 {
@@ -1181,6 +1181,7 @@ example (n: Nat) : n = n := by
   "additionalProperties": false
 }
 -/
+#notImplementedCode "Figure"
 
 /- Table
 {
@@ -1224,3 +1225,4 @@ example (n: Nat) : n = n := by
   "additionalProperties": false
 }
 -/
+#notImplementedCode "Table"
