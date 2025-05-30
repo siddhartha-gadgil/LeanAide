@@ -73,6 +73,15 @@ def statementWithDoc (data: DefData)(doc: String)
     mkStatementWithDoc
         (some data.name) data.type value? data.isProp useExample doc data.isNoncomputable
 
+def statementStx (data: DefData)(omitProofs: Bool := true) :
+        CoreM Syntax.Command := do
+    let value? := if omitProofs && data.isProp then none else some data.value
+    match data.doc? with
+    | none =>
+      mkStatementStx (some data.name) data.type value? data.isProp (isNoncomputable := data.isNoncomputable)
+    | some doc =>
+      mkStatementWithDocStx (some data.name) data.type value? data.isProp true doc data.isNoncomputable
+
 -- incorrect
 -- def relType (xs:  List (TSyntax [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])) (type: Syntax.Term) : MetaM Syntax.Term := do
 --     match xs with

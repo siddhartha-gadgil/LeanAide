@@ -5,8 +5,7 @@ import LeanAide.StructToLean
 
 To Do:
 
-* For existential types in `have` statements, use `rcases` to separate the variable and its properties.
-* Have a clear way to specify used results, and use them in the proof.
+* Complete the various kinds of statements.
 -/
 open Lean Meta Qq Elab Term
 
@@ -187,8 +186,6 @@ def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
 }
 -/
 
-#eval "Hello".toName ++ ("World".toName)
-
 @[codegen "theorem"]
 def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, `command, js => do
@@ -264,7 +261,7 @@ where
       let type ←  dropLocalContext type
       -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
       let name ← translator.server.theoremName thm
-      let typeStx ← PrettyPrinter.delab type
+      let typeStx ← delabDetailed type
       let label := js.getObjString? "label" |>.getD name.toString
       Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
       return (typeStx, name, proofStx?)
@@ -467,7 +464,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let goal := goalExpr.mvarId!
   let pfStx ← getCodeTactics translator goal content
   let n := mkIdent labelledTheorem.name
-  let typeStx ← PrettyPrinter.delab goalType
+  let typeStx ← delabDetailed goalType
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
@@ -680,7 +677,7 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
       }
     },
     "calculate": {
-      "$ref": "#/$defs/calculate_choice",
+      "$ref": "#/$defs/calculate",
       "description": "(OPTIONAL) An equation, inequality, short calculation etc."
     }
   },
@@ -695,20 +692,26 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
 @[codegen "assertion_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  let stx ← typeStx js
-  `(command| example : $stx := by sorry)
+  let (stx, tac) ← typeStx js
+  `(command| example : $stx := by $tac)
 | _, `commandSeq, js => do
-  let stx ← typeStx js
-  `(commandSeq| example : $stx := by sorry)
+  let (stx, tac) ← typeStx js
+  `(commandSeq| example : $stx := by $tac)
 | _, ``tacticSeq, js => do
-  let stx ← typeStx js
-  `(tacticSeq| have : $stx := bysorry)
+  let (stx, tac) ← typeStx js
+  let hash₀ := hash stx.raw.reprint
+  let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let headTac ← `(tactic| have $name : $stx := by $tac)
+  let resTacs ← CodeGenerator.resolveExistsHave stx
+  let tacSeq := #[headTac] ++ resTacs
+  `(tacticSeq| $tacSeq*)
 | _, `tactic, js => do
-  let stx ← typeStx js
-  `(tactic| have : $stx := bysorry)
+  let (stx, tac) ← typeStx js
+  `(tactic| have : $stx := by $tac)
 | _, _, _ => throwError
     s!"codegen: test does not work"
-where typeStx (js: Json) : TranslateM Syntax.Term := do
+where typeStx (js: Json) :
+    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) := do
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in {js}"
   let .ok type ← translator.translateToProp? claim | throwError
@@ -726,13 +729,31 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
     throwError s!"Failed to infer type {type}, error {← e.toMessageData.format}"
   if univ.isSort then
     let type ←  dropLocalContext type
-    -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
-    PrettyPrinter.delab type
+    let resultsUsed :=
+      js.getObjValAs? (Array Json) "results_used" |>.toOption |>.getD #[]
+    let statementsUsed :=
+      resultsUsed.filterMap fun
+        res =>
+          res.getObjValAs? String "statement" |>.toOption
+    let names' ← statementsUsed.mapM fun s =>
+                  Translator.matchingTheoremsAI   (s := s) (qp:= translator)
+    let names' := names'.toList.flatten
+    let targets :=
+      resultsUsed.filterMap fun
+        res =>
+          res.getObjValAs? String "target_identifier" |>.toOption
+    let labelledTheorems ←
+      targets.filterMapM fun target =>
+        findTheorem? target
+    let usedNames := labelledTheorems.map (·.name)
+    let ids := (usedNames ++ names').map mkIdent
+    let tac ← `(tacticSeq| auto? [ $ids,* ])
+    return (← delabDetailed type, tac)
   else
     IO.eprintln s!"Not a type: {type}"
     throwError s!"codegen: no translation found for {js}"
 
-/- calculate_choice
+/- calculation
 {
   "type": "object",
   "description": "An equation, inequality, short calculation etc.",
@@ -751,13 +772,6 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
       }
     }
   }
-}
--/
-
-/- calculation_step
-{
-  "type": "string",
-  "description": "A step, typically an equality or inequality, in a calculation or computation."
 }
 -/
 
@@ -797,20 +811,12 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
 /- bi-implication_cases_statement
     "bi-implication_cases_statement": {
       "type": "object",
-      "description": "Proof of a statement `P ↔ Q`, i.e., P (the antecedent) if and only if Q (the consequent).",
+      "description": "Proof of a statement `P ↔ Q`.",
       "properties": {
         "type": {
           "type": "string",
           "const": "bi-implication_cases_statement",
           "description": "The type of this logical step."
-        },
-        "antecedent": {
-          "type": "string",
-          "description": "The antecedent `P` for the equivalence `P ↔ Q`."
-        },
-        "consequent": {
-          "type": "string",
-          "description": "The consequent `Q` for the equivalence `P ↔ Q`."
         },
         "if_proof": {
           "$ref": "#/$defs/Proof",
@@ -831,6 +837,25 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
     }
   },
 -/
+@[codegen "bi-implication_cases_statement"]
+def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| some goal, ``tacticSeq, js => do
+  let .ok ifProof := js.getObjValAs? Json "if_proof" | throwError
+    s!"codegen: no if_proof found in {js}"
+  let .ok onlyIfProof := js.getObjValAs? Json "only_if_proof" | throwError
+    s!"codegen: no only_if_proof found in {js}"
+  let tac ← `(tactic|constructor)
+  let [ifGoal, onlyIfGoal] ←
+    runAndGetMVars goal #[tac] 2 | throwError "codegen: biequivalenceCode failed to get two goals"
+  let some ifProofStx ← getCode translator (some ifGoal) ``tacticSeq ifProof | throwError
+    s!"codegen: no translation found for if_proof {ifProof}"
+  let some onlyIfProofStx ← getCode translator (some onlyIfGoal) ``tacticSeq onlyIfProof | throwError
+    s!"codegen: no translation found for only_if_proof {onlyIfProof}"
+  let tacs := #[tac, ← `(tactic| · $ifProofStx), ← `(tactic| · $onlyIfProofStx)]
+  `(tacticSeq| $tacs*)
+| goal?, kind ,_ => throwError
+    s!"codegen: biequivalenceCode does not work for kind {kind} with goal present: {goal?.isSome}"
+
 /- condition_cases_statement
     "condition_cases_statement": {
       "type": "object",
@@ -863,6 +888,47 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
     }
   },
 -/
+@[codegen "condition_cases_statement"]
+def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| some goal, ``tacticSeq, js => do
+  let .ok condition := js.getObjValAs? String "condition" | throwError
+    s!"codegen: no condition found in {js}"
+  let .ok conditionType ← translator.translateToProp? condition | throwError
+      s!"codegen: no translation found for {condition}"
+  let conditionType ← instantiateMVars conditionType
+  Term.synthesizeSyntheticMVarsNoPostponing
+  if conditionType.hasSorry || conditionType.hasExprMVar then
+    throwError s!"Failed to infer type {conditionType} has sorry or mvar"
+  let univ ← try
+    withoutErrToSorry do
+    if conditionType.hasSorry then
+      throwError "Type has sorry"
+    inferType conditionType
+  catch e =>
+    throwError s!"Failed to infer type {conditionType}, error {← e.toMessageData.format}"
+  let conditionType ←
+    if univ.isSort then
+      dropLocalContext conditionType
+    else
+      IO.eprintln s!"Not a type: {conditionType}"
+      throwError s!"codegen: no translation found for {js}"
+  let conditionStx ← delabDetailed conditionType
+  let tac ← `(tactic|if $conditionStx then _ else _)
+  let [thenGoal, elseGoal] ←
+    runAndGetMVars goal #[tac] 2 | throwError "codegen: biequivalenceCode failed to get two goals"
+  let .ok trueCaseProof := js.getObjValAs? Json "true_case_proof" | throwError
+    s!"codegen: no true_case_proof found in {js}"
+  let .ok falseCaseProof := js.getObjValAs? Json "false_case_proof" | throwError
+    s!"codegen: no false_case_proof found in {js}"
+  let some trueCaseProofStx ← getCode translator (some thenGoal) ``tacticSeq trueCaseProof | throwError
+    s!"codegen: no translation found for true_case_proof {trueCaseProof}"
+  let some falseCaseProofStx ← getCode translator (some elseGoal) ``tacticSeq falseCaseProof | throwError
+    s!"codegen: no translation found for false_case_proof {falseCaseProof}"
+  let tacs := #[← `(tactic| if $conditionStx then $trueCaseProofStx else $falseCaseProofStx)]
+  `(tacticSeq| $tacs*)
+| goal?, kind ,_ => throwError
+    s!"codegen: biequivalenceCode does not work for kind {kind} with goal present: {goal?.isSome}"
+
 /-
     "multi-condition_cases_statement": {
       "type": "object",
@@ -1044,7 +1110,7 @@ example (n: Nat) : n = n := by
       "description": "The type of this logical step."
     },
     "calculation": {
-      "$ref": "#/$defs/calculate_choice",
+      "$ref": "#/$defs/calculate",
       "description": "An equation, inequality, short calculation etc."
     }
   },
