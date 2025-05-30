@@ -185,7 +185,9 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   if accum.isEmpty then
     throwError
       s!"codegen: no commands generated from {sources}"
-  flattenCommands accum
+  let res ← flattenCommands accum
+  Translate.addCommands res
+  return res
 
 def noCode : CodeGenerator → Option MVarId  →
   (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do

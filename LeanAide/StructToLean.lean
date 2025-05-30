@@ -498,15 +498,15 @@ partial def existsVarTypes (type: Syntax.Term) : MetaM <| Option (Array <| Synta
   | `(∃ $n:ident $ms*, $t) => do
     let ms' := ms.toList.toArray
     let t' ← `(∃ $ms':binderIdent*, $t)
-    return some <| #[(n, t)] ++ ((← existsVarTypes t').getD #[])
+    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
   | `(∃ ($n:ident $ms* : $type), $t) => do
     let ms' := ms.toList.toArray
-    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
-    return some <| #[(n, t)] ++ ((← existsVarTypes t').getD #[])
+    let t' ← `(∃ $ms':binderIdent* : $type, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
   | `(∃ $n:ident $ms* : $type, $t) => do
     let ms' := ms.toList.toArray
-    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
-    return some <| #[(n, t)] ++ ((← existsVarTypes t').getD #[])
+    let t' ← `(∃ $ms':binderIdent* : $type, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
   | _ =>
     logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
@@ -521,7 +521,25 @@ elab "#exists_vars" type:term : command => do
       logInfo s!"No vars"
       return
 
--- #exists_vars ∃ n m : Nat, ∃ k: Nat, n + m  = 3
+#exists_vars ∃ n m : Nat, ∃ k: Nat, n + m  = 3
+
+example (h : ∃ n m : Nat, ∃ k: Nat, n + m  = 3) : True := by
+  rcases h with ⟨n, m, k, h⟩
+  trivial
+
+elab "#exists_varTypes" type:term : command => do
+  Command.liftTermElabM do
+  match ← existsVarTypes type with
+  | some varTypes =>
+    logInfo s!"Var types: {varTypes.size}"
+    for (var, type) in varTypes do
+      logInfo s!"Var: {var}; type: {← ppTerm type}"
+    return
+  | none =>
+      logInfo s!"No vars"
+      return
+
+#exists_varTypes ∃ n m : Nat, ∃ k: Nat, n + m  = 3
 
 example (h : ∃ l n m : Nat, l + n + m = 3) : True := by
   let ⟨l, ⟨n, ⟨m, h⟩⟩⟩  := h
@@ -584,34 +602,36 @@ elab "#tactic_trythis" goal:term "by" tacticCode:tactic "log" : command =>
       logInfo "No tactics found"
       return ()
 
-def haveForAssertion (goal: Expr)
-  (premises: List Name) :
-    TermElabM <| Array Syntax.Tactic := do
-  let type ← delabDetailed goal
-  let ids := premises.toArray.map fun n => Lean.mkIdent n
-  let hash₀ := hash type.raw.reprint
-  let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+def resolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Tactic := do
   let existsVarTypes? ← existsVarTypes type
   let existsVarTypes := existsVarTypes?.getD #[]
   let existsVarTypeIdents := existsVarTypes.map fun (n, t) =>
     let hsh := hash t.raw.reprint
     let tId := mkIdent <| Name.mkSimple s!"assert_{hsh}"
     (n, tId)
-  let typeIdent := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
-  let typeIdent ← `($typeIdent)
-  let rhsIdents := #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
-  let existsTacs ←
-    (existsVarTypeIdents.zip rhsIdents).mapM fun ((name, tId), rhs) =>
+  let hash₀ := hash type.raw.reprint
+  let typeIdent : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let rhsIdents :=
+    #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
+  (existsVarTypeIdents.zip rhsIdents).mapM
+    fun ((name, tId), rhs) =>
       `(tactic| have ⟨$name, $tId⟩  := $rhs:term)
+
+def haveForAssertion (goal: Expr)
+  (premises: List Name) :
+    TermElabM <| Array Syntax.Tactic := do
+  let type ← delabDetailed goal
+  let hash₀ := hash type.raw.reprint
+  let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let ids := premises.toArray.map fun n => Lean.mkIdent n
+  let existsTacs ←
+    resolveExistsHave type
   let headTacs? ←
     runTacticsAndGetTryThis? goal #[← `(tactic| auto? [$ids,*])]
   if headTacs?.isNone then
     IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr goal} while running "
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
   let head ← `(tactic| have $name : $type := by $headTacs*)
-  -- IO.eprintln s!"Tactics found for {← PrettyPrinter.ppExpr goal}"
-  -- for tac in headTacs do
-  --   IO.eprintln s!"Tactic: {← ppTactic tac}"
   return #[head] ++ existsTacs
 
 def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :

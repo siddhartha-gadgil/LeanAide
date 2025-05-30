@@ -143,7 +143,7 @@ structure Translate.State where
   queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.empty
   /-- Descriptions, docstrings etc -/
   descriptionMap : Std.HashMap Name Json := Std.HashMap.empty
-  cmdPrelude : Array String := #[]
+  cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
   preludes : Array String := #[]
@@ -226,16 +226,27 @@ def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   | some desc => return desc
   | none => return none
 
+open PrettyPrinter
 def cmdPreludeBlob : TranslateM String := do
   let cmds := (← get).cmdPrelude
+  let cmds ←
+    cmds.mapM (fun cmd => PrettyPrinter.ppCommand cmd)
+  let cmds := cmds.map (·.pretty)
   return cmds.foldr (· ++ "\n" ++ · ) "\n\n"
 
-def runCommand (cmd: String) : TranslateM Unit := do
-  discard <|  runFrontendM cmd true
+def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
+  discard <|  runFrontendM (← ppCommand cmd).pretty true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
+def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
+  modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
+
+def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
+  let cmds := commands cmds
+  modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
+
 def addDefn (dfn: DefData) : TranslateM Unit := do
-  runCommand <| ← dfn.statement
+  runCommand <| ← dfn.statementStx
   modify fun s => {s with defs := s.defs.push dfn}
 
 def clearDefs : TranslateM Unit := do
@@ -339,7 +350,7 @@ unsafe def TranslateM.runWithLoadingEmbeddings (descFields : List String)
 
 
 structure Translate.SavedState where
-  cmdPrelude : Array String := #[]
+  cmdPrelude : Array Syntax.Command := #[]
   defs : Array (DefData) := #[]
   preludes : Array String := #[]
   context : Option String := none

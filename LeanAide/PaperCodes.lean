@@ -5,8 +5,7 @@ import LeanAide.StructToLean
 
 To Do:
 
-* For existential types in `have` statements, use `rcases` to separate the variable and its properties.
-* Have a clear way to specify used results, and use them in the proof.
+* Complete the various kinds of statements.
 -/
 open Lean Meta Qq Elab Term
 
@@ -264,7 +263,7 @@ where
       let type ←  dropLocalContext type
       -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
       let name ← translator.server.theoremName thm
-      let typeStx ← PrettyPrinter.delab type
+      let typeStx ← delabDetailed type
       let label := js.getObjString? "label" |>.getD name.toString
       Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
       return (typeStx, name, proofStx?)
@@ -467,7 +466,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let goal := goalExpr.mvarId!
   let pfStx ← getCodeTactics translator goal content
   let n := mkIdent labelledTheorem.name
-  let typeStx ← PrettyPrinter.delab goalType
+  let typeStx ← delabDetailed goalType
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid proof_steps"
@@ -695,20 +694,26 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
 @[codegen "assertion_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  let stx ← typeStx js
-  `(command| example : $stx := by sorry)
+  let (stx, tac) ← typeStx js
+  `(command| example : $stx := by $tac)
 | _, `commandSeq, js => do
-  let stx ← typeStx js
-  `(commandSeq| example : $stx := by sorry)
+  let (stx, tac) ← typeStx js
+  `(commandSeq| example : $stx := by $tac)
 | _, ``tacticSeq, js => do
-  let stx ← typeStx js
-  `(tacticSeq| have : $stx := bysorry)
+  let (stx, tac) ← typeStx js
+  let hash₀ := hash stx.raw.reprint
+  let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let headTac ← `(tactic| have $name : $stx := by $tac)
+  let resTacs ← CodeGenerator.resolveExistsHave stx
+  let tacSeq := #[headTac] ++ resTacs
+  `(tacticSeq| $tacSeq*)
 | _, `tactic, js => do
-  let stx ← typeStx js
-  `(tactic| have : $stx := bysorry)
+  let (stx, tac) ← typeStx js
+  `(tactic| have : $stx := by $tac)
 | _, _, _ => throwError
     s!"codegen: test does not work"
-where typeStx (js: Json) : TranslateM Syntax.Term := do
+where typeStx (js: Json) :
+    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) := do
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in {js}"
   let .ok type ← translator.translateToProp? claim | throwError
@@ -726,8 +731,26 @@ where typeStx (js: Json) : TranslateM Syntax.Term := do
     throwError s!"Failed to infer type {type}, error {← e.toMessageData.format}"
   if univ.isSort then
     let type ←  dropLocalContext type
-    -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
-    PrettyPrinter.delab type
+    let resultsUsed :=
+      js.getObjValAs? (Array Json) "results_used" |>.toOption |>.getD #[]
+    let statementsUsed :=
+      resultsUsed.filterMap fun
+        res =>
+          res.getObjValAs? String "statement" |>.toOption
+    let names' ← statementsUsed.mapM fun s =>
+                  Translator.matchingTheoremsAI   (s := s) (qp:= translator)
+    let names' := names'.toList.flatten
+    let targets :=
+      resultsUsed.filterMap fun
+        res =>
+          res.getObjValAs? String "target_identifier" |>.toOption
+    let labelledTheorems ←
+      targets.filterMapM fun target =>
+        findTheorem? target
+    let usedNames := labelledTheorems.map (·.name)
+    let ids := (usedNames ++ names').map mkIdent
+    let tac ← `(tacticSeq| auto? [ $ids,* ])
+    return (← delabDetailed type, tac)
   else
     IO.eprintln s!"Not a type: {type}"
     throwError s!"codegen: no translation found for {js}"

@@ -9,19 +9,45 @@
       "description": "The root of the mathematical document, containing a sequence of environments.",
       "items": {
         "anyOf": [
-          { "$ref": "#/$defs/Title" },
-          { "$ref": "#/$defs/Abstract" },
-          { "$ref": "#/$defs/Metadata" },
-          { "$ref": "#/$defs/Section" },
-          { "$ref": "#/$defs/Theorem" },
-          { "$ref": "#/$defs/Definition" },
-          { "$ref": "#/$defs/Remark" },
-          { "$ref": "#/$defs/LogicalStepSequence" },
-          { "$ref": "#/$defs/Paragraph" },
-          { "$ref": "#/$defs/Proof" },
-          { "$ref": "#/$defs/Figure" },
-          { "$ref": "#/$defs/Table" },
-          { "$ref": "#/$defs/Bibliography" }
+          {
+            "$ref": "#/$defs/Title"
+          },
+          {
+            "$ref": "#/$defs/Abstract"
+          },
+          {
+            "$ref": "#/$defs/Metadata"
+          },
+          {
+            "$ref": "#/$defs/Section"
+          },
+          {
+            "$ref": "#/$defs/Theorem"
+          },
+          {
+            "$ref": "#/$defs/Definition"
+          },
+          {
+            "$ref": "#/$defs/Remark"
+          },
+          {
+            "$ref": "#/$defs/LogicalStepSequence"
+          },
+          {
+            "$ref": "#/$defs/Paragraph"
+          },
+          {
+            "$ref": "#/$defs/Proof"
+          },
+          {
+            "$ref": "#/$defs/Figure"
+          },
+          {
+            "$ref": "#/$defs/Table"
+          },
+          {
+            "$ref": "#/$defs/Bibliography"
+          }
         ]
       }
     }
@@ -85,15 +111,33 @@
           "description": "The content of the section.",
           "items": {
             "anyOf": [
-              { "$ref": "#/$defs/Section" },
-              { "$ref": "#/$defs/Theorem" },
-              { "$ref": "#/$defs/Definition" },
-              { "$ref": "#/$defs/Remark" },
-              { "$ref": "#/$defs/LogicalStepSequence" },
-              { "$ref": "#/$defs/Paragraph" },
-              { "$ref": "#/$defs/Proof" },
-              { "$ref": "#/$defs/Figure" },
-              { "$ref": "#/$defs/Table" }
+              {
+                "$ref": "#/$defs/Section"
+              },
+              {
+                "$ref": "#/$defs/Theorem"
+              },
+              {
+                "$ref": "#/$defs/Definition"
+              },
+              {
+                "$ref": "#/$defs/Remark"
+              },
+              {
+                "$ref": "#/$defs/LogicalStepSequence"
+              },
+              {
+                "$ref": "#/$defs/Paragraph"
+              },
+              {
+                "$ref": "#/$defs/Proof"
+              },
+              {
+                "$ref": "#/$defs/Figure"
+              },
+              {
+                "$ref": "#/$defs/Table"
+              }
             ]
           }
         },
@@ -132,15 +176,27 @@
           "description": "(OPTIONAL) The hypothesis or assumptions of the theorem, consisting of statements like 'let', 'assume', etc.",
           "items": {
             "anyOf": [
-              { "$ref": "#/$defs/let_statement" },
-              { "$ref": "#/$defs/assume_statement" },
-              { "$ref": "#/$defs/some_statement" }
+              {
+                "$ref": "#/$defs/let_statement"
+              },
+              {
+                "$ref": "#/$defs/assume_statement"
+              },
+              {
+                "$ref": "#/$defs/some_statement"
+              }
             ]
           }
         },
-        "claim": { "type": "string", "description": "The statement." },
-        "label": { "type": "string", "description": "Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping')." },
-        "proof" : {
+        "claim": {
+          "type": "string",
+          "description": "The statement."
+        },
+        "label": {
+          "type": "string",
+          "description": "Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping')."
+        },
+        "proof": {
           "$ref": "#/$defs/Proof",
           "description": "Proof of the theorems, if it is present soon after the statement."
         },
@@ -158,15 +214,24 @@
         "citations": {
           "type": "array",
           "description": "(OPTIONAL) Explicit list of citations relevant to this statement.",
-          "items": { "$ref": "#/$defs/Citation" }
+          "items": {
+            "$ref": "#/$defs/Citation"
+          }
         },
         "internal_references": {
           "type": "array",
           "description": "(OPTIONAL) Explicit list of internal references mentioned in the statement.",
-          "items": { "$ref": "#/$defs/InternalReference" }
+          "items": {
+            "$ref": "#/$defs/InternalReference"
+          }
         }
       },
-      "required": ["type", "label", "header", "claim"],
+      "required": [
+        "type",
+        "label",
+        "header",
+        "claim"
+      ],
       "additionalProperties": false
     },
     "Definition": {
@@ -250,12 +315,16 @@
         "citations": {
           "type": "array",
           "description": "(OPTIONAL) Explicit list of citations relevant to this statement.",
-          "items": { "$ref": "#/$defs/Citation" }
+          "items": {
+            "$ref": "#/$defs/Citation"
+          }
         },
         "internal_references": {
           "type": "array",
           "description": "(OPTIONAL) Explicit list of internal references mentioned in the statement.",
-          "items": { "$ref": "#/$defs/InternalReference" }
+          "items": {
+            "$ref": "#/$defs/InternalReference"
+          }
         }
       },
       "required": [
@@ -271,15 +340,33 @@
       "description": "A sequence of structured logical steps, typically used within a proof or derivation, consisting of statements like 'let', 'assert', 'assume', etc.",
       "items": {
         "anyOf": [
-          { "$ref": "#/$defs/let_statement" },
-          { "$ref": "#/$defs/assert_statement" },
-          { "$ref": "#/$defs/assume_statement" },
-          { "$ref": "#/$defs/some_statement" },
-          { "$ref": "#/$defs/cases_statement" },
-          { "$ref": "#/$defs/induction_statement" },
-          { "$ref": "#/$defs/calculate_statement" },
-          { "$ref": "#/$defs/contradiction_statement" },
-          { "$ref": "#/$defs/conclude_statement" }
+          {
+            "$ref": "#/$defs/let_statement"
+          },
+          {
+            "$ref": "#/$defs/assert_statement"
+          },
+          {
+            "$ref": "#/$defs/assume_statement"
+          },
+          {
+            "$ref": "#/$defs/some_statement"
+          },
+          {
+            "$ref": "#/$defs/cases_statement"
+          },
+          {
+            "$ref": "#/$defs/induction_statement"
+          },
+          {
+            "$ref": "#/$defs/calculate_statement"
+          },
+          {
+            "$ref": "#/$defs/contradiction_statement"
+          },
+          {
+            "$ref": "#/$defs/conclude_statement"
+          }
         ]
       }
     },
@@ -301,11 +388,21 @@
           "description": "Steps in the proof.",
           "items": {
             "anyOf": [
-              { "$ref": "#/$defs/Remark" },
-              { "$ref": "#/$defs/LogicalStepSequence" },
-              { "$ref": "#/$defs/Paragraph" },
-              { "$ref": "#/$defs/Figure" },
-              { "$ref": "#/$defs/Table" }
+              {
+                "$ref": "#/$defs/Remark"
+              },
+              {
+                "$ref": "#/$defs/LogicalStepSequence"
+              },
+              {
+                "$ref": "#/$defs/Paragraph"
+              },
+              {
+                "$ref": "#/$defs/Figure"
+              },
+              {
+                "$ref": "#/$defs/Table"
+              }
             ]
           }
         }
@@ -445,8 +542,24 @@
         },
         "results_used": {
           "type": "array",
-          "description": "(OPTIONAL) Explicit list of internal references used in the proof, for example where the assertion says \"using ...\".",
-          "items": { "$ref": "#/$defs/InternalReference" }
+          "description": "(OPTIONAL) Explicit list of results used in the proof, for example where the assertion says \"using ...\". Include both standard results and results from the document itself, with references where available.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "statement": {
+                "type": "string",
+                "description": "The statement of the result used."
+              },
+              "target_identifier": {
+                "type": "string",
+                "description": "(OPTIONAL) The unique 'label' of the document element being referenced (e.g., 'sec:intro', 'thm:main', 'fig:diagram')."
+              }
+            },
+            "required": [
+              "statement"
+            ],
+            "additionalProperties": false
+          }
         },
         "internal_references": {
           "type": "array",
@@ -529,7 +642,7 @@
           "type": "string",
           "const": "bi-implication_cases_statement",
           "description": "The type of this logical step."
-        },        
+        },
         "antecedent": {
           "type": "string",
           "description": "The antecedent `P` for the equivalence `P ↔ Q`."
@@ -546,16 +659,16 @@
           "$ref": "#/$defs/Proof",
           "description": "Proof that `Q` implies `P`."
         },
-      "required": [
-        "type",
-        "antecedent",
-        "consequent",
-        "if_proof",
-        "only_if_proof"
-      ],
-      "additionalProperties": false
-    }
-  },
+        "required": [
+          "type",
+          "antecedent",
+          "consequent",
+          "if_proof",
+          "only_if_proof"
+        ],
+        "additionalProperties": false
+      }
+    },
     "condition_cases_statement": {
       "type": "object",
       "description": "Proof of a statement based on splitting into cases where a condition is true and false, i.e., an if-then-else proof.",
@@ -564,7 +677,7 @@
           "type": "string",
           "const": "condition_cases_statement",
           "description": "The type of this logical step."
-        },        
+        },
         "condition": {
           "type": "string",
           "description": "The condition based on which the proof is split."
@@ -577,15 +690,15 @@
           "$ref": "#/$defs/Proof",
           "description": "Proof of the case where the condition is false."
         },
-      "required": [
-        "type",
-        "condition",
-        "true_case_proof",
-        "false_case_proof"
-      ],
-      "additionalProperties": false
-    }
-  },
+        "required": [
+          "type",
+          "condition",
+          "true_case_proof",
+          "false_case_proof"
+        ],
+        "additionalProperties": false
+      }
+    },
     "multi-condition_cases_statement": {
       "type": "object",
       "description": "A proof by cases given by three or more conditions.",
@@ -613,8 +726,7 @@
       ],
       "additionalProperties": false
     },
-
-  "pattern_case": {
+    "pattern_case": {
       "type": "object",
       "description": "A case in a proof by cases with cases determined by matching patterns.",
       "properties": {
@@ -630,7 +742,6 @@
         "proof": {
           "$ref": "#/$defs/Proof",
           "description": "Proof of this case."
-  
         }
       },
       "required": [
@@ -656,7 +767,6 @@
         "proof": {
           "$ref": "#/$defs/Proof",
           "description": "Proof of this case."
-  
         }
       },
       "required": [
@@ -666,8 +776,7 @@
       ],
       "additionalProperties": false
     },
-
-  "case": {
+    "case": {
       "type": "object",
       "description": "A case in a proof by cases or proof by induction.",
       "properties": {
@@ -683,7 +792,6 @@
         "proof": {
           "$ref": "#/$defs/Proof",
           "description": "Proof of this case."
-  
         }
       },
       "required": [
@@ -713,7 +821,8 @@
         "induction_step_proof": {
           "$ref": "#/$defs/Proof",
           "description": "Proof of the induction step, which typically shows that if the statement holds for `n`, it holds for `n+1`."
-        }},
+        }
+      },
       "required": [
         "type",
         "on",
