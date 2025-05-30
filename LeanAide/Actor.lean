@@ -2,6 +2,8 @@ import LeanAide.TranslatorParams
 import LeanCodePrompts.Translate
 import LeanAide.StructToLean
 import LeanAide.TranslatorParams
+import LeanAide.Codegen
+import LeanAide.PaperCodes
 
 namespace LeanAide.Actor
 open LeanAide Lean
@@ -174,6 +176,22 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | _, _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no theorem or proof found")]
   | Except.ok "lean_from_json_structured" => do
+    match data.getObjVal? "json_structured" with
+    | Except.ok js => do
+      try
+        let qp := translator.codeGenerator
+        let some codeStx ←  Codegen.getCode qp none ``commandSeq js |
+          throwError "Did not obtain code"
+        let declarations :=
+          CodeGenerator.namesFromCommands <| commands codeStx
+        let code ←
+          PrettyPrinter.ppCategory ``commandSeq codeStx
+        return Json.mkObj
+          [("result", "success"), ("lean_code", code.pretty), ("declarations", toJson declarations), ("top_code", CodeGenerator.topCode)]
+      catch e =>
+        return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
+    | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
+  | Except.ok "lean_from_json_structured_old" => do
     match data.getObjVal? "json_structured" with
     | Except.ok js => do
       try
