@@ -1237,7 +1237,8 @@ def egTheorem : Json :=
     [ ("type", Json.str "theorem"),
       ("name", Json.str "egTheorem"),
       ("claim_label", Json.str "egTheorem"),
-      ("claim", Json.str "There are infinitely many odd numbers.")]
+      ("claim", Json.str "There are infinitely many odd numbers.")
+           ]
 
 open Codegen
 #eval showStx {} none egTheorem ``commandSeq
