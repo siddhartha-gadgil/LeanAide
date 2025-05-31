@@ -109,7 +109,8 @@ def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: SyntaxNo
         match code? with
         | some code => return some code
         | none => continue -- try next function
-      catch _ =>
+      catch e =>
+        logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
         continue -- try next function
     throwError
       s!"codegen: no valid function found for key {key} in JSON object {source}"
@@ -230,6 +231,13 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   | .error _ => do
     throwError
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
+
+def showStx  (translator: CodeGenerator)(goal? : Option (MVarId))
+  (source: Json) (cat: Name) :
+    TranslateM (Format) := do
+    let some stx ← getCode translator  goal? cat source | throwError
+      s!"codegen: no command"
+    PrettyPrinter.ppCategory cat stx
 
 end Codegen
 

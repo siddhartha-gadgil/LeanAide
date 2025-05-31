@@ -188,26 +188,28 @@ def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
 
 @[codegen "theorem"]
 def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| some goal, `command, js => do
-  let (stx, name, pf?) ← thmStxParts js goal
+| goal?, `command, js => do
+  let (stx, name, pf?) ← thmStxParts js goal?
   match pf? with
   | some pf =>
     let n := mkIdent name
     `(command| theorem $n : $stx := by $pf)
   | none =>
     let n := mkIdent (name ++ `prop)
-    let propIdent := mkIdent `Prop
-    `(command| abbrev $n : $propIdent := $stx)
-| some goal, `commandSeq, js => do
-  let (stx, name, pf?) ← thmStxParts js goal
+    let propExpr := mkSort Level.zero
+    let propIdent ← delabDetailed propExpr
+    `(command| abbrev $n : $propIdent:term := $stx)
+| goal?, `commandSeq, js => do
+  let (stx, name, pf?) ← thmStxParts js goal?
   match pf? with
   | some pf =>
     let n := mkIdent name
     `(commandSeq| theorem $n : $stx := by $pf)
   | none =>
     let n := mkIdent (name ++ `prop)
-    let propIdent := mkIdent `Prop
-    `(commandSeq| abbrev $n : $propIdent := $stx)
+    let propExpr := mkSort Level.zero
+    let propIdent ← delabDetailed propExpr
+    `(commandSeq| abbrev $n : $propIdent:term := $stx)
 
 | some goal, ``tacticSeq, js => do
   let (stx, name, pf?) ← thmStxParts js goal
@@ -217,7 +219,8 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     `(tacticSeq| have $n : $stx := by $pf)
   | none =>
     let n := mkIdent (name ++ `prop)
-    let propIdent := mkIdent `Prop
+    let propExpr := mkSort Level.zero
+    let propIdent ← delabDetailed propExpr
     `(tacticSeq| let $n : $propIdent := $stx)
 | some goal, `tactic, js => do
   let (stx, name, pf?) ← thmStxParts js goal
@@ -227,12 +230,13 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     `(tactic| have $n : $stx := by $pf)
   | none =>
     let n := mkIdent (name ++ `prop)
-    let propIdent := mkIdent `Prop
+    let propExpr := mkSort Level.zero
+    let propIdent ← delabDetailed propExpr
     `(tactic| let $n : $propIdent := $stx)
 | goal?, kind, _ => throwError
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
 where
-  thmStxParts (js: Json) (goal: MVarId) :
+  thmStxParts (js: Json) (goal?: Option MVarId) :
     TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq)  := withoutModifyingState do
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
@@ -242,7 +246,7 @@ where
     let proof? :=
       js.getObjVal? "proof" |>.toOption
     let proofStx? ← proof?.bindM fun
-      pf => getCode translator (some goal) ``tacticSeq pf
+      pf => getCode translator goal? ``tacticSeq pf
     let thm ← withPreludes claim
     let .ok type ← translator.translateToProp? thm | throwError
         s!"codegen: no type translation found for '{claim}'"
@@ -1225,3 +1229,15 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
 }
 -/
 #notImplementedCode "Table"
+
+-- Test
+
+def egTheorem : Json :=
+  Json.mkObj
+    [ ("type", Json.str "theorem"),
+      ("name", Json.str "egTheorem"),
+      ("claim_label", Json.str "egTheorem"),
+      ("claim", Json.str "There are infinitely many odd numbers.")]
+
+open Codegen
+#eval showStx {} none egTheorem ``commandSeq

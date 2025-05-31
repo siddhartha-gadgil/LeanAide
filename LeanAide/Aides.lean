@@ -761,11 +761,18 @@ def Lean.Json.getKVorType? (js : Json) : Option (String × Json) :=
     | #[⟨k, v⟩] => some (k, v)
     | jsArr =>
       let keys := jsArr.map (fun ⟨k, _⟩ => k)
+      let keyVals := jsArr.map (fun ⟨k, v⟩ => (k, v))
       if keys.contains "type" then
         let purged := jsArr.filter (fun ⟨k, _⟩ => k != "type")
         let purged : Array (String × Json) :=
           purged.map fun ⟨k, v⟩ => (k, v)
-        some ("type", Json.mkObj purged.toList)
+        let typeVal? := keyVals.findSome? (fun (k, v) => if k == "type" then some v else none)
+        match typeVal? with
+          | some typeVal =>
+            let type? := typeVal.getStr?.toOption
+            type?.map fun type =>
+              (type, Json.mkObj purged.toList)
+          | none => none
       else
         none
   | _ => none
