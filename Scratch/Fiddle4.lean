@@ -4,6 +4,7 @@ import Plausible
 import LeanSearchClient.Syntax
 import Lake.Toml.ParserUtil
 import Lake
+import Qq
 
 open Lean Meta Elab Term PrettyPrinter Tactic Parser
 
@@ -334,3 +335,22 @@ example : True := by
 example : 1 + 1 = 2 := by
   symm
   norm_num
+
+open Qq
+
+def commentEg : TermElabM Unit := do
+  let stxText := "sorry /- I failed to translate this-/"
+  let .ok stx := Parser.runParserCategory (← getEnv) `term stxText |
+    throwError m!"Failed to parse syntax: {stxText}"
+  logInfo m!"Parsed syntax: {stx}"
+  logInfo m!"Detailed: {repr stx}"
+  let t ← Term.elabTerm stx none
+  logInfo m!"Elaborated term: {t}"
+  return ()
+
+#eval commentEg
+
+#check mkNode
+#check mkAtom
+#check Syntax.atom
+#check SourceInfo

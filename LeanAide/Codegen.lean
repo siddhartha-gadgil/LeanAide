@@ -140,9 +140,14 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   | [] => do
     return (accum, goal)
   | source::sources => do
-    let code? ← getCode translator (some goal) ``tacticSeq source
+    let code? ← try
+        getCode translator (some goal) ``tacticSeq source
+      catch e =>
+        let err ←   e.toMessageData.toString
+        let errSrx := Syntax.mkStrLit <| "Error: " ++ err
+        pure <| some <| ← `(tacticSeq| have := $errSrx)
     match code? with
-    | none => do -- error with obtaining tactics
+    | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
     | some code => do
       let goal? ← runForSingleGoal goal code
@@ -176,7 +181,13 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
     TranslateM (TSyntax ``commandSeq) := withoutModifyingState do
   let mut accum : Array <| TSyntax ``commandSeq := #[]
   for source in sources do
-    let code? ← getCode translator goal? ``commandSeq source
+    let code? ← try
+        getCode translator goal? ``commandSeq source
+      catch e =>
+        let err ←   e.toMessageData.toString
+        let errSrx := Syntax.mkStrLit <| "Error: " ++ err
+        pure <| some <| ← `(commandSeq| example := $errSrx)
+
     match code? with
     | none => do -- error with obtaining commands
       continue
