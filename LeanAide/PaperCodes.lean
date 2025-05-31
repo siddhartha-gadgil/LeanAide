@@ -243,10 +243,6 @@ where
       | Except.error _ => pure ()
     let .ok  claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no 'claim' found in 'theorem'"
-    let proof? :=
-      js.getObjVal? "proof" |>.toOption
-    let proofStx? ← proof?.bindM fun
-      pf => getCode translator goal? ``tacticSeq pf
     let thm ← withPreludes claim
     let .ok type ← translator.translateToProp? thm | throwError
         s!"codegen: no type translation found for '{claim}'"
@@ -264,6 +260,11 @@ where
     if univ.isSort then
       let type ←  dropLocalContext type
       -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
+      let proof? :=
+        js.getObjVal? "proof" |>.toOption
+      let pfGoal ← mkFreshExprMVar type
+      let proofStx? ← proof?.bindM fun
+        pf => getCode translator pfGoal.mvarId! ``tacticSeq (Json.mkObj [("proof", pf)])
       let name ← translator.server.theoremName thm
       let typeStx ← delabDetailed type
       let label := js.getObjString? "label" |>.getD name.toString
@@ -1237,7 +1238,7 @@ def egTheorem : Json :=
     [ ("type", Json.str "theorem"),
       ("name", Json.str "egTheorem"),
       ("claim_label", Json.str "egTheorem"),
-      ("claim", Json.str "There are infinitely many odd numbers.")
+      ("claim", Json.str "There are infinitely many odd numbers."), ("proof", Json.mkObj [("proof_steps", Json.arr #[])])
            ]
 
 open Codegen
