@@ -136,4 +136,4 @@ def showCommand (translator: CodeGenerator)
   example : {n | Odd n}.Infinite := by sorry
   example : {p | Nat.Prime p}.Infinite := by sorry
 -/
-#eval showStx {} none docJson `commandSeq
+#eval showStx  docJson `commandSeq

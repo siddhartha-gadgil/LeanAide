@@ -95,7 +95,7 @@ def codeFromFunc (goal? : Option MVarId) (translator: CodeGenerator) (f: Name) (
 /--
 Given a JSON object, return the corresponding syntax by matching with `.getKVorType?` and then calling the function in the environment using `codeFromFunc`. The function is expected to return a `TranslateM (Option (TSyntax kind))`, where `kind` is the syntax category of the object.
 -/
-def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: SyntaxNodeKinds)
+partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: SyntaxNodeKinds)
   (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   match source.getKVorType? with
@@ -114,7 +114,12 @@ def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: SyntaxNo
         continue -- try next function
     throwError
       s!"codegen: no valid function found for key {key} in JSON object {source}"
-  | none => do
+  | none =>
+    match source with
+    | Json.arr sources =>
+      let obj := Json.mkObj [("document", Json.arr sources)]
+      getCode translator goal? kind obj
+    | _ => do
     let fs ← codegenKeyless
     if fs.isEmpty then
       throwError
@@ -232,8 +237,8 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
     throwError
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
 
-def showStx  (translator: CodeGenerator)(goal? : Option (MVarId))
-  (source: Json) (cat: Name) :
+def showStx (source: Json) (cat: Name := ``commandSeq) (translator: CodeGenerator := {})(goal? : Option (MVarId) := none)
+   :
     TranslateM (Format) := do
     let some stx ← getCode translator  goal? cat source | throwError
       s!"codegen: no command"

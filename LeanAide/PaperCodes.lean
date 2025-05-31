@@ -29,6 +29,9 @@ def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | _, `commandSeq, js => do
   let .ok content := js.getArr? | throwError "'document' must be a JSON array"
   getCodeCommands translator none  content.toList
+| some goal, ``tacticSeq, js => do
+  let .ok content := js.getArr? | throwError "'document' must be a JSON array"
+  getCodeTactics translator goal  content.toList
 | _, kind, _ => throwError
     s!"codegen: 'document' does not work for kind {kind}"
 
@@ -107,6 +110,9 @@ def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
 | _, `commandSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "content" | throwError "'section' must have 'content'"
   getCodeCommands translator none  content
+| some goal, ``tacticSeq, js => do
+  let .ok content := js.getObjValAs? (List Json) "content" | throwError "'section' must have 'content'"
+  getCodeTactics translator goal  content
 | _, kind, _ => throwError
     s!"codegen: 'section' does not work for kind {kind}"
 
@@ -1242,4 +1248,4 @@ def egTheorem : Json :=
            ]
 
 open Codegen
-#eval showStx {} none egTheorem ``commandSeq
+#eval showStx egTheorem
