@@ -1249,3 +1249,5 @@ def egTheorem : Json :=
 
 open Codegen
 #eval showStx egTheorem
+
+#eval egTheorem.compress

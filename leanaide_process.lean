@@ -38,7 +38,8 @@ unsafe def launchProcess (p : Parsed) : IO UInt32 := do
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
-    {module:= `LeanAide.StructToLean}] {}
+    {module:= `LeanAide.StructToLean},
+    {module:= `LeanAide.PaperCodes}] {}
   withUnpickle (← picklePath "docString")
     <|fun (docStringData : EmbedData) => do
   withUnpickle (← picklePath "description")

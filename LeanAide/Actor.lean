@@ -4,6 +4,7 @@ import LeanAide.StructToLean
 import LeanAide.TranslatorParams
 import LeanAide.Codegen
 import LeanAide.PaperCodes
+import Lean
 
 namespace LeanAide.Actor
 open LeanAide Lean
