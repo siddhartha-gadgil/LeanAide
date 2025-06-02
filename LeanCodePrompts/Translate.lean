@@ -600,7 +600,6 @@ def translateToProp? (s: String)(translator : Translator)
     logError s prompt e
     return Except.error e
 
-
 /--
 Translating a definition greedily by parsing as a command
 -/
