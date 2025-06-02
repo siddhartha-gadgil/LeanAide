@@ -1113,31 +1113,28 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   "additionalProperties": false
 }
 -/
-#notImplementedCode "contradiction_statement"
+@[codegen "contradiction_statement"]
+def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, ``tacticSeq, js => do
+  let .ok assumptionText := js.getObjValAs? String "assumption" | throwError
+    s!"codegen: no 'assumption' found in 'contradiction_statement'"
+  let assumptionType ← translator.translateToPropStrict assumptionText
+  let goalType ← mkArrow assumptionType (mkConst ``False)
+  let goalExpr ←  mkFreshExprMVar goalType
+  let fullGoal := goalExpr.mvarId!
+  let contraId := mkIdent `contraHyp
+  let [goal] ← runAndGetMVars fullGoal #[← `(tactic| intro $contraId:term)] 1 | throwError
+    s!"codegen: contradiction_statement failed to get goal, goalType: {← ppExpr <| goalType}"
+  let .ok proof := js.getObjValAs? Json "proof" | throwError
+    s!"codegen: no 'proof' found in 'contradiction_statement'"
+  let some tacs ← getCode translator (some goal) ``tacticSeq proof | throwError
+    s!"codegen: no tactics found for proof {proof}"
+  let fullTacs ←  appendTactics (← `(tacticSeq| intro $contraId:term)) tacs
+  let stx ← delabDetailed assumptionType
+  `(tacticSeq| have : $stx := by $fullTacs)
+| _, kind, _ => throwError
+    s!"codegen: conclude_statement does not work for kind {kind}"
 
-/-  calculation
-  {
-      "type": "object",
-      "description": "An equation, inequality, short calculation etc.",
-      "minProperties": 1,
-      "maxProperties": 1,
-      "properties": {
-        "inline_calculation": {
-          "type": "string",
-          "description": "A simple calculation or computation written as a single line."
-        },
-        "calculation_sequence": {
-          "type": "array",
-          "description": "A list of elements of type `calculation_step`.",
-          "items": {
-            "$ref": "#/$defs/calculation_step"
-          }
-        }
-      }
-    }
-
--/
-#notImplementedCode "calculation"
 
 /- conclude_statement
 {
@@ -1161,8 +1158,17 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   "additionalProperties": false
 }
 -/
-#notImplementedCode "conclude_statement"
-
+@[codegen "conclude_statement"]
+def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, ``tacticSeq, js => do
+  let .ok claim := js.getObjValAs? String "claim" | throwError
+    s!"codegen: no 'claim' found in 'conclude_statement'"
+  let type ← translator.translateToPropStrict claim
+  let stx ← delabDetailed type
+  let pf ← runTacticsAndGetTryThisI type #[← `(tactic| auto?)]
+  `(tacticSeq| have : $stx := by $pf*)
+| _, kind, _ => throwError
+    s!"codegen: conclude_statement does not work for kind {kind}"
 /- Figure
 {
   "type": "object",
