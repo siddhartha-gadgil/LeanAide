@@ -95,7 +95,7 @@ def codeFromFunc (goal? : Option MVarId) (translator: CodeGenerator) (f: Name) (
 /--
 Given a JSON object, return the corresponding syntax by matching with `.getKVorType?` and then calling the function in the environment using `codeFromFunc`. The function is expected to return a `TranslateM (Option (TSyntax kind))`, where `kind` is the syntax category of the object.
 -/
-def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: SyntaxNodeKinds)
+partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: SyntaxNodeKinds)
   (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   match source.getKVorType? with
@@ -109,11 +109,17 @@ def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: SyntaxNo
         match code? with
         | some code => return some code
         | none => continue -- try next function
-      catch _ =>
+      catch e =>
+        logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
         continue -- try next function
     throwError
       s!"codegen: no valid function found for key {key} in JSON object {source}"
-  | none => do
+  | none =>
+    match source with
+    | Json.arr sources =>
+      let obj := Json.mkObj [("document", Json.arr sources)]
+      getCode translator goal? kind obj
+    | _ => do
     let fs ← codegenKeyless
     if fs.isEmpty then
       throwError
@@ -140,9 +146,14 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   | [] => do
     return (accum, goal)
   | source::sources => do
-    let code? ← getCode translator (some goal) ``tacticSeq source
+    let code? ← try
+        getCode translator (some goal) ``tacticSeq source
+      catch e =>
+        let err ←   e.toMessageData.toString
+        let errSrx := Syntax.mkStrLit <| "Error: " ++ err
+        pure <| some <| ← `(tacticSeq| have := $errSrx)
     match code? with
-    | none => do -- error with obtaining tactics
+    | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
     | some code => do
       let goal? ← runForSingleGoal goal code
@@ -176,7 +187,13 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
     TranslateM (TSyntax ``commandSeq) := withoutModifyingState do
   let mut accum : Array <| TSyntax ``commandSeq := #[]
   for source in sources do
-    let code? ← getCode translator goal? ``commandSeq source
+    let code? ← try
+        getCode translator goal? ``commandSeq source
+      catch e =>
+        let err ←   e.toMessageData.toString
+        let errSrx := Syntax.mkStrLit <| "Error: " ++ err
+        pure <| some <| ← `(commandSeq| example := $errSrx)
+
     match code? with
     | none => do -- error with obtaining commands
       continue
@@ -219,6 +236,13 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   | .error _ => do
     throwError
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
+
+def showStx (source: Json) (cat: Name := ``commandSeq) (translator: CodeGenerator := {})(goal? : Option (MVarId) := none)
+   :
+    TranslateM (Format) := do
+    let some stx ← getCode translator  goal? cat source | throwError
+      s!"codegen: no command"
+    PrettyPrinter.ppCategory cat stx
 
 end Codegen
 

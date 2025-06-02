@@ -129,13 +129,6 @@ def showCommand (translator: CodeGenerator)
       s!"codegen: no command"
     ppCommand cmd
 
-def showStx  (translator: CodeGenerator)(goal? : Option (MVarId))
-  (source: Json) (cat: Name) :
-    TranslateM (Format) := do
-    let some stx ← getCode translator  goal? cat source | throwError
-      s!"codegen: no command"
-    ppCategory cat stx
-
 
 #eval showCommand {} thmJson -- example : {n | Odd n}.Infinite := by sorry
 
@@ -143,4 +136,4 @@ def showStx  (translator: CodeGenerator)(goal? : Option (MVarId))
   example : {n | Odd n}.Infinite := by sorry
   example : {p | Nat.Prime p}.Infinite := by sorry
 -/
-#eval showStx {} none docJson `commandSeq
+#eval showStx  docJson `commandSeq
