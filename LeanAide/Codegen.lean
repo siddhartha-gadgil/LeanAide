@@ -245,6 +245,23 @@ def showStx (source: Json) (cat: Name := ``commandSeq) (translator: CodeGenerato
     | some stx => do
       PrettyPrinter.ppCategory cat stx
 
+elab "prop" t:term "do" : term => do
+  Term.elabType t
+
+def showTacticStx (source: Json)  (translator: CodeGenerator := {})(goalType? : Option Expr := none)
+   :
+    TranslateM (Format) := do
+    let cat := ``tacticSeq
+    let goal? ←  goalType?.mapM (fun t => do
+      let goalExpr ← mkFreshExprMVar t
+      return goalExpr.mvarId!)
+    match ← getCode translator  goal? cat source with
+    | none => do
+      return "No code generated"
+    | some stx => do
+      PrettyPrinter.ppCategory cat stx
+
+
 end Codegen
 
 #eval [1, 2, 3].contains 2

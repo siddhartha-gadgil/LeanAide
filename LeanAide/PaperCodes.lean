@@ -498,7 +498,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
       "const": "let_statement",
       "description": "The type of this logical step."
     },
-    "variable": {
+    "variable_name": {
       "type": "string",
       "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
     },
@@ -506,7 +506,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
       "type": "string",
       "description": "(OPTIONAL) The value of the variable being defined"
     },
-    "kind": {
+    "variable_type": {
       "type": "string",
       "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
     },
@@ -557,11 +557,11 @@ def letCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKi
       "const": "some_statement",
       "description": "The type of this logical step."
     },
-    "variable": {
+    "variable_name": {
       "type": "string",
       "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
     },
-    "kind": {
+    "variable_kind": {
       "type": "string",
       "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
     },
