@@ -1,7 +1,6 @@
-import Lean
-import Mathlib
+-- import Mathlib
 import LeanAide.TheoremElab
-import LeanAide.SimpleFrontend
+-- import LeanAide.SimpleFrontend
 import LeanAide.TranslateM
 open Lean Meta Elab Term
 

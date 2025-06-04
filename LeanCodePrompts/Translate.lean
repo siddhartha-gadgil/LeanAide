@@ -256,7 +256,7 @@ def bestElab (output: Array String) : TranslateM Expr := do
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
   let mut cache : Std.HashMap String (Except ElabError Expr) :=
-    Std.HashMap.empty
+    Std.HashMap.emptyWithCapacity output.size
   for out in output do
     -- IO.println s!"elaboration called: {out}"
     let elab? ←
@@ -291,7 +291,7 @@ def bestElab (output: Array String) : TranslateM Expr := do
               ("syntax", stx.reprint.get!), ("output", Json.str out)]
     let errorJson := Json.arr errors
     appendLog "translate_fail_error" errorJson
-    mkSyntheticSorry (mkSort levelZero)
+    mkAppM ``sorryAx #[(mkSort levelZero), mkConst ``true]
   else
     logTimed "elaborated outputs, starting majority voting"
     let priority :=
@@ -300,6 +300,7 @@ def bestElab (output: Array String) : TranslateM Expr := do
     logTimed "finished majority voting"
     return (groupSorted[0]!)[0]!
 
+#check sorryAx
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
 def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (Array ElabError) ElabSuccessResult) := do

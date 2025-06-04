@@ -1,8 +1,4 @@
 import Lean
-import Lean.Meta
-import Lean.Elab
-import Lean.Parser
-import Lean.Parser.Extension
 import LeanAide.Aides
 import LeanAide.TranslateHelpers
 open Lean Meta Elab Parser  Tactic

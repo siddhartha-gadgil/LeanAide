@@ -1058,10 +1058,10 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let .ok discr := js.getObjValAs? String "on" | throwError
     s!"codegen: no 'on' found in 'induction_statement'"
   let discrTerm' :=
-    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(sorry))
+    runParserCategory (← getEnv) ``Lean.Parser.Tactic.elimTarget discr |>.toOption.getD (← `(sorry))
         let succId := mkIdent ``Nat.succ
   let ihId := mkIdent `ih
-  let discrTerm : Syntax.Term := ⟨discrTerm'⟩
+  let discrTerm : TSyntax ``Lean.Parser.Tactic.elimTarget := ⟨discrTerm'⟩
   let zeroId := mkIdent ``Nat.zero
   let tac ← `(tactic|
     induction $discrTerm with
