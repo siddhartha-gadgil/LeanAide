@@ -423,7 +423,7 @@
           "const": "let_statement",
           "description": "The type of this logical step."
         },
-        "variable": {
+        "variable_name": {
           "type": "string",
           "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
         },
@@ -431,7 +431,7 @@
           "type": "string",
           "description": "(OPTIONAL) The value of the variable being defined"
         },
-        "kind": {
+        "variable_type": {
           "type": "string",
           "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
         },
@@ -442,7 +442,7 @@
       },
       "required": [
         "type",
-        "variable"
+        "variable_name"
       ],
       "additionalProperties": false
     },
@@ -455,11 +455,11 @@
           "const": "some_statement",
           "description": "The type of this logical step."
         },
-        "variable": {
+        "variable_name": {
           "type": "string",
           "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
         },
-        "kind": {
+        "variable_kind": {
           "type": "string",
           "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
         },
@@ -470,7 +470,7 @@
       },
       "required": [
         "type",
-        "variable"
+        "variable_name"
       ],
       "additionalProperties": false
     },

@@ -498,7 +498,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
       "const": "let_statement",
       "description": "The type of this logical step."
     },
-    "variable": {
+    "variable_name": {
       "type": "string",
       "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
     },
@@ -506,7 +506,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
       "type": "string",
       "description": "(OPTIONAL) The value of the variable being defined"
     },
-    "kind": {
+    "variable_type": {
       "type": "string",
       "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
     },
@@ -557,11 +557,11 @@ def letCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKi
       "const": "some_statement",
       "description": "The type of this logical step."
     },
-    "variable": {
+    "variable_name": {
       "type": "string",
       "description": "The variable being defined (use `<anonymous>` if there is no name such as in `We have a group structure on S`)"
     },
-    "kind": {
+    "variable_kind": {
       "type": "string",
       "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
     },
@@ -1260,7 +1260,29 @@ def egTheorem : Json :=
       ("claim", Json.str "There are infinitely many odd numbers."), ("proof", Json.mkObj [("proof_steps", Json.arr #[])])
            ]
 
+def egTheorem' : Json :=
+  Json.mkObj
+    [ ("type", Json.str "theorem"),
+      ("name", Json.str "egTheorem"),
+      ("claim_label", Json.str "egTheorem"),
+      ("claim", Json.str "There are infinitely many odd numbers.")
+           ]
+def egLet : Json :=
+  Json.mkObj
+    [ ("type", Json.str "let_statement"),
+      ("variable_name", Json.str "n"),
+      ("variable_type", Json.str "natural number"),
+      ("value", Json.str "n is odd"),
+      ("properties", Json.str "n > 0")
+    ]
+
 open Codegen
 #eval showStx egTheorem
 
+#eval showStx egTheorem'
+
+
 #eval egTheorem.compress
+
+
+#eval showStx egLet

@@ -145,13 +145,13 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
   | Except.ok "prove_prop" => do
     match data.getObjValAs? String "prop" with
     | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no `prop` found: {e}")]
-    | Except.ok prop => do
-      match Parser.runParserCategory (← getEnv) `term prop with
+    | Except.ok p => do
+      match Parser.runParserCategory (← getEnv) `term p with
       | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"error in parsing `prop`: {e}")]
       | Except.ok propStx => do
         try
-          let prop ← Elab.Term.elabType propStx
-          match ← translator.getTypeProofM prop with
+          let p ← Elab.Term.elabType propStx
+          match ← translator.getTypeProofM p with
           | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
           | some (proof, _, _) => do
             return Json.mkObj [("result", "success"), ("theorem_proof", toJson proof)]
