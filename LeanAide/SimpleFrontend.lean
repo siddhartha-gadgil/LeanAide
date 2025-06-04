@@ -99,11 +99,13 @@ def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
     return Except.error errorStrings
 
 def checkElabFrontM(s: String) : MetaM <| List String := do
+  IO.eprintln  s!"Checking command elaboration for: {s}"
   let (_, log) ← runFrontendM s
   let mut l := []
   for msg in log.toList do
     if msg.severity == MessageSeverity.error then
       let x ← msg.data.toString
+      IO.eprintln s!"Error: {x}"
       l := l.append [x]
   return l
 

@@ -309,7 +309,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
   let mut cache : Std.HashMap String (Except ElabError Expr) :=
-    Std.HashMap.empty
+    Std.HashMap.emptyWithCapacity output.size
   logTimed "elaborating outputs"
   let mut errors : Array ElabError := #[]
 

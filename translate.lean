@@ -5,6 +5,7 @@ import LeanAide.Config
 import LeanAide.TranslateM
 import LeanAide.PromptBuilder
 import LeanAide.TranslatorParams
+import Mathlib
 import Cli
 open Lean Cli LeanAide.Meta LeanAide Translator Translate
 
@@ -13,7 +14,8 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def runTranslate (p : Parsed) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot) initFiles
+  IO.eprintln (← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot)))
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
@@ -30,7 +32,8 @@ def runTranslate (p : Parsed) : IO UInt32 := do
   let env ←
     importModules #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate}] {}
+    {module:= `LeanCodePrompts.Translate},
+    {module := `LeanAide.TheoremElab}] {}
   let core :=
     translator.translateViewVerboseM type   |>.runToCore
   let io? :=

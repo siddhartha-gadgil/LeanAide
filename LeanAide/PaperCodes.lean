@@ -1276,6 +1276,14 @@ def egLet : Json :=
       ("properties", Json.str "n > 0")
     ]
 
+def egTheorem'' : Json :=
+  Json.mkObj
+    [ ("type", Json.str "theorem"),
+      ("name", Json.str "egTheorem"),
+      ("claim_label", Json.str "egTheorem"),
+      ("claim", Json.str "Every group is Abelian.")
+           ]
+
 open Codegen
 #eval showStx egTheorem
 
@@ -1286,3 +1294,5 @@ open Codegen
 
 
 #eval showStx egLet
+
+#eval showStx egTheorem''

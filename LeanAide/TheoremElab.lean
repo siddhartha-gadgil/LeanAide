@@ -29,11 +29,12 @@ syntax term : theorem_statement
 def thmsPrompt : IO (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["extra_resources/thms.txt"]
   IO.FS.lines file
+open Lean.Parser.Category
 
 /-- check whether a string parses as a theorem -/
 def checkThm (s : String) : MetaM Bool := do
   let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `theorem_statement  s
+  let chk := Lean.Parser.runParserCategory env ``theorem_statement  s
   match chk with
   | Except.ok stx  =>
       IO.println stx
@@ -49,7 +50,7 @@ match s with
 
 def getTokens (s: String) : MetaM <| Array String := do
   let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env `theorem_statement  s
+  let chk := Lean.Parser.runParserCategory env ``theorem_statement  s
   match chk with
   | Except.ok stx  =>
       pure <| tokens stx
@@ -121,7 +122,7 @@ def elabThm (s : String)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
   let env ← getEnv
-  let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
+  let stx? := Lean.Parser.runParserCategory env ``theorem_statement  s
   match stx? with
   | Except.ok stx  =>
       elabThmFromStx stx levelNames
