@@ -1260,7 +1260,29 @@ def egTheorem : Json :=
       ("claim", Json.str "There are infinitely many odd numbers."), ("proof", Json.mkObj [("proof_steps", Json.arr #[])])
            ]
 
+def egTheorem' : Json :=
+  Json.mkObj
+    [ ("type", Json.str "theorem"),
+      ("name", Json.str "egTheorem"),
+      ("claim_label", Json.str "egTheorem"),
+      ("claim", Json.str "There are infinitely many odd numbers.")
+           ]
+def egLet : Json :=
+  Json.mkObj
+    [ ("type", Json.str "let_statement"),
+      ("variable_name", Json.str "n"),
+      ("variable_type", Json.str "natural number"),
+      ("value", Json.str "n is odd"),
+      ("properties", Json.str "n > 0")
+    ]
+
 open Codegen
 #eval showStx egTheorem
 
+#eval showStx egTheorem'
+
+
 #eval egTheorem.compress
+
+
+#eval showStx egLet

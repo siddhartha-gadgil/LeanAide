@@ -103,12 +103,11 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
     let key := key.toLower
     let fs ←  codegenMatches key
     for f in fs.reverse do
+      logInfo m!"codegen: trying {f} for key {key}"
       try
         -- logInfo m!"codegen: trying {f} for key {key}"
         let code? ← codeFromFunc goal? translator f kind source
-        match code? with
-        | some code => return some code
-        | none => continue -- try next function
+        return code?
       catch e =>
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
         continue -- try next function
@@ -240,9 +239,11 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
 def showStx (source: Json) (cat: Name := ``commandSeq) (translator: CodeGenerator := {})(goal? : Option (MVarId) := none)
    :
     TranslateM (Format) := do
-    let some stx ← getCode translator  goal? cat source | throwError
-      s!"codegen: no command"
-    PrettyPrinter.ppCategory cat stx
+    match ← getCode translator  goal? cat source with
+    | none => do
+      return "No code generated"
+    | some stx => do
+      PrettyPrinter.ppCategory cat stx
 
 end Codegen
 
