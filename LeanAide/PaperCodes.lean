@@ -35,16 +35,6 @@ def Translator.translateToPropStrict
   else
     throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
 
-
-@[codegen "assumption_statement"]
-def assumptionCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, js => do
-  let .ok assumption :=
-    js.getObjValAs? String "assumption" | throwError
-    s!"codegen: no 'assumption' found in 'assumption_statement'"
-  addPrelude assumption
-  return none
-
 open Lean.Parser.Tactic
 
 @[codegen "document"]
@@ -704,7 +694,7 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
 }
 -/
 
-@[codegen "assertion_statement"]
+@[codegen "assert_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let (stx, tac) ← typeStx js
