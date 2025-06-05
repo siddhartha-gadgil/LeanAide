@@ -181,6 +181,10 @@ lean_exe putnamelab {
   supportInterpreter := true
 }
 
+lean_exe check_command {
+  supportInterpreter := true
+}
+
 lean_lib Scratch {
 }
 
