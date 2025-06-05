@@ -124,6 +124,7 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
   | some (key, source) => do
     let key := key.toLower
     let fs ←  codegenMatches key
+    let mut accumErrors : Array String := #[]
     for f in fs.reverse do
       logInfo m!"codegen: trying {f} for key {key}"
       try
@@ -132,9 +133,10 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
         return code?
       catch e =>
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
+        accumErrors := accumErrors.push s!"{f}: {← e.toMessageData.toString}"
         continue -- try next function
     throwError
-      s!"codegen: no valid function found for key {key} in JSON object {source}"
+      s!"codegen: no valid function found for key {key} in JSON object {source}; tried: {accumErrors.toList}"
   | none =>
     match source with
     | Json.arr sources =>
