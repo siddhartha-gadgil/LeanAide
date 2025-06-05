@@ -51,7 +51,7 @@ def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | _, kind, _ => throwError
     s!"codegen: 'document' does not work for kind {kind}"
 
-@[codegen "title","abstract", "remark", "metadata", "author", "bibliography", "citation", "internalreference"]
+@[codegen "title","abstract", "remark", "metadata", "author", "bibliography", "citation", "internalreference", "paragraph", "figure", "table", "image"]
 def noGenCode := noCode
 
 /- Section
