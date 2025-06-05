@@ -3,9 +3,9 @@ import LeanAide.StructToLean
 /-!
 # Code generation for LeanAide "PaperStructure" schema
 
-To Do:
+This module provides code generation for the LeanAide "PaperStructure" schema, which includes sections, theorems, definitions, logical steps, proofs, and other elements of a mathematical document.
 
-* Complete the various kinds of statements.
+Each function corresponds to a specific JSON schema element and generates the appropriate Lean code. The tag `codegen` is used to mark these functions for code generation with argument the key.
 -/
 open Lean Meta Qq Elab Term
 
@@ -13,6 +13,9 @@ namespace LeanAide
 
 open Codegen Translate
 
+/--
+Translating to a proposition in Lean, using the `translateToProp?` method of the `Translator`. Various checks are performed to ensure the type is valid and does not contain `sorry` or metavariables. An error is thrown if the translation fails or if the type is not valid.
+-/
 def Translator.translateToPropStrict
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
@@ -48,7 +51,7 @@ def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | _, kind, _ => throwError
     s!"codegen: 'document' does not work for kind {kind}"
 
-@[codegen "title","abstract", "remark", "metadata", "author", "bibliography", "citation", "internalreference"]
+@[codegen "title","abstract", "remark", "metadata", "author", "bibliography", "citation", "internalreference", "paragraph", "figure", "table", "image"]
 def noGenCode := noCode
 
 /- Section
