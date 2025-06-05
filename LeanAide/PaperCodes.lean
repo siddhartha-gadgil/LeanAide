@@ -405,7 +405,7 @@ where
 @[codegen "logicalstepsequence"]
 def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
-  let .ok content := js.getArr? | throwError "logicalStepSequence must be a JSON array"
+  let .ok content := js.getObjValAs? (Array Json) "items" | throwError "logicalStepSequence must be a JSON array"
   getCodeCommands translator none  content.toList
 | some goal, ``tacticSeq, js => do
   let .ok content := js.getArr? | throwError "logicalStepSequence must be a JSON array"
