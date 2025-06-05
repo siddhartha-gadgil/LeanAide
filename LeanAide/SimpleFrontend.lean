@@ -14,7 +14,7 @@ def simpleRunFrontend
     (env: Environment)
     (opts : Options := {})
     (fileName : String := "<input>")
-    : IO (Environment × MessageLog) := do
+    : IO (Environment × MessageLog) := unsafe do
   let inputCtx := Parser.mkInputContext input fileName
   let commandState := Command.mkState env (opts := opts)
   let parserState: ModuleParserState := {}
@@ -99,13 +99,14 @@ def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
     return Except.error errorStrings
 
 def checkElabFrontM(s: String) : MetaM <| List String := do
-  IO.eprintln  s!"Checking command elaboration for: {s}"
-  let (_, log) ← runFrontendM s
+  -- IO.eprintln  s!"Checking command elaboration for: {s}"
+  let (env, log) ← runFrontendM  s
   let mut l := []
   for msg in log.toList do
     if msg.severity == MessageSeverity.error then
       let x ← msg.data.toString
       IO.eprintln s!"Error: {x}"
+      IO.eprintln s!"imports : {env.allImportedModuleNames.size}"
       l := l.append [x]
   return l
 
@@ -127,3 +128,5 @@ def newDeclarations (s: String) : MetaM <| List Name := do
   return newConstants.filter (· ∉ constants)
 
 -- #eval newDeclarations "def x : Nat := 0"
+
+#check Elab.runFrontend
