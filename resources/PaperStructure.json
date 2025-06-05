@@ -353,7 +353,16 @@
             "$ref": "#/$defs/some_statement"
           },
           {
-            "$ref": "#/$defs/cases_statement"
+            "$ref" : "#/$defs/pattern_cases_statement" 
+          },
+          {
+            "$ref": "#/$defs/bi-implication_cases_statement"
+          },
+          {
+            "$ref": "#/$defs/condition_cases_statement"
+          },
+          {
+            "$ref": "#/$defs/multi-condition_cases_statement"
           },
           {
             "$ref": "#/$defs/induction_statement"
