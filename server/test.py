@@ -3,6 +3,8 @@ import json
 import requests
 import streamlit as st
 
+from leanaide_serv import FASTAPI_PORT
+
 st.title("Basic Caculator App 🧮")
 
 # taking user inpputs
@@ -19,6 +21,6 @@ inputs = {"operation": option,   "x": x,  "y": y}
 
 # when the user clicks on button it will fetch the API
 if st.button('Calculate'):
-    res = requests.post(url = "http://127.0.0.1:7654", data = json.dumps(inputs))
+    res = requests.post(url = f"http://127.0.0.1:{FASTAPI_PORT}", data = json.dumps(inputs))
     st.code(inputs)
     st.write(f"Response from API 🚀  =  {res.text}")

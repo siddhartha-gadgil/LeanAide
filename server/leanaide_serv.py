@@ -15,7 +15,7 @@ def is_port_in_use(port: int) -> bool:
 
 def run_fastapi():
     """Run FastAPI server using uvicorn"""
-    subprocess.run(["uvicorn", "fast_api:app", "--reload", "--port", str(FASTAPI_PORT)])
+    subprocess.run([sys.executable, "-m", "uvicorn", "fast_api:app", "--reload", "--port", str(FASTAPI_PORT)])
 
 def run_streamlit():
     """Run Streamlit app on port STREAMLIT_PORT only"""
@@ -26,6 +26,7 @@ def run_streamlit():
     
     # Force Streamlit to use only port STREAMLIT_PORT
     subprocess.run([
+        sys.executable, "-m",
         "streamlit", "run", "test.py",
         f"--server.port={STREAMLIT_PORT}",
         "--server.headless=true",
@@ -42,8 +43,8 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
     print("\n\033[1;34mStarting servers (single-port mode)\033[0m\n")
-    print("\033[1;34mFastAPI:\033[0m http://localhost:8000")
-    print("\033[1;34mStreamlit:\033[0m http://localhost:STREAMLIT_PORT\n")
+    print(f"\033[1;34mFastAPI:\033[0m http://localhost:{FASTAPI_PORT}")
+    print(f"\033[1;34mStreamlit:\033[0m http://localhost:{STREAMLIT_PORT}\n")
 
     # Start processes
     fastapi_process = multiprocessing.Process(target=run_fastapi)
