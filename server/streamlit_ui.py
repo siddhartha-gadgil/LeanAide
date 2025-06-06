@@ -248,8 +248,3 @@ if st.button("Submit Request", on_click= button_clicked("request_button")) or st
     else:
         st.error(f"Error: {response.status_code}, {response.text}")
 
-
-if os.path.exists(temp_dir):
-    for file in os.listdir(temp_dir):
-        os.remove(os.path.join(temp_dir, file))
-    os.rmdir(temp_dir)

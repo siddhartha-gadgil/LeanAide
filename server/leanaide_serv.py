@@ -1,12 +1,18 @@
 import multiprocessing
+import os
 import signal
 import socket
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 STREAMLIT_PORT = 8501
 FASTAPI_PORT = 7654
+
+serv_dir = str(Path(__file__).resolve().parent)
+STREAMLIT_FILE = os.path.join(serv_dir, "streamlit_ui.py") 
+FASTAPI_FILE = os.path.join(serv_dir, "fast_api.py").split("/")[-1].split(".")[0] # fast_api
 
 def is_port_in_use(port: int) -> bool:
     """Check if a port is already in use"""
@@ -15,7 +21,8 @@ def is_port_in_use(port: int) -> bool:
 
 def run_fastapi():
     """Run FastAPI server using uvicorn"""
-    subprocess.run([sys.executable, "-m", "uvicorn", "fast_api:app", "--reload", "--port", str(FASTAPI_PORT)])
+    # This requires `fast_api.py` in the same directory, and `fast_api` name as is.
+    subprocess.run([sys.executable, "-m", "uvicorn", f"{FASTAPI_FILE}:app", "--reload", "--port", str(FASTAPI_PORT)])
 
 def run_streamlit():
     """Run Streamlit app on port STREAMLIT_PORT only"""
@@ -27,7 +34,7 @@ def run_streamlit():
     # Force Streamlit to use only port STREAMLIT_PORT
     subprocess.run([
         sys.executable, "-m",
-        "streamlit", "run", "test.py",
+        "streamlit", "run", STREAMLIT_FILE,
         f"--server.port={STREAMLIT_PORT}",
         "--server.headless=true",
         "--browser.gatherUsageStats=false"
