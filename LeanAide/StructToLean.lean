@@ -521,9 +521,9 @@ elab "#exists_vars" type:term : command => do
       logInfo s!"No vars"
       return
 
-#exists_vars ∃ n m : Nat, ∃ k: Nat, n + m  = 3
+-- #exists_vars ∃ n m : Nat, ∃ k: Nat, n + m  = 3
 
-example (h : ∃ n m : Nat, ∃ k: Nat, n + m  = 3) : True := by
+example (h : ∃ n m : Nat, ∃ _k: Nat, n + m  = 3) : True := by
   rcases h with ⟨n, m, k, h⟩
   trivial
 
@@ -539,7 +539,7 @@ elab "#exists_varTypes" type:term : command => do
       logInfo s!"No vars"
       return
 
-#exists_varTypes ∃ n m : Nat, ∃ k: Nat, n + m  = 3
+-- #exists_varTypes ∃ n m : Nat, ∃ k: Nat, n + m  = 3
 
 example (h : ∃ l n m : Nat, l + n + m = 3) : True := by
   let ⟨l, ⟨n, ⟨m, h⟩⟩⟩  := h
@@ -682,7 +682,7 @@ def conditionCases (cond₁ cond₂ : String)
   return #[← `(tactic| if $condTerm₁' then $pf₁* else $pf₂'*)]
 
 
-#tactic_trythis (∀ n: Nat,(1 : Nat) ≤  7) by auto? log
+-- #tactic_trythis (∀ _n: Nat,(1 : Nat) ≤  7) by auto? log
 
 def groupCasesGoals (goal: MVarId) (context : Array Json) (conds: List String)
     (qp: CodeGenerator) : TranslateM <| List MVarId := goal.withContext do
@@ -709,9 +709,9 @@ def _root_.Lean.Json.getJsonList? (js: Json) (key: String) :
     | none => Except.error e
 
 
-#check String.containsSubstr "hello" "hel"
+-- #check String.containsSubstr "hello" "hel"
 
-#check Json.getObj?
+-- #check Json.getObj?
 
 namespace expr
 

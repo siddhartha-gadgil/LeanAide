@@ -3,9 +3,9 @@ import LeanAide.StructToLean
 /-!
 # Code generation for LeanAide "PaperStructure" schema
 
-To Do:
+This module provides code generation for the LeanAide "PaperStructure" schema, which includes sections, theorems, definitions, logical steps, proofs, and other elements of a mathematical document.
 
-* Complete the various kinds of statements.
+Each function corresponds to a specific JSON schema element and generates the appropriate Lean code. The tag `codegen` is used to mark these functions for code generation with argument the key.
 -/
 open Lean Meta Qq Elab Term
 
@@ -13,6 +13,9 @@ namespace LeanAide
 
 open Codegen Translate
 
+/--
+Translating to a proposition in Lean, using the `translateToProp?` method of the `Translator`. Various checks are performed to ensure the type is valid and does not contain `sorry` or metavariables. An error is thrown if the translation fails or if the type is not valid.
+-/
 def Translator.translateToPropStrict
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
@@ -35,16 +38,6 @@ def Translator.translateToPropStrict
   else
     throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
 
-
-@[codegen "assumption_statement"]
-def assumptionCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, js => do
-  let .ok assumption :=
-    js.getObjValAs? String "assumption" | throwError
-    s!"codegen: no 'assumption' found in 'assumption_statement'"
-  addPrelude assumption
-  return none
-
 open Lean.Parser.Tactic
 
 @[codegen "document"]
@@ -58,7 +51,7 @@ def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | _, kind, _ => throwError
     s!"codegen: 'document' does not work for kind {kind}"
 
-@[codegen "title","abstract", "remark", "metadata", "author", "bibliography", "citation", "internalreference"]
+@[codegen "title","abstract", "remark", "metadata", "author", "bibliography", "citation", "internalreference", "paragraph", "figure", "table", "image"]
 def noGenCode := noCode
 
 /- Section
@@ -285,7 +278,7 @@ where
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
     return (typeStx, name, proofStx?)
 
-#check commandToTactic
+-- #check commandToTactic
 
 /- Definition
 {
@@ -412,7 +405,7 @@ where
 @[codegen "logicalstepsequence"]
 def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
-  let .ok content := js.getArr? | throwError "logicalStepSequence must be a JSON array"
+  let .ok content := js.getObjValAs? (Array Json) "items" | throwError "logicalStepSequence must be a JSON array"
   getCodeCommands translator none  content.toList
 | some goal, ``tacticSeq, js => do
   let .ok content := js.getArr? | throwError "logicalStepSequence must be a JSON array"
@@ -704,7 +697,7 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
 }
 -/
 
-@[codegen "assertion_statement"]
+@[codegen "assert_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let (stx, tac) ← typeStx js
@@ -970,8 +963,6 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
 | some goal, ``tacticSeq, js => do
   let .ok condition := js.getObjValAs? String "condition" | throwError
     s!"codegen: no 'condition' found in 'condition_cases_statement'"
-  let .ok conditionType ← translator.translateToProp? condition | throwError
-      s!"codegen: no 'translation' found for condition: {condition}"
   let conditionType ← translator.translateToPropStrict condition
   let conditionStx ← delabDetailed conditionType
   let tac ← `(tactic|if $conditionStx then _ else _)
@@ -1285,14 +1276,12 @@ def egTheorem'' : Json :=
            ]
 
 open Codegen
-#eval showStx egTheorem
+-- #eval showStx egTheorem
 
-#eval showStx egTheorem'
-
-
-#eval egTheorem.compress
+-- #eval showStx egTheorem'
 
 
-#eval showStx egLet
+-- #eval egTheorem.compress
 
-#eval showStx egTheorem''
+
+-- #eval showStx egLet

@@ -47,4 +47,4 @@ def resourcesDir : IO System.FilePath := do
   let base ← baseDir
   return base / "resources"
 
-#eval resourcesDir
+-- #eval resourcesDir

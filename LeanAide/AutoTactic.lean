@@ -75,9 +75,9 @@ elab "#note" "[" term,* "]" : tactic => do
   return ()
 
 def mkNoteCmd (s: String) : MetaM Syntax.Command :=
-  -- let sLit := Lean.Syntax.mkStrLit  s
-  `(command | example := "#note: " ++ s)
+  let sLit := Lean.Syntax.mkStrLit  s
+  `(command | example := "#note: " ++ $sLit)
 
 def mkNoteTactic (s: String) : MetaM Syntax.Tactic :=
-  -- let sLit := Lean.Syntax.mkStrLit  s
-  `(tactic | let _ :=  "#note: " ++ s)
+  let sLit := Lean.Syntax.mkStrLit  s
+`(tactic | let _ :=  "#note: " ++ $sLit)

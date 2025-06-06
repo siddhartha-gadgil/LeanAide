@@ -5,6 +5,12 @@ import LeanAide.TranslateM
 import LeanCodePrompts.Translate
 import LeanAide.RunTactics
 import LeanAide.AutoTactic
+/-!
+## Code generation from JSON data
+
+This module provides a way to generate Lean code from JSON data in an extensible way. The main function is `getCode`, which takes a `CodeGenerator`, an optional goal, a syntax category, and a JSON object, and returns the corresponding syntax or throws an error.
+-/
+
 
 open Lean Meta Qq Elab
 
@@ -40,6 +46,9 @@ initialize codegenExt :
     initial := {}
   }
 
+/--
+Extract the keys from the `codegen` attribute syntax. If no keys are provided, return `none`. If keys are provided, return an array of strings.
+-/
 def codegenKeyM (stx : Syntax) : CoreM <| Option (Array String) := do
   match stx with
   | `(attr|codegen) => do
@@ -51,7 +60,9 @@ def codegenKeyM (stx : Syntax) : CoreM <| Option (Array String) := do
     return keys.map (·.getString)
   | _ => throwUnsupportedSyntax
 
-
+/--
+An environment extension for code generation functions. It stores the functions that can be used to generate code from JSON data. The key is a string that identifies the function, and the value is an array of names of the functions that can be used to generate code for that key.
+-/
 initialize registerBuiltinAttribute {
   name := `codegen
   descr := "Lean code generator"
@@ -73,15 +84,24 @@ initialize registerBuiltinAttribute {
       codegenExt.add (decl, key) kind
 }
 
+/--
+Get the code generation functions for a given key. The key is a string that identifies the function. If no function is found for the key, an error is thrown.
+-/
 def codegenMatches (key: String) : CoreM <| Array Name := do
   let some fs :=
     (codegenExt.getState (← getEnv)).get? key | throwError
       s!"codegen: no function found for key {key}"
   return fs
 
+/--
+Get the code generation functions that do not have a key associated with them. These functions are used when no key is found in the JSON object.
+-/
 def codegenKeyless : CoreM <| Array Name := do
   return (codegenExt.getState (← getEnv)).get? none |>.getD #[]
 
+/--
+Given a function *name*, a `CodeGenerator`, an optional goal, a syntax category, and a JSON object, this function evaluates the function in the environment and returns the corresponding syntax or throws an error if the function does not match the expected type.
+-/
 def codeFromFunc (goal? : Option MVarId) (translator: CodeGenerator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
   let expectedType : Q(Type) :=
@@ -94,6 +114,8 @@ def codeFromFunc (goal? : Option MVarId) (translator: CodeGenerator) (f: Name) (
 
 /--
 Given a JSON object, return the corresponding syntax by matching with `.getKVorType?` and then calling the function in the environment using `codeFromFunc`. The function is expected to return a `TranslateM (Option (TSyntax kind))`, where `kind` is the syntax category of the object.
+
+The return value is an `Option (TSyntax kind)`, which is `none` if the action is purely side-effecting (e.g. modifying the context) and `some` if the action generates code.
 -/
 partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: SyntaxNodeKinds)
   (source: Json) :
@@ -102,6 +124,7 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
   | some (key, source) => do
     let key := key.toLower
     let fs ←  codegenMatches key
+    let mut accumErrors : Array String := #[]
     for f in fs.reverse do
       logInfo m!"codegen: trying {f} for key {key}"
       try
@@ -110,9 +133,10 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
         return code?
       catch e =>
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
+        accumErrors := accumErrors.push s!"{f}: {← e.toMessageData.toString}"
         continue -- try next function
     throwError
-      s!"codegen: no valid function found for key {key} in JSON object {source}"
+      s!"codegen: no valid function found for key {key} in JSON object {source}; tried: {accumErrors.toList}"
   | none =>
     match source with
     | Json.arr sources =>
@@ -137,6 +161,8 @@ def emptyTacs : CoreM (TSyntax ``tacticSeq) := do
   let xs: Array (TSyntax `tactic) := #[]
   `(tacticSeq| $xs*)
 
+/--
+-/
 def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
@@ -264,8 +290,6 @@ def showTacticStx (source: Json)  (translator: CodeGenerator := {})(goalType? : 
 
 end Codegen
 
-#eval [1, 2, 3].contains 2
-
-#check Fact
+-- #check Fact
 
 end LeanAide

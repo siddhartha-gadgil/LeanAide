@@ -26,7 +26,7 @@ def getFileThmInfo : MetaM (List $ Name × Option String) := do
 
   -- fetching the docstrings for each of the theorems in the current file
   (liftM : IO _ → MetaM _) $
-    cnsts.mapM (λ ⟨nm, typ⟩ => do
+    cnsts.mapM (λ ⟨nm, _typ⟩ => do
       return ⟨nm, ← findDocString? env nm⟩ )
 
 
@@ -39,6 +39,6 @@ theorem add_two_comm : ∀ n : Nat, n + 2 = 2 + n := sorry
 theorem flt3 : a^3 + b^3 = c^3 → a * b * c = 0 := sorry
 
 
-#eval getFileThmInfo
+-- #eval getFileThmInfo
 
 end Testing
