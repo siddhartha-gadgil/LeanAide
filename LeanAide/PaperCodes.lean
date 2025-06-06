@@ -1048,10 +1048,10 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let .ok discr := js.getObjValAs? String "on" | throwError
     s!"codegen: no 'on' found in 'induction_statement'"
   let discrTerm' :=
-    runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(sorry))
+    runParserCategory (← getEnv) ``Lean.Parser.Tactic.elimTarget discr |>.toOption.getD (← `(sorry))
         let succId := mkIdent ``Nat.succ
   let ihId := mkIdent `ih
-  let discrTerm : Syntax.Term := ⟨discrTerm'⟩
+  let discrTerm : TSyntax ``Lean.Parser.Tactic.elimTarget := ⟨discrTerm'⟩
   let zeroId := mkIdent ``Nat.zero
   let tac ← `(tactic|
     induction $discrTerm with
@@ -1265,6 +1265,14 @@ def egLet : Json :=
       ("value", Json.str "n is odd"),
       ("properties", Json.str "n > 0")
     ]
+
+def egTheorem'' : Json :=
+  Json.mkObj
+    [ ("type", Json.str "theorem"),
+      ("name", Json.str "egTheorem"),
+      ("claim_label", Json.str "egTheorem"),
+      ("claim", Json.str "Every group is Abelian.")
+           ]
 
 open Codegen
 -- #eval showStx egTheorem

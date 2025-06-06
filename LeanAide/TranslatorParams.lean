@@ -1,5 +1,5 @@
 import LeanAide.PromptBuilder
-import LeanAide.TomlConfig
+-- import LeanAide.TomlConfig
 import Cli
 
 namespace LeanAide
@@ -60,7 +60,7 @@ def Translator.ofCli (p: Parsed) : IO Translator :=
   let chatParams : ChatParams :=
     {temp := temp, n := queryNum, maxTokens := maxTokens}
   let translator : Translator := {pb := pb, server := chatServer, params := chatParams}
-  translator.configureToml
+  return translator
 
 def Translator.configure (translator: Translator) (config: Json) : Translator :=
   let n := config.getObjValAs? Nat "n" |>.toOption.getD translator.params.n

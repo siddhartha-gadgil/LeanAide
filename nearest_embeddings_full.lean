@@ -1,10 +1,9 @@
 import LeanCodePrompts.NearestEmbeddings
 import LeanCodePrompts.EpsilonClusters
-import Cache.IO
 import LeanAide.Aides
 import Lean.Data.Json
 import Batteries.Util.Pickle
-open Lean Cache.IO
+open Lean
 
 unsafe def show_nearest_full (stdin stdout : IO.FS.Stream)
   (docStringData: Array ((String × String × Bool × String) × FloatArray))
@@ -59,14 +58,14 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
      else pure false
   unless picklePresent do
     IO.eprintln "Fetching embeddings ..."
-    let out ← runCurl #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]
+    let out ← IO.Process.output {cmd:= "curl", args := #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]}
     IO.eprintln "Fetched embeddings"
-    IO.eprintln out
+    IO.eprintln out.stdout
 
 unsafe def main (args: List String) : IO Unit := do
   for descField in ["docString", "description", "concise-description"] do
     checkAndFetch descField
-  match args.get? 0 with
+  match args[0]? with
   | some doc =>
   logTimed "starting nearest embedding process"
   let descField := args.getD 1 "docString"

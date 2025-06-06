@@ -5,6 +5,7 @@ import LeanAide.Config
 import LeanAide.TranslateM
 import LeanAide.PromptBuilder
 import LeanAide.TranslatorParams
+import Mathlib
 import Cli
 open Lean Cli LeanAide.Meta LeanAide Translator Translate
 
@@ -12,8 +13,12 @@ set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-def runTranslate (p : Parsed) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+#check withImportModules
+
+unsafe def runTranslate (p : Parsed) : IO UInt32 := do
+  IO.eprintln (← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot)))
+  initSearchPath (← findSysroot)
+
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
@@ -27,10 +32,15 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     else System.mkFilePath <| ["results", model]
   if !(← dir.pathExists) then
         IO.FS.createDirAll dir
-  let env ←
-    importModules #[{module := `Mathlib},
+  let env ← importModules (loadExts := true)  #[{module := `Mathlib, importAll := true},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate}] {}
+    {module:= `LeanCodePrompts.Translate},
+    {module := `LeanAide.TheoremElab}] {}
+  -- let text := "example : ∀ (G : Type) [Group G], ∀ a b : G, a * b = b * a := by sorry"
+  -- let (_, logs) ← simpleRunFrontend text env
+  -- IO.eprintln "Ran dummy example to load Mathlib and LeanAide"
+  -- for log in logs.toList do
+  --   IO.eprintln s!"{←  log.toString}"
   let core :=
     translator.translateViewVerboseM type   |>.runToCore
   let io? :=
@@ -99,7 +109,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
       return 1
 
 
-def translateCmd : Cmd := `[Cli|
+unsafe def translateCmd : Cmd := `[Cli|
   translate VIA runTranslate;
   "Elaborate a set of inputs and report whether successful and the result if successful."
 
@@ -130,5 +140,5 @@ def translateCmd : Cmd := `[Cli|
 
 ]
 
-def main (args: List String) : IO UInt32 :=
+unsafe def main (args: List String) : IO UInt32 :=
   translateCmd.validate args
