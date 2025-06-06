@@ -278,7 +278,7 @@ where
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
     return (typeStx, name, proofStx?)
 
-#check commandToTactic
+-- #check commandToTactic
 
 /- Definition
 {
@@ -963,8 +963,6 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
 | some goal, ``tacticSeq, js => do
   let .ok condition := js.getObjValAs? String "condition" | throwError
     s!"codegen: no 'condition' found in 'condition_cases_statement'"
-  let .ok conditionType ← translator.translateToProp? condition | throwError
-      s!"codegen: no 'translation' found for condition: {condition}"
   let conditionType ← translator.translateToPropStrict condition
   let conditionStx ← delabDetailed conditionType
   let tac ← `(tactic|if $conditionStx then _ else _)
@@ -1270,12 +1268,12 @@ def egLet : Json :=
     ]
 
 open Codegen
-#eval showStx egTheorem
+-- #eval showStx egTheorem
 
-#eval showStx egTheorem'
-
-
-#eval egTheorem.compress
+-- #eval showStx egTheorem'
 
 
-#eval showStx egLet
+-- #eval egTheorem.compress
+
+
+-- #eval showStx egLet

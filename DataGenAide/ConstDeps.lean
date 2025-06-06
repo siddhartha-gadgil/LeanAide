@@ -113,7 +113,7 @@ def withSorry' (n m: Nat) : n + m = m + n := by
   | zero => simp
   | succ n ih => sorry
 
-#check show_sorries# LeanAide.Meta.withSorry'
+-- #check show_sorries# LeanAide.Meta.withSorry'
 
 /-- names that are offspring of the constant with a given name -/
 def offSpring? (name: Name) : MetaM (Option (Array Name)) := do
