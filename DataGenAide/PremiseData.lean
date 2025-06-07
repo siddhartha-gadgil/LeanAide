@@ -107,7 +107,7 @@ def getBinders : List Syntax → MetaM (Option (List ContextTerm))
         | _ => return none
 
 
-#check Term.explicitBinder
+-- #check Term.explicitBinder
 
 -- #check letDecl
 

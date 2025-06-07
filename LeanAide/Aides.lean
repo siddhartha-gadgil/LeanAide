@@ -29,7 +29,7 @@ def cachePath : IO System.FilePath := do
   else
     return leanAidePath / path
 
-#eval cachePath
+-- #eval cachePath
 
 def reroutePath (fp : System.FilePath) : IO System.FilePath := do
   if ← fp.pathExists then
@@ -206,7 +206,7 @@ def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
 /-
 Obtaining names of constants
 -/
-#check Name.isInternalDetail
+-- #check Name.isInternalDetail
 
 def isBlackListed  (declName : Name) : MetaM  Bool := do
   let env ← getEnv

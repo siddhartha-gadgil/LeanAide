@@ -86,7 +86,7 @@ def url : ChatServer → IO String
       return "https://api.openai.com/v1/chat/completions"
   | azure deployment _ _ =>
       azureURL deployment
-  | gemini _ key? => do
+  | gemini _ _ => do
       let url ←  pure s!"https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
       -- IO.eprintln s!"Google URL: {url}"
       return url

@@ -38,14 +38,14 @@ elab "unchecked_sorry" : tactic => do
   logWarning s!"Goal remains: {← ppExpr <| ← getMainTarget}"
   evalTactic (← `(tactic|sorry))
 
-example : 1 + 1 = 2 := by plausible_sorry
-example : Nat := by
-  plausible_sorry'
--- example : 2 + 1 = 4 := by plausible_sorry
--- example : Nat := by plausible_sorry
-theorem myTheorem (n: Nat): 1 + 1 = 2 := by plausible_sorry
+-- example : 1 + 1 = 2 := by plausible_sorry
+-- example : Nat := by
+--   plausible_sorry'
+-- -- example : 2 + 1 = 4 := by plausible_sorry
+-- -- example : Nat := by plausible_sorry
+-- theorem myTheorem (n: Nat): 1 + 1 = 2 := by plausible_sorry
 
-#print myTheorem
+-- #print myTheorem
 
 open Lean Meta Elab Term
 
@@ -92,14 +92,14 @@ elab "#sorry_free" n:ident : term => do
   return e
 
 set_option pp.mvars.withType true
-#check #sorry_free myTheorem
+-- #check #sorry_free myTheorem
 
-theorem multigoal : 1 + 1 = 2 ∧ 2 + 2 = 4 ∧ 1 + 1 = 2 := by
-  apply And.intro
-  plausible_sorry
-  apply And.intro
-  plausible_sorry
-  plausible_sorry
+-- theorem multigoal : 1 + 1 = 2 ∧ 2 + 2 = 4 ∧ 1 + 1 = 2 := by
+--   apply And.intro
+--   plausible_sorry
+--   apply And.intro
+--   plausible_sorry
+--   plausible_sorry
 
 -- #check #sorry_free multigoal
 -- #check Expr.hasSorry

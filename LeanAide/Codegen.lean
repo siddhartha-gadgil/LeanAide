@@ -290,8 +290,6 @@ def showTacticStx (source: Json)  (translator: CodeGenerator := {})(goalType? : 
 
 end Codegen
 
-#eval [1, 2, 3].contains 2
-
-#check Fact
+-- #check Fact
 
 end LeanAide

@@ -20,23 +20,31 @@ def Translator.translateToPropStrict
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
   let thm ← withPreludes claim
-  let .ok type ← translator.translateToProp? thm | throwError
-      s!"codegen: no translation found for '{claim}', full statement {thm}"
-  let type ← instantiateMVars type
-  Term.synthesizeSyntheticMVarsNoPostponing
-  if type.hasSorry || type.hasExprMVar then
-    throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
-  let univ ← try
-    Term.withoutErrToSorry do
-    if type.hasSorry then
-      throwError "Type {type} has sorry when translating assertion '{claim}', full statement {thm}"
-    inferType type
-  catch e =>
-    throwError s!"Failed to infer type {type}, error {← e.toMessageData.format} when translating assertion '{claim}', full statement {thm}"
-  if univ.isSort then
-    dropLocalContext type
-  else
-    throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
+  let (js, _, _) ← translator.getLeanCodeJson  thm
+  let output ← getMessageContents js
+  for out in output do
+    let el? ← elabThm4 out
+    match el? with
+    | Except.error _ =>
+      continue
+    | Except.ok type =>
+      let type ← instantiateMVars type
+      Term.synthesizeSyntheticMVarsNoPostponing
+      if type.hasSorry || type.hasExprMVar then
+        throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
+      let univ ← try
+        Term.withoutErrToSorry do
+        if type.hasSorry then
+          throwError "Type {type} has sorry when translating assertion '{claim}', full statement {thm}"
+        inferType type
+      catch e =>
+        throwError s!"Failed to infer type {type}, error {← e.toMessageData.format} when translating assertion '{claim}', full statement {thm}"
+      if univ.isSort then
+        let type ← dropLocalContext type
+        return type
+      else
+        throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
+  throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}"
 
 open Lean.Parser.Tactic
 
@@ -276,9 +284,10 @@ where
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
+    logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?)
 
-#check commandToTactic
+-- #check commandToTactic
 
 /- Definition
 {
@@ -405,14 +414,13 @@ where
 @[codegen "logicalstepsequence"]
 def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
-  let .ok content := js.getObjValAs? (Array Json) "items" | throwError "logicalStepSequence must be a JSON array"
+  let .ok content := js.getObjValAs? (Array Json) "items" | throwError "logicalStepSequence must have an `items` field that is a JSON array"
   getCodeCommands translator none  content.toList
 | some goal, ``tacticSeq, js => do
-  let .ok content := js.getArr? | throwError "logicalStepSequence must be a JSON array"
+  let .ok content := js.getObjValAs? (Array Json) "items" | throwError "logicalStepSequence must have an `items` field that is a JSON array"
   getCodeTactics translator goal  content.toList
 | goal?, kind, _ => throwError
     s!"codegen: logicalStepSequence does not work for kind {kind}where goal present: {goal?.isSome}"
-
 /- Proof
 {
   "type": "object",
@@ -466,7 +474,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
     s!"codegen: no 'claim_label' found in standalone 'proof'"
   let some labelledTheorem ← findTheorem? claimLabel | throwError
-    s!"codegen: no theorem found with label {claimLabel}"
+    s!"codegen: no theorem found with label {claimLabel}; all labels {← allLabels}"
   let goalType := labelledTheorem.type
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
@@ -963,8 +971,6 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
 | some goal, ``tacticSeq, js => do
   let .ok condition := js.getObjValAs? String "condition" | throwError
     s!"codegen: no 'condition' found in 'condition_cases_statement'"
-  let .ok conditionType ← translator.translateToProp? condition | throwError
-      s!"codegen: no 'translation' found for condition: {condition}"
   let conditionType ← translator.translateToPropStrict condition
   let conditionStx ← delabDetailed conditionType
   let tac ← `(tactic|if $conditionStx then _ else _)
@@ -1257,9 +1263,20 @@ def egTheorem' : Json :=
   Json.mkObj
     [ ("type", Json.str "theorem"),
       ("name", Json.str "egTheorem"),
-      ("claim_label", Json.str "egTheorem"),
+      ("label", Json.str "egTheorem"),
       ("claim", Json.str "There are infinitely many odd numbers.")
            ]
+
+def egTheorem'' : Json :=
+  Json.arr #[Json.mkObj
+    [ ("type", Json.str "theorem"),
+      ("name", Json.str "egTheorem"),
+      ("label", Json.str "egTheorem"),
+      ("claim", Json.str "There are infinitely many odd numbers.")
+           ],
+      Json.mkObj [("proof", Json.mkObj [("proof_steps", Json.arr #[]), ("claim_label", Json.str "egTheorem")])]]
+
+
 def egLet : Json :=
   Json.mkObj
     [ ("type", Json.str "let_statement"),
@@ -1272,10 +1289,10 @@ def egLet : Json :=
 open Codegen
 #eval showStx egTheorem
 
-#eval showStx egTheorem'
+#eval showStx egTheorem''
 
 
-#eval egTheorem.compress
+#eval egTheorem
 
 
 #eval showStx egLet
