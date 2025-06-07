@@ -1,6 +1,6 @@
 import multiprocessing
 import os
-import pkgutil
+import importlib.util
 import signal
 import socket
 import subprocess
@@ -49,50 +49,83 @@ def signal_handler(sig, frame):
 
 def check_dependencies():
     """Check if required packages for streamlit are installed"""
-    required_packages = {
-        'streamlit',
-        'pyperclip',
-        'pillow',
-        'python-dotenv',
-        'requests'
-    }
+    required_packages = []
+    try:
+        with open(os.path.join(str(serv_dir), "requirements.txt"), "r") as f:
+            required_packages = f.read().splitlines()
+        # Clean up package names (remove version specifiers and comments)
+        required_packages = [
+            pkg.split('==')[0].split('>')[0].split('<')[0].split('[')[0].strip()
+            for pkg in required_packages
+            if pkg.strip() and not pkg.strip().startswith('#')
+        ]
+    except Exception as e:
+        print(f"Error reading requirements.txt: {e}")
     
     missing_packages = []
     for package in required_packages:
-        if not pkgutil.find_loader(package):
+        if "dotenv" in package:
+            package = "dotenv"
+        spec = importlib.util.find_spec(package)
+        if spec is None:
             missing_packages.append(package)
     
-    return
+    return missing_packages
 
 if __name__ == "__main__":
     # Set up signal handler
     signal.signal(signal.SIGINT, signal_handler)
 
     # Parse command line arguments
-    run_ui = "--ui" in sys.argv
-
-    if run_ui:
-        # Check dependencies
-        missing = check_dependencies()
-        if missing:
-            print(f"\n\033[1;31mMissing required packages: {', '.join(missing)}\033[0m")
-            print("\033[1;34mCheck out server/README.md for installation instructions and running the web streamlit server.\033[0m")
+    if len(sys.argv) > 1:
+        if sys.argv[1] in ["--help", "-h"]:
+            print(f"Usage: {sys.executable} leanaide_server.py [--ui] [--no-server | --ns] [--help | -h]")
+            print("Options:")
+            print("  --ui                   Run the Streamlit UI (default: API server only)")
+            print("  --no-server | --ns     Don't run the backend server (use with --ui)")
+            print("  --help | -h            Show this help message")
+            sys.exit(0)
+        elif sys.argv[1] not in ["--ui", "-h", "--help", "--no-server", "--ns"]:
+            print(f"Unknown argument: {sys.argv[1]}")
+            print("Use --help for usage information.")
             sys.exit(1)
+    
+    run_ui = "--ui" in sys.argv
+    run_server = "--no-server" not in sys.argv and "--ns" not in sys.argv
+    missing_st = True
 
-    print("\n\033[1;34mStarting servers\033[0m\n")
-    print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get('HOST', 'localhost')}:{LEANAIDE_PORT}")
-    
-    # Start API server process
-    serv_process = multiprocessing.Process(target=run_server_api)
-    streamlit_process = None
-    serv_process.start()
-    
     if run_ui:
-        time.sleep(0.5)  # Brief delay to ensure server starts first
+        print("\nRunning Streamlit UI.")
+        # Check dependencies
+        if missing_packages := check_dependencies():
+            print(f"\033[1;31mMissing required packages:\033[0m {', '.join(missing_packages)}")
+            print("Check out \033[1;34mserver/README.md \033[0m for installation instructions and running the web streamlit server.")
+            print("Skipping Streamlit UI...")
+        else:
+            missing_st = False
+            print("\033[1;32mDependencies satisfied. Streamlit UI can be run.\033[0m")
+
+    print("\n\033[1;34mStarting servers:\033[0m")
+    
+    # Start processes
+    serv_process = None
+    streamlit_process = None
+    
+    if run_server:
+        print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get('HOST', 'localhost')}:{LEANAIDE_PORT}\n")
+        serv_process = multiprocessing.Process(target=run_server_api)
+        serv_process.start()
+    else:
+        print("\033[1;34mRunning without API server\033[0m\n")
+
+    if run_ui and not missing_st:
+        if run_server:
+            time.sleep(0.5)  # Brief delay to ensure server starts first
         streamlit_process = multiprocessing.Process(target=run_streamlit)
         streamlit_process.start()
-    else:
-        print("\nRunning in API-only mode (no UI)")
+    elif not run_server and not run_ui:
+        print("\033[1;33mWarning: No services specified. Use --ui and/or don't use --no-server\033[0m")
+        sys.exit(0)
 
     try:
         # Keep main process alive
@@ -100,8 +133,9 @@ if __name__ == "__main__":
             pass
     except KeyboardInterrupt:
         print("\nShutting down...")
-        serv_process.terminate()
-        if run_ui:
+        if serv_process:
+            serv_process.terminate()
+            serv_process.join()
+        if streamlit_process:
             streamlit_process.terminate()
             streamlit_process.join()
-        serv_process.join()

@@ -34,7 +34,7 @@ source .venv/bin/activate
 4. Run the Server:
 
 ```bash
-python3 leanaide_serv.py
+python3 leanaide_server.py --ui
 ```
 
 This will start the Streamlit server on `http://localhost:8501` and the server on `http://localhost:7654`. These ports can be changed in the `leanaide_server.py` file if needed.
