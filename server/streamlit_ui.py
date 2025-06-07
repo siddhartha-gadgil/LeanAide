@@ -1,6 +1,7 @@
 import json
 import os
 import shlex
+import socket
 import sys
 from pathlib import Path
 
@@ -8,7 +9,7 @@ import pyperclip
 import requests
 import streamlit as st
 from dotenv import load_dotenv
-import socket
+
 from api_server import HOST, PORT
 
 load_dotenv()
@@ -102,10 +103,10 @@ tasks = {
 }
 
 ## Initialize session state variables
-for key in ["parsed_curl", "manual_selection", "curl_selection", "sel_inputs", "sel_params", "selected_tasks", "result"]:
+for key in ["parsed_curl", "selected_inputs", "manual_selection", "curl_selection", "sel_inputs", "sel_params", "selected_tasks", "result"]:
     if key not in st.session_state:
         st.session_state[key] = None
-for key in ["curl_botton", "request_button", "ignore_curl_ip_port"]:
+for key in ["curl_botton", "request_button", "manual_input_button", "ignore_curl_ip_port"]:
     if key not in st.session_state:
         st.session_state[key] = False
 
@@ -194,28 +195,30 @@ if st.checkbox(
 ):
     st.session_state.manual_selection = True
     st.subheader("Step 1: Select Input Tasks")
-    selected_inputs = st.multiselect("Select Input Tasks:", list(tasks.keys()))
+    st.session_state.selected_inputs = st.multiselect("Select Input Tasks:", list(tasks.keys()))
 
-    sel_inputs = {}
-    sel_params = {}
-    if st.button("Give Input"):
-        for task in selected_inputs:
-            sel_inputs[task] = {}
+    st.session_state.sel_inputs = {}
+    st.session_state.sel_params = {}
+    if st.button("Give Input") or st.session_state.manual_input_button:
+        st.session_state.manual_input_button = True
+        for task in st.session_state.selected_inputs:
+            st.session_state.sel_inputs[task] = {}
             for key, value in tasks[task].get("input", {}).items():
-                sel_inputs[task][key] = st.text_input(
+                st.session_state.sel_inputs[task][key] = st.text_input(
                     f"{task.capitalize()} - {key} ({value}):"
                 )
             for param, param_type in tasks[task].get("parameters", {}).items():
-                sel_params[param] = st.checkbox(f"{task} - {param} ({param_type})")
+                st.session_state.sel_params[param] = st.checkbox(f"{task} - {param} ({param_type})")
+
 
     st.subheader("Step 2: Select Processing Tasks")
-    selected_tasks = [task for task in tasks.keys() if task not in selected_inputs]
-    selected_tasks = st.multiselect("Select Processing Tasks:", selected_tasks)
+
+    st.session_state.selected_tasks = st.session_state.selected_inputs.copy()
+    selected_tasks_options = [task for task in tasks.keys()]
+    selected_tasks = st.multiselect("Select Processing Tasks:", selected_tasks_options, default=st.session_state.selected_tasks)
 
     # update to session state
-    st.session_state.selected_tasks = selected_tasks
-    st.session_state.sel_inputs = sel_inputs
-    st.session_state.sel_params = sel_params
+    st.session_state.selected_tasks += selected_tasks
 
 
 # Submit Request Section. Common to Curl and Manual Selection
@@ -227,13 +230,13 @@ if st.button("Submit Request", on_click= button_clicked("request_button")) or st
         request_payload = {"tasks": st.session_state.selected_tasks, **st.session_state.sel_inputs, **st.session_state.sel_params}
     else: # Makes the request payload from cURL
         request_payload = st.session_state.parsed_curl.get("data", {})
-        print(f"Request Payload: {request_payload}")
         if not request_payload:
             st.warning(
                 "No data found in the cURL request. Please check the cURL command."
             )
             st.stop()
     with st.spinner("Request sent. Please wait for a short while..."):
+        print(f"Request Payload: {request_payload}")
         response = requests.post(
             f"http://{st.session_state.api_host}:{st.session_state.api_port}", json=request_payload
         )
