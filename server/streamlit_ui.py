@@ -8,6 +8,8 @@ import pyperclip
 import requests
 import streamlit as st
 from dotenv import load_dotenv
+import socket
+from api_server import HOST, PORT
 
 load_dotenv()
 
@@ -18,20 +20,21 @@ sys.path.insert(0, str(src_dir))
 st.title("LeanAide Server")
 
 if "api_host" not in st.session_state:
-    st.session_state.api_host = "localhost"
+    st.session_state.api_host = HOST
 if "api_port" not in st.session_state:
-    st.session_state.api_port = "7654"
+    st.session_state.api_port = PORT
 
 # Host Information Section
 with st.expander("Host Information"):
     localhost_serv = st.checkbox(
-        "Your backend server is running on localhost", value=True, help="Check this if you want to call the backend API running on localhost.",
+        "Your backend server is running on localhost", value=False, help="Check this if you want to call the backend API running on localhost.",
     )
 
     if not localhost_serv:
+        local_ip = socket.gethostbyname(socket.gethostname())
         api_host = st.text_input(
-            "Backend API Host:",
-            value="10.134.13.102",
+            "Backend API Host: (default: HOST or localhost IP)",
+            value= HOST if HOST != "localhost" else local_ip,
             help="Specify the hostname or IP address where the proof server is running. Default is localhost.",
         )
         st.session_state.api_host = api_host
@@ -98,8 +101,15 @@ tasks = {
     },
 }
 
+## Initialize session state variables
+for key in ["parsed_curl", "manual_selection", "curl_selection", "sel_inputs", "sel_params", "selected_tasks", "result"]:
+    if key not in st.session_state:
+        st.session_state[key] = None
+for key in ["curl_botton", "request_button", "ignore_curl_ip_port"]:
+    if key not in st.session_state:
+        st.session_state[key] = False
 
-def parse_curl(curl_cmd):
+def parse_curl(curl_cmd, ignore_curl_ip_port):
     args = shlex.split(curl_cmd)
     out = {"method": "POST", "url_ip": "", "port": "", "headers": {}, "data": {}}
     i = 0
@@ -122,8 +132,12 @@ def parse_curl(curl_cmd):
                 i += 2
             case x if x.startswith("http"):
                 x = x.split("://", 1)[1].split(":", 1)
-                out["url_ip"] = x[0]
-                out["port"] = x[1]
+                if ignore_curl_ip_port:
+                    out["url_ip"] = st.session_state.get("api_host", HOST)
+                    out["port"] = st.session_state.get("api_port", "7654")
+                else:
+                    out["url_ip"] = x[0]
+                    out["port"] = x[1]
                 i += 1
             case _:
                 i += 1
@@ -135,7 +149,7 @@ def button_clicked(button_arg):
         st.session_state[button_arg] = True
     return protector
 
-st.header("Server Request: Sparrow")
+st.header("Server Request")
 
 # cURL Request Section
 st.subheader("Paste cURL Request")
@@ -144,28 +158,25 @@ curl_input = st.text_area(
     height=150,
     placeholder="Paste cURL command starting with curl -X POST...",
 )
+if st.checkbox("Ignore above cURL request's host and port, and use the host and port specified in Host Information.", value=False):
+    st.session_state.ignore_curl_ip_port = True
+else:
+    st.session_state.ignore_curl_ip_port = False 
 
-## Initialize session state variables
-for key in ["parsed_curl", "manual_selection", "curl_selection", "sel_inputs", "sel_params", "selected_tasks", "result"]:
-    if key not in st.session_state:
-        st.session_state[key] = None
-for key in ["curl_botton", "request_button"]:
-    if key not in st.session_state:
-        st.session_state[key] = False
-#
 if st.button("Process cURL Request", on_click = button_clicked("curl_botton")) or st.session_state.curl_botton:
     try:
         # Extract JSON payload from curl
-        st.session_state.parsed_curl = parsed_curl = parse_curl(curl_input)
+        st.session_state.parsed_curl = parsed_curl = parse_curl(curl_input, st.session_state.ignore_curl_ip_port)
         # Update session state with host and port if they exist in the curl
-        if "url_ip" in parsed_curl and parsed_curl["url_ip"]:
-            st.session_state.api_host = parsed_curl.get(
-                "url_ip", st.session_state.get("api_host", "localhost")
-            )
-        if "port" in parsed_curl and parsed_curl["port"]:
-            st.session_state.api_port = parsed_curl.get(
-                "port", st.session_state.get("api_port", "7654")
-            )
+        if not st.session_state.ignore_curl_ip_port:
+            if "url_ip" in parsed_curl and parsed_curl["url_ip"]:
+                st.session_state.api_host = parsed_curl.get(
+                    "url_ip", st.session_state.get("api_host", HOST)
+                )
+            if "port" in parsed_curl and parsed_curl["port"]:
+                st.session_state.api_port = parsed_curl.get(
+                    "port", st.session_state.get("api_port", "7654")
+                )
 
         st.success("cURL parsed successfully!")
         st.json(parsed_curl)
@@ -176,8 +187,9 @@ if st.button("Process cURL Request", on_click = button_clicked("curl_botton")) o
         st.session_state.selected_tasks = []
         st.error(f"Error parsing curl: {e}")
 
+st.subheader("Fill Request Manually")
 if st.checkbox(
-    "Fill request manually. This will ignore any cURL request pasted above.",
+    "To fill request manually, pls check this box. This will ignore any cURL request pasted above.",
     value=False,
 ):
     st.session_state.manual_selection = True

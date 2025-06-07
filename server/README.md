@@ -5,9 +5,9 @@ This is a Streamlit server for the Project.
 ## About
 
 The LeanAide Streamlit server is designed to provide a user-friendly interface for POSTING and GETTING queries for Autoformalization tasks.
-The main backend is powered by the LeanAide tools. The server is buit using Streamlit and FastAPI, allowing users to interact with a simple web interface.
+The main backend is powered by the LeanAide tools. The website is buit using Streamlit, allowing users to interact with a simple web interface.
 
-The `leanaide_serv.py` runs two processed, which are `streamlit` and `fastapi`. The Streamlit app is used for the frontend website, which you can interact with, while the FastAPI app is used to handle the API requests. This allows you to use `curl` or any other HTTP client to interact with the server from your terminal, our streamlit app or any other program you write.
+The `leanaide_serv.py` runs two processed, which are `streamlit` and a server process. The Streamlit app is used for the frontend website, which you can interact with, while the server process run is used to handle the API requests. This allows you to use `curl` or any other HTTP client to interact with the server from your terminal, our streamlit app or any other program you write.
 
 ## Installation Instructions
 
@@ -37,4 +37,4 @@ source .venv/bin/activate
 python3 leanaide_serv.py
 ```
 
-This will start the Streamlit server on `http://localhost:8501` and the FastAPI server on `http://localhost:7654`. These ports can be changed in the `leanaide_serv.py` file if needed.
+This will start the Streamlit server on `http://localhost:8501` and the server on `http://localhost:7654`. These ports can be changed in the `leanaide_server.py` file if needed.
