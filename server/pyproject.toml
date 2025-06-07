@@ -1,0 +1,12 @@
+[project]
+name = "leanaide_serv"
+version = "0.1.0"
+description = "Leanaide Streamlit Server"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pyperclip>=1.9.0",
+    "python-dotenv>=1.1.0",
+    "streamlit>=1.45.1",
+    "watchdog>=6.0.0",
+]
