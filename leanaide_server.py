@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+import pkgutil
 import signal
 import socket
 import subprocess
@@ -46,21 +47,52 @@ def signal_handler(sig, frame):
     print("\nShutting down servers...")
     sys.exit(0)
 
+def check_dependencies():
+    """Check if required packages for streamlit are installed"""
+    required_packages = {
+        'streamlit',
+        'pyperclip',
+        'pillow',
+        'python-dotenv',
+        'requests'
+    }
+    
+    missing_packages = []
+    for package in required_packages:
+        if not pkgutil.find_loader(package):
+            missing_packages.append(package)
+    
+    return
+
 if __name__ == "__main__":
     # Set up signal handler
     signal.signal(signal.SIGINT, signal_handler)
 
-    print("\n\033[1;34mStarting servers (single-port mode)\033[0m\n")
-    print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get("HOST", "localhost")}:{LEANAIDE_PORT}")
-    print()
+    # Parse command line arguments
+    run_ui = "--ui" in sys.argv
 
-    # Start processes
+    if run_ui:
+        # Check dependencies
+        missing = check_dependencies()
+        if missing:
+            print(f"\n\033[1;31mMissing required packages: {', '.join(missing)}\033[0m")
+            print("\033[1;34mCheck out server/README.md for installation instructions and running the web streamlit server.\033[0m")
+            sys.exit(1)
+
+    print("\n\033[1;34mStarting servers\033[0m\n")
+    print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get('HOST', 'localhost')}:{LEANAIDE_PORT}")
+    
+    # Start API server process
     serv_process = multiprocessing.Process(target=run_server_api)
-    streamlit_process = multiprocessing.Process(target=run_streamlit)
-
+    streamlit_process = None
     serv_process.start()
-    time.sleep(0.5)  # Brief delay to ensure server starts first
-    streamlit_process.start()
+    
+    if run_ui:
+        time.sleep(0.5)  # Brief delay to ensure server starts first
+        streamlit_process = multiprocessing.Process(target=run_streamlit)
+        streamlit_process.start()
+    else:
+        print("\nRunning in API-only mode (no UI)")
 
     try:
         # Keep main process alive
@@ -69,6 +101,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nShutting down...")
         serv_process.terminate()
-        streamlit_process.terminate()
+        if run_ui:
+            streamlit_process.terminate()
+            streamlit_process.join()
         serv_process.join()
-        streamlit_process.join()
