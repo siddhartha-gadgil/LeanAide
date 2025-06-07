@@ -8,21 +8,20 @@ import time
 from pathlib import Path
 
 STREAMLIT_PORT = 8501
-FASTAPI_PORT = 7654
+LEANAIDE_PORT = 7654
 
 serv_dir = str(Path(__file__).resolve().parent)
 STREAMLIT_FILE = os.path.join(serv_dir, "streamlit_ui.py") 
-FASTAPI_FILE = os.path.join(serv_dir, "fast_api.py").split("/")[-1].split(".")[0] # fast_api
+SERVER_FILE = os.path.join(serv_dir, "..", "leanaide_server.py")
 
 def is_port_in_use(port: int) -> bool:
     """Check if a port is already in use"""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('localhost', port)) == 0
 
-def run_fastapi():
-    """Run FastAPI server using uvicorn"""
-    # This requires `fast_api.py` in the same directory, and `fast_api` name as is.
-    subprocess.run([sys.executable, "-m", "uvicorn", f"{FASTAPI_FILE}:app", "--reload", "--port", str(FASTAPI_PORT)])
+def run_server_api():
+    """Run Server server using uvicorn"""
+    subprocess.run([sys.executable, SERVER_FILE])
 
 def run_streamlit():
     """Run Streamlit app on port STREAMLIT_PORT only"""
@@ -50,15 +49,15 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
     print("\n\033[1;34mStarting servers (single-port mode)\033[0m\n")
-    print(f"\033[1;34mFastAPI:\033[0m http://localhost:{FASTAPI_PORT}")
+    print(f"\033[1;34mAPI Server:\033[0m http://localhost:{LEANAIDE_PORT}")
     print(f"\033[1;34mStreamlit:\033[0m http://localhost:{STREAMLIT_PORT}\n")
 
     # Start processes
-    fastapi_process = multiprocessing.Process(target=run_fastapi)
+    serv_process = multiprocessing.Process(target=run_server_api)
     streamlit_process = multiprocessing.Process(target=run_streamlit)
 
-    fastapi_process.start()
-    time.sleep(0.5)  # Brief delay to ensure FastAPI starts first
+    serv_process.start()
+    time.sleep(0.5)  # Brief delay to ensure server starts first
     streamlit_process.start()
 
     try:
@@ -67,7 +66,7 @@ if __name__ == "__main__":
             pass
     except KeyboardInterrupt:
         print("\nShutting down...")
-        fastapi_process.terminate()
+        serv_process.terminate()
         streamlit_process.terminate()
-        fastapi_process.join()
+        serv_process.join()
         streamlit_process.join()
