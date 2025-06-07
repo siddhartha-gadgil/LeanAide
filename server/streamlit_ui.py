@@ -1,16 +1,14 @@
-import json
 import os
-import shlex
 import socket
 import sys
 from pathlib import Path
 
-import pyperclip
 import requests
 import streamlit as st
 from dotenv import load_dotenv
 
 from api_server import HOST, PORT
+from serv_utils import button_clicked, parse_curl, tasks
 
 load_dotenv()
 
@@ -46,62 +44,6 @@ with st.expander("Host Information"):
     )
     st.session_state.api_port = api_port
 
-# Function to copy text to clipboard and show confirmation
-def copy_to_clipboard(text):
-    try:
-        pyperclip.copy(text)
-        st.toast("Copied to clipboard!", icon="✔️")
-    except Exception as e:
-        st.warning(f"Failed to copy: {e}")
-
-# Lean Checker Tasks
-tasks = {
-    "echo": {"input": {"data": "Json"}, "output": {"data": "Json"}},
-    "translate_thm": {
-        "input": {"text": "String"},
-        "output": {"theorem": "String"},
-        "parameters": {
-            "greedy": "Bool (default: true)",
-            "fallback": "Bool (default: true)",
-        },
-    },
-    "translate_def": {
-        "input": {"text": "String"},
-        "output": {"definition": "String"},
-        "parameters": {"fallback": "Bool (default: true)"},
-    },
-    "theorem_doc": {
-        "input": {"name": "String", "command": "String"},
-        "output": {"doc": "String"},
-    },
-    "def_doc": {
-        "input": {"name": "String", "command": "String"},
-        "output": {"doc": "String"},
-    },
-    "theorem_name": {"input": {"text": "String"}, "output": {"name": "String"}},
-    "prove": {"input": {"theorem": "String"}, "output": {"proof": "String"}},
-    "structured_json_proof": {
-        "input": {"theorem": "String", "proof": "String"},
-        "output": {"json_structured": "Json"},
-    },
-    "lean_from_json_structured": {
-        "input": {"json_structured": "String"},
-        "output": {
-            "lean_code": "String",
-            "declarations": "List String",
-            "top_code": "String",
-        },
-    },
-    "elaborate": {
-        "input": {"lean_code": "String", "declarations": "List Name"},
-        "output": {"logs": "List String", "sorries": "List Json"},
-        "parameters": {
-            "top_code": 'String (default: "")',
-            "describe_sorries": "Bool (default: false)",
-        },
-    },
-}
-
 ## Initialize session state variables
 for key in ["parsed_curl", "selected_inputs", "manual_selection", "curl_selection", "sel_inputs", "sel_params", "selected_tasks", "result"]:
     if key not in st.session_state:
@@ -109,46 +51,6 @@ for key in ["parsed_curl", "selected_inputs", "manual_selection", "curl_selectio
 for key in ["curl_botton", "request_button", "manual_input_button", "ignore_curl_ip_port"]:
     if key not in st.session_state:
         st.session_state[key] = False
-
-def parse_curl(curl_cmd, ignore_curl_ip_port):
-    args = shlex.split(curl_cmd)
-    out = {"method": "POST", "url_ip": "", "port": "", "headers": {}, "data": {}}
-    i = 0
-    while i < len(args):
-        match args[i]:
-            case "curl":
-                i += 1
-            case "-X":
-                out["method"] = args[i + 1]
-                i += 2
-            case "-H":
-                k, v = args[i + 1].split(":", 1)
-                out["headers"][k.strip()] = v.strip()
-                i += 2
-            case "--data" | "-d":
-                try:
-                    out["data"] = json.loads(args[i + 1])
-                except Exception:
-                    out["data"] = args[i + 1]
-                i += 2
-            case x if x.startswith("http"):
-                x = x.split("://", 1)[1].split(":", 1)
-                if ignore_curl_ip_port:
-                    out["url_ip"] = st.session_state.get("api_host", HOST)
-                    out["port"] = st.session_state.get("api_port", "7654")
-                else:
-                    out["url_ip"] = x[0]
-                    out["port"] = x[1]
-                i += 1
-            case _:
-                i += 1
-    return out
-
-def button_clicked(button_arg):
-    def protector():
-        """This function does not allow value to become True until the button is clicked."""
-        st.session_state[button_arg] = True
-    return protector
 
 st.header("Server Request")
 
