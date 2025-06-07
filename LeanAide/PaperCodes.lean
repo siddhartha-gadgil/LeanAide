@@ -20,23 +20,31 @@ def Translator.translateToPropStrict
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
   let thm ← withPreludes claim
-  let .ok type ← translator.translateToProp? thm | throwError
-      s!"codegen: no translation found for '{claim}', full statement {thm}"
-  let type ← instantiateMVars type
-  Term.synthesizeSyntheticMVarsNoPostponing
-  if type.hasSorry || type.hasExprMVar then
-    throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
-  let univ ← try
-    Term.withoutErrToSorry do
-    if type.hasSorry then
-      throwError "Type {type} has sorry when translating assertion '{claim}', full statement {thm}"
-    inferType type
-  catch e =>
-    throwError s!"Failed to infer type {type}, error {← e.toMessageData.format} when translating assertion '{claim}', full statement {thm}"
-  if univ.isSort then
-    dropLocalContext type
-  else
-    throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
+  let (js, _, _) ← translator.getLeanCodeJson  thm
+  let output ← getMessageContents js
+  for out in output do
+    let el? ← elabThm4 out
+    match el? with
+    | Except.error _ =>
+      continue
+    | Except.ok type =>
+      let type ← instantiateMVars type
+      Term.synthesizeSyntheticMVarsNoPostponing
+      if type.hasSorry || type.hasExprMVar then
+        throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
+      let univ ← try
+        Term.withoutErrToSorry do
+        if type.hasSorry then
+          throwError "Type {type} has sorry when translating assertion '{claim}', full statement {thm}"
+        inferType type
+      catch e =>
+        throwError s!"Failed to infer type {type}, error {← e.toMessageData.format} when translating assertion '{claim}', full statement {thm}"
+      if univ.isSort then
+        let type ← dropLocalContext type
+        return type
+      else
+        throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
+  throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}"
 
 open Lean.Parser.Tactic
 
@@ -1279,12 +1287,12 @@ def egLet : Json :=
     ]
 
 open Codegen
--- #eval showStx egTheorem
+#eval showStx egTheorem
 
 #eval showStx egTheorem''
 
 
--- #eval egTheorem.compress
+#eval egTheorem
 
 
--- #eval showStx egLet
+#eval showStx egLet
