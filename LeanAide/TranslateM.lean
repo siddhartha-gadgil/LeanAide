@@ -283,6 +283,10 @@ def findTheorem? (label: String) : TranslateM <| Option LabelledTheorem := do
   let thms := (← get).labelledTheorems
   return thms.find? (fun thm => thm.label == label)
 
+def allLabels : TranslateM <| Array String := do
+  let thms := (← get).labelledTheorems
+  return thms.map (·.label)
+
 def updateToProved (labelledTheorem : String) : TranslateM Unit := do
   let newLabelledTheorems := (← get).labelledTheorems.map (fun thm =>
     if thm.label == labelledTheorem then
@@ -359,8 +363,8 @@ instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
     let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context}
     return (saved, σ)
-  restoreState := fun s => do
-    modify fun _ =>
-      {cmdPrelude := s.cmdPrelude, defs := s.defs, preludes := s.preludes, context := s.context}
+  restoreState := fun ss => do
+    modify fun s =>
+      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, preludes := ss.preludes, context := ss.context}
 
 end LeanAide

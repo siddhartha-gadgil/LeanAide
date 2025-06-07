@@ -276,6 +276,7 @@ where
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
+    logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?)
 
 -- #check commandToTactic
@@ -465,7 +466,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
     s!"codegen: no 'claim_label' found in standalone 'proof'"
   let some labelledTheorem ← findTheorem? claimLabel | throwError
-    s!"codegen: no theorem found with label {claimLabel}"
+    s!"codegen: no theorem found with label {claimLabel}; all labels {← allLabels}"
   let goalType := labelledTheorem.type
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
@@ -1254,9 +1255,20 @@ def egTheorem' : Json :=
   Json.mkObj
     [ ("type", Json.str "theorem"),
       ("name", Json.str "egTheorem"),
-      ("claim_label", Json.str "egTheorem"),
+      ("label", Json.str "egTheorem"),
       ("claim", Json.str "There are infinitely many odd numbers.")
            ]
+
+def egTheorem'' : Json :=
+  Json.arr #[Json.mkObj
+    [ ("type", Json.str "theorem"),
+      ("name", Json.str "egTheorem"),
+      ("label", Json.str "egTheorem"),
+      ("claim", Json.str "There are infinitely many odd numbers.")
+           ],
+      Json.mkObj [("proof", Json.mkObj [("proof_steps", Json.arr #[]), ("claim_label", Json.str "egTheorem")])]]
+
+
 def egLet : Json :=
   Json.mkObj
     [ ("type", Json.str "let_statement"),
@@ -1269,7 +1281,7 @@ def egLet : Json :=
 open Codegen
 -- #eval showStx egTheorem
 
--- #eval showStx egTheorem'
+#eval showStx egTheorem''
 
 
 -- #eval egTheorem.compress
