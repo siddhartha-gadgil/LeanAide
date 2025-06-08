@@ -478,12 +478,15 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let goalType := labelledTheorem.type
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
-  let pfStx ← getCodeTactics translator goal content
+  let pfStx ←
+    withoutModifyingState do
+    getCodeTactics translator goal content
   let n := mkIdent labelledTheorem.name
   let typeStx ← delabDetailed goalType
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
+  withoutModifyingState do
   getCodeTactics translator goal  content
 | goal?, kind, _ => throwError
     s!"codegen: proof does not work for kind {kind}where goal present: {goal?.isSome}"

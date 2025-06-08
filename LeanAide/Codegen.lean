@@ -181,21 +181,24 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
     | some code => do
-      let goal? ← runForSingleGoal goal code
-      match goal? with
-      | none => do -- tactics closed the goal
-        return (accum, none)
-      | some newGoal => do
-        let newAccum ← appendTactics accum code
-        getCodeTacticsAux translator newGoal sources newAccum
+      if (getTactics code).isEmpty then
+        -- no tactics generated, but side effect
+        getCodeTacticsAux translator goal sources accum
+      else
+        let goal? ← runForSingleGoal goal code
+        match goal? with
+        | none => do -- tactics closed the goal
+          return (accum, none)
+        | some newGoal => do
+          let newAccum ← appendTactics accum code
+          getCodeTacticsAux translator newGoal sources newAccum
 
 /--
 Main helper for generating tactics from a list of JSON objects.
 -/
 def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
-    TranslateM (TSyntax ``tacticSeq) :=
-  withoutModifyingState do
+    TranslateM (TSyntax ``tacticSeq) := do
   let accum ← emptyTacs
   let (tacs, goal?) ←
      getCodeTacticsAux translator goal sources accum
