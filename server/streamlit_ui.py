@@ -55,86 +55,87 @@ for key in ["curl_botton", "request_button", "manual_input_button", "ignore_curl
 
 st.header("Server Request", divider = True, help = "You can either paste a cURL request or fill the request manually. The request will be sent to the backend server specified by you.")
 
-# cURL Request Section
-st.subheader("Paste cURL Request")
-curl_input = st.text_area(
-    "Paste your cURL request here:",
-    height=150,
-    placeholder="Paste cURL command starting with curl -X POST...",
-)
-if st.checkbox("Ignore above cURL request's host and port, and use the host and port specified in Host Information.", value=False):
-    st.session_state.ignore_curl_ip_port = True
-else:
-    st.session_state.ignore_curl_ip_port = False 
+st.subheader("Structured Input", help = "Select the tasks you want to perform and provide the necessary inputs.")
+st.session_state.manual_selection = True
+st.subheader("Step 1: Select Input Tasks")
+st.session_state.selected_inputs = st.multiselect("Select Input Tasks:", list(tasks.keys()))
 
-if st.button("Process cURL Request", on_click = button_clicked("curl_botton")) or st.session_state.curl_botton:
-    try:
-        # Extract JSON payload from curl
-        st.session_state.parsed_curl = parsed_curl = parse_curl(curl_input, st.session_state.ignore_curl_ip_port)
-        # Update session state with host and port if they exist in the curl
-        if not st.session_state.ignore_curl_ip_port:
-            if "url_ip" in parsed_curl and parsed_curl["url_ip"]:
-                st.session_state.api_host = parsed_curl.get(
-                    "url_ip", st.session_state.get("api_host", HOST)
-                )
-            if "port" in parsed_curl and parsed_curl["port"]:
-                st.session_state.api_port = parsed_curl.get(
-                    "port", st.session_state.get("api_port", "7654")
-                )
+st.session_state.val_input = {}
+if st.button("Give Input", help = "Provide inputs to the your selected tasks. Note: It is not compulsary to fill all of them.") or st.session_state.manual_input_button:
+    st.session_state.manual_input_button = True
+    for task in st.session_state.selected_inputs:
+        # Get input for each task
+        for key, val_type in tasks[task].get("input", {}).items():
+            help = f"Please provide input for `{key}` of type `{val_type}`."
+            if "json" in key.lower():
+                help += " Just paste your `json` object here."
+            # While the expected type of input and actual input type do not match, keep asking for input
+            val_in = st.text_input(f"{task.capitalize()} - {key} ({val_type}):", help = help)
+            if val_in:
+                inp_type, st.session_state.val_input[key] = get_actual_input(val_in)
+                if validate_input_type(inp_type, val_type):
+                    st.session_state.valid_manual_input = True
+                else:
+                    st.warning(
+                        f"Invalid input type for {key}. Expected `{val_type}`, got `{inp_type.__name__}`. See help for each input for more info. Please try again."
+                    )
+                    st.session_state.valid_manual_input = False
 
-        st.success("cURL parsed successfully!")
-        st.json(parsed_curl)
-        # Update session states
-        st.session_state.curl_selection = True
-        st.session_state.selected_tasks = list(parsed_curl.get("data", {})["tasks"]) if "data" in parsed_curl else []
-    except Exception as e:
-        st.session_state.selected_tasks = []
-        st.error(f"Error parsing curl: {e}")
+        for param, param_type in tasks[task].get("parameters", {}).items():
+            if "boolean" in param_type.lower() or "bool" in param_type.lower():
+                if param_in := st.checkbox(f"{task.capitalize()} - {param} ({param_type})", help = "Check this box if you want to change the default Boolean value"):
+                    st.session_state.val_input[param] = param_in
+            else:
+                help = f"Please provide a value for `{param}` of type `{param_type}`. If you want to skip this parameter, just leave it unchecked."
+                if param_in := st.text_input(f"{task.capitalize()} - {param} ({param_type}):", help=help):
+                    st.session_state.val_input[param] = param_in
 
-st.subheader("Fill Request Manually", help = "Select the tasks you want to perform and provide the necessary inputs.")
+st.subheader("Step 2: Select Processing Tasks")
+
+st.session_state.selected_tasks = st.session_state.selected_inputs.copy()
+# update to session state
+st.session_state.selected_tasks = st.multiselect("Select Processing Tasks:", [task for task in tasks.keys()] , default=st.session_state.selected_tasks)
+
+st.subheader("Raw cURL Request")
 if st.checkbox(
-    "To fill request manually, pls check this box. This will ignore any cURL request pasted above.",
+    "If you have a cURL request you will like to request, pls check this box. This will ignore any manually entered inputs in the previous section.",
     value=False,
 ):
-    st.session_state.manual_selection = True
-    st.subheader("Step 1: Select Input Tasks")
-    st.session_state.selected_inputs = st.multiselect("Select Input Tasks:", list(tasks.keys()))
+    st.session_state.manual_selection = False
+    # cURL Request Section
+    curl_input = st.text_area(
+        "Paste your cURL request here:",
+        height=150,
+        placeholder="Paste cURL command starting with curl -X POST...",
+    )
+    if st.checkbox("Ignore above cURL request's host and port, and use the host and port specified in Host Information.", value=False):
+        st.session_state.ignore_curl_ip_port = True
+    else:
+        st.session_state.ignore_curl_ip_port = False 
 
-    st.session_state.val_input = {}
-    if st.button("Give Input", help = "Provide inputs to the your selected tasks. Note: It is not compulsary to fill all of them.") or st.session_state.manual_input_button:
-        st.session_state.manual_input_button = True
-        for task in st.session_state.selected_inputs:
-            # Get input for each task
-            for key, val_type in tasks[task].get("input", {}).items():
-                help = f"Please provide input for `{key}` of type `{val_type}`."
-                if "json" in key.lower():
-                    help += " Just paste your `json` object here."
-                # While the expected type of input and actual input type do not match, keep asking for input
-                val_in = st.text_input(f"{task.capitalize()} - {key} ({val_type}):", help = help)
-                if val_in:
-                    inp_type, st.session_state.val_input[key] = get_actual_input(val_in)
-                    if validate_input_type(inp_type, val_type):
-                        st.session_state.valid_manual_input = True
-                    else:
-                        st.warning(
-                            f"Invalid input type for {key}. Expected `{val_type}`, got `{inp_type.__name__}`. See help for each input for more info. Please try again."
-                        )
-                        st.session_state.valid_manual_input = False
+    if st.button("Process cURL Request", on_click = button_clicked("curl_botton")) or st.session_state.curl_botton:
+        try:
+            # Extract JSON payload from curl
+            st.session_state.parsed_curl = parsed_curl = parse_curl(curl_input, st.session_state.ignore_curl_ip_port)
+            # Update session state with host and port if they exist in the curl
+            if not st.session_state.ignore_curl_ip_port:
+                if "url_ip" in parsed_curl and parsed_curl["url_ip"]:
+                    st.session_state.api_host = parsed_curl.get(
+                        "url_ip", st.session_state.get("api_host", HOST)
+                    )
+                if "port" in parsed_curl and parsed_curl["port"]:
+                    st.session_state.api_port = parsed_curl.get(
+                        "port", st.session_state.get("api_port", "7654")
+                    )
 
-            for param, param_type in tasks[task].get("parameters", {}).items():
-                if "boolean" in param_type.lower() or "bool" in param_type.lower():
-                    if param_in := st.checkbox(f"{task.capitalize()} - {param} ({param_type})", help = "Check this box if you want to change the default Boolean value"):
-                        st.session_state.val_input[param] = param_in
-                else:
-                    help = f"Please provide a value for `{param}` of type `{param_type}`. If you want to skip this parameter, just leave it unchecked."
-                    if param_in := st.text_input(f"{task.capitalize()} - {param} ({param_type}):", help=help):
-                        st.session_state.val_input[param] = param_in
-
-    st.subheader("Step 2: Select Processing Tasks")
-
-    st.session_state.selected_tasks = st.session_state.selected_inputs.copy()
-    # update to session state
-    st.session_state.selected_tasks = st.multiselect("Select Processing Tasks:", [task for task in tasks.keys()] , default=st.session_state.selected_tasks)
+            st.success("cURL parsed successfully!")
+            st.json(parsed_curl)
+            # Update session states
+            st.session_state.curl_selection = True
+            st.session_state.selected_tasks = list(parsed_curl.get("data", {})["tasks"]) if "data" in parsed_curl else []
+        except Exception as e:
+            st.session_state.selected_tasks = []
+            st.error(f"Error parsing curl: {e}")
 
 # Submit Request Section. Common to Curl and Manual Selection
 st.header("Submit your Request.", divider=True, help = "For both cURL and manual selection, you can submit your request here. The request will be sent to the backend server specified in the Host Information section.")
