@@ -478,6 +478,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let goalType := labelledTheorem.type
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
+  IO.eprintln s!"number of proof steps: {content.length}"
   let pfStx ←
     withoutModifyingState do
     getCodeTactics translator goal content

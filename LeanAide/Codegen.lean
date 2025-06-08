@@ -190,7 +190,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         let goal? ← runForSingleGoal goal code
         match goal? with
         | none => do -- tactics closed the goal
-          return (accum, none)
+          IO.eprintln s!"codegen: goal closed by tactics"
+          IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
+          IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+          return (← appendTactics accum code, none)
         | some newGoal => do
           let newAccum ← appendTactics accum code
           getCodeTacticsAux translator newGoal sources newAccum
