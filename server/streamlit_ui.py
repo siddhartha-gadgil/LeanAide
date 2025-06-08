@@ -8,7 +8,8 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from api_server import HOST, PORT
-from serv_utils import button_clicked, parse_curl, tasks
+from serv_utils import (button_clicked, get_actual_input, parse_curl, tasks,
+                        validate_input_type)
 
 load_dotenv()
 
@@ -45,14 +46,14 @@ with st.expander("Host Information"):
     st.session_state.api_port = api_port
 
 ## Initialize session state variables
-for key in ["parsed_curl", "selected_inputs", "manual_selection", "curl_selection", "sel_inputs", "sel_params", "selected_tasks", "result"]:
+for key in ["parsed_curl", "selected_inputs", "manual_selection", "curl_selection", "val_input", "selected_tasks", "result"]:
     if key not in st.session_state:
         st.session_state[key] = None
-for key in ["curl_botton", "request_button", "manual_input_button", "ignore_curl_ip_port"]:
+for key in ["curl_botton", "request_button", "manual_input_button", "ignore_curl_ip_port", "server_output_success", "valid_manual_input"]:
     if key not in st.session_state:
         st.session_state[key] = False
 
-st.header("Server Request")
+st.header("Server Request", divider = True, help = "You can either paste a cURL request or fill the request manually. The request will be sent to the backend server specified by you.")
 
 # cURL Request Section
 st.subheader("Paste cURL Request")
@@ -90,7 +91,7 @@ if st.button("Process cURL Request", on_click = button_clicked("curl_botton")) o
         st.session_state.selected_tasks = []
         st.error(f"Error parsing curl: {e}")
 
-st.subheader("Fill Request Manually")
+st.subheader("Fill Request Manually", help = "Select the tasks you want to perform and provide the necessary inputs.")
 if st.checkbox(
     "To fill request manually, pls check this box. This will ignore any cURL request pasted above.",
     value=False,
@@ -99,37 +100,50 @@ if st.checkbox(
     st.subheader("Step 1: Select Input Tasks")
     st.session_state.selected_inputs = st.multiselect("Select Input Tasks:", list(tasks.keys()))
 
-    st.session_state.sel_inputs = {}
-    st.session_state.sel_params = {}
-    if st.button("Give Input") or st.session_state.manual_input_button:
+    st.session_state.val_input = {}
+    if st.button("Give Input", help = "Provide inputs to the your selected tasks. Note: It is not compulsary to fill all of them.") or st.session_state.manual_input_button:
         st.session_state.manual_input_button = True
         for task in st.session_state.selected_inputs:
-            st.session_state.sel_inputs[task] = {}
-            for key, value in tasks[task].get("input", {}).items():
-                st.session_state.sel_inputs[task][key] = st.text_input(
-                    f"{task.capitalize()} - {key} ({value}):"
-                )
-            for param, param_type in tasks[task].get("parameters", {}).items():
-                st.session_state.sel_params[param] = st.checkbox(f"{task} - {param} ({param_type})")
+            # Get input for each task
+            for key, val_type in tasks[task].get("input", {}).items():
+                help = f"Please provide input for `{key}` of type `{val_type}`."
+                if "json" in key.lower():
+                    help += " Just paste your `json` object here."
+                # While the expected type of input and actual input type do not match, keep asking for input
+                val_in = st.text_input(f"{task.capitalize()} - {key} ({val_type}):", help = help)
+                if val_in:
+                    inp_type, st.session_state.val_input[key] = get_actual_input(val_in)
+                    if validate_input_type(inp_type, val_type):
+                        st.session_state.valid_manual_input = True
+                    else:
+                        st.warning(
+                            f"Invalid input type for {key}. Expected `{val_type}`, got `{inp_type.__name__}`. See help for each input for more info. Please try again."
+                        )
+                        st.session_state.valid_manual_input = False
 
+            for param, param_type in tasks[task].get("parameters", {}).items():
+                if "boolean" in param_type.lower() or "bool" in param_type.lower():
+                    if param_in := st.checkbox(f"{task.capitalize()} - {param} ({param_type})", help = "Check this box if you want to change the default Boolean value"):
+                        st.session_state.val_input[param] = param_in
+                else:
+                    help = f"Please provide a value for `{param}` of type `{param_type}`. If you want to skip this parameter, just leave it unchecked."
+                    if param_in := st.text_input(f"{task.capitalize()} - {param} ({param_type}):", help=help):
+                        st.session_state.val_input[param] = param_in
 
     st.subheader("Step 2: Select Processing Tasks")
 
     st.session_state.selected_tasks = st.session_state.selected_inputs.copy()
-    selected_tasks_options = [task for task in tasks.keys()]
-    selected_tasks = st.multiselect("Select Processing Tasks:", selected_tasks_options, default=st.session_state.selected_tasks)
-
     # update to session state
-    st.session_state.selected_tasks += selected_tasks
-
+    st.session_state.selected_tasks = st.multiselect("Select Processing Tasks:", [task for task in tasks.keys()] , default=st.session_state.selected_tasks)
 
 # Submit Request Section. Common to Curl and Manual Selection
+st.header("Submit your Request.", divider=True, help = "For both cURL and manual selection, you can submit your request here. The request will be sent to the backend server specified in the Host Information section.")
 if st.button("Submit Request", on_click= button_clicked("request_button")) or st.session_state.request_button:
     if not st.session_state.curl_selection and not st.session_state.manual_selection:
         st.warning("Please either paste a cURL request or select tasks manually.")
         st.stop()
     if st.session_state.manual_selection: # Makes the request payload from manual selection
-        request_payload = {"tasks": st.session_state.selected_tasks, **st.session_state.sel_inputs, **st.session_state.sel_params}
+        request_payload = {"tasks": st.session_state.selected_tasks, **st.session_state.val_input}
     else: # Makes the request payload from cURL
         request_payload = st.session_state.parsed_curl.get("data", {})
         if not request_payload:
@@ -145,23 +159,30 @@ if st.button("Submit Request", on_click= button_clicked("request_button")) or st
 
     if response.status_code == 200:
         # Get the result
-        st.success("Response received successfully!")
+        st.success("Response sent and received successfully! Request method: {}".format("cURL" if st.session_state.curl_selection else "Manual Selection"))
         st.session_state.result = response.json()
         print(f"Selected Tasks: {st.session_state.selected_tasks}")
         print(f"Response: {st.session_state.result}")
-  
+
+        if st.session_state.result["result"] == "success":
+            st.session_state.server_output_success = True
+            st.success("Request processed successfully!")
+        else: # result = "error"
+            st.session_state.server_output_success = False
+            st.error("Error in processing the request. Please check the input and try again.")
+            st.write("Error (String):")
+            st.code(st.session_state.result["error"])
         # Handle the output for each task
         for task in st.session_state.selected_tasks:
             st.subheader(task.capitalize() + " Output", divider =True)
-            for key, value in tasks[task]["output"].items():
-                if "json" in value.lower().split():
-                    st.write(f"{key.capitalize()} ({value}):")
+            for key, val_type in tasks[task]["output"].items():
+                if "json" in val_type.lower().split():
+                    st.write(f"{key.capitalize()} ({val_type}):")
                     st.json(st.session_state.result.get(key, "No data available."))
                 else:
-                    st.write(f"{key.capitalize()} ({value}):")
+                    st.write(f"{key.capitalize()} ({val_type}):")
                     st.code(
                         st.session_state.result.get(key, "No data available."), language="plaintext"
                     )
     else:
         st.error(f"Error: {response.status_code}, {response.text}")
-

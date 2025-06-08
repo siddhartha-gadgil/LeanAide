@@ -1,7 +1,11 @@
+import ast
 import json
 import shlex
+from typing import Any, Tuple, Type
 
 import streamlit as st
+
+from api_server import HOST
 
 # Lean Checker Tasks
 tasks = {
@@ -34,7 +38,7 @@ tasks = {
         "output": {"json_structured": "Json"},
     },
     "lean_from_json_structured": {
-        "input": {"json_structured": "String"},
+        "input": {"json_structured": "Json String"},
         "output": {
             "lean_code": "String",
             "declarations": "List String",
@@ -92,3 +96,43 @@ def button_clicked(button_arg):
         """This function does not allow value to become True until the button is clicked."""
         st.session_state[button_arg] = True
     return protector
+
+def get_actual_input(input_str: str) -> Tuple[Type, Any]:
+    """
+    Convert a string representation of a Python literal into its corresponding type.
+    Returns a tuple of (type, parsed_value).
+    """
+    try:
+        json_input = json.loads(input_str) # Check if the input is valid JSON
+        return (type(json_input), json_input)
+    except json.JSONDecodeError:
+        try:
+            # If not JSON, check if if it is a list
+            literal_input = ast.literal_eval(input_str)
+            return (type(literal_input), literal_input)
+        except (ValueError, SyntaxError):
+            # If all else fails, return as string
+            return (str, input_str)
+
+def validate_input_type(input_type: Any, expected_type: str) -> bool:
+    """
+    Validate if the input value matches the expected type.
+    Returns True if it matches, False otherwise.
+    """
+    exp = expected_type.lower().split()
+    if "json" in exp:
+        if input_type.__name__.lower() == "dict":
+            return True
+    elif "list" in exp:
+        if input_type.__name__.lower() == "list":
+            return True
+    elif "string" in exp or "str" in exp:
+        if input_type.__name__.lower() == "str":
+            return True
+    elif "int" in exp:
+        if input_type.__name__.lower() == "int":
+            return True
+    elif "bool" in exp or "boolean" in exp:
+        if input_type.__name__.lower() == "bool":
+            return True
+    return False
