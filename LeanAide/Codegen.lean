@@ -127,9 +127,11 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
     let mut accumErrors : Array String := #[]
     for f in fs.reverse do
       logInfo m!"codegen: trying {f} for key {key}"
+      IO.eprintln s!"codegen: trying {f} for key {key}"
       try
         -- logInfo m!"codegen: trying {f} for key {key}"
         let code? ← codeFromFunc goal? translator f kind source
+        IO.eprintln s!"codegen: {f} for key {key} worked; returned : {code?.isSome}"
         return code?
       catch e =>
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
