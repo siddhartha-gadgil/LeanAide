@@ -7,9 +7,9 @@ import requests
 import streamlit as st
 from dotenv import load_dotenv
 
-from api_server import HOST, PORT
+from api_server import HOST, PORT, LOG_FILE
 from serv_utils import (button_clicked, get_actual_input, parse_curl, tasks,
-                        validate_input_type)
+                        validate_input_type, log_server, log_write)
 
 load_dotenv()
 
@@ -69,8 +69,9 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
             help = f"Please provide input for `{key}` of type `{val_type}`."
             if "json" in key.lower():
                 help += " Just paste your `json` object here."
-            # While the expected type of input and actual input type do not match, keep asking for input
-            val_in = st.text_input(f"{task.capitalize()} - {key} ({val_type}):", help = help)
+                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", height = 68)
+            else:
+                val_in = st.text_input(f"{task.capitalize()} - {key} ({val_type}):", help = help)
             if val_in:
                 inp_type, st.session_state.val_input[key] = get_actual_input(val_in)
                 if validate_input_type(inp_type, val_type):
@@ -90,6 +91,9 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
                 if param_in := st.text_input(f"{task.capitalize()} - {param} ({param_type}):", help=help):
                     st.session_state.val_input[param] = param_in
 
+    if st.session_state.valid_manual_input:
+        st.subheader("Inputs obtained. Please verify them before proceeding.", help = "Note that default values will be used for any parameters that you did not provide input for.")
+        st.json(st.session_state.val_input)
 st.subheader("Step 2: Select Processing Tasks")
 
 st.session_state.selected_tasks = st.session_state.selected_inputs.copy()
@@ -153,7 +157,7 @@ if st.button("Submit Request", on_click= button_clicked("request_button")) or st
             )
             st.stop()
     with st.spinner("Request sent. Please wait for a short while..."):
-        print(f"Request Payload: {request_payload}")
+        log_write("Streamlit", f"Request Payload: {request_payload}")
         response = requests.post(
             f"http://{st.session_state.api_host}:{st.session_state.api_port}", json=request_payload
         )
@@ -162,17 +166,23 @@ if st.button("Submit Request", on_click= button_clicked("request_button")) or st
         # Get the result
         st.success("Response sent and received successfully! Request method: {}".format("cURL" if st.session_state.curl_selection else "Manual Selection"))
         st.session_state.result = response.json()
-        print(f"Selected Tasks: {st.session_state.selected_tasks}")
-        print(f"Response: {st.session_state.result}")
+        log_write("Streamlit", f"Selected Tasks: {st.session_state.selected_tasks}")
+        log_write("Streamlit", f"Response: {st.session_state.result}")
 
-        if st.session_state.result["result"] == "success":
-            st.session_state.server_output_success = True
-            st.success("Request processed successfully!")
-        else: # result = "error"
+        try:
+            if st.session_state.result["result"] == "success":
+                st.session_state.server_output_success = True
+                st.success("Request processed successfully!")
+            else: # result = "error"
+                st.session_state.server_output_success = False
+                st.error("Error in processing the request. Please check the input and try again.")
+                st.write("Error (String):")
+                st.code(st.session_state.result["error"])
+        except Exception as e:
             st.session_state.server_output_success = False
-            st.error("Error in processing the request. Please check the input and try again.")
-            st.write("Error (String):")
-            st.code(st.session_state.result["error"])
+            st.error(f"Error in processing the request: {e}")
+            st.write("Response (String):")
+            st.code(str(st.session_state.result))
         # Handle the output for each task
         for task in st.session_state.selected_tasks:
             st.subheader(task.capitalize() + " Output", divider =True)
@@ -187,3 +197,44 @@ if st.button("Submit Request", on_click= button_clicked("request_button")) or st
                     )
     else:
         st.error(f"Error: {response.status_code}, {response.text}")
+
+## LOGS SECTION
+if "log_cleaned" not in st.session_state:
+    st.session_state.log_cleaned = False
+
+st.subheader("Server Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server log file and new logs are updated after SUBMIT REQUEST button is clicked. You might see old logs as well.")
+with st.expander("Click to view Server logs", expanded=False):
+    if log_out := log_server():
+        height = 500 if len(log_out) > 1000 else 300
+        st.text_area(
+            "Server Logs",
+            value=log_out if not st.session_state.log_cleaned else "",
+            height= height,
+            placeholder="No logs available yet.",
+            disabled=True,
+            help="This shows the server logs. It is updated after each request is processed.",
+        )
+
+    else:
+        st.code("No logs available yet.", language="plaintext")
+        
+    @st.dialog("Confirm Server Log Cleaning")
+    def clean_log():
+        """Function to clean the server logs."""
+        st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server log file.")
+        if st.button("Yes"):
+            st.session_state.log_cleaned = True
+        if st.button("No"):
+            st.session_state.log_cleaned = False
+
+        if st.session_state.log_cleaned:
+            try:
+                with open(LOG_FILE, "w") as f:
+                    f.write("")  # Clear the log file
+                st.success("Server logs cleaned successfully! Please UNCHECK THE BOX to avoid cleaning again.")
+            except Exception as e:
+                st.error(f"Error cleaning server logs: {e}")
+        
+        st.session_state.log_cleaned = False
+    if st.checkbox("Clean Server Logs. Read the help text before checking this box", value=st.session_state.log_cleaned, key="clean_log", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
+        clean_log()

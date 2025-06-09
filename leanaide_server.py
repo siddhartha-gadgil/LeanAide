@@ -7,6 +7,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+import tempfile
 
 STREAMLIT_PORT = 8501
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
@@ -17,6 +18,8 @@ serv_dir = os.path.join(home_dir, "server")
 STREAMLIT_FILE = os.path.join(serv_dir, "streamlit_ui.py")
 SERVER_FILE = os.path.join(serv_dir, "api_server.py")
 
+LOG_FILE = os.path.join(str(tempfile.gettempdir()), "leanaide_streamlit_server.log")
+
 def is_port_in_use(port: int) -> bool:
     """Check if a port is already in use"""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -24,14 +27,35 @@ def is_port_in_use(port: int) -> bool:
 
 def run_server_api():
     """Run Server server using uvicorn"""
-    subprocess.run([sys.executable, SERVER_FILE])
+    process = subprocess.Popen(
+        [sys.executable, SERVER_FILE],
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    # Write stderr to a file that Streamlit can read
+    with open(LOG_FILE, "a") as f:  # Append mode
+        for line in process.stderr:
+            f.write(f"[Server stderr] {line}")
+        f.flush()
 
 def run_streamlit():
     """Run Streamlit app on port STREAMLIT_PORT only"""
-    # STREAMLIT_PORT is used by our main Streamlit, this prevents another instance of same streamlit being made
     if is_port_in_use(STREAMLIT_PORT):
-        # print("❌ Port STREAMLIT_PORT is already in use! Close other Streamlit instances first.")
         return
+
+    process = subprocess.Popen([
+        sys.executable, "-m",
+        "streamlit", "run", STREAMLIT_FILE,
+        f"--server.port={STREAMLIT_PORT}",
+        "--server.headless=true",
+        "--browser.gatherUsageStats=false"
+    ], stderr=subprocess.PIPE, text=True)
+    
+    # Write stderr to a file that Streamlit can read
+    with open(LOG_FILE, "a") as f:  # Append mode
+        for line in process.stderr:
+            f.write(f"[Streamlit] {line}")
+            f.flush()
 
     # Force Streamlit to use only port STREAMLIT_PORT
     subprocess.run([

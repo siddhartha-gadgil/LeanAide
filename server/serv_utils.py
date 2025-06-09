@@ -2,10 +2,9 @@ import ast
 import json
 import shlex
 from typing import Any, Tuple, Type
-
 import streamlit as st
 
-from api_server import HOST
+from api_server import HOST, LOG_FILE
 
 # Lean Checker Tasks
 tasks = {
@@ -54,7 +53,6 @@ tasks = {
         },
     },
 }
-
 
 def parse_curl(curl_cmd, ignore_curl_ip_port):
     args = shlex.split(curl_cmd)
@@ -136,3 +134,27 @@ def validate_input_type(input_type: Any, expected_type: str) -> bool:
         if input_type.__name__.lower() == "bool":
             return True
     return False
+
+def log_server():
+    """Read last n lines from the log file"""
+    try:
+        with open(LOG_FILE, "r") as f:
+            # Efficiently get last n lines
+            lines = []
+            for line in f:
+                lines.append(line)
+            return "".join(lines)
+    except FileNotFoundError:
+        return "No log file found yet."
+
+def log_write(proc_name: str, log_message: str):
+    """
+    Write a message to the log file, in format "[proc_name] log_message".
+    proc_name: "Server stderr" or "Streamlit" are standard. You can use any name.
+    log_message: The message to log.
+    """
+    try:
+        with open(LOG_FILE, "a") as f:
+            f.write(f"[{proc_name}] {log_message}" + "\n")
+    except Exception as e:
+        print(f"Error writing to log file: {e}")

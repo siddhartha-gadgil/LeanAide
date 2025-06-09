@@ -7,12 +7,15 @@ import os
 import threading
 import queue
 import sys
+import tempfile
 
 PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
 HOST = os.environ.get("HOST", "localhost")  
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     COMMAND += " " + arg
+
+LOG_FILE = os.path.join(tempfile.gettempdir(), "leanaide_streamlit_server.log")
 
 print(f"Command: {COMMAND}")
 process = None
@@ -32,6 +35,9 @@ def process_error_reader(process):  # New function for stderr
         if not line:
             break  # Process terminated
         print(f"Process stderr: {line.strip()}", file=sys.stderr)  # Print to server's stderr
+        with open(LOG_FILE, "a") as f:  # Append to log file
+            f.write(f"[Server stderr] {line.strip()}\n")
+            f.flush()
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
