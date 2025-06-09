@@ -1,13 +1,13 @@
+import importlib.util
 import multiprocessing
 import os
-import importlib.util
 import signal
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
-import tempfile
 
 STREAMLIT_PORT = 8501
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
@@ -17,6 +17,9 @@ serv_dir = os.path.join(home_dir, "server")
 
 STREAMLIT_FILE = os.path.join(serv_dir, "streamlit_ui.py")
 SERVER_FILE = os.path.join(serv_dir, "api_server.py")
+COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
+for arg in sys.argv[1:]:
+    COMMAND += " " + arg
 
 LOG_FILE = os.path.join(str(tempfile.gettempdir()), "leanaide_streamlit_server.log")
 
@@ -28,7 +31,7 @@ def is_port_in_use(port: int) -> bool:
 def run_server_api():
     """Run Server server using uvicorn"""
     process = subprocess.Popen(
-        [sys.executable, SERVER_FILE],
+        [sys.executable, SERVER_FILE, COMMAND],
         stderr=subprocess.PIPE,
         text=True
     )
@@ -103,16 +106,13 @@ if __name__ == "__main__":
     # Parse command line arguments
     if len(sys.argv) > 1:
         if sys.argv[1] in ["--help", "-h"]:
-            print(f"Usage: {sys.executable} leanaide_server.py [--ui] [--no-server | --ns] [--help | -h]")
+            print("Usage: leanaide_server.py [--ui] [--no-server | --ns] [--help | -h] [additional arguments]")
             print("Options:")
             print("  --ui                   Run the Streamlit UI (default: API server only)")
             print("  --no-server | --ns     Don't run the backend server (use with --ui)")
             print("  --help | -h            Show this help message")
+            print("Any other argument will be passed on to the process `lake exe leanaide_process` as it is.")
             sys.exit(0)
-        elif sys.argv[1] not in ["--ui", "-h", "--help", "--no-server", "--ns"]:
-            print(f"Unknown argument: {sys.argv[1]}")
-            print("Use --help for usage information.")
-            sys.exit(1)
     
     run_ui = "--ui" in sys.argv
     run_server = "--no-server" not in sys.argv and "--ns" not in sys.argv

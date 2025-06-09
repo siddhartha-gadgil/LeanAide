@@ -1,19 +1,19 @@
 # Code from Gemini 2.0 Flash Experimental
 #
 import http.server
-import subprocess
 import json
 import os
-import threading
 import queue
+import subprocess
 import sys
 import tempfile
+import threading
 
 PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
 HOST = os.environ.get("HOST", "localhost")  
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
-    COMMAND += " " + arg
+    COMMAND = " " + arg
 
 LOG_FILE = os.path.join(tempfile.gettempdir(), "leanaide_streamlit_server.log")
 
