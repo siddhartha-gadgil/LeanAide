@@ -707,7 +707,7 @@
           "type": "array",
           "description": "The conditions and proofs in the different cases.",
           "items": {
-            "$ref": "#/$defs/condtion_case"
+            "$ref": "#/$defs/condition_case"
           }
         },
         "exhaustiveness": {
@@ -757,11 +757,11 @@
         },
         "condition": {
           "type": "string",
-          "description": "The pattern determining this case."
+          "description": "The condition determining this case."
         },
         "proof": {
           "$ref": "#/$defs/Proof",
-          "description": "Proof of this case."
+          "description": "Proof for this case."
         }
       },
       "required": [

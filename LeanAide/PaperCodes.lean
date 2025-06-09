@@ -20,23 +20,31 @@ def Translator.translateToPropStrict
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
   let thm ← withPreludes claim
-  let .ok type ← translator.translateToProp? thm | throwError
-      s!"codegen: no translation found for '{claim}', full statement {thm}"
-  let type ← instantiateMVars type
-  Term.synthesizeSyntheticMVarsNoPostponing
-  if type.hasSorry || type.hasExprMVar then
-    throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
-  let univ ← try
-    Term.withoutErrToSorry do
-    if type.hasSorry then
-      throwError "Type {type} has sorry when translating assertion '{claim}', full statement {thm}"
-    inferType type
-  catch e =>
-    throwError s!"Failed to infer type {type}, error {← e.toMessageData.format} when translating assertion '{claim}', full statement {thm}"
-  if univ.isSort then
-    dropLocalContext type
-  else
-    throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
+  let (js, _, _) ← translator.getLeanCodeJson  thm
+  let output ← getMessageContents js
+  for out in output do
+    let el? ← elabThm4 out
+    match el? with
+    | Except.error _ =>
+      continue
+    | Except.ok type =>
+      let type ← instantiateMVars type
+      Term.synthesizeSyntheticMVarsNoPostponing
+      if type.hasSorry || type.hasExprMVar then
+        throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
+      let univ ← try
+        Term.withoutErrToSorry do
+        if type.hasSorry then
+          throwError "Type {type} has sorry when translating assertion '{claim}', full statement {thm}"
+        inferType type
+      catch e =>
+        throwError s!"Failed to infer type {type}, error {← e.toMessageData.format} when translating assertion '{claim}', full statement {thm}"
+      if univ.isSort then
+        let type ← dropLocalContext type
+        return type
+      else
+        throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
+  throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}"
 
 open Lean.Parser.Tactic
 
@@ -276,6 +284,7 @@ where
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
+    logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?)
 
 -- #check commandToTactic
@@ -465,16 +474,20 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
     s!"codegen: no 'claim_label' found in standalone 'proof'"
   let some labelledTheorem ← findTheorem? claimLabel | throwError
-    s!"codegen: no theorem found with label {claimLabel}"
+    s!"codegen: no theorem found with label {claimLabel}; all labels {← allLabels}"
   let goalType := labelledTheorem.type
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
-  let pfStx ← getCodeTactics translator goal content
+  IO.eprintln s!"number of proof steps: {content.length}"
+  let pfStx ←
+    withoutModifyingState do
+    getCodeTactics translator goal content
   let n := mkIdent labelledTheorem.name
   let typeStx ← delabDetailed goalType
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
+  withoutModifyingState do
   getCodeTactics translator goal  content
 | goal?, kind, _ => throwError
     s!"codegen: proof does not work for kind {kind}where goal present: {goal?.isSome}"
@@ -964,7 +977,7 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
     s!"codegen: no 'condition' found in 'condition_cases_statement'"
   let conditionType ← translator.translateToPropStrict condition
   let conditionStx ← delabDetailed conditionType
-  let tac ← `(tactic|if $conditionStx then _ else _)
+  let tac ← `(tactic|if $conditionStx then ?_ else ?_)
   let [thenGoal, elseGoal] ←
     runAndGetMVars goal #[tac] 2 | throwError "codegen:  `if _ then _ else _` failed to get two goals, goal: {← ppExpr <| ← goal.getType}"
   let .ok trueCaseProof := js.getObjValAs? Json "true_case_proof" | throwError
@@ -975,10 +988,37 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
     s!"codegen: no translation found for true_case_proof {trueCaseProof}"
   let some falseCaseProofStx ← getCode translator (some elseGoal) ``tacticSeq falseCaseProof | throwError
     s!"codegen: no translation found for false_case_proof {falseCaseProof}"
-  let tacs := #[← `(tactic| if $conditionStx then $trueCaseProofStx else $falseCaseProofStx)]
+  let hash := hash conditionStx.raw.reprint
+  let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
+  let conditionBinder ←
+    `(Lean.binderIdent| $conditionId:ident)
+  let tacs := #[← `(tactic| if $conditionBinder :  $conditionStx then $trueCaseProofStx else $falseCaseProofStx)]
   `(tacticSeq| $tacs*)
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
+
+def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json)) (exhaustiveness: Option <| Syntax.Tactic) : TranslateM (TSyntax ``tacticSeq) := match cases with
+  | [] => goal.withContext do
+    let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
+    let pf := match exhaustiveness with
+      | some e => #[e] ++ pf
+      | none => pf
+    `(tacticSeq| $pf*)
+  | (conditionType, trueCaseProof) :: tail => goal.withContext do
+    let conditionStx ← delabDetailed conditionType
+    let tac ← `(tactic|if $conditionStx then ?_ else ?_)
+    let [thenGoal, elseGoal] ←
+      runAndGetMVars goal #[tac] 2 | throwError "codegen:  `if _ then _ else _` failed to get two goals, goal: {← ppExpr <| ← goal.getType}"
+    let some trueCaseProofStx ← getCode translator (some thenGoal) ``tacticSeq trueCaseProof | throwError
+      s!"codegen: no translation found for true_case_proof {trueCaseProof}"
+    let falseCaseProofStx ←
+      multiConditionCasesAux translator elseGoal tail exhaustiveness
+    let hash := hash conditionStx.raw.reprint
+    let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
+    let conditionBinder ←
+      `(Lean.binderIdent| $conditionId:ident)
+    let tacs := #[← `(tactic| if $conditionBinder :  $conditionStx then $trueCaseProofStx else $falseCaseProofStx)]
+    `(tacticSeq| $tacs*)
 
 /-
     "multi-condition_cases_statement": {
@@ -994,7 +1034,7 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
           "type": "array",
           "description": "The conditions and proofs in the different cases.",
           "items": {
-            "$ref": "#/$defs/condtion_case"
+            "$ref": "#/$defs/condition_case"
           }
         },
         "exhaustiveness": {
@@ -1009,7 +1049,35 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
       "additionalProperties": false
     },
 -/
-#notImplementedCode "multi-condition_cases_statement"
+@[codegen "multi-condition_cases_statement"]
+def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| some goal, ``tacticSeq, js => do
+  let .ok proofCases := js.getObjValAs? (List Json) "proof_cases" | throwError
+    s!"codegen: no 'proof_cases' found in 'multi-condition_cases_statement'"
+  let exhaustiveness? := js.getObjValAs? Json "exhaustiveness" |>.toOption
+  let cases ←  proofCases.mapM fun
+    c => do
+      let .ok condition := c.getObjValAs? String "condition" | throwError
+        s!"codegen: no 'condition' found in 'condition_case'"
+      let conditionType ← translator.translateToPropStrict condition
+      let .ok proof := c.getObjValAs? Json "proof" | throwError
+        s!"codegen: no 'proof' found in 'condition_case'"
+      pure (conditionType, proof)
+  let exhaustiveTac : Option <| Syntax.Tactic ←
+    exhaustiveness?.mapM fun
+      e => do
+        let conds := cases.map (·.1)
+        let exhaustGoal ←
+          orAllWithGoal conds (← goal.getType)
+        let exhaustGoalStx ← delabDetailed exhaustGoal
+        let hash := hash exhaustGoalStx.raw.reprint
+        let exhaustId := mkIdent <| ("exhaust" ++ s!"_{hash}").toName
+        let some pfStx ← getCode translator (some goal) ``tacticSeq e | throwError
+          s!"codegen: no translation found for exhaustiveness {e}"
+        `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
+  multiConditionCasesAux translator goal cases exhaustiveTac
+| goal?, kind ,_ => throwError
+    s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
 /- induction_statement
     "induction_statement": {
@@ -1254,9 +1322,20 @@ def egTheorem' : Json :=
   Json.mkObj
     [ ("type", Json.str "theorem"),
       ("name", Json.str "egTheorem"),
-      ("claim_label", Json.str "egTheorem"),
+      ("label", Json.str "egTheorem"),
       ("claim", Json.str "There are infinitely many odd numbers.")
            ]
+
+def egTheorem'' : Json :=
+  Json.arr #[Json.mkObj
+    [ ("type", Json.str "theorem"),
+      ("name", Json.str "egTheorem"),
+      ("label", Json.str "egTheorem"),
+      ("claim", Json.str "There are infinitely many odd numbers.")
+           ],
+      Json.mkObj [("proof", Json.mkObj [("proof_steps", Json.arr #[]), ("claim_label", Json.str "egTheorem")])]]
+
+
 def egLet : Json :=
   Json.mkObj
     [ ("type", Json.str "let_statement"),
@@ -1267,12 +1346,12 @@ def egLet : Json :=
     ]
 
 open Codegen
--- #eval showStx egTheorem
+#eval showStx egTheorem
 
--- #eval showStx egTheorem'
-
-
--- #eval egTheorem.compress
+#eval showStx egTheorem''
 
 
--- #eval showStx egLet
+#eval egTheorem
+
+
+#eval showStx egLet
