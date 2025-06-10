@@ -19,7 +19,8 @@ STREAMLIT_FILE = os.path.join(serv_dir, "streamlit_ui.py")
 SERVER_FILE = os.path.join(serv_dir, "api_server.py")
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
-    COMMAND += " " + arg
+    if arg not in ["--ui", "--no-server", "--ns", "--help", "-h"]:
+        COMMAND += " " + arg
 
 LOG_FILE = os.path.join(str(tempfile.gettempdir()), "leanaide_streamlit_server.log")
 
