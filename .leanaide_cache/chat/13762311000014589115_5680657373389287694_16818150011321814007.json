@@ -1,0 +1,106 @@
+{"usage":
+ {"total_tokens": 2992,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2482,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 510},
+ "system_fingerprint": "fp_898ac29719",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BJ4Dgak55G7Txsk4DW24SuLjsqsDZ",
+ "created": 1743884152,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "{V : Type u} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj] (h : G.IsTree) : G.edgeFinset.card = Fintype.card V - 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {G : SimpleGraph V} [inst : Fintype V] [inst_1 : DecidableRel G.Adj], \n  G.IsTree → G.edgeFinset.card = Fintype.card V - 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {G : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [G.IsTree],\n  G.edgeFinset.card = Fintype.card V - 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} [inst : Fintype V] (T : SimpleGraph V) [inst_1 : DecidableRel T.Adj],\n  T.IsTree → T.edgeFinset.card = Fintype.card V - 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "theorem SimpleGraph.card_edges_eq_card_verts_sub_one {V : Type u} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj] [Fintype G.edgeSet] (hG : G.IsTree) :\n  G.edgeFinset.card = Fintype.card V - 1 := hG.card_edges_eq_card_verts_sub_one",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {T : SimpleGraph V} [inst : Fintype V] [T.IsTree],\n  T.edgeFinset.card = Fintype.card V - 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} [inst : Fintype V] (T : SimpleGraph V) [inst_1 : DecidableRel T.Adj] [T.IsTree],\n  T.edgeFinset.card = Fintype.card V - 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "tree.card_edges_eq_card_verts_sub_one",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} [inst : Fintype V] (T : SimpleGraph V) [T.IsTree],\n  T.edgeFinset.card = Fintype.card V - 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {V : Type u_1} {G : SimpleGraph V} [inst : Fintype V] [inst_1 : DecidableRel G.Adj],\n  G.IsTree → G.edgeFinset.card = Fintype.card V - 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

@@ -1,0 +1,106 @@
+{"usage":
+ {"total_tokens": 2818,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2388,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 430},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Bf6x2GiHlYQQAJysekcdnquLOnjid",
+ "created": 1749137868,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : AddMonoid R] (a b : R), ∃ c, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u_1} [inst : AddCommMonoid α] (a b : α), ∃ c, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u} [inst : AddCommMonoid α] (a b : α), ∃ c : α, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u} [inst : AddSemigroup R] [inst_1 : Mul R] {a b : R}, ∃ c, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u} [inst : AddCommSemigroup α] [inst_1 : Mul α] (a b : α), ∃ c, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u} [AddCommMonoid α] [Mul α], ∀ a b : α, ∃ c : α, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u} [inst : AddSemigroup α] [inst : MulActionWithZero ℕ α] (a b : α), ∃ c, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ (a b : ℕ), ∃ c : ℕ, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {α : Type u_1} [inst : AddCommGroup α] [inst_1 : MulAction ℕ α] (a b : α), ∃ c : α, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u_1} [inst : AddCommMonoid R] (a b : R), ∃ c, 2 * (a + b) = 2 * c",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}
