@@ -82,15 +82,18 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
                     )
                     st.session_state.valid_manual_input = False
 
+        # Parameters for each task
         for param, param_type in tasks[task].get("parameters", {}).items():
             if "boolean" in param_type.lower() or "bool" in param_type.lower():
-                if param_in := st.checkbox(f"{task.capitalize()} - {param} ({param_type})", help = "Check this box if you want to change the default Boolean value"):
-                    st.session_state.val_input[param] = param_in
+                if st.checkbox(f"{task.capitalize()} - {param} ({param_type})", help = "Check this box if you want to change the default Boolean value"):
+                    st.session_state.val_input[param] = False if "true" in param_type.lower() else True
+                    st.session_state.valid_manual_input = True
             else:
                 help = f"Please provide a value for `{param}` of type `{param_type}`. If you want to skip this parameter, just leave it unchecked."
                 if param_in := st.text_input(f"{task.capitalize()} - {param} ({param_type}):", help=help):
                     st.session_state.val_input[param] = param_in
-
+                    st.session_state.valid_manual_input = True
+            
     if st.session_state.valid_manual_input:
         st.subheader("Inputs obtained. Please verify them before proceeding.", help = "Note that default values will be used for any parameters that you did not provide input for.")
         st.json(st.session_state.val_input)

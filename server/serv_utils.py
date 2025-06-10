@@ -8,7 +8,7 @@ from api_server import HOST, LOG_FILE
 
 # Lean Checker Tasks
 tasks = {
-    "echo": {"input": {"data": "Json"}, "output": {"data": "Json"}},
+    "echo": {"input": {"data": "String"}, "output": {"data": "String"}},
     "translate_thm": {
         "input": {"text": "String"},
         "output": {"theorem": "String"},
