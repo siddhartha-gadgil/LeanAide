@@ -215,9 +215,19 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
+    IO.eprintln s!"codegen: goal still open after tactics: {← ppExpr <| ← goal.getType}"
+    IO.eprintln "Local context:"
+    let lctx ← getLCtx
+    for decl in lctx do
+      IO.eprintln s!"{decl.userName}: {← ppExpr <| decl.type}"
     let autoTacs ←
-      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
+      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| aesop?)]
+    IO.eprintln s!"codegen: auto tactics:"
+    for tac in autoTacs do
+      IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
     appendTactics tacs (← `(tacticSeq| $autoTacs*))
+
+#check LocalContext
 
 def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   (sources: List Json) :

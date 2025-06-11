@@ -187,7 +187,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     (← cachePath) / "chat" /
       s!"{hash server}_{hash params}_{hash messages}.json"
   if ← file.pathExists then
-    -- IO.eprintln s!"Reading from cache: {file}"
+    IO.eprintln s!"Reading from cache: {file}"
     -- logInfo s!"Reading from cache: {file}"
     let output ← IO.FS.readFile file
     match Json.parse output with

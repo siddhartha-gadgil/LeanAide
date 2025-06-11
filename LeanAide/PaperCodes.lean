@@ -20,6 +20,7 @@ def Translator.translateToPropStrict
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
   let thm ← withPreludes claim
+  IO.eprintln s!"Translating to proposition: {claim}, full statement: {thm}"
   let (js, _, _) ← translator.getLeanCodeJson  thm
   let output ← getMessageContents js
   for out in output do
@@ -40,7 +41,9 @@ def Translator.translateToPropStrict
       catch e =>
         throwError s!"Failed to infer type {type}, error {← e.toMessageData.format} when translating assertion '{claim}', full statement {thm}"
       if univ.isSort then
+        IO.eprintln s!"Obtained type: {← ppExpr type}"
         let type ← dropLocalContext type
+        IO.eprintln s!"Obtained type in local context: {← ppExpr type}"
         return type
       else
         throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
@@ -283,7 +286,7 @@ where
     let name ← translator.server.theoremName thm
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
-    Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
+    Translate.addTheorem <| {name := name, type := type, label := label, isProved := true, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?)
 
@@ -479,6 +482,13 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
   IO.eprintln s!"number of proof steps: {content.length}"
+  match labelledTheorem.source.getObjVal?  "hypothesis" with
+      | Except.ok h =>
+        IO.eprintln s!"hypothesis: {h} in proof"
+        contextRun translator none ``tacticSeq h
+        IO.eprintln "Preludes added:"
+        IO.eprintln <| ← withPreludes ""
+      | Except.error _ => pure ()
   let pfStx ←
     withoutModifyingState do
     getCodeTactics translator goal content
@@ -649,7 +659,7 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
 | _, js => do
   let .ok statement :=
       js.getObjValAs? String "assumption" | throwError "No 'assumption' found in 'assume_statement'"
-  addPrelude statement
+  addPrelude <| "Assume that: " ++ statement
   return none
 
 
@@ -1056,7 +1066,6 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
   let .ok proofCases := js.getObjValAs? (List Json) "proof_cases" | throwError
     s!"codegen: no 'proof_cases' found in 'multi-condition_cases_statement'"
   let exhaustiveness? := js.getObjValAs? Json "exhaustiveness" |>.toOption
-  IO.eprintln s!"number of proof cases: {proofCases.length}"
   let cases ←  proofCases.mapM fun
     c => do
       let .ok condition := c.getObjValAs? String "condition" | throwError
@@ -1065,15 +1074,12 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
       let .ok proof := c.getObjValAs? Json "proof" | throwError
         s!"codegen: no 'proof' found in 'condition_case'"
       pure (conditionType, proof)
-  IO.eprintln s!"number of cases (obtained): {cases.length}"
   let exhaustiveTac : Option <| Syntax.Tactic ←
     exhaustiveness?.mapM fun
       e => do
         let conds := cases.map (·.1)
-        IO.eprintln "getting OrAll"
         let exhaustGoalType ←
           orAllWithGoal conds (← goal.getType)
-        IO.eprintln "Got OrAll"
         let exhaustGoalStx ← delabDetailed exhaustGoalType
         let hash := hash exhaustGoalStx.raw.reprint
         let exhaustId := mkIdent <| ("exhaust" ++ s!"_{hash}").toName
@@ -1229,13 +1235,14 @@ def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind
 -/
 @[codegen "conclude_statement"]
 def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, ``tacticSeq, js => do
+| some _, ``tacticSeq, js => do
   let .ok claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no 'claim' found in 'conclude_statement'"
   let type ← translator.translateToPropStrict claim
   let stx ← delabDetailed type
   let pf ← runTacticsAndGetTryThisI type #[← `(tactic| auto?)]
   `(tacticSeq| have : $stx := by $pf*)
+| none, ``tacticSeq, _ => do return none
 | _, kind, _ => throwError
     s!"codegen: conclude_statement does not work for kind {kind}"
 /- Figure
@@ -1362,19 +1369,28 @@ def egLet : Json :=
   }
 
 open Codegen
-#eval showStx egTheorem
+-- #eval showStx egTheorem
 
-#eval showStx egTheorem''
-
-
-#eval egTheorem
+-- #eval showStx egTheorem''
 
 
-#eval showStx egLet
+-- #eval egTheorem
+
+
+-- #eval showStx egLet
 
 def egView : MetaM Format := do
   let .ok js := runParserCategory (← getEnv) `json egTheorem.pretty | throwError
     "Failed to parse egLet as JSON"
   PrettyPrinter.ppCategory `json js
 
-#eval egView
+-- #eval egView
+
+def egTacs : TermElabM <|  (Array Syntax.Tactic) := do
+  let goal := q(∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N)
+  let autoTac ← `(tactic| aesop?)
+  let tacs ← runTacticsAndGetTryThisI goal #[autoTac]
+  return tacs
+
+
+#eval egTacs

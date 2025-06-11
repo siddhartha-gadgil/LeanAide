@@ -1,0 +1,107 @@
+{"usage":
+ {"total_tokens": 3008,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2522,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 486},
+ "system_fingerprint": "fp_a288987b44",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BhEqwEO83eQNVJ5ZcWStkH8JAZ7cz",
+ "created": 1749644898,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (N : ℤ), (N % 10 = 0 ∨ N % 10 = 5) → (N % 10 = 0) → ∃ (q : ℤ), N = 10 * q",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (N : ℤ), (N % 10 = 0 ∨ N % 10 = 5) → N % 10 = 0 → ∃ (q : ℤ), N = 10 * q",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (N : ℤ), (N % 10 = 0 ∨ N % 10 = 5) → (N % 10 = 0) → ∃ q : ℤ, N = 10 * q",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (N : ℤ), (N % 10 = 0 ∨ N % 10 = 5) → N % 10 = 0 → ∃ (q : ℤ), N = 10 * q",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {N : ℤ}, (N % 10 = 0 ∨ N % 10 = 5) → (N % 10 = 0) → ∃ q : ℤ, N = 10 * q",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (N : ℤ), (N % 10 = 0 ∨ N % 10 = 5) → N % 10 = 0 → ∃ (q : ℤ), N = 10 * q",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (N : ℤ), (N % 10 = 0 ∨ N % 10 = 5) → (N % 10 = 0) → ∃ q : ℤ, N = 10 * q",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (N : ℤ), (N % 10 = 0 ∨ N % 10 = 5) → (N % 10 = 0) → ∃ q : ℤ, N = 10 * q",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → (N % 10 = 0 → ∃ (q : ℤ), N = 10 * q)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (N : ℤ), (N % 10 = 0 ∨ N % 10 = 5) → N % 10 = 0 → ∃ (q : ℤ), N = 10 * q",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

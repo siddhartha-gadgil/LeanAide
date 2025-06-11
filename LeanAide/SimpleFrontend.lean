@@ -105,8 +105,8 @@ def checkElabFrontM(s: String) : MetaM <| List String := do
   for msg in log.toList do
     if msg.severity == MessageSeverity.error then
       let x ← msg.data.toString
-      IO.eprintln s!"Error: {x}"
-      IO.eprintln s!"imports : {env.allImportedModuleNames.size}"
+      -- IO.eprintln s!"Error: {x}"
+      -- IO.eprintln s!"imports : {env.allImportedModuleNames.size}"
       l := l.append [x]
   return l
 
