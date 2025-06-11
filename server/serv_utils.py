@@ -7,9 +7,14 @@ import streamlit as st
 from api_server import HOST, LOG_FILE
 
 # Lean Checker Tasks
-tasks = {
-    "echo": {"input": {"data": "String"}, "output": {"data": "String"}},
+TASKS = {
+    "echo": {
+        "name" : "Echo",
+        "input": {"data": "String"},
+        "output": {"data": "String"}
+    },
     "translate_thm": {
+        "name": "Translate Theorem",
         "input": {"text": "String"},
         "output": {"theorem": "String"},
         "parameters": {
@@ -18,26 +23,39 @@ tasks = {
         },
     },
     "translate_def": {
+        "name": "Translate Definition",
         "input": {"text": "String"},
         "output": {"definition": "String"},
         "parameters": {"fallback": "Bool (default: true)"},
     },
     "theorem_doc": {
+        "name": "Documentation for a Theorem",
         "input": {"name": "String", "command": "String"},
         "output": {"doc": "String"},
     },
     "def_doc": {
+        "name": "Documentation for a Definition",
         "input": {"name": "String", "command": "String"},
         "output": {"doc": "String"},
     },
-    "theorem_name": {"input": {"text": "String"}, "output": {"name": "String"}},
-    "prove": {"input": {"theorem": "String"}, "output": {"proof": "String"}},
+    "theorem_name": {
+        "name": "Theorem Name",
+        "input": {"text": "String"},
+        "output": {"name": "String"}
+    },
+    "prove": {
+        "name": "Prove Theorem",
+        "input": {"theorem": "String"},
+        "output": {"proof": "String"}
+    },
     "structured_json_proof": {
+        "name": "Structured JSON Proof",
         "input": {"theorem": "String", "proof": "String"},
         "output": {"json_structured": "Json"},
     },
     "lean_from_json_structured": {
-        "input": {"json_structured": "Json String"},
+        "name": "Lean from JSON Structured",
+        "input": {"json_structured": "Json"},
         "output": {
             "lean_code": "String",
             "declarations": "List String",
@@ -45,6 +63,7 @@ tasks = {
         },
     },
     "elaborate": {
+        "name": "Elaborate Lean Code",
         "input": {"lean_code": "String", "declarations": "List Name"},
         "output": {"logs": "List String", "sorries": "List Json"},
         "parameters": {
@@ -53,6 +72,32 @@ tasks = {
         },
     },
 }
+
+def get_names_by_tasks():
+    list_tasks = []
+    for task in TASKS:
+        if "name" in TASKS[task]:
+            list_tasks.append(TASKS[task]["name"])
+        else:
+            list_tasks.append(task)
+    return list_tasks
+
+def get_task_by_name(name):
+    for task in TASKS:
+        if "name" in TASKS[task] and TASKS[task]["name"] == name:
+            return task
+    return None
+
+def get_task_list_by_name(list_names):
+    """
+    Given a list of task names, return a list of tasks that match those names.
+    If a name does not match any task, it is ignored.
+    """
+    task_list = []
+    for name in list_names:
+        if task := get_task_by_name(name):
+            task_list.append(task)
+    return task_list
 
 def parse_curl(curl_cmd, ignore_curl_ip_port):
     args = shlex.split(curl_cmd)

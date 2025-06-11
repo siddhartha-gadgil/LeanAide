@@ -2,7 +2,7 @@ import streamlit as st
 
 # Page Setup
 intro_page = st.Page(
-    page = "pages/intro.py",
+    page = "pages/home.py",
     title = "Home",
     icon = ":material/home:",
     default = True,
