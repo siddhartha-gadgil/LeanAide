@@ -1,10 +1,16 @@
 import ast
+import pyperclip
+from pathlib import Path
+import os
+import sys
 import json
 import shlex
 from typing import Any, Tuple, Type
 import streamlit as st
 
 from api_server import HOST, LOG_FILE
+
+HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
 
 # Lean Checker Tasks
 TASKS = {
@@ -203,3 +209,20 @@ def log_write(proc_name: str, log_message: str):
             f.write(f"[{proc_name}] {log_message}" + "\n")
     except Exception as e:
         print(f"Error writing to log file: {e}")
+
+def download_file(file_content, file_name):
+    st.download_button(
+        label="Download File", data=file_content, file_name=file_name, mime="text/plain"
+    )
+
+# Function to copy text to clipboard and show confirmation
+def copy_to_clipboard(text):
+    try:
+        pyperclip.copy(text)
+        st.toast("Copied to clipboard!", icon="✔️")
+    except Exception as e:
+        st.warning(f"Failed to copy: {e}")
+
+if __name__ == "__main__":
+    # Example usage
+    print(homedir)

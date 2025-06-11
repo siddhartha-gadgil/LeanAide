@@ -1,8 +1,6 @@
-import os
 import socket
-import sys
 from pathlib import Path
-
+import urllib
 import requests
 import streamlit as st
 from dotenv import load_dotenv
@@ -11,10 +9,6 @@ from api_server import HOST, PORT, LOG_FILE
 from serv_utils import *
 
 load_dotenv()
-
-homedir = str(Path(__file__).resolve().parent.parent)
-src_dir = os.path.join(homedir, "src")
-sys.path.insert(0, str(src_dir))
 
 st.sidebar.header("Server Response")
 
@@ -214,12 +208,16 @@ if st.button("Submit Request", on_click= button_clicked("request_button"), type 
             for key, val_type in TASKS[task]["output"].items():
                 if "json" in val_type.lower().split():
                     st.write(f"{key.capitalize()} ({val_type}):")
+                    st.markdown('<font color="grey">This text is grey.To copy the JSON data, click on the :clipboard: icon</font>', unsafe_allow_html=True)
                     st.json(st.session_state.result.get(key, "No data available."))
                 else:
                     st.write(f"{key.capitalize()} ({val_type}):")
                     st.code(
                         st.session_state.result.get(key, "No data available."), language="plaintext"
                     )
+                    if "lean_code" in key.lower():
+                        code = st.session_state.result.get(key, "-- No Lean code available")
+                        st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
     else:
         st.error(f"Error: {response.status_code}, {response.text}")
 
