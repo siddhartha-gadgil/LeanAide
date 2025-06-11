@@ -1005,6 +1005,7 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
       | none => pf
     `(tacticSeq| $pf*)
   | (conditionType, trueCaseProof) :: tail => goal.withContext do
+    IO.eprintln s!"number of cases (remaining): {tail.length + 1}"
     let conditionStx ← delabDetailed conditionType
     let tac ← `(tactic|if $conditionStx then ?_ else ?_)
     let [thenGoal, elseGoal] ←
@@ -1055,6 +1056,7 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
   let .ok proofCases := js.getObjValAs? (List Json) "proof_cases" | throwError
     s!"codegen: no 'proof_cases' found in 'multi-condition_cases_statement'"
   let exhaustiveness? := js.getObjValAs? Json "exhaustiveness" |>.toOption
+  IO.eprintln s!"number of proof cases: {proofCases.length}"
   let cases ←  proofCases.mapM fun
     c => do
       let .ok condition := c.getObjValAs? String "condition" | throwError
@@ -1063,18 +1065,25 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
       let .ok proof := c.getObjValAs? Json "proof" | throwError
         s!"codegen: no 'proof' found in 'condition_case'"
       pure (conditionType, proof)
+  IO.eprintln s!"number of cases (obtained): {cases.length}"
   let exhaustiveTac : Option <| Syntax.Tactic ←
     exhaustiveness?.mapM fun
       e => do
         let conds := cases.map (·.1)
-        let exhaustGoal ←
+        IO.eprintln "getting OrAll"
+        let exhaustGoalType ←
           orAllWithGoal conds (← goal.getType)
-        let exhaustGoalStx ← delabDetailed exhaustGoal
+        IO.eprintln "Got OrAll"
+        let exhaustGoalStx ← delabDetailed exhaustGoalType
         let hash := hash exhaustGoalStx.raw.reprint
         let exhaustId := mkIdent <| ("exhaust" ++ s!"_{hash}").toName
-        let some pfStx ← getCode translator (some goal) ``tacticSeq e | throwError
+        let exhaustGoalExpr ← mkFreshExprMVar
+          exhaustGoalType
+        let exhaustGoal := exhaustGoalExpr.mvarId!
+        let some pfStx ← getCode translator (some exhaustGoal) ``tacticSeq e | throwError
           s!"codegen: no translation found for exhaustiveness {e}"
         `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
+  IO.eprintln s!"number of cases (after exhaustiveness): {cases.length}"
   multiConditionCasesAux translator goal cases exhaustiveTac
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"

@@ -416,7 +416,7 @@ partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
   match goal with
   | .forallE name type _ bi =>
     withLocalDecl name bi type fun x => do
-      let inner ← orAllWithGoal terms goal
+      let inner ← orAllWithGoal terms type
       mkForallFVars #[x] inner
   | _ =>
     let terms ← terms.mapM dropLocalContext
