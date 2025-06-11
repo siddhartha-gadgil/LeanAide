@@ -210,7 +210,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   match goal? with
   | none => do
     return tacs
-  | some goal => do
+  | some goal => goal.withContext do
     let autoTacs ←
       runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
     appendTactics tacs (← `(tacticSeq| $autoTacs*))
