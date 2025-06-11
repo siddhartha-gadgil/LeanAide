@@ -88,9 +88,13 @@ initialize registerBuiltinAttribute {
 Get the code generation functions for a given key. The key is a string that identifies the function. If no function is found for the key, an error is thrown.
 -/
 def codegenMatches (key: String) : CoreM <| Array Name := do
+  let allKeys := (codegenExt.getState (← getEnv)).toArray.map (fun (k, _) => k)
   let some fs :=
     (codegenExt.getState (← getEnv)).get? key | throwError
-      s!"codegen: no function found for key {key}"
+      s!"codegen: no function found for key {key} available keys are {allKeys.toList}"
+  IO.eprintln s!"codegen: found {fs.size} functions for key {key}"
+  if fs.isEmpty then
+    IO.eprintln s!"codegen: no function found for key {key} in {allKeys.toList}"
   return fs
 
 /--
