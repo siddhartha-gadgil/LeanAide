@@ -211,8 +211,23 @@ def log_write(proc_name: str, log_message: str):
         print(f"Error writing to log file: {e}")
 
 def download_file(file_content, file_name):
+    # match mime
+    mime = "text/plain"
+    match file_name.split(".")[-1].lower():
+        case "json":
+            mime = "application/json"
+        case "txt":
+            mime = "text/plain"
+        case "md":
+            mime = "text/markdown"
+        case "html":
+            mime = "text/html"
+        case "csv":
+            mime = "text/csv"
+        case _:
+            pass  # Keep default text/plain for other extensions
     st.download_button(
-        label="Download File", data=file_content, file_name=file_name, mime="text/plain"
+        label="Download File", data=file_content, file_name=file_name, mime=mime, help = "Click to download the file. "
     )
 
 # Function to copy text to clipboard and show confirmation
@@ -221,8 +236,4 @@ def copy_to_clipboard(text):
         pyperclip.copy(text)
         st.toast("Copied to clipboard!", icon="✔️")
     except Exception as e:
-        st.warning(f"Failed to copy: {e}")
-
-if __name__ == "__main__":
-    # Example usage
-    print(homedir)
+        st.warning(f"Failed to copy: {e}", icon="⚠️")

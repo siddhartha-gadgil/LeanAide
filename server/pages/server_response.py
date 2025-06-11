@@ -208,8 +208,10 @@ if st.button("Submit Request", on_click= button_clicked("request_button"), type 
             for key, val_type in TASKS[task]["output"].items():
                 if "json" in val_type.lower().split():
                     st.write(f"{key.capitalize()} ({val_type}):")
-                    st.markdown('<font color="grey">This text is grey.To copy the JSON data, click on the :clipboard: icon</font>', unsafe_allow_html=True)
-                    st.json(st.session_state.result.get(key, "No data available."))
+                    json_out = st.session_state.result.get(key, {})
+                    st.json(json_out)
+                    if st.button(f"Copy to Clipboard", key=f"copy_btn_{key}"):
+                        copy_to_clipboard(str(json_out))
                 else:
                     st.write(f"{key.capitalize()} ({val_type}):")
                     st.code(

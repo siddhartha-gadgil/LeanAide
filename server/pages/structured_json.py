@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import os
 from pathlib import Path
+import shutil
 
 import requests
 from dotenv import load_dotenv
@@ -13,7 +14,7 @@ from serv_utils import copy_to_clipboard, download_file, HOMEDIR
 load_dotenv()
 
 st.title("LeanAide: Structured Json Output")
-st.write("Here you can input your theorem-proof/paper, etc. and generate structured JSON output using LeanAide Schema's.")
+st.write("Here you can input your theorem-proof/paper, etc. and generate Structured JSON output using LeanAide Schema.")
 
 st.sidebar.header("Structured Json")
 
@@ -68,14 +69,15 @@ with st.expander("Credentials"):
         )
 
 # Create a temporary directory if it doesn't exist
-temp_dir = "leanaide_st_temp"
+TEMP_DIR = "leanaide_st_temp"
+os.makedirs(TEMP_DIR, exist_ok=True)
 
 # Create session state variables if they don't exist
-for key in ["image_paths", "proof", "theorem", "structured_proof", "pdf_paper"]:
+for key in ["image_paths", "proof", "theorem", "structured_proof", "paper"]:
     if key not in st.session_state:
         st.session_state[key] = None
 
-for key in ["input_upload_files", "input_text_content", "input_markdown_file"]:
+for key in ["input_upload_files", "input_text_content", "input_markdown_file", "input_paper", "input_pdf_file"]:
     if key not in st.session_state:
         st.session_state[key] = False
 
@@ -85,130 +87,221 @@ input_options = ["Upload PDF Paper", "Input Theorem-Proof"]
 input_captions = ["For Research Papers", "For single Theorem-Proof or Problems"]
 input_method = st.radio("Choose the input method:", options = input_options)
 
-# PDF upload section
-if input_method == input_options[0]:
-    st.session_state.input_upload_files = True
-    st.subheader("Upload Paper PDF")
-    uploaded_pdf = st.file_uploader("Upload a PDF file for the paper", type="pdf")
-
-    if uploaded_pdf:
-        try:
-            # Save the uploaded PDF to a temporary location
-            pdf_path = os.path.join(temp_dir, "pdf_paper.pdf")
-            with open(pdf_path, "wb"):
-                st.session_state.pdf_paper = uploaded_pdf.read()
-            st.success("PDF uploaded successfully.")
-        except Exception as e:
-            st.warning(f"Failed to upload the PDF file: {e}")
+def action_copy_download(key: str, filename: str):
+    """Helper function to copy text to clipboard and download as a file."""
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button(f"Copy to Clipboard", key=f"copy_btn_{key}"):
+            copy_to_clipboard(st.session_state[key])
+    with col2:
+        download_file(st.session_state[key], filename)
 
 # Helper function for image inputs
 def handle_image_input(key: str):
-    """Handles image input and reordering. key is the `st.session_state[key]` where output text will be stored."""
-    uploaded_images = st.file_uploader(
-        "Upload multiple images", type=["png", "jpg", "jpeg"], accept_multiple_files=True
-    )
-    if uploaded_images:
-        st.write("Images uploaded successfully. You can reorder them below:")
-        os.makedirs(temp_dir, exist_ok=True)
+    """Handles image input and reordering for different sections."""
+    # Create unique session state keys for this section
+    st.info(f"Note: For the uploaded images, they are sent to LLM's for OCR and processing, so please ensure they are clear and readable. Also make sure to provide LLM Credentials for the same.")
+    paths_key = f"{key}_image_paths"
+    if paths_key not in st.session_state:
+        st.session_state[paths_key] = []
+    
+    temp_dir = os.path.join(TEMP_DIR, key)
+    os.makedirs(temp_dir, exist_ok=True)
 
-        # Save uploaded images to the temporary directory
+    # File uploader with unique key
+    uploaded_images = st.file_uploader(
+        f"Upload images for {key}",
+        type=["png", "jpg", "jpeg"],
+        accept_multiple_files=True,
+        key=f"file_uploader_{key}"  # Unique key for each uploader
+    )
+
+    if uploaded_images:
+        st.success(f"Images uploaded successfully for {key}. You can reorder them below:") 
+        # Process new uploads
         for uploaded_file in uploaded_images:
             img = Image.open(uploaded_file)
             temp_path = os.path.join(temp_dir, uploaded_file.name)
             img.save(temp_path)
-            if temp_path not in st.session_state.image_paths:
-                st.session_state.image_paths.append(temp_path)
+            if temp_path not in st.session_state[paths_key]:
+                st.session_state[paths_key].append(temp_path)
 
-        # Allow reordering of images using drag-and-drop functionality
-        reordered_images = sort_items(
-            items=[
-                os.path.basename(path) for path in st.session_state.image_paths
-            ],  # Display only filenames
-            direction="vertical",
-        )
-        st.session_state.image_paths = [
-            os.path.join(temp_dir, filename) for filename in reordered_images
-        ]
-
-        if st.button("Generate Image to Text"):
-            with st.spinner("Processing reordered images..."):
-                try:
-                    # st.session_state.proof = solution_from_images(st.session_state.image_paths)
-                    st.session_state[key] = f"Sample {key} text generated from images." #TODO:
-                except Exception as e:
-                    st.warning(f"Failed to process images: {e}")
-
-        if st.session_state.proof:
-            st.subheader(f"Generated {key}:")
-            st.session_state[key] = st.text_area(
-                key.capitalize(), st.session_state.proof, height=200, key=f"{key}_text"
+        # Display and reorder images
+        if st.session_state[paths_key]:
+            reordered_images = sort_items(
+                items=[os.path.basename(path) for path in st.session_state[paths_key]],
+                direction="vertical",
+                key=f"sortable_{key}"  # Unique key for sortable list
             )
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                if st.button("Copy to Clipboard", key=f"copy_{key}"):
-                    copy_to_clipboard(st.session_state[key])
-            with col2:
-                download_file(st.session_state[key], "proof.txt")
+            
+            # Update paths with new order
+            st.session_state[paths_key] = [
+                os.path.join(temp_dir, filename) for filename in reordered_images
+            ]
 
-# Helper function for markdown input
-def handle_markdown_input(key: str):
-    """Handles markdown input. key is the `st.session_state[key]` where output text will be stored."""
-    st.subheader("Upload Markdown/Text File")
-    uploaded_markdown = st.file_uploader("Upload a markdown file", type=["md", "txt"])
-    file_type = "Markdown" if uploaded_markdown and uploaded_markdown.name.endswith(".md") else "Text"
-    if uploaded_markdown:
-        try:
-            st.session_state[key] = uploaded_markdown.read().decode("utf-8")
-            st.success(f"{file_type} file uploaded successfully.")
-        except Exception as e:
-            st.warning(f"Failed to read the {file_type} file: {e}")
+            # Display image previews in columns
+            cols = st.columns(min(3, len(st.session_state[paths_key])))
+            for idx, img_path in enumerate(st.session_state[paths_key]):
+                with cols[idx % len(cols)]:
+                    st.image(img_path, use_column_width=True)
 
+    # Generate text from images
+    if st.session_state[paths_key] and st.button(f"Generate {key.capitalize()} text from Images", 
+                                              key=f"generate_btn_{key}"):
+        with st.spinner(f"Processing images..."):
+            try:
+                # Replace with your actual image processing function
+                generated_text = f"Sample {key} text generated from {len(st.session_state[paths_key])} images."
+                st.session_state[key] = generated_text
+            except Exception as e:
+                st.error(f"Failed to process images: {str(e)}")
+                st.session_state[key] = ""
+
+    # Display and manage generated text
     if st.session_state[key]:
-        st.subheader(f"{file_type} Content:")
-        st.session_state[key] = st.code(f"No {key} text found.", st.session_state[key], height=200)
+        st.subheader(f"Generated {key.capitalize()}:", help = "Generated text from images or manual input. You may see some text previously if you have already filled the value in other sections.")
+        st.session_state[key] = st.text_area(
+            f"{key.capitalize()} Content",
+            st.session_state[key],
+            height=200,
+            key=f"text_area_{key}"  # Unique key for text area
+        )
+        
+        # Action buttons
+        action_copy_download(key, f"{key}.txt")
+        
+
+# Helper function for markdown/text file input
+def handle_md_file_input(key: str):
+    """Handles markdown/text file input for different sections."""
+    st.subheader(f"Upload Markdown/Text file for {key.capitalize()}")
+ 
+    # file uploader with unique key
+    uploaded_file = st.file_uploader(
+        f"Upload {key} file",
+        type=["md", "txt"],
+        key=f"md_uploader_{key}"  # Unique key for each uploader
+    )
+
+    if uploaded_file:
+        file_type = "Markdown" if uploaded_file.name.endswith(".md") else "Text"
+        try:
+            content = uploaded_file.read().decode("utf-8")
+            st.session_state[key] = content
+            st.success(f"{file_type} file for {key} uploaded successfully.")
+        except UnicodeDecodeError:
+            try:
+                # Fallback to different encoding if utf-8 fails
+                content = uploaded_file.read().decode("latin-1")
+                st.session_state[key] = content
+                st.success(f"{file_type} file for {key} uploaded (using fallback encoding).")
+            except Exception as e:
+                st.error(f"Failed to read the {file_type} file: {str(e)}")
+                st.session_state[key] = ""
+        except Exception as e:
+            st.error(f"Failed to process {file_type} file: {str(e)}")
+            st.session_state[key] = ""
+
+    # Display content if available
+    if st.session_state[key]:
+        st.subheader(f"{key.capitalize()} Content:", help = "You can edit the content below if needed. You may see some text previously if you have already filled the value in other sections.")
+        st.session_state[key] = st.text_area(
+            f"Edit {key} content",
+            st.session_state[key],
+            height=200,
+            key=f"md_content_{key}"  # Unique key for text area
+        )
+        
+        # Action buttons
+        ext = "md" if uploaded_file.name.endswith(".md") else "txt"
+        action_copy_download(key, f"{key}.{ext}")
+    else:
+        st.warning(f"No {key} content available yet. Upload a file to begin.")
 
 # Helper function for text input
 def handle_text_input(key: str):
     st.session_state.input_text_content = True
     default_text = f"Enter the {key} text here..."
-    st.session_state.theorem = st.text_area(
+    obt_text = st.text_area(
         key.capitalize(),
-        value = default_text,
+        value = st.session_state[key] if st.session_state[key] else "",
+        placeholder = default_text,
         height=200,
     )
-    if st.session_state[key] != default_text or st.session_state[key] != "":
+    if obt_text.strip() != "" and obt_text.strip() != default_text:
         st.success(f"{key.capitalize()} received successfully.")
+        action_copy_download(key, f"{key}.txt")
+        return obt_text
     else:
-        st.warning(f"Please enter {key.capitalize} text before proceeding.")
+        st.warning(f"Please enter {key.capitalize()} text before proceeding.")
+        return ""
 
+# Helper function for PDF input
+def handle_pdf_input(key:str):
+    uploaded_pdf = st.file_uploader(f"Upload a PDF file for the {key}", type="pdf", key = f"pdf_uploader_{key}")
+    if uploaded_pdf:
+        try:
+            # Save the uploaded PDF to a temporary location
+            pdf_path = os.path.join(TEMP_DIR, f"pdf_{key}.pdf")
+            with open(pdf_path, "wb"):
+                st.session_state[key] = uploaded_pdf.read()
+            st.success("PDF uploaded successfully.")
+        except Exception as e:
+            st.warning(f"Failed to upload the PDF file: {e}")
+    
+    if st.session_state[key]:
+        st.subheader(f"{key.capitalize()} PDF Content:", help = "You can edit the content below if needed. You may see some text previously if you have already filled the value in other sections.")
+        # Display the PDF content (if any)
+        pdf_content = st.text_area(
+            f"Edit {key} PDF content",
+            value = st.session_state[key].decode("utf-8") if isinstance(st.session_state[key], bytes) else st.session_state[key],
+            height=200,
+            key=f"pdf_content_{key}"  # Unique key for text area
+        )
+        
+        # Action buttons
+        action_copy_download(key, f"{key}.pdf")
+
+# PDF upload section
+if input_method == input_options[0]:
+    st.session_state.input_paper = True
+    st.subheader("Upload Paper PDF")
+    handle_pdf_input("paper")
 # Theorem-Proof section
 if input_method == input_options[1]:
     st.session_state.input_upload_files = True
     # Upload Theorem
     st.subheader("Input Theorem")
-    thm_opt = st.radio("Choose input method for theorem:", options = ["Upload Images", "Upload Markdown/Text File", "Input Text"],)
+    standard_options = ["Upload Images", "Upload Markdown/Text File", "Input Text", "Upload PDF"]
+    thm_opt = st.radio("Choose input method for theorem:", options = standard_options, horizontal = True)
     if "image" in thm_opt.lower():
         st.session_state.input_upload_files = True
         handle_image_input("theorem") 
-    elif "text" in thm_opt.lower():
+    elif "markdown" in thm_opt.lower():
         st.session_state.input_markdown_file = True
-        handle_markdown_input("theorem")
+        handle_md_file_input("theorem")
+    elif "pdf" in thm_opt.lower():
+        st.session_state.input_pdf_file = True
+        handle_pdf_input("theorem")
     else:
         st.session_state.input_text_content = True
-        handle_text_input("theorem")
+        st.session_state.theorem = handle_text_input("theorem")
 
     # Upload Proof
-    st.header("Input Proof")
-    proof_opt = st.radio("Choose input method for proof:", options = ["Upload Images", "Upload Markdown/Text File", "Input Text"],)
+    st.subheader("Input Proof")
+    proof_opt = st.radio("Choose input method for proof:", options = standard_options, horizontal = True)
     if "image" in proof_opt.lower():
         st.session_state.input_upload_files = True
         handle_image_input("proof")
-    elif "text" in proof_opt.lower():
+    elif "markdown" in proof_opt.lower():
         st.session_state.input_markdown_file = True
-        handle_markdown_input("proof")
+        handle_md_file_input("proof")
+    elif "pdf" in proof_opt.lower():
+        st.session_state.input_pdf_file = True
+        handle_pdf_input("proof")
     else:
         st.session_state.input_text_content = True
-        handle_text_input("proof")
+        st.session_state.proof = handle_text_input("proof")
 
 if st.button("Generate Structured Proof"):
     if not st.session_state.input_upload_files and not st.session_state.input_text_content and not st.session_state.input_markdown_file:
@@ -235,20 +328,21 @@ if st.session_state.structured_proof:
         st.json(json_str)
         col1, col2 = st.columns([1, 1])
         with col1:
-            if st.button("Copy to Clipboard", key="copy_structured_proof"):
+            if st.button("Copy to Clipboard"):
                 copy_to_clipboard(json_str)
         with col2:
             download_file(json_str, "structured_proof.json")
     except Exception as e:
         st.warning(f"Failed to display structured proof: {e}")
 
+st.divider()
+
 # Schema Info
-st.subheader("Schema Information", help = "Expand the JSON schema below to see the LeanAide PaperStructure.json schema followed by models.")
+st.subheader("Schema Information", help = "Expand the JSON schema below to see the LeanAide `PaperStructure.json` schema followed by models.")
 schema_path = os.path.join(str(HOMEDIR), "resources", "PaperStructure.json")
 ln_schema_json = json.load(open(schema_path, "r"))
 st.json(ln_schema_json, expanded=False)
 
-if os.path.exists(temp_dir):
-    for file in os.listdir(temp_dir):
-        os.remove(os.path.join(temp_dir, file))
-    os.rmdir(temp_dir)
+if st.session_state.structured_proof:
+    if os.path.exists(TEMP_DIR):
+        shutil.rmtree(TEMP_DIR)
