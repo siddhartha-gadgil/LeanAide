@@ -142,6 +142,13 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic): Term
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 
+open PrettyPrinter
 def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): TermElabM <|  (Array Syntax.Tactic) := do
   let tacs? ← runTacticsAndGetTryThis? goal tactics
+  IO.eprintln s!"Tactics for goal: {← PrettyPrinter.ppExpr goal}"
+  if let some tacs := tacs? then
+    let view ← ppCategory ``tacticSeq <| ← `(tacticSeq|$tacs*)
+    IO.eprintln s!"Tactics:\n {view}"
+  else
+    IO.eprintln "No tactics found"
   return tacs?.getD #[(←  `(tactic| sorry))]

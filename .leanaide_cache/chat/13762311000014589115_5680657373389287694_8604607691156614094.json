@@ -1,0 +1,96 @@
+{"usage":
+ {"total_tokens": 496,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 318,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 178},
+ "system_fingerprint": "fp_55d88aaf2f",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BeyiViIjaoru2mCD34XO0VVuDVQob",
+ "created": 1749106215,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "```lean\n[\"nat.even_iff\"]\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "```lean\n[]\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\n[\"nat.even_iff\", \"exists_eq_mul_left_of_dvd\"]\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "[`exists_eq_mul_left_of_dvd`]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\n[\"nat.even_iff_exists_two_mul\", \"nat.even_iff\", \"nat.even_iff_two_dvd\", \"int.even_iff\", \"int.even_iff_two_dvd\"]\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\n[\"even_iff_two_dvd\", \"exists_eq_mul_left_of_dvd\", \"exists_eq_mul_right_of_dvd\"]\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\n[\"even_iff_two_mul\", \"exists_eq_mul_left_of_dvd\", \"nat.even_iff\"]\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "[]", "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant", "refusal": null, "content": "[]", "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\n[\"even_iff_two_dvd\", \"nat.even_iff\", \"int.even_iff\"]\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

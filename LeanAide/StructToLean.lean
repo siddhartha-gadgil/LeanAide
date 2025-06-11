@@ -257,7 +257,7 @@ namespace CodeGenerator
 def topCode := "import Mathlib
 import LeanAide.AutoTactic
 import LeanAide.Syntax
-universe u v u_1
+universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
 "
@@ -416,7 +416,7 @@ partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
   match goal with
   | .forallE name type _ bi =>
     withLocalDecl name bi type fun x => do
-      let inner ← orAllWithGoal terms goal
+      let inner ← orAllWithGoal terms type
       mkForallFVars #[x] inner
   | _ =>
     let terms ← terms.mapM dropLocalContext

@@ -1,0 +1,107 @@
+{"usage":
+ {"total_tokens": 4799,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 3929,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 870},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Bg3k0Z13gFyzy8cVgM0G80VAip1Ll",
+ "created": 1749363856,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {c : Y} \n  {f : X → Y} (hf : ∀ x, f x = c) {V : Set Y} (hV : IsOpen V) (hcV : c ∉ V), IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {c : Y} (f : X → Y)\n  (hf : ∀ x, f x = c) {V : Set Y} (hV : IsOpen V) (hcV : c ∉ V), IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {c : Y} {f : X → Y},\n  (∀ x, f x = c) → ∀ (V : Set Y), IsOpen V → c ∉ V → IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {c : Y} {f : X → Y}\n  (h : ∀ x, f x = c) {V : Set Y} (hV : IsOpen V) (hVc : c ∉ V), IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {c : Y} {f : X → Y},\n  (∀ x : X, f x = c) → (∀ V : Set Y, IsOpen V → c ∉ V) → IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] (c : Y) (f : X → Y),\n  (∀ x, f x = c) → ∀ (V : Set Y), IsOpen V → c ∉ V → IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {c : Y} {f : X → Y},\n  (∀ x, f x = c) → ∀ (V : Set Y), IsOpen V → c ∉ V → IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {c : Y} {f : X → Y},\n  (∀ x, f x = c) → ∀ {V : Set Y}, IsOpen V → c ∉ V → IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {c : Y} {f : X → Y},\n  (∀ x, f x = c) → ∀ {V : Set Y}, IsOpen V → c ∉ V → IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {X : Type u_1} {Y : Type u_2} [inst : TopologicalSpace X] [inst_1 : TopologicalSpace Y] {c : Y} {f : X → Y},\n  (∀ x, f x = c) → ∀ V ∈ {V : Set Y | IsOpen V}, c ∉ V → IsOpen (∅ : Set X)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

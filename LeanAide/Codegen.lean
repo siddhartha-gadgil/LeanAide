@@ -127,9 +127,11 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
     let mut accumErrors : Array String := #[]
     for f in fs.reverse do
       logInfo m!"codegen: trying {f} for key {key}"
+      IO.eprintln s!"codegen: trying {f} for key {key}"
       try
         -- logInfo m!"codegen: trying {f} for key {key}"
         let code? ← codeFromFunc goal? translator f kind source
+        IO.eprintln s!"codegen: {f} for key {key} worked; returned : {code?.isSome}"
         return code?
       catch e =>
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
@@ -181,28 +183,34 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
     | some code => do
-      let goal? ← runForSingleGoal goal code
-      match goal? with
-      | none => do -- tactics closed the goal
-        return (accum, none)
-      | some newGoal => do
-        let newAccum ← appendTactics accum code
-        getCodeTacticsAux translator newGoal sources newAccum
+      if (getTactics code).isEmpty then
+        -- no tactics generated, but side effect
+        getCodeTacticsAux translator goal sources accum
+      else
+        let goal? ← runForSingleGoal goal code
+        match goal? with
+        | none => do -- tactics closed the goal
+          IO.eprintln s!"codegen: goal closed by tactics"
+          IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
+          IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+          return (← appendTactics accum code, none)
+        | some newGoal => do
+          let newAccum ← appendTactics accum code
+          getCodeTacticsAux translator newGoal sources newAccum
 
 /--
 Main helper for generating tactics from a list of JSON objects.
 -/
 def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
-    TranslateM (TSyntax ``tacticSeq) :=
-  withoutModifyingState do
+    TranslateM (TSyntax ``tacticSeq) := do
   let accum ← emptyTacs
   let (tacs, goal?) ←
      getCodeTacticsAux translator goal sources accum
   match goal? with
   | none => do
     return tacs
-  | some goal => do
+  | some goal => goal.withContext do
     let autoTacs ←
       runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
     appendTactics tacs (← `(tacticSeq| $autoTacs*))
