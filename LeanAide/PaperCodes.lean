@@ -53,7 +53,7 @@ def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | _, `commandSeq, js => do
   let .ok content := js.getArr? | throwError "'document' must be a JSON array"
   getCodeCommands translator none  content.toList
-| some goal, ``tacticSeq, js => do
+| some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getArr? | throwError "'document' must be a JSON array"
   getCodeTactics translator goal  content.toList
 | _, kind, _ => throwError
@@ -134,7 +134,7 @@ def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
 | _, `commandSeq, js => do
   let .ok content := js.getObjValAs? (List Json) "content" | throwError "'section' must have 'content'"
   getCodeCommands translator none  content
-| some goal, ``tacticSeq, js => do
+| some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "content" | throwError "'section' must have 'content'"
   getCodeTactics translator goal  content
 | _, kind, _ => throwError
@@ -416,7 +416,7 @@ def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
 | _, `commandSeq, js => do
   let .ok content := js.getObjValAs? (Array Json) "items" | throwError "logicalStepSequence must have an `items` field that is a JSON array"
   getCodeCommands translator none  content.toList
-| some goal, ``tacticSeq, js => do
+| some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (Array Json) "items" | throwError "logicalStepSequence must have an `items` field that is a JSON array"
   getCodeTactics translator goal  content.toList
 | goal?, kind, _ => throwError
@@ -485,7 +485,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let n := mkIdent labelledTheorem.name
   let typeStx ← delabDetailed goalType
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
-| some goal, ``tacticSeq, js => do
+| some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
   withoutModifyingState do
   getCodeTactics translator goal  content
@@ -845,7 +845,7 @@ where typeStx (eqn: String) :
 open Lean.Parser.Term CodeGenerator Parser
 @[codegen "pattern_cases_statement"]
 def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| some goal, ``tacticSeq, js => do
+| some goal, ``tacticSeq, js => goal.withContext do
   let .ok discr := js.getObjValAs? String "on" | throwError
     s!"codegen: no 'on' found in 'pattern_cases_statement'"
   let .ok patternCases := js.getObjValAs? (Array Json) "proof_cases" | throwError
@@ -921,7 +921,7 @@ def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (ki
 -/
 @[codegen "bi-implication_cases_statement"]
 def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| some goal, ``tacticSeq, js => do
+| some goal, ``tacticSeq, js => goal.withContext do
   let .ok ifProof := js.getObjValAs? Json "if_proof" | throwError
     s!"codegen: no 'if_proof' found in 'bi-implication_cases_statement'"
   let .ok onlyIfProof := js.getObjValAs? Json "only_if_proof" | throwError
@@ -972,7 +972,7 @@ def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (k
 -/
 @[codegen "condition_cases_statement"]
 def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| some goal, ``tacticSeq, js => do
+| some goal, ``tacticSeq, js => goal.withContext do
   let .ok condition := js.getObjValAs? String "condition" | throwError
     s!"codegen: no 'condition' found in 'condition_cases_statement'"
   let conditionType ← translator.translateToPropStrict condition
@@ -1051,7 +1051,7 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
 -/
 @[codegen "multi-condition_cases_statement"]
 def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| some goal, ``tacticSeq, js => do
+| some goal, ``tacticSeq, js => goal.withContext do
   let .ok proofCases := js.getObjValAs? (List Json) "proof_cases" | throwError
     s!"codegen: no 'proof_cases' found in 'multi-condition_cases_statement'"
   let exhaustiveness? := js.getObjValAs? Json "exhaustiveness" |>.toOption
@@ -1112,7 +1112,7 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
 -/
 @[codegen "induction_statement"]
 def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| some goal, ``tacticSeq, js => do
+| some goal, ``tacticSeq, js => goal.withContext do
   let .ok discr := js.getObjValAs? String "on" | throwError
     s!"codegen: no 'on' found in 'induction_statement'"
   let discrTerm' :=
@@ -1311,39 +1311,44 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 -- Test
 
 def egTheorem : Json :=
-  Json.mkObj
-    [ ("type", Json.str "theorem"),
-      ("name", Json.str "egTheorem"),
-      ("claim_label", Json.str "egTheorem"),
-      ("claim", Json.str "There are infinitely many odd numbers."), ("proof", Json.mkObj [("proof_steps", Json.arr #[])])
-           ]
+  json% {
+    "type": "theorem",
+    "name": "egTheorem",
+    "claim_label": "egTheorem",
+    "claim": "There are infinitely many odd numbers.",
+    "proof": {
+      "proof_steps": []
+    }
+  }
 
 def egTheorem' : Json :=
-  Json.mkObj
-    [ ("type", Json.str "theorem"),
-      ("name", Json.str "egTheorem"),
-      ("label", Json.str "egTheorem"),
-      ("claim", Json.str "There are infinitely many odd numbers.")
-           ]
+  json% {
+    "type": "theorem",
+    "name": "egTheorem",
+    "label": "egTheorem",
+    "claim": "There are infinitely many odd numbers."
+  }
+
 
 def egTheorem'' : Json :=
-  Json.arr #[Json.mkObj
-    [ ("type", Json.str "theorem"),
-      ("name", Json.str "egTheorem"),
-      ("label", Json.str "egTheorem"),
-      ("claim", Json.str "There are infinitely many odd numbers.")
-           ],
-      Json.mkObj [("proof", Json.mkObj [("proof_steps", Json.arr #[]), ("claim_label", Json.str "egTheorem")])]]
-
+  json% {
+    "type": "theorem",
+    "name": "egTheorem",
+    "claim_label": "egTheorem",
+    "claim": "There are infinitely many odd numbers.",
+    "proof": {
+      "proof_steps": []
+    }
+  }
 
 def egLet : Json :=
-  Json.mkObj
-    [ ("type", Json.str "let_statement"),
-      ("variable_name", Json.str "n"),
-      ("variable_type", Json.str "natural number"),
-      ("value", Json.str "n is odd"),
-      ("properties", Json.str "n > 0")
-    ]
+  json% {
+    "type" : "let_statement",
+    "variable_name": "n",
+    "variable_type": "natural number",
+    "value": "n is odd",
+    "properties": "n > 0"
+  }
 
 open Codegen
 #eval showStx egTheorem
@@ -1355,3 +1360,10 @@ open Codegen
 
 
 #eval showStx egLet
+
+def egView : MetaM Format := do
+  let .ok js := runParserCategory (← getEnv) `json egTheorem.pretty | throwError
+    "Failed to parse egLet as JSON"
+  PrettyPrinter.ppCategory `json js
+
+#eval egView

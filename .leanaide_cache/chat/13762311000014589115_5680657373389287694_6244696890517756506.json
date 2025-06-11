@@ -1,0 +1,107 @@
+{"usage":
+ {"total_tokens": 5933,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 5359,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 574},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-Bg3ikokxkWprUEVyKarc8DRVPnZKx",
+ "created": 1749363778,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def continuous {X Y : Type} [topological_space X] [topological_space Y] (f : X → Y) : Prop :=\n  ∀ V : set Y, is_open V → is_open (f ⁻¹' V)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def continuous {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) :=\n  ∀ V : Set Y, IsOpen V → IsOpen (f ⁻¹' V)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def isContinuous {X Y : Type} [tX : TopologicalSpace X] [tY : TopologicalSpace Y] (f : X → Y) : Prop :=\n  ∀ (V : Set Y), IsOpen V → IsOpen (f ⁻¹' V)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition is_continuous {X Y : Type} [τ_X : TopologicalSpace X] [τ_Y : TopologicalSpace Y] (f : X → Y) : Prop :=\n  ∀ V ∈ τ_Y.openSets, f ⁻¹' V ∈ τ_X.openSets",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def is_continuous {X Y : Type} [τ_X : TopologicalSpace X] [τ_Y : TopologicalSpace Y] (f : X → Y) : Prop :=\n  ∀ (V : Set Y), IsOpen V → IsOpen (f ⁻¹' V)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "definition continuous {X : Type u_1} {Y : Type u_2} [τ_X : TopologicalSpace X] [τ_Y : TopologicalSpace Y] (f : X → Y) : Prop :=\n  ∀ V ∈ τ_Y.IsOpen, τ_X.IsOpen (f ⁻¹' V)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def continuous {X Y : Type} [topological_space X] [topological_space Y] (f : X → Y) :=\n∀ V : set Y, is_open V → is_open (f ⁻¹' V)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def Continuous {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y] (f : X → Y) : Prop :=\n  ∀ V ∈ tY, f ⁻¹' V ∈ tX",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def continuous {X Y : Type} [τ_X : TopologicalSpace X] [τ_Y : TopologicalSpace Y] (f : X → Y) : Prop :=\n  ∀ V ∈ τ_Y, f ⁻¹' V ∈ τ_X",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def continuous {X Y : Type} [tX : TopologicalSpace X] [tY : TopologicalSpace Y] (f : X → Y) : Prop :=\n  ∀ V ∈ tY.is_open, f ⁻¹' V ∈ tX.is_open",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

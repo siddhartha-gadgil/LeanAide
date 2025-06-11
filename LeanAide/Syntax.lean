@@ -249,3 +249,26 @@ syntax (name := askCommand) "#ask" (num)? str : command
       logWarning "To make a query, end the string with a `.` or `?`."
 
 -- #check TryThis.Suggestion
+
+open Lean.Parser.Command
+
+@[command_parser]
+def proofComment := leading_parser
+  ppDedent <| "/proof" >> ppSpace >> commentBody >> ppLine
+
+def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) : m String :=
+  match stx.raw[1] with
+  | Lean.Syntax.atom _ val => return val.extract 0 (val.endPos - ⟨2⟩)
+  | _                 => throwErrorAt stx "unexpected doc string{indentD stx.raw[1]}"
+
+@[command_elab proofComment] def elabProofComment : CommandElab :=
+  fun stx => Command.liftTermElabM do
+  match stx with
+  | `(command|$doc:proofComment) =>
+    let view ← getProofStringText doc
+    logInfo m!"Proof comment: {view}"
+  | _ => throwUnsupportedSyntax
+
+/proof Hello there -/
+
+end LeanAide.Meta
