@@ -424,6 +424,7 @@ def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
   getCodeTactics translator goal  content.toList
 | goal?, kind, _ => throwError
     s!"codegen: logicalStepSequence does not work for kind {kind}where goal present: {goal?.isSome}"
+
 /- Proof
 {
   "type": "object",
@@ -481,17 +482,37 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let goalType := labelledTheorem.type
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
-  IO.eprintln s!"number of proof steps: {content.length}"
-  match labelledTheorem.source.getObjVal?  "hypothesis" with
+  -- IO.eprintln s!"number of proof steps: {content.length}"
+  let hypSize ←
+    match labelledTheorem.source.getObjValAs? (Array Json)  "hypothesis" with
       | Except.ok h =>
         IO.eprintln s!"hypothesis: {h} in proof"
-        contextRun translator none ``tacticSeq h
-        IO.eprintln "Preludes added:"
-        IO.eprintln <| ← withPreludes ""
-      | Except.error _ => pure ()
+        contextRun translator none ``tacticSeq (.arr h)
+        -- IO.eprintln "Preludes added:"
+        -- IO.eprintln <| ← withPreludes ""
+        pure h.size
+      | Except.error _ => pure 0
+  IO.eprintln s!"hypothesis size: {hypSize} in proof"
+  let (goal, names) ← extractIntros goal hypSize
   let pfStx ←
     withoutModifyingState do
     getCodeTactics translator goal content
+  let pfStx ←  if names.isEmpty then
+      pure pfStx
+    else
+      let namesStx : List <| TSyntax `term ←
+        names.mapM fun n =>
+          if n.isInaccessibleUserName || n.isInternal then
+            `(_)
+          else do
+            IO.eprintln s!"Adding intro for {n}, not inaccessible"
+            let n' := mkIdent n
+            `($n':ident)
+      let namesStx := namesStx.toArray
+      let introTac ←
+        `(tacticSeq| intro $namesStx*)
+      appendTactics introTac pfStx
+  IO.eprintln s!"Proof steps: {← PrettyPrinter.ppCategory ``tacticSeq pfStx}"
   let n := mkIdent labelledTheorem.name
   let typeStx ← delabDetailed goalType
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
@@ -501,7 +522,6 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   getCodeTactics translator goal  content
 | goal?, kind, _ => throwError
     s!"codegen: proof does not work for kind {kind}where goal present: {goal?.isSome}"
-
 
 /- let_statement
 {
