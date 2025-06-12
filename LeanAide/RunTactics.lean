@@ -162,3 +162,15 @@ def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): Term
   else
     IO.eprintln "No tactics found"
   return tacs?.getD #[(←  `(tactic| sorry))]
+
+def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
+    MetaM <| MVarId × List Name := do
+  match maxDepth, ← goal.getType with
+  | 0, _ =>
+    return (goal, accum)
+  | k + 1, Expr.forallE n _ _ _ => do
+    let n := if n.isInternal then n.components[0]! else n
+    let (_, goal') ← goal.intro n
+    extractIntros goal' k (accum ++ [n])
+  | _, _ => do
+    return (goal, accum)
