@@ -98,7 +98,7 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
   let targetType ← relLCtx' mvarId
   let typeView ← PrettyPrinter.ppExpr targetType
   let introTac ← `(tactic| intro $vars*)
-  let tactics := #[introTac] ++ tactics
+  let tactics := if vars.isEmpty then tactics else  #[introTac] ++ tactics
   let tacticCode ← `(tacticSeq| $tactics*)
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
   let egCode := s!"example : {typeView} := {termView}"
