@@ -10,7 +10,7 @@ open Lean Meta Tactic Parser.Tactic
 namespace LeanAide
 
 def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
-  return [← `(tacticSeq| ring),← `(tacticSeq| omega),  ← `(tacticSeq| linarith)
+  return [← `(tacticSeq| ring),← `(tacticSeq| omega),  ← `(tacticSeq| linarith), ← `(tacticSeq| grind +ring)
   -- , ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction)
   ]
 
