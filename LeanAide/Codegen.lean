@@ -221,7 +221,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     for decl in lctx do
       IO.eprintln s!"{decl.userName}: {← ppExpr <| decl.type}"
     let autoTacs ←
-      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| aesop?)]
+      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
     IO.eprintln s!"codegen: auto tactics:"
     for tac in autoTacs do
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
