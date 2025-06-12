@@ -16,7 +16,7 @@ def main : IO Unit := do
   let names := names.map (fun s => s.trim)
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
-    importModules #[
+    importModules (loadExts := true) #[
     {module := `Mathlib},
     {module := `DataGenAide.ConstDeps}] {}
   let outpath : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descriptions_docs.jsonl")

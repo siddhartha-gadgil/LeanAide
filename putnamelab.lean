@@ -24,7 +24,7 @@ unsafe def main (args : List String) : IO UInt32 := do
         System.mkFilePath <| ["results", "putnam", s!"statements_{start}_{last}.jsonl"]
   let handle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}

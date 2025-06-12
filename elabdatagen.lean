@@ -14,7 +14,7 @@ def main (args: List String) : IO Unit := do
   let size? := (args.get? 1).flatMap (fun x => x.toNat?)
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanAide.TheoremElab},
 

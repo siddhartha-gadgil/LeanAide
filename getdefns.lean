@@ -15,7 +15,7 @@ def main (args: List String) : IO Unit := do
   let stop :=
     (args.get? 1 >>= fun s => s.toNat?).getD 1
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
 
     {module:= `LeanAide.VerboseDelabs},

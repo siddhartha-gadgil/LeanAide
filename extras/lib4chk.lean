@@ -23,7 +23,7 @@ def main : IO Unit := do
   IO.println "loaded file"
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanAide.TheoremElab},
     {module := `Mathlib}] {}

@@ -1227,7 +1227,7 @@ def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format × Name := do
     let xs ← qp.server.structuredProofFromStatement s
-    match xs.get? 0 with
+    match xs[0]? with
     | some (pf, #[js]) =>
       thmProofStrucToCode s pf js qp
     | _ =>

@@ -33,7 +33,7 @@ The underlying code also supports `open` for namespaces but this demo version do
 def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module := `Mathlib}] {}
   match args with

@@ -13,7 +13,7 @@ set_option compiler.extract_closed false
 unsafe def main (args: List String) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module:= `LeanAide.AutoTactic},
