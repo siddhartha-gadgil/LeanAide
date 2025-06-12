@@ -5,9 +5,10 @@ import signal
 import socket
 import subprocess
 import sys
-import tempfile
 import time
 from pathlib import Path
+
+from server.serv_utils import log_write
 
 STREAMLIT_PORT = 8501
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
@@ -22,8 +23,6 @@ for arg in sys.argv[1:]:
     if arg not in ["--ui", "--no-server", "--ns", "--help", "-h"]:
         COMMAND += " " + arg
 
-LOG_FILE = os.path.join(str(tempfile.gettempdir()), "leanaide_streamlit_server.log")
-
 def is_port_in_use(port: int) -> bool:
     """Check if a port is already in use"""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -36,11 +35,9 @@ def run_server_api():
         stderr=subprocess.PIPE,
         text=True
     )
-    # Write stderr to a file that Streamlit can read
-    with open(LOG_FILE, "a") as f:  # Append mode
-        for line in process.stderr:
-            f.write(f"[Server stderr] {line}")
-        f.flush()
+    # Write stderr to log that Streamlit can read
+    for line in process.stderr:
+        log_write("Server Stderr", line.strip())
 
 def run_streamlit():
     """Run Streamlit app on port STREAMLIT_PORT only"""
@@ -56,10 +53,8 @@ def run_streamlit():
     ], stderr=subprocess.PIPE, text=True)
     
     # Write stderr to a file that Streamlit can read
-    with open(LOG_FILE, "a") as f:  # Append mode
-        for line in process.stderr:
-            f.write(f"[Streamlit] {line}")
-            f.flush()
+    for line in process.stderr:
+        log_write("Streamlit", line)
 
     # Force Streamlit to use only port STREAMLIT_PORT
     subprocess.run([

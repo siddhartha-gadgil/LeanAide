@@ -97,19 +97,6 @@ wheels = [
 ]
 
 [[package]]
-name = "copykitten"
-version = "1.2.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d0/7b/91dcfab849d3f53a2308be30fa8d77cbdc3f1caad994c2b610b1fbcb25c7/copykitten-1.2.2.tar.gz", hash = "sha256:d1ee05abecca7a41605d22e1a514c762656e8d5483a9da09e2623071fca22c0a", size = 17020 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/93/a3/4b8b69d668d2967cff5ccc0791b0c85e725259bad8fc3a51a5021fa798d5/copykitten-1.2.2-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:e59b1c9cc5e8ec723b9426a92e7868cdbeed0468596ca28313cf8ba1405b7128", size = 381148 },
-    { url = "https://files.pythonhosted.org/packages/7d/e8/add871a79d8ee113008a438d8f2df6740c6bd5e580e922a92a83cdee7fbe/copykitten-1.2.2-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:8b8aeef4a24f7425031df87ced2a569ced1be89ed4f2d894793a4e3697df644f", size = 369377 },
-    { url = "https://files.pythonhosted.org/packages/c8/88/2a0fb779f1f748902ec057ad1c72395483340f9a9f26ec4d3880086a7a8e/copykitten-1.2.2-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6362c526fcb4a69b5dfdbcc4ea189a880c29fae58a0bcab558837c1d59078c44", size = 410366 },
-    { url = "https://files.pythonhosted.org/packages/e7/38/c2470add369e2404ee095dd06d29537473ed7e2706336a3aa7494db1911d/copykitten-1.2.2-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:83c8aff0971ba54d73f645c464f8e105e08042e101d246c965032cf0946566f8", size = 432453 },
-    { url = "https://files.pythonhosted.org/packages/ef/fe/262377e82a381e424a4902cf7984abf3a76c5911f4b8f1126be4011392e2/copykitten-1.2.2-cp38-abi3-win_amd64.whl", hash = "sha256:f1783b69c02a2c073964e477dade48840e80015488d81115a6ff78998ea31969", size = 192585 },
-]
-
-[[package]]
 name = "gitdb"
 version = "4.0.12"
 source = { registry = "https://pypi.org/simple" }
@@ -186,7 +173,6 @@ name = "leanaide-serv"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "copykitten" },
     { name = "python-dotenv" },
     { name = "st-copy" },
     { name = "streamlit" },
@@ -196,7 +182,6 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "copykitten", specifier = ">=1.2.2" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "st-copy", specifier = ">=1.1.0" },
     { name = "streamlit", specifier = ">=1.45.1" },

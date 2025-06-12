@@ -5,7 +5,7 @@ import requests
 import streamlit as st
 from dotenv import load_dotenv
 
-from api_server import HOST, PORT, LOG_FILE
+from api_server import HOST, PORT
 from serv_utils import *
 
 load_dotenv()
@@ -49,7 +49,7 @@ with st.sidebar:
 for key in ["parsed_curl", "selected_tasks", "self_selection", "curl_selection", "val_input", "result"]:
     if key not in st.session_state:
         st.session_state[key] = None
-for key in ["curl_botton", "request_button", "self_input_button", "ignore_curl_ip_port", "server_output_success", "valid_self_input"]:
+for key in ["curl_botton", "request_button", "self_input_button", "ignore_curl_ip_port", "server_output_success", "valid_self_input", "log_cleaned", "log_opened"]:
     if key not in st.session_state:
         st.session_state[key] = False
 
@@ -120,6 +120,7 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
     if st.session_state.valid_self_input:
         st.subheader("Query Obtained", help = "Note that default values will be used for any parameters that you did not provide input for.")
         st.json(st.session_state.val_input)
+        log_write("Streamlit", "Query Obtained: Success")
 
 ## CURL REQUEST SECTION
 if st.checkbox(
@@ -159,9 +160,11 @@ if st.checkbox(
             # Update session states
             st.session_state.curl_selection = True
             st.session_state.selected_tasks = list(parsed_curl.get("data", {})["tasks"]) if "data" in parsed_curl else []
+            log_write("Streamlit", f"Parsed cURL: Success")
         except Exception as e:
             st.session_state.selected_tasks = []
             st.error(f"Error parsing curl: {e}")
+            log_write("Streamlit", f"Parsed cURL: Error - {e}")
 
 # Submit Request Section. Common to Curl and self Selection
 if st.button("Submit Request", on_click= button_clicked("request_button"), type = "primary", help = "For both cURL and Self input, you can submit your request here. The request will be sent to the backend server specified in the Host Information section.") or st.session_state.request_button:
@@ -177,6 +180,7 @@ if st.button("Submit Request", on_click= button_clicked("request_button"), type 
                 "No data found in the cURL request. Please check the cURL command."
             )
             st.stop()
+    
     with st.spinner("Request sent. Please wait for a short while..."):
         log_write("Streamlit", f"Request Payload: {request_payload}")
         response = requests.post(
@@ -199,11 +203,13 @@ if st.button("Submit Request", on_click= button_clicked("request_button"), type 
                 st.error("Error in processing the request. Please check the input and try again.")
                 st.write("Error (String):")
                 st.code(st.session_state.result["error"])
+            log_write("Streamlit", f"Server Output: Success")
         except Exception as e:
             st.session_state.server_output_success = False
             st.error(f"Error in processing the request: {e}")
             st.write("Response (String):")
             st.code(str(st.session_state.result))
+            log_write("Streamlit", f"Server Output: Error - {e}")
         # Handle the output for each task
         for task in st.session_state.selected_tasks:
             st.subheader(TASKS[task]["name"] + " Output", divider =True)
@@ -223,22 +229,21 @@ if st.button("Submit Request", on_click= button_clicked("request_button"), type 
                         st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
     else:
         st.error(f"Error: {response.status_code}, {response.text}")
+        log_write("Streamlit", f"Server Response Error: {response.status_code} - {response.text}")
 
 ## LOGS SECTION
-if "log_cleaned" not in st.session_state:
-    st.session_state.log_cleaned = False
-
-st.subheader("Server Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server log file and new logs are updated after SUBMIT REQUEST button is clicked. You might see old logs as well.")
+st.subheader("Server Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked. If you refresh the page, the old logs will dissapear.")
 with st.expander("Click to view Server logs", expanded=False):
+    st.session_state.log_opened = True
     if log_out := log_server():
-        height = 500 if len(log_out) > 1000 else 300
-        st.text_area(
-            "Server Logs",
-            value=log_out if not st.session_state.log_cleaned else "",
+        height = 500 if len(log_out) > 1000 else 150
+        st.write("Server logs:")
+        st.code(
+            log_out if not st.session_state.log_cleaned else "",
+            language = "log",
             height= height,
-            placeholder="No logs available yet.",
-            disabled=True,
-            help="This shows the server logs. It is updated after each request is processed.",
+            wrap_lines =True,
+            line_numbers=True,
         )
 
     else:
@@ -252,15 +257,15 @@ with st.expander("Click to view Server logs", expanded=False):
             st.session_state.log_cleaned = True
         if st.button("No"):
             st.session_state.log_cleaned = False
-
+        st.info("Exit the dialog by clicking the :heavy_multiplication_x: button.")
         if st.session_state.log_cleaned:
             try:
-                with open(LOG_FILE, "w") as f:
-                    f.write("")  # Clear the log file
+                log_buffer_clean()
                 st.success("Server logs cleaned successfully! Please UNCHECK THE BOX to avoid cleaning again.")
             except Exception as e:
                 st.error(f"Error cleaning server logs: {e}")
         
         st.session_state.log_cleaned = False
+
     if st.checkbox("Clean Server Logs. Read the help text before checking this box", value=st.session_state.log_cleaned, key="clean_log", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
         clean_log()

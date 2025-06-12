@@ -1,14 +1,14 @@
 import ast
+import os
 from pathlib import Path
 import json
 import shlex
 from typing import Any, Tuple, Type
 import streamlit as st
 from st_copy import copy_button
-import copykitten
+from collections import deque
 
-from api_server import HOST, LOG_FILE
-
+HOST = os.environ.get("HOST", "localhost")  
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
 
 # Lean Checker Tasks
@@ -185,30 +185,31 @@ def validate_input_type(input_type: Any, expected_type: str) -> bool:
             return True
     return False
 
+# In-memory log storage with max size (1000 lines by default)
+LOG_BUFFER = deque(maxlen=1000) 
 
 def log_server():
-    """Read from the log file"""
-    try:
-        with open(LOG_FILE, "r") as f:
-            # Efficiently get last n lines
-            lines = []
-            for line in f:
-                lines.append(line)
-            return "".join(lines)
-    except FileNotFoundError:
-        return "No log file found yet."
+    """Read from the in-memory log buffer"""
+    if not LOG_BUFFER:
+        return "No logs available yet."
+    return "".join(LOG_BUFFER)
 
 def log_write(proc_name: str, log_message: str):
     """
-    Write a message to the log file, in format "[proc_name] log_message".
-    proc_name: "Server stderr" or "Streamlit" are standard. You can use any name.
-    log_message: The message to log.
+    Write a message to the in-memory log buffer
+    Format: "[proc_name] log_message"
     """
     try:
-        with open(LOG_FILE, "a") as f:
-            f.write(f"[{proc_name}] {log_message}" + "\n")
+        log_entry = f"[{proc_name}] {log_message}\n"
+        LOG_BUFFER.append(log_entry)
     except Exception as e:
-        print(f"Error writing to log file: {e}")
+        print(f"Error writing to log buffer: {e}")
+
+def log_buffer_clean():
+    try:
+        LOG_BUFFER.clear()
+    except Exception as e:
+        log_write("log_clean", f"Error clearing log buffer: {e}")
 
 def download_file(file_content, file_name):
     # match mime
@@ -233,9 +234,6 @@ def download_file(file_content, file_name):
 # Function to copy text to clipboard and show confirmation
 def copy_to_clipboard(text):
     try:
-        copykitten.copy(text)
-        st.toast("Copied to clipboard!", icon="✔️")
-    except copykitten.CopykittenError as e:
         copy_button(
             text,
             tooltip="Copy to Clipboard",
