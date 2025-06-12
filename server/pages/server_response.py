@@ -16,6 +16,7 @@ st.title("LeanAide: Server Response")
 st.write(
     "Here you can send requests to the backend server and view the responses. You can either paste a cURL request or fill the request yourself."
 )
+st.info("Ensure the Host information of the backend server to query is correct. Check out the sidebar for host information settings.")
 
 if "api_host" not in st.session_state:
     st.session_state.api_host = HOST
@@ -23,25 +24,26 @@ if "api_port" not in st.session_state:
     st.session_state.api_port = PORT
 
 # Host Information Section
-with st.expander("Host Information"):
-    localhost_serv = st.checkbox(
-        "Your backend server is running on localhost", value=False, help="Check this if you want to call the backend API running on localhost.",
-    )
-
-    if not localhost_serv:
-        local_ip = socket.gethostbyname(socket.gethostname())
-        api_host = st.text_input(
-            "Backend API Host: (default: HOST or localhost IP)",
-            value= HOST if HOST != "localhost" else local_ip,
-            help="Specify the hostname or IP address where the proof server is running. Default is localhost.",
+with st.sidebar:
+    with st.expander("Host Information"):
+        localhost_serv = st.checkbox(
+            "Your backend server is running on localhost", value=False, help="Check this if you want to call the backend API running on localhost.",
         )
-        st.session_state.api_host = api_host
-    api_port = st.text_input(
-        "API Port:",
-        value="7654",
-        help="Specify the port number where the proof server is running. Default is 7654.",
-    )
-    st.session_state.api_port = api_port
+
+        if not localhost_serv:
+            local_ip = socket.gethostbyname(socket.gethostname())
+            api_host = st.text_input(
+                "Backend API Host: (default: HOST or localhost IP)",
+                value= HOST if HOST != "localhost" else local_ip,
+                help="Specify the hostname or IP address where the proof server is running. Default is localhost.",
+            )
+            st.session_state.api_host = api_host
+        api_port = st.text_input(
+            "API Port:",
+            value="7654",
+            help="Specify the port number where the proof server is running. Default is 7654.",
+        )
+        st.session_state.api_port = api_port
 
 ## Initialize session state variables
 for key in ["parsed_curl", "selected_tasks", "self_selection", "curl_selection", "val_input", "result"]:

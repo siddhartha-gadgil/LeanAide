@@ -6,9 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "python-dotenv>=1.1.0",
-    "st-copy>=1.1.0",
-    "streamlit-code-editor>=0.1.22",
     "streamlit-sortables>=0.3.1",
     "streamlit>=1.45.1",
     "watchdog>=6.0.0",
+    "copykitten>=1.2.2",
+    "st-copy>=1.1.0",
 ]

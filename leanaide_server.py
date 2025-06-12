@@ -87,6 +87,7 @@ def check_dependencies():
             for pkg in required_packages
             if pkg.strip() and not pkg.strip().startswith('#')
         ]
+        required_packages = [pkg.replace('-', '_') for pkg in required_packages]
     except Exception as e:
         print(f"Error reading requirements.txt: {e}")
     

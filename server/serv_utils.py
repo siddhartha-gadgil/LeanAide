@@ -5,6 +5,7 @@ import shlex
 from typing import Any, Tuple, Type
 import streamlit as st
 from st_copy import copy_button
+import copykitten
 
 from api_server import HOST, LOG_FILE
 
@@ -226,15 +227,28 @@ def download_file(file_content, file_name):
         case _:
             pass  # Keep default text/plain for other extensions
     st.download_button(
-        label="Download File", data=file_content, file_name=file_name, mime=mime, help = "Click to download the file. "
+        label="Download File", data=file_content, file_name=file_name, mime=mime, help = "Click to download the file with the above text content.",
     )
 
 # Function to copy text to clipboard and show confirmation
 def copy_to_clipboard(text):
-    copy_button(
-        text,
-        icon='st',  # default, use 'st' as alternative
-        tooltip='Copy to Clipboard',  # defaults to 'Copy'
-        copied_label='Copied Successfully!',  # defaults to 'Copied!'
-        # key="key",  # If omitted, a random key will be generated
-)
+    try:
+        copykitten.copy(text)
+        st.toast("Copied to clipboard!", icon="✔️")
+    except copykitten.CopykittenError as e:
+        copy_button(
+            text,
+            tooltip="Copy to Clipboard",
+            copied_label = "Copied!",
+            icon=":material/content_copy:",
+        )
+    except Exception as e:
+        st.warning(f"Failed to copy: {e}", icon="⚠️")
+
+def action_copy_download(key: str, filename: str):
+    """Helper function to copy text to clipboard and download as a file."""
+    col1, col2 = st.columns(2)
+    with col1:
+        copy_to_clipboard(st.session_state[key])
+    with col2:
+        download_file(st.session_state[key], filename)

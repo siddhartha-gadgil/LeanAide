@@ -1,19 +1,19 @@
 import streamlit as st
 import json
 import os
-from pathlib import Path
 import shutil
 
 from dotenv import load_dotenv
 from PIL import Image
 from streamlit_sortables import sort_items
 # from gpt_structured import gen_structure_proof, solution_from_images
-from serv_utils import copy_to_clipboard, download_file, HOMEDIR
+from serv_utils import action_copy_download, HOMEDIR
 
 load_dotenv()
 
 st.title("LeanAide: Structured Json Output")
 st.write("Here you can input your theorem-proof/paper, etc. and generate Structured JSON output using LeanAide Schema.")
+st.info("Please fill out your API credentials in the sidebar to use the LLM's. Image OCR and Structured Json Generation will not work without valid API credentials.")
 
 st.sidebar.header("Structured Json")
 
@@ -31,41 +31,42 @@ provider_info = {
 }
 
 # API Credentials Section
-with st.expander("Credentials"):
-    # Provider selection
-    provider = st.selectbox("Select Provider:", list(provider_info.keys()), index=0)
+with st.sidebar:
+    with st.expander("Credentials"):
+        # Provider selection
+        provider = st.selectbox("Select Provider:", list(provider_info.keys()), index=0)
 
-    # Dynamically update API Key and Model fields based on the provider
-    selected_provider = provider_info[provider]
+        # Dynamically update API Key and Model fields based on the provider
+        selected_provider = provider_info[provider]
 
-    if provider == "Gemini":
-        # Warning if Gemini is selected
-        st.warning("Gemini API is not yet supported. Please select OpenAI for now.")
-    else:
-        # API Key Input with masked display
-        api_key_placeholder = (
-            f"{selected_provider['default_api_key'][:15]}{'*' * (len(selected_provider['default_api_key']) - 15)}"
-            if selected_provider["default_api_key"]
-            else ""
-        )
-        api_key = st.text_input(
-            "API Key:",
-            value=api_key_placeholder,
-            type="password",
-            help="Hover to see the key, edit if needed.",
-        )
+        if provider == "Gemini":
+            # Warning if Gemini is selected
+            st.warning("Gemini API is not yet supported. Please select OpenAI for now.")
+        else:
+            # API Key Input with masked display
+            api_key_placeholder = (
+                f"{selected_provider['default_api_key'][:15]}{'*' * (len(selected_provider['default_api_key']) - 15)}"
+                if selected_provider["default_api_key"]
+                else ""
+            )
+            api_key = st.text_input(
+                "API Key:",
+                value=api_key_placeholder,
+                type="password",
+                help="Hover to see the key, edit if needed.",
+            )
 
-        # Model selection text boxes
-        model_image_to_text = st.text_input(
-            "Model for Image to Text:",
-            value=selected_provider["default_model"],
-            help="Specify the model for Image to Text. Check out list of OpenAI Models [↗](https://platform.openai.com/docs/models)",
-        )
-        model_json_generator = st.text_input(
-            "Model for JSON Generator:",
-            value=selected_provider["default_model"],
-            help="Specify the model for JSON Generator. Check out list of OpenAI Models [↗](https://platform.openai.com/docs/models)",
-        )
+            # Model selection text boxes
+            model_image_to_text = st.text_input(
+                "Model for Image to Text:",
+                value=selected_provider["default_model"],
+                help="Specify the model for Image to Text. Check out list of OpenAI Models [↗](https://platform.openai.com/docs/models)",
+            )
+            model_json_generator = st.text_input(
+                "Model for JSON Generator:",
+                value=selected_provider["default_model"],
+                help="Specify the model for JSON Generator. Check out list of OpenAI Models [↗](https://platform.openai.com/docs/models)",
+            )
 
 # Create a temporary directory if it doesn't exist
 TEMP_DIR = "leanaide_st_temp"
@@ -76,23 +77,15 @@ for key in ["image_paths", "proof", "theorem", "structured_proof", "paper"]:
     if key not in st.session_state:
         st.session_state[key] = None
 
-for key in ["input_upload_files", "input_text_content", "input_markdown_file", "input_paper", "input_pdf_file"]:
+for key in ["input_pdf", "input_images", "input_markdown", "input_txt", "input_latex", "input_text_content"]:
     if key not in st.session_state:
         st.session_state[key] = False
 
-st.header("Input PDF/Images/Markdown of Paper/Theorem-Proof", divider = True)
+st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
-input_options = ["Upload PDF Paper", "Input Theorem-Proof"] 
-input_captions = ["For Research Papers", "For single Theorem-Proof or Problems"]
-input_method = st.radio("Choose the input method:", options = input_options)
-
-def action_copy_download(key: str, filename: str):
-    """Helper function to copy text to clipboard and download as a file."""
-    col1, col2 = st.columns(2)
-    with col1:
-        copy_to_clipboard(st.session_state[key])
-    with col2:
-        download_file(st.session_state[key], filename)
+input_options = ["Mathematical Papers", "Theorem-Proofs or Problems"] 
+input_captions = ["For Research Papers", "For short Theorem Proofs or Mathematical Problems"]
+input_method = st.radio("Choose what you would like to work on:", options = input_options, captions = input_captions, horizontal = True, help = "Select what you are inputting. If you are working on a single theorem-proof or problem, select the second option. If you are working on a research paper, select the first option.")
 
 # Helper function for image inputs
 def handle_image_input(key: str):
@@ -168,31 +161,45 @@ def handle_image_input(key: str):
         # Action buttons
         action_copy_download(key, f"{key}.txt")
         
-
 # Helper function for markdown/text file input
-def handle_md_file_input(key: str):
+def handle_textual_file_input(key: str):
     """Handles markdown/text file input for different sections."""
     st.subheader(f"Upload Markdown/Text file for {key.capitalize()}")
- 
     # file uploader with unique key
     uploaded_file = st.file_uploader(
         f"Upload {key} file",
-        type=["md", "txt"],
+        type=["md", "txt", "tex"],
         key=f"md_uploader_{key}"  # Unique key for each uploader
     )
+    extension = uploaded_file.name.split('.')[-1] if uploaded_file else "md"
+    if extension not in ["md", "txt", "tex"]:
+        st.error(f"Unsupported file type: {extension}. Please upload a .md, .txt, or .tex file.")
+        return
+
+    if f"{key}_{extension}_local_key" not in st.session_state:
+        st.session_state[f"{key}_{extension}_local_key"] = False
+
+    file_type = "Markdown"
+    if extension == "tex":
+        file_type = "LaTeX"
+    elif extension == "txt":
+        file_type = "Text"
+    else:
+        pass
 
     if uploaded_file:
-        file_type = "Markdown" if uploaded_file.name.endswith(".md") else "Text"
         try:
             content = uploaded_file.read().decode("utf-8")
-            st.session_state[key] = content
             st.success(f"{file_type} file for {key} uploaded successfully.")
+            st.session_state[key] = content
+            st.session_state[f"{key}_{extension}_local_key"] = True
         except UnicodeDecodeError:
             try:
                 # Fallback to different encoding if utf-8 fails
                 content = uploaded_file.read().decode("latin-1")
-                st.session_state[key] = content
                 st.success(f"{file_type} file for {key} uploaded (using fallback encoding).")
+                st.session_state[key] = content
+                st.session_state[f"{key}_{extension}_local_key"] = True
             except Exception as e:
                 st.error(f"Failed to read the {file_type} file: {str(e)}")
                 st.session_state[key] = ""
@@ -201,7 +208,7 @@ def handle_md_file_input(key: str):
             st.session_state[key] = ""
 
     # Display content if available
-    if st.session_state[key]:
+    if st.session_state[key] and st.session_state[f"{key}_{extension}_local_key"]:
         st.subheader(f"{key.capitalize()} Content:", help = "You can edit the content below if needed. You may see some text previously if you have already filled the value in other sections.")
         st.session_state[key] = st.text_area(
             f"Edit {key} content",
@@ -227,7 +234,8 @@ def handle_text_input(key: str):
         height=200,
     )
     if obt_text.strip() != "" and obt_text.strip() != default_text:
-        st.success(f"{key.capitalize()} received successfully.")
+        st.session_state[key] = obt_text.strip()
+        st.success(f"{key.capitalize()} received successfully: {obt_text.strip()[:25]}...")
         action_copy_download(key, f"{key}.txt")
         return obt_text
     else:
@@ -237,6 +245,8 @@ def handle_text_input(key: str):
 # Helper function for PDF input
 def handle_pdf_input(key:str):
     uploaded_pdf = st.file_uploader(f"Upload a PDF file for the {key}", type="pdf", key = f"pdf_uploader_{key}")
+    if f"{key}_local_key" not in st.session_state:
+        st.session_state[f"{key}_local_key"] = False
     if uploaded_pdf:
         try:
             # Create temp directory if it doesn't exist
@@ -255,13 +265,14 @@ def handle_pdf_input(key:str):
             
             # Display PDF info
             st.info(f"File: {uploaded_pdf.name} | Size: {len(uploaded_pdf.getvalue())//1024} KB")
+            st.session_state[f"{key}_local_key"] = True
             
         except Exception as e:
             st.error(f"Failed to process PDF for {key}: {str(e)}")
             st.session_state[key] = None
             st.session_state[f"{key}_pdf_path"] = None
     
-    if st.session_state[key]:
+    if st.session_state[key] and st.session_state[f"{key}_local_key"]:
         st.subheader(f"{key.capitalize()} PDF Content:", help = "You can edit the content below if needed. You may see some text previously if you have already filled the value in other sections.")
         # Display the PDF content (if any)
         try:
@@ -277,49 +288,51 @@ def handle_pdf_input(key:str):
         # Action buttons
         action_copy_download(key, f"{uploaded_pdf.name}") # has the extension .pdf
 
+# General input handler for theorem, proof, and paper
+def handle_general_input(key: str):
+    st.subheader(f"Input "+ key.capitalize())
+    input_formats = ["Type Input Yourself", "PDF(.pdf)", "Image(.png, .jpg, .jpeg)", "Markdown(.md)", "Text(.txt), Latex(.tex)"]
+
+    format_opt = st.selectbox(
+        "Choose input format for the theorem",
+        options = input_formats,
+        help = f"Select the format in which you want to input the {key}. You may instead type the {key} text directly.",
+        placeholder = "Choose input format",
+        key = f"input_format_{key}",
+        index = 1 if key == "paper" else 0  # Default to PDF for paper, else default to first option
+    )
+    if "image" in format_opt.lower():
+        st.session_state.input_image = True
+        handle_image_input(key) 
+    elif "markdown" in format_opt.lower():
+        st.session_state.input_markdown_file = True
+        handle_textual_file_input(key)
+    elif "text" in format_opt.lower():
+        st.session_state.input_txt = True
+        handle_textual_file_input(key)
+    elif "latex" in format_opt.lower():
+        st.session_state.input_latex = True
+        handle_textual_file_input(key)
+    elif "pdf" in format_opt.lower():
+        st.session_state.input_pdf_file = True
+        handle_pdf_input(key)
+    else: # Self typed input
+        st.session_state.input_text_content = True
+        st.session_state[key] = handle_text_input(key)
+
 # PDF upload section
 if input_method == input_options[0]:
     st.session_state.input_paper = True
-    st.subheader("Upload Paper PDF")
-    handle_pdf_input("paper")
+    st.info("It is recommended to upload the paper in PDF format for better processing. Though you can choose any other formats as well.")
+    handle_general_input("paper")
+
 # Theorem-Proof section
 if input_method == input_options[1]:
-    st.session_state.input_upload_files = True
-    # Upload Theorem
-    st.subheader("Input Theorem")
-    standard_options = ["Upload Images", "Upload Markdown/Text File", "Input Text", "Upload PDF"]
-    thm_opt = st.radio("Choose input method for theorem:", options = standard_options, horizontal = True)
-    if "image" in thm_opt.lower():
-        st.session_state.input_upload_files = True
-        handle_image_input("theorem") 
-    elif "markdown" in thm_opt.lower():
-        st.session_state.input_markdown_file = True
-        handle_md_file_input("theorem")
-    elif "pdf" in thm_opt.lower():
-        st.session_state.input_pdf_file = True
-        handle_pdf_input("theorem")
-    else:
-        st.session_state.input_text_content = True
-        st.session_state.theorem = handle_text_input("theorem")
-
-    # Upload Proof
-    st.subheader("Input Proof")
-    proof_opt = st.radio("Choose input method for proof:", options = standard_options, horizontal = True)
-    if "image" in proof_opt.lower():
-        st.session_state.input_upload_files = True
-        handle_image_input("proof")
-    elif "markdown" in proof_opt.lower():
-        st.session_state.input_markdown_file = True
-        handle_md_file_input("proof")
-    elif "pdf" in proof_opt.lower():
-        st.session_state.input_pdf_file = True
-        handle_pdf_input("proof")
-    else:
-        st.session_state.input_text_content = True
-        st.session_state.proof = handle_text_input("proof")
+    for key in ["theorem", "proof"]:
+       handle_general_input(key) 
 
 if st.button("Generate Structured Proof"):
-    if not st.session_state.input_upload_files and not st.session_state.input_text_content and not st.session_state.input_markdown_file:
+    if not st.session_state.theorem and not (st.session_state.proof and  st.session_state.paper):
         st.warning(
             "Please upload the inputs before generating the structured proof."
         )
