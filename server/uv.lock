@@ -173,8 +173,8 @@ name = "leanaide-serv"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "pyperclip" },
     { name = "python-dotenv" },
+    { name = "st-copy" },
     { name = "streamlit" },
     { name = "streamlit-code-editor" },
     { name = "streamlit-sortables" },
@@ -183,8 +183,8 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pyperclip", specifier = ">=1.9.0" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
+    { name = "st-copy", specifier = ">=1.1.0" },
     { name = "streamlit", specifier = ">=1.45.1" },
     { name = "streamlit-code-editor", specifier = ">=0.1.22" },
     { name = "streamlit-sortables", specifier = ">=0.3.1" },
@@ -376,12 +376,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pyperclip"
-version = "1.9.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/30/23/2f0a3efc4d6a32f3b63cdff36cd398d9701d26cda58e3ab97ac79fb5e60d/pyperclip-1.9.0.tar.gz", hash = "sha256:b7de0142ddc81bfc5c7507eea19da920b92252b548b96186caf94a5e2527d310", size = 20961 }
-
-[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -490,6 +484,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/44/cd/a040c4b3119bbe532e5b0732286f805445375489fceaec1f48306068ee3b/smmap-5.0.2.tar.gz", hash = "sha256:26ea65a03958fa0c8a1c7e8c7a58fdc77221b8910f6be2131affade476898ad5", size = 22329 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/04/be/d09147ad1ec7934636ad912901c5fd7667e1c858e19d355237db0d0cd5e4/smmap-5.0.2-py3-none-any.whl", hash = "sha256:b30115f0def7d7531d22a0fb6502488d879e75b260a9db4d0819cfb25403af5e", size = 24303 },
+]
+
+[[package]]
+name = "st-copy"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "streamlit" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f0/8c/ae6e14a21f55ae134596af6035f231d7645eec95321c418ec2a90477ad67/st_copy-1.1.0.tar.gz", hash = "sha256:43f0229a5e64c7813ffd9e30a5dbc1fe25fab8263bcbc859b2eae65366ac49e8", size = 59142 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d1/fc/a04d7656419db7efe7a290ba8450e42ff4a58d2764505d4510f7dfce9ac4/st_copy-1.1.0-py3-none-any.whl", hash = "sha256:98f5629f59c51dfa9a72738289d11e5acf16a1e5a7981ee0aacd5207813b23be", size = 58457 },
 ]
 
 [[package]]

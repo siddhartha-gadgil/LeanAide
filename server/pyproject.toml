@@ -5,8 +5,8 @@ description = "Leanaide Streamlit Server"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "pyperclip>=1.9.0",
     "python-dotenv>=1.1.0",
+    "st-copy>=1.1.0",
     "streamlit-code-editor>=0.1.22",
     "streamlit-sortables>=0.3.1",
     "streamlit>=1.45.1",

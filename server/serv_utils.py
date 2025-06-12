@@ -1,12 +1,10 @@
 import ast
-import pyperclip
 from pathlib import Path
-import os
-import sys
 import json
 import shlex
 from typing import Any, Tuple, Type
 import streamlit as st
+from st_copy import copy_button
 
 from api_server import HOST, LOG_FILE
 
@@ -186,8 +184,9 @@ def validate_input_type(input_type: Any, expected_type: str) -> bool:
             return True
     return False
 
+
 def log_server():
-    """Read last n lines from the log file"""
+    """Read from the log file"""
     try:
         with open(LOG_FILE, "r") as f:
             # Efficiently get last n lines
@@ -232,8 +231,10 @@ def download_file(file_content, file_name):
 
 # Function to copy text to clipboard and show confirmation
 def copy_to_clipboard(text):
-    try:
-        pyperclip.copy(text)
-        st.toast("Copied to clipboard!", icon="✔️")
-    except Exception as e:
-        st.warning(f"Failed to copy: {e}", icon="⚠️")
+    copy_button(
+        text,
+        icon='st',  # default, use 'st' as alternative
+        tooltip='Copy to Clipboard',  # defaults to 'Copy'
+        copied_label='Copied Successfully!',  # defaults to 'Copied!'
+        # key="key",  # If omitted, a random key will be generated
+)

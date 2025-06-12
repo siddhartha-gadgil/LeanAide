@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 import shutil
 
-import requests
 from dotenv import load_dotenv
 from PIL import Image
 from streamlit_sortables import sort_items
@@ -91,8 +90,7 @@ def action_copy_download(key: str, filename: str):
     """Helper function to copy text to clipboard and download as a file."""
     col1, col2 = st.columns(2)
     with col1:
-        if st.button(f"Copy to Clipboard", key=f"copy_btn_{key}"):
-            copy_to_clipboard(st.session_state[key])
+        copy_to_clipboard(st.session_state[key])
     with col2:
         download_file(st.session_state[key], filename)
 
@@ -100,7 +98,7 @@ def action_copy_download(key: str, filename: str):
 def handle_image_input(key: str):
     """Handles image input and reordering for different sections."""
     # Create unique session state keys for this section
-    st.info(f"Note: For the uploaded images, they are sent to LLM's for OCR and processing, so please ensure they are clear and readable. Also make sure to provide LLM Credentials for the same.")
+    st.info(f"Note: For the uploaded images, they are sent to LLM's for OCR and processed, so please ensure they are clear and readable. Also make sure to provide LLM Credentials for the same.")
     paths_key = f"{key}_image_paths"
     if paths_key not in st.session_state:
         st.session_state[paths_key] = []
@@ -241,26 +239,43 @@ def handle_pdf_input(key:str):
     uploaded_pdf = st.file_uploader(f"Upload a PDF file for the {key}", type="pdf", key = f"pdf_uploader_{key}")
     if uploaded_pdf:
         try:
-            # Save the uploaded PDF to a temporary location
-            pdf_path = os.path.join(TEMP_DIR, f"pdf_{key}.pdf")
-            with open(pdf_path, "wb"):
-                st.session_state[key] = uploaded_pdf.read()
-            st.success("PDF uploaded successfully.")
+            # Create temp directory if it doesn't exist
+            os.makedirs(TEMP_DIR, exist_ok=True)
+            
+            # Save PDF to temporary file
+            pdf_path = os.path.join(TEMP_DIR, f"{key}_{uploaded_pdf.name}")
+            with open(pdf_path, "wb") as f:
+                f.write(uploaded_pdf.getvalue())
+            
+            # Store both path and content in session state
+            st.session_state[f"{key}_pdf_path"] = pdf_path
+            st.session_state[key] = uploaded_pdf.getvalue()
+            
+            st.success(f"PDF for {key} uploaded successfully.")
+            
+            # Display PDF info
+            st.info(f"File: {uploaded_pdf.name} | Size: {len(uploaded_pdf.getvalue())//1024} KB")
+            
         except Exception as e:
-            st.warning(f"Failed to upload the PDF file: {e}")
+            st.error(f"Failed to process PDF for {key}: {str(e)}")
+            st.session_state[key] = None
+            st.session_state[f"{key}_pdf_path"] = None
     
     if st.session_state[key]:
         st.subheader(f"{key.capitalize()} PDF Content:", help = "You can edit the content below if needed. You may see some text previously if you have already filled the value in other sections.")
         # Display the PDF content (if any)
-        pdf_content = st.text_area(
-            f"Edit {key} PDF content",
-            value = st.session_state[key].decode("utf-8") if isinstance(st.session_state[key], bytes) else st.session_state[key],
-            height=200,
-            key=f"pdf_content_{key}"  # Unique key for text area
-        )
+        try:
+            pdf_content = st.text_area(
+                f"Edit {key} PDF content",
+                value = st.session_state[key].decode("utf-8") if isinstance(st.session_state[key], bytes) else st.session_state[key],
+                height=200,
+                key=f"pdf_content_{key}"  # Unique key for text area
+            )
+        except Exception as e:
+            st.warning(f"Failed to display PDF content: {str(e)}. **Don't worry,** This can still be passed to LLMs for processing.")
         
         # Action buttons
-        action_copy_download(key, f"{key}.pdf")
+        action_copy_download(key, f"{uploaded_pdf.name}") # has the extension .pdf
 
 # PDF upload section
 if input_method == input_options[0]:
@@ -326,12 +341,7 @@ if st.session_state.structured_proof:
         structured_proof_json = json.loads(st.session_state.structured_proof)
         json_str = json.dumps(structured_proof_json, indent=2)
         st.json(json_str)
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            if st.button("Copy to Clipboard"):
-                copy_to_clipboard(json_str)
-        with col2:
-            download_file(json_str, "structured_proof.json")
+        action_copy_download("structured_proof", "structured_proof.json")
     except Exception as e:
         st.warning(f"Failed to display structured proof: {e}")
 
