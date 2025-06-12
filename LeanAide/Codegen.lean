@@ -247,11 +247,14 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
     | some code => do
       accum := accum.push code
   if accum.isEmpty then
-    throwError
-      s!"codegen: no commands generated from {sources}"
-  let res ← flattenCommands accum
-  Translate.addCommands res
-  return res
+    let empty : Array <| TSyntax `command := #[]
+    `(commandSeq| $empty*)
+  else
+    let res ← flattenCommands accum
+    Translate.addCommands res
+    return res
+
+
 
 def noCode : CodeGenerator → Option MVarId  →
   (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
