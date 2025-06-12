@@ -30,6 +30,13 @@ def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : Term
       return none
   catch e =>
     IO.eprintln s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
+    IO.eprintln s!"Tactic code: \n{← ppCategory ``tacticSeq tacticCode}"
+    IO.eprintln s!"Tactics:"
+    let tacs := getTactics tacticCode
+    for tac in tacs do
+      IO.eprintln s!"{← ppTactic tac}"
+      IO.eprintln ""
+    IO.eprintln s!"Assignment: {← mvarId.isAssigned}; {← PrettyPrinter.ppExpr <| mkMVar mvarId} "
     s₀.restore
     return mvarId
 
@@ -75,6 +82,7 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     return mvars
   catch e =>
     IO.eprintln s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
+    IO.eprintln s!"Tactic code: {← ppCategory ``tacticSeq tacticCode}"
     for tac in tacs do
       IO.eprintln s!"Tactic: {← ppTactic tac}"
     return List.replicate n mvarId
@@ -93,14 +101,16 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
       else
         `(_)
       vars := vars.push term
-    -- IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
+    IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
   -- vars := vars[1:]
   let targetType ← relLCtx' mvarId
   let typeView ← PrettyPrinter.ppExpr targetType
+  logInfo m!"Target type: {typeView}"
   let introTac ← `(tactic| intro $vars*)
   let tactics := if vars.isEmpty then tactics else  #[introTac] ++ tactics
   let tacticCode ← `(tacticSeq| $tactics*)
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
+  logInfo m!"Tactic proof: {termView}"
   let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
   let (_, msgs') ← runFrontendM egCode
@@ -136,9 +146,9 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic): Term
   let mvar ← mkFreshExprMVar goal
   let msgs ←
     runTacticsAndGetMessages mvar.mvarId! tactics
-  -- IO.eprintln "Messages:"
-  -- for msg in msgs.toList do
-  --   IO.eprintln s!"Message: {← msg.data.toString}"
+  IO.eprintln "Messages:"
+  for msg in msgs.toList do
+    IO.eprintln s!"Message: {← msg.data.toString}"
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 

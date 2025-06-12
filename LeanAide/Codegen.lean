@@ -88,9 +88,13 @@ initialize registerBuiltinAttribute {
 Get the code generation functions for a given key. The key is a string that identifies the function. If no function is found for the key, an error is thrown.
 -/
 def codegenMatches (key: String) : CoreM <| Array Name := do
+  let allKeys := (codegenExt.getState (← getEnv)).toArray.map (fun (k, _) => k)
   let some fs :=
     (codegenExt.getState (← getEnv)).get? key | throwError
-      s!"codegen: no function found for key {key}"
+      s!"codegen: no function found for key {key} available keys are {allKeys.toList}"
+  IO.eprintln s!"codegen: found {fs.size} functions for key {key}"
+  if fs.isEmpty then
+    IO.eprintln s!"codegen: no function found for key {key} in {allKeys.toList}"
   return fs
 
 /--
@@ -211,9 +215,19 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
+    IO.eprintln s!"codegen: goal still open after tactics: {← ppExpr <| ← goal.getType}"
+    IO.eprintln "Local context:"
+    let lctx ← getLCtx
+    for decl in lctx do
+      IO.eprintln s!"{decl.userName}: {← ppExpr <| decl.type}"
     let autoTacs ←
-      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
+      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| aesop?)]
+    IO.eprintln s!"codegen: auto tactics:"
+    for tac in autoTacs do
+      IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
     appendTactics tacs (← `(tacticSeq| $autoTacs*))
+
+#check LocalContext
 
 def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   (sources: List Json) :

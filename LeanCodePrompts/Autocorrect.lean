@@ -260,8 +260,7 @@ def interleaveAux (full: Substring)(cursor: String.Pos)
 
 def interLeave(full: Substring)(idents: List Substring) :
       (List (Substring × Substring)) × Substring :=
-          interleaveAux full 0 [] idents
-
+          interleaveAux full 0 [
 /-- given a string expected to be a *theorem statement* such as `{A: Type} (a : A) : P a`, transforms to one of the type `{A: Type} → (a : A) → P a`, parses this as a term and returns segments and a tail, with each segment a pair with the second part an identifier and the first an identifier-free part preceding it. -/
 def identThmSegments (s : String)
   : MetaM <| Except String ((Array (String × String)) × String) := do
