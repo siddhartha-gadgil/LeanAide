@@ -253,7 +253,7 @@ def tacticList : TacticM <| List String := do
   let prompts ← getTacticPrompts core 5
   let promptPairs := prompts.map (fun p =>
     let arr := p.splitOn ":= by"
-    (arr.get! 0++ ":= by", arr.get! 1))
+    (arr[0]!++ ":= by", arr.get! 1))
   let prompt := makePrompt core promptPairs
   -- let prompt ← makeTacticPrompt 20
   let cache ← cacheTacticJson.get

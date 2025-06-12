@@ -12,13 +12,13 @@ def eg2 := server.structuredProofFromStatement "Every subgroup of a cyclic group
 
 def eg3 : TranslateM (Array (String × Array Json) × Format) := do
   let jsArr ← server.structuredProofFromStatement "Every subgroup of an abelian group is abelian."
-  let js := jsArr.get! 0 |>.2.get! 0
+  let js := jsArr[0]! |>.2[0]!
   let (doc, _) ←  mathDocumentCode (doc := js) (qp := {})
   return (jsArr, doc)
 
 def eg4 : TranslateM (Array (String × Array Json) × Format) := do
   let jsArr ← server.structuredProofFromStatement "Every subgroup of a cyclic group is cyclic."
-  let js := jsArr.get! 0 |>.2.get! 0
+  let js := jsArr[0]! |>.2[0]!
   let (doc, _) ←  mathDocumentCode (doc := js) (qp := {})
   return (jsArr, doc)
 
@@ -757,7 +757,7 @@ def egJson : TranslateM <| Array String := do
   | Except.ok js =>
     match js.getKV? with
     | some ("math_document", .arr jsArr) =>
-      let js := jsArr.get! 0
+      let js := jsArr[0]!
       match js.getKV? with
       | some ("theorem", js) =>
         match js.getObjValAs? (Array Json) "hypothesis" with

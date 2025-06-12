@@ -18,8 +18,8 @@ unsafe def main (args : List String) : IO UInt32 := do
   let dir := System.mkFilePath <| ["results", "putnam"]
   if !(← dir.pathExists) then
         IO.FS.createDirAll dir
-  let start := args.get! 0 |>.toNat!
-  let last := args.get! 1 |>.toNat!
+  let start := args[0]! |>.toNat!
+  let last := args[1]! |>.toNat!
   let outFile :=
         System.mkFilePath <| ["results", "putnam", s!"statements_{start}_{last}.jsonl"]
   let handle ← IO.FS.Handle.mk outFile IO.FS.Mode.append
