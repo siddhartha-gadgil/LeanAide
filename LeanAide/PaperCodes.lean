@@ -20,6 +20,7 @@ def Translator.translateToPropStrict
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
   let thm ← withPreludes claim
+  IO.eprintln s!"Translating to proposition: {claim}, full statement: {thm}"
   let (js, _, _) ← translator.getLeanCodeJson  thm
   let output ← getMessageContents js
   for out in output do
@@ -40,7 +41,9 @@ def Translator.translateToPropStrict
       catch e =>
         throwError s!"Failed to infer type {type}, error {← e.toMessageData.format} when translating assertion '{claim}', full statement {thm}"
       if univ.isSort then
+        IO.eprintln s!"Obtained type: {← ppExpr type}"
         let type ← dropLocalContext type
+        IO.eprintln s!"Obtained type in local context: {← ppExpr type}"
         return type
       else
         throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
@@ -283,7 +286,7 @@ where
     let name ← translator.server.theoremName thm
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
-    Translate.addTheorem <| {name := name, type := type, label := label, isProved := true}
+    Translate.addTheorem <| {name := name, type := type, label := label, isProved := true, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?)
 
@@ -479,6 +482,13 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
   IO.eprintln s!"number of proof steps: {content.length}"
+  match labelledTheorem.source.getObjVal?  "hypothesis" with
+      | Except.ok h =>
+        IO.eprintln s!"hypothesis: {h} in proof"
+        contextRun translator none ``tacticSeq h
+        IO.eprintln "Preludes added:"
+        IO.eprintln <| ← withPreludes ""
+      | Except.error _ => pure ()
   let pfStx ←
     withoutModifyingState do
     getCodeTactics translator goal content
@@ -649,7 +659,7 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
 | _, js => do
   let .ok statement :=
       js.getObjValAs? String "assumption" | throwError "No 'assumption' found in 'assume_statement'"
-  addPrelude statement
+  addPrelude <| "Assume that: " ++ statement
   return none
 
 
@@ -1005,6 +1015,7 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
       | none => pf
     `(tacticSeq| $pf*)
   | (conditionType, trueCaseProof) :: tail => goal.withContext do
+    IO.eprintln s!"number of cases (remaining): {tail.length + 1}"
     let conditionStx ← delabDetailed conditionType
     let tac ← `(tactic|if $conditionStx then ?_ else ?_)
     let [thenGoal, elseGoal] ←
@@ -1067,14 +1078,18 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
     exhaustiveness?.mapM fun
       e => do
         let conds := cases.map (·.1)
-        let exhaustGoal ←
+        let exhaustGoalType ←
           orAllWithGoal conds (← goal.getType)
-        let exhaustGoalStx ← delabDetailed exhaustGoal
+        let exhaustGoalStx ← delabDetailed exhaustGoalType
         let hash := hash exhaustGoalStx.raw.reprint
         let exhaustId := mkIdent <| ("exhaust" ++ s!"_{hash}").toName
-        let some pfStx ← getCode translator (some goal) ``tacticSeq e | throwError
+        let exhaustGoalExpr ← mkFreshExprMVar
+          exhaustGoalType
+        let exhaustGoal := exhaustGoalExpr.mvarId!
+        let some pfStx ← getCode translator (some exhaustGoal) ``tacticSeq e | throwError
           s!"codegen: no translation found for exhaustiveness {e}"
         `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
+  IO.eprintln s!"number of cases (after exhaustiveness): {cases.length}"
   multiConditionCasesAux translator goal cases exhaustiveTac
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
@@ -1120,9 +1135,10 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
         let succId := mkIdent ``Nat.succ
   let ihId := mkIdent `ih
   let discrTerm : Syntax.Term := ⟨discrTerm'⟩
+  let dicrTerm' ← `(elimTarget| $discrTerm:term)
   let zeroId := mkIdent ``Nat.zero
   let tac ← `(tactic|
-    induction $discrTerm with
+    induction discrTerm' with
     | $zeroId => _
     | $succId:ident $ihId:ident => _)
 
@@ -1136,8 +1152,9 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     s!"codegen: no translation found for base_case_proof {baseCaseProof}"
   let some inductionStepProofStx ← getCode translator (some stepGoal) ``tacticSeq inductionStepProof | throwError
     s!"codegen: no translation found for induction_step_proof {inductionStepProof}"
+    let dicrTerm' ← `(elimTarget| $discrTerm:term)
   let tacs := #[← `(tactic|
-    induction $discrTerm with
+    induction discrTerm' with
     | $zeroId => $baseCaseProofStx
     | $succId:ident $ihId:ident => $inductionStepProofStx)]
   `(tacticSeq| $tacs*)
@@ -1218,13 +1235,14 @@ def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind
 -/
 @[codegen "conclude_statement"]
 def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, ``tacticSeq, js => do
+| some _, ``tacticSeq, js => do
   let .ok claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no 'claim' found in 'conclude_statement'"
   let type ← translator.translateToPropStrict claim
   let stx ← delabDetailed type
   let pf ← runTacticsAndGetTryThisI type #[← `(tactic| auto?)]
   `(tacticSeq| have : $stx := by $pf*)
+| none, ``tacticSeq, _ => do return none
 | _, kind, _ => throwError
     s!"codegen: conclude_statement does not work for kind {kind}"
 /- Figure
@@ -1351,19 +1369,34 @@ def egLet : Json :=
   }
 
 open Codegen
-#eval showStx egTheorem
+-- #eval showStx egTheorem
 
-#eval showStx egTheorem''
-
-
-#eval egTheorem
+-- #eval showStx egTheorem''
 
 
-#eval showStx egLet
+-- #eval egTheorem
+
+
+-- #eval showStx egLet
 
 def egView : MetaM Format := do
   let .ok js := runParserCategory (← getEnv) `json egTheorem.pretty | throwError
     "Failed to parse egLet as JSON"
   PrettyPrinter.ppCategory `json js
 
-#eval egView
+-- #eval egView
+
+def egTacs : TermElabM <|  Format := do
+  let goal := q(∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N)
+  let autoTac ← `(tactic| aesop?)
+  let tacs ← runTacticsAndGetTryThisI goal #[autoTac]
+  PrettyPrinter.ppCategory ``tacticSeq <| ← `(tacticSeq|$tacs*)
+
+
+#eval egTacs
+
+example: ∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N := by
+  intro
+  aesop?
+  · sorry
+  · sorry

@@ -132,6 +132,9 @@ structure LabelledTheorem where
   type : Expr
   /-- Whether the theorem is proved-/
   isProved : Bool
+  /-- source -/
+  source: Json
+deriving Repr
 
 /--
 State for translation. The main motivation for this was to avoid repeatedly loading embeddings.

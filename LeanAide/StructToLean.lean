@@ -416,7 +416,7 @@ partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
   match goal with
   | .forallE name type _ bi =>
     withLocalDecl name bi type fun x => do
-      let inner ← orAllWithGoal terms goal
+      let inner ← orAllWithGoal terms type
       mkForallFVars #[x] inner
   | _ =>
     let terms ← terms.mapM dropLocalContext
@@ -692,8 +692,8 @@ def groupCasesGoals (goal: MVarId) (context : Array Json) (conds: List String)
     | h :: t => do
       let tacs ← ifSkeleton context h qp
       let splitGoals ← runAndGetMVars goal #[tacs] 2
-      let tailGoals ← groupCasesGoals (splitGoals.get! 1) context t qp
-      return splitGoals.get! 0 :: tailGoals
+      let tailGoals ← groupCasesGoals (splitGoals[1]!) context t qp
+      return splitGoals[0]! :: tailGoals
 
 def _root_.Lean.Json.getJsonList? (js: Json) (key: String) :
   Except String (List Json) :=
