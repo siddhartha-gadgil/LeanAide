@@ -1386,11 +1386,17 @@ def egView : MetaM Format := do
 
 -- #eval egView
 
-def egTacs : TermElabM <|  (Array Syntax.Tactic) := do
+def egTacs : TermElabM <|  Format := do
   let goal := q(∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N)
   let autoTac ← `(tactic| aesop?)
   let tacs ← runTacticsAndGetTryThisI goal #[autoTac]
-  return tacs
+  PrettyPrinter.ppCategory ``tacticSeq <| ← `(tacticSeq|$tacs*)
 
 
 #eval egTacs
+
+example: ∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N := by
+  intro
+  aesop?
+  · sorry
+  · sorry
