@@ -1,5 +1,4 @@
 import Lean
-import Cache.IO
 import LeanAide.Aides
 import LeanAide.Template
 import LeanCodePrompts.MathDoc
@@ -162,7 +161,8 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
     | some h => #["-H", h] ++ baseArgs
     | none => baseArgs
   -- logInfo s!"Querying {url} with {data}"
-  let output ← Cache.IO.runCurl (args ++ #["--data", data])
+  let output ← IO.Process.output {cmd := "curl", args := (args ++ #["--data", data])}
+  let output := output.stdout
   trace[Translate.info] "Model response: {output}"
   let queryJs := Json.mkObj [
     ("url", Json.str url),
@@ -187,7 +187,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     (← cachePath) / "chat" /
       s!"{hash server}_{hash params}_{hash messages}.json"
   if ← file.pathExists then
-    -- IO.eprintln s!"Reading from cache: {file}"
+    IO.eprintln s!"Reading from cache: {file}"
     -- logInfo s!"Reading from cache: {file}"
     let output ← IO.FS.readFile file
     match Json.parse output with

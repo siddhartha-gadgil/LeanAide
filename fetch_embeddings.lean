@@ -1,6 +1,5 @@
-import Cache.IO
 import LeanAide.Aides
-open Lean Cache.IO
+open Lean
 
 unsafe def fetchEmbedding (descField : String) (force: Bool) : IO UInt32 := do
   let picklePath ← picklePath descField

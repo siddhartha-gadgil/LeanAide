@@ -138,7 +138,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no theorem found: {e}")]
     | Except.ok thm => do
       let pfs ← translator.server.prove thm 1 translator.params
-      match pfs.get? 0 with
+      match pfs[0]? with
       | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
       | some pf => do
         return Json.mkObj [("result", "success"), ("proof", toJson pf)]
@@ -162,7 +162,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | _, _, Except.ok block => do
       let jsons ←
         translator.server.structuredProof block 1 translator.params
-      match jsons.get? 0 with
+      match jsons[0]? with
       | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
       | some json => do
         return Json.mkObj [("result", "success"), ("json_structured", json)]
@@ -170,7 +170,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
       let block := s!"## Theorem : {statement}\n##Proof: {pf}"
       let jsons ←
         translator.server.structuredProof block 1 translator.params
-      match jsons.get? 0 with
+      match jsons[0]? with
       | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
       | some json => do
         return Json.mkObj [("result", "success"), ("json_structured", json)]
