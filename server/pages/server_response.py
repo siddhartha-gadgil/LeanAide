@@ -49,7 +49,7 @@ with st.sidebar:
 for key in ["parsed_curl", "selected_tasks", "self_selection", "curl_selection", "val_input", "result"]:
     if key not in st.session_state:
         st.session_state[key] = None
-for key in ["curl_botton", "request_button", "self_input_button", "ignore_curl_ip_port", "server_output_success", "valid_self_input", "log_cleaned", "log_opened"]:
+for key in ["curl_botton", "request_button", "self_input_button", "ignore_curl_ip_port", "server_output_success", "valid_self_input", "log_cleaned"]:
     if key not in st.session_state:
         st.session_state[key] = False
 
@@ -234,7 +234,6 @@ if st.button("Submit Request", on_click= button_clicked("request_button"), type 
 ## LOGS SECTION
 st.subheader("Server Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked. If you refresh the page, the old logs will dissapear.")
 with st.expander("Click to view Server logs", expanded=False):
-    st.session_state.log_opened = True
     if log_out := log_server():
         height = 500 if len(log_out) > 1000 else 150
         st.write("Server logs:")
@@ -269,3 +268,6 @@ with st.expander("Click to view Server logs", expanded=False):
 
     if st.checkbox("Clean Server Logs. Read the help text before checking this box", value=st.session_state.log_cleaned, key="clean_log", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
         clean_log()
+        if st.session_state.log_cleaned:
+            st.rerun()
+            st.session_state.log_cleaned = False

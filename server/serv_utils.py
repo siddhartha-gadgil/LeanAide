@@ -10,6 +10,8 @@ from collections import deque
 
 HOST = os.environ.get("HOST", "localhost")  
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
+schema_path = os.path.join(str(HOMEDIR), "resources", "PaperStructure.json")
+SCHEMA_JSON = json.load(open(schema_path, "r", encoding="utf-8"))
 
 # Lean Checker Tasks
 TASKS = {
@@ -250,3 +252,16 @@ def action_copy_download(key: str, filename: str):
         copy_to_clipboard(st.session_state[key])
     with col2:
         download_file(st.session_state[key], filename)
+
+def preview_text(key: str, default_text: str = ""):
+    """
+    Display a preview of the text in a text area with a copy and download button.
+    """
+    with st.expander(f"Preview Text {key.capitalize()}", expanded=False):
+        lang = st.radio("Language", ["Markdown", "LateX", "Text"], horizontal = True, key = f"preview_{key}").lower()
+        if lang == "latex":
+            st.latex(st.session_state[key] if st.session_state[key] else default_text)
+        elif lang == "markdown":
+            st.markdown(st.session_state[key] if st.session_state[key] else default_text)
+        else:
+            st.code(st.session_state[key] if st.session_state[key] else default_text, wrap_lines = True)

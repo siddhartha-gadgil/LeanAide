@@ -7,15 +7,34 @@ from dotenv import load_dotenv
 from PIL import Image
 from streamlit_sortables import sort_items
 # from gpt_structured import gen_structure_proof, solution_from_images
-from serv_utils import action_copy_download, HOMEDIR
+from serv_utils import action_copy_download, preview_text, SCHEMA_JSON
+from llm_response import *
 
 load_dotenv()
 
 st.title("LeanAide: Structured Json Output")
 st.write("Here you can input your theorem-proof/paper, etc. and generate Structured JSON output using LeanAide Schema.")
-st.info("Please fill out your API credentials in the sidebar to use the LLM's. Image OCR and Structured Json Generation will not work without valid API credentials.")
+st.info("Please fill out your API credentials in the sidebar to use the LLM's. Image OCR, Structured Json Generation, etc. will not work without valid API credentials.")
 
 st.sidebar.header("Structured Json")
+
+# Create a temporary directory if it doesn't exist
+TEMP_DIR = "leanaide_st_temp"
+os.makedirs(TEMP_DIR, exist_ok=True)
+
+# Create session state variables if they don't exist
+for key in ["image_paths", "proof", "theorem", "structured_proof", "paper", "model_text", "model_img" , "llm_provider", "llm_list"]:
+    if key not in st.session_state:
+        st.session_state[key] = None
+
+for key in ["input_pdf", "input_images", "input_markdown", "input_txt", "input_latex", "input_text_content", "input_paper"]:
+    if key not in st.session_state:
+        st.session_state[key] = False
+
+# For buttons only
+for key in ["gen_json_button"]:
+    if key not in st.session_state:
+        st.session_state[key] = False
 
 provider_info = {
     "OpenAI": {
@@ -34,12 +53,16 @@ provider_info = {
 with st.sidebar:
     with st.expander("Credentials"):
         # Provider selection
-        provider = st.selectbox("Select Provider:", list(provider_info.keys()), index=0)
+        st.session_state.llm_provider = st.selectbox("Select Provider:", list(provider_info.keys()), index=0)
 
         # Dynamically update API Key and Model fields based on the provider
-        selected_provider = provider_info[provider]
+        selected_provider = provider_info[st.session_state.llm_provider]
 
-        if provider == "Gemini":
+        if not st.session_state.llm_list:
+            if st.session_state.llm_provider.lower() == "openai":
+                st.session_state.llm_list = get_openai_models()
+
+        if st.session_state.llm_provider == "Gemini":
             # Warning if Gemini is selected
             st.warning("Gemini API is not yet supported. Please select OpenAI for now.")
         else:
@@ -56,36 +79,35 @@ with st.sidebar:
                 help="Hover to see the key, edit if needed.",
             )
 
+            if st.session_state.llm_provider.lower() == "openai":
+                st.info("The below options are models supported by your OpenAI API Key.")
             # Model selection text boxes
-            model_image_to_text = st.text_input(
+            default_openai_model_index = st.session_state.llm_list.index(selected_provider["default_model"]) if selected_provider["default_model"] in st.session_state.llm_list else 0
+            model_image_to_text = st.selectbox(
                 "Model for Image to Text:",
-                value=selected_provider["default_model"],
+                options = st.session_state.llm_list,
+                index = default_openai_model_index,
                 help="Specify the model for Image to Text. Check out list of OpenAI Models [↗](https://platform.openai.com/docs/models)",
+                accept_new_options = True
             )
-            model_json_generator = st.text_input(
+            model_json_generator = st.selectbox(
                 "Model for JSON Generator:",
-                value=selected_provider["default_model"],
+                options = get_openai_models(),
+                index = default_openai_model_index,
                 help="Specify the model for JSON Generator. Check out list of OpenAI Models [↗](https://platform.openai.com/docs/models)",
+                accept_new_options = True
             )
-
-# Create a temporary directory if it doesn't exist
-TEMP_DIR = "leanaide_st_temp"
-os.makedirs(TEMP_DIR, exist_ok=True)
-
-# Create session state variables if they don't exist
-for key in ["image_paths", "proof", "theorem", "structured_proof", "paper"]:
-    if key not in st.session_state:
-        st.session_state[key] = None
-
-for key in ["input_pdf", "input_images", "input_markdown", "input_txt", "input_latex", "input_text_content"]:
-    if key not in st.session_state:
-        st.session_state[key] = False
 
 st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
 input_options = ["Mathematical Papers", "Theorem-Proofs or Problems"] 
 input_captions = ["For Research Papers", "For short Theorem Proofs or Mathematical Problems"]
-input_method = st.radio("Choose what you would like to work on:", options = input_options, captions = input_captions, horizontal = True, help = "Select what you are inputting. If you are working on a single theorem-proof or problem, select the second option. If you are working on a research paper, select the first option.")
+input_method = st.radio("Choose what you would like to work on:",
+    options = input_options,
+    captions = input_captions,
+    horizontal = True,
+    help = "Select what you are inputting. If you are working on a single theorem-proof or problem, select the second option. If you are working on a research paper, select the first option."
+)
 
 # Helper function for image inputs
 def handle_image_input(key: str):
@@ -141,9 +163,7 @@ def handle_image_input(key: str):
                                               key=f"generate_btn_{key}"):
         with st.spinner(f"Processing images..."):
             try:
-                # Replace with your actual image processing function
-                generated_text = f"Sample {key} text generated from {len(st.session_state[paths_key])} images."
-                st.session_state[key] = generated_text
+                st.session_state[key] = solution_from_images(st.session_state[paths_key])
             except Exception as e:
                 st.error(f"Failed to process images: {str(e)}")
                 st.session_state[key] = ""
@@ -157,7 +177,7 @@ def handle_image_input(key: str):
             height=200,
             key=f"text_area_{key}"  # Unique key for text area
         )
-        
+        preview_text(key) 
         # Action buttons
         action_copy_download(key, f"{key}.txt")
         
@@ -216,6 +236,7 @@ def handle_textual_file_input(key: str):
             height=200,
             key=f"md_content_{key}"  # Unique key for text area
         )
+        preview_text(key, f"Enter the {key} text here...")
         
         # Action buttons
         ext = "md" if uploaded_file.name.endswith(".md") else "txt"
@@ -226,21 +247,25 @@ def handle_textual_file_input(key: str):
 # Helper function for text input
 def handle_text_input(key: str):
     st.session_state.input_text_content = True
-    default_text = f"Enter the {key} text here..."
+    default_text = f"Enter the {key.capitalize()} text here..."
     obt_text = st.text_area(
         key.capitalize(),
         value = st.session_state[key] if st.session_state[key] else "",
         placeholder = default_text,
         height=200,
-    )
-    if obt_text.strip() != "" and obt_text.strip() != default_text:
-        st.session_state[key] = obt_text.strip()
-        st.success(f"{key.capitalize()} received successfully: {obt_text.strip()[:25]}...")
+        help = "You can type your " + key + " text here. You can even write `LaTeX` code if you want to.",
+        key=f"text_input_{key}" 
+    ).strip()
+    if obt_text != "" and obt_text != default_text:
+        _code_suffix = "..." if len(obt_text) > 50 else ""
+        st.session_state[key] = obt_text
+        # After components
+        preview_text(key, default_text)
+        st.success(f"{key.capitalize()} received successfully: {obt_text[:50]}" + _code_suffix)
         action_copy_download(key, f"{key}.txt")
-        return obt_text
     else:
         st.warning(f"Please enter {key.capitalize()} text before proceeding.")
-        return ""
+        st.session_state[key] = ""
 
 # Helper function for PDF input
 def handle_pdf_input(key:str):
@@ -254,13 +279,11 @@ def handle_pdf_input(key:str):
             
             # Save PDF to temporary file
             pdf_path = os.path.join(TEMP_DIR, f"{key}_{uploaded_pdf.name}")
-            with open(pdf_path, "wb") as f:
-                f.write(uploaded_pdf.getvalue())
+            pdf_text = extract_text_from_pdf(uploaded_pdf)
             
             # Store both path and content in session state
             st.session_state[f"{key}_pdf_path"] = pdf_path
-            st.session_state[key] = uploaded_pdf.getvalue()
-            
+            st.session_state[key] = pdf_text 
             st.success(f"PDF for {key} uploaded successfully.")
             
             # Display PDF info
@@ -291,7 +314,7 @@ def handle_pdf_input(key:str):
 # General input handler for theorem, proof, and paper
 def handle_general_input(key: str):
     st.subheader(f"Input "+ key.capitalize())
-    input_formats = ["Type Input Yourself", "PDF(.pdf)", "Image(.png, .jpg, .jpeg)", "Markdown(.md)", "Text(.txt), Latex(.tex)"]
+    input_formats = ["Type Input Yourself", "PDF(.pdf)", "Image(.png, .jpg, .jpeg)", "Markdown(.md)", "Text(.txt)" , "Latex(.tex)"]
 
     format_opt = st.selectbox(
         "Choose input format for the theorem",
@@ -318,38 +341,40 @@ def handle_general_input(key: str):
         handle_pdf_input(key)
     else: # Self typed input
         st.session_state.input_text_content = True
-        st.session_state[key] = handle_text_input(key)
+        handle_text_input(key) 
 
 # PDF upload section
-if input_method == input_options[0]:
+if input_method == input_options[0]: # Papers
     st.session_state.input_paper = True
     st.info("It is recommended to upload the paper in PDF format for better processing. Though you can choose any other formats as well.")
     handle_general_input("paper")
 
 # Theorem-Proof section
-if input_method == input_options[1]:
+if input_method == input_options[1]: # Theorem-Proofs or Problems
+    st.session_state.input_paper = False
     for key in ["theorem", "proof"]:
-       handle_general_input(key) 
+        handle_general_input(key) 
 
-if st.button("Generate Structured Proof"):
-    if not st.session_state.theorem and not (st.session_state.proof and  st.session_state.paper):
+if st.button("Generate Structured Proof") or st.session_state["gen_json_button"]:
+    st.session_state.gen_json_button = True
+    if not st.session_state.paper and not (st.session_state.proof and  st.session_state.theorem):
         st.warning(
             "Please upload the inputs before generating the structured proof."
         )
     else:
         with st.spinner("Generating structured proof..."):
             try:
-                #TODO:
-                st.session_state.structured_proof = json.dumps({"theorem": st.session_state.theorem, "proof": st.session_state.proof})
-                # st.session_state.structured_proof = gen_structure_proof(
-                #     st.session_state.theorem, st.session_state.proof
-                # )
+                if st.session_state.input_paper: # For mathematical papers
+                    st.session_state.structured_proof = gen_paper_json(st.session_state.paper)
+                else: # Theorem Proof based
+                    st.session_state.structured_proof = gen_thmpf_json(st.session_state.theorem, st.session_state.proof)
             except Exception as e:
                 st.warning(f"Failed to generate structured proof: {e}")
+else:
+    st.session_state.gen_json_button = False
 
 if st.session_state.structured_proof:
     st.subheader("Structured Proof Output (JSON):")
-    st.write("TEMPORARY OUTPUT")
     try:
         structured_proof_json = json.loads(st.session_state.structured_proof)
         json_str = json.dumps(structured_proof_json, indent=2)
@@ -362,9 +387,7 @@ st.divider()
 
 # Schema Info
 st.subheader("Schema Information", help = "Expand the JSON schema below to see the LeanAide `PaperStructure.json` schema followed by models.")
-schema_path = os.path.join(str(HOMEDIR), "resources", "PaperStructure.json")
-ln_schema_json = json.load(open(schema_path, "r"))
-st.json(ln_schema_json, expanded=False)
+st.json(SCHEMA_JSON, expanded=False)
 
 if st.session_state.structured_proof:
     if os.path.exists(TEMP_DIR):
