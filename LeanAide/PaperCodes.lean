@@ -690,8 +690,8 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
 }
 -/
 @[codegen "some_statement"]
-def someCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, js => do
+def someCode (translator : CodeGenerator := {})(goal : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| kind, js => do
   let statement :=
     match js.getObjValAs? String "statement" with
     | Except.ok s => s
@@ -707,8 +707,12 @@ def someCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeK
       | some p => s!"(such that) {p}"
       | _ => ""
     s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
+  let assJs := Json.mkObj [
+    ("type", "assume_statement"),
+    ("claim", .str statement)
+  ]
   addPrelude statement
-  return none
+  getCode translator goal kind assJs
 
 
 /- assume_statement
