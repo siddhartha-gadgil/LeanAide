@@ -4,6 +4,7 @@ import LeanAide.Syntax
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
+set_option statesearch.revision "v4.16.0"
   example :=
     "Error: codegen: no valid function found for key definition in JSON object {\"label\": \"def:even\",\n \"header\": \"Definition\",\n \"definition\":\n \"An integer n ∈ ℤ is defined as **even** if it is a multiple of 2. That is, an integer n is even if there exists some integer k ∈ ℤ such that: n = 2k\"}; tried: [LeanAide.defCode: codegen: no definition translation found for An integer n ∈ ℤ is defined as **even** if it is a multiple of 2. That is, an integer n is even if there exists some integer k ∈ ℤ such that: n = 2k]"
   def Int.Odd (m : ℤ) : Prop :=

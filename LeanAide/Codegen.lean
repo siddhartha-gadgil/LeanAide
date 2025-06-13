@@ -182,7 +182,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
       catch e =>
         let err ←   e.toMessageData.toString
         let errSrx := Syntax.mkStrLit <| "Error: " ++ err
-        pure <| some <| ← `(tacticSeq| have := $errSrx)
+        pure <| some <| ← `(tacticSeq| trace $errSrx)
     match code? with
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
@@ -239,7 +239,7 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
       catch e =>
         let err ←   e.toMessageData.toString
         let errSrx := Syntax.mkStrLit <| "Error: " ++ err
-        pure <| some <| ← `(commandSeq| example := $errSrx)
+        pure <| some <| ← `(commandSeq| #check $errSrx)
 
     match code? with
     | none => do -- error with obtaining commands

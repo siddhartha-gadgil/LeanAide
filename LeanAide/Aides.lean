@@ -382,12 +382,15 @@ def codeBlock (code: String) (s: String) : String :=
   (split.splitOn "```")[0]!
 
 def codeBlock? (code: String) (s: String) : Option String := do
-  let split ←   (s.splitOn s!"```{code}")[1]? |>.orElse fun _ =>
-    (s.splitOn "```")[1]!
-  (split.splitOn "```")[0]!
+  let split ←
+    (s.splitOn s!"```{code}")[1]? |>.orElse fun _ =>
+      (s.splitOn "```")[1]?
+  (split.splitOn "```")[0]?
 
 def extractLean (s: String) : String :=
   codeBlock? "lean" s |>.getD s
+
+#eval "".splitOn "```lean"
 
 def extractJson (s: String) : Json :=
   let code := codeBlock? "json" s |>.getD s

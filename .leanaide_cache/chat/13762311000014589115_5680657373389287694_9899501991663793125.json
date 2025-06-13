@@ -1,0 +1,104 @@
+{"usage":
+ {"total_tokens": 5627,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 5268,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 359},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BhriH8pebaUQthhZK70eVHmGorcwq",
+ "created": 1749794277,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def x : ℤ := sorry -- Assume x is an odd integer\ndef y : ℤ := sorry -- Assume y is an even integer\ndef S : ℤ := x + y",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable {x y : ℤ}\n\ndef x_is_odd [inst : Odd x] : Prop := inst.property\ndef y_is_even [inst : Even y] : Prop := inst.property\n\ndef S : ℤ := x + y\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "def S (x y : ℤ) [inst : Odd x] [inst_1 : Even y] : ℤ := x + y",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def x : ℤ := sorry -- integer such that odd\ndef y : ℤ := sorry -- integer such that even\ndef S : ℤ := x + y",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def x : ℤ := -- assume x is an integer such that odd\ndef y : ℤ := -- assume y is an integer such that even\ndef S : ℤ := x + y",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def x : ℤ := sorry -- integer such that x is odd\ndef y : ℤ := sorry -- integer such that y is even\ndef S : ℤ := x + y",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "def x : ℤ := sorry\n\ndef y : ℤ := sorry\n\ndef S : ℤ := x + y",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef S (x y : ℤ) [inst : Odd x] [inst_1 : Even y] : ℤ := x + y\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def x : ℤ := sorry -- integer such that odd\ndef y : ℤ := sorry -- integer such that even\ndef S : ℤ := x + y",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "def x : ℤ := sorry\n\ndef y : ℤ := sorry\n\ndef S : ℤ := x + y",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}
