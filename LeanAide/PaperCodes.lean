@@ -708,7 +708,7 @@ def someCode (translator : CodeGenerator := {})(goal : Option (MVarId)) : (kind:
       | _ => ""
     s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
   let assJs := Json.mkObj [
-    ("type", "assume_statement"),
+    ("type", "assert_statement"),
     ("claim", .str statement)
   ]
   addPrelude statement
