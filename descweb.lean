@@ -30,7 +30,7 @@ def block? (name: Name)(js: Json) : IO <| Option String := do
 def main : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
-    importModules #[
+    importModules (loadExts := true) #[
     {module := `Mathlib},
     {module := `DataGenAide.ConstDeps}] {}
   let dataPath : System.FilePath := (← resourcesDir)/ "mathlib4-descs.jsonl"

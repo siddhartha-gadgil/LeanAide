@@ -1,0 +1,107 @@
+{"usage":
+ {"total_tokens": 5715,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 4956,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 759},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BhqV1TtkN7cyNCcf7AqNMH9wQ5NjW",
+ "created": 1749789611,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable {x y : ℤ}\n\ndef is_odd (n : ℤ) := n % 2 ≠ 0\ndef is_even (n : ℤ) := n % 2 = 0\n\ndef x_is_odd : Prop := is_odd x\ndef y_is_even : Prop := is_even y\n\ndef S : ℤ := x + y\n\nvariables {j k : ℤ}\n\ndef p : ℤ := j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "def x : ℤ := sorry\ndef y : ℤ := sorry\ndef h₁ : x % 2 = 1 := sorry -- x is odd\ndef h₂ : y % 2 = 0 := sorry -- y is even\ndef S : ℤ := x + y\ndef j : ℤ := sorry\ndef k : ℤ := sorry\ndef p₁ : ℤ := j + k\ndef p₂ : ℤ := j + k",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable (x : ℤ) (hx : x % 2 = 1)\nvariable (y : ℤ) (hy : y % 2 = 0)\nvariable (S : ℤ) (hS : S = x + y)\nvariable (p : ℤ) (hp : p = j + k)\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry\ndef y : ℤ := sorry\ndef h_odd_x : x % 2 = 1 := sorry\ndef h_even_y : y % 2 = 0 := sorry\ndef S : ℤ := x + y\n\ndef j : ℤ := sorry\ndef k : ℤ := sorry\ndef p_1 : ℤ := j + k\ndef p_2 : ℤ := j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry -- integer such that odd\n\ndef y : ℤ := sorry -- integer such that even\n\ndef S : ℤ := x + y\n\ndef p : ℤ := sorry -- j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry  -- x is an integer such that x is odd\ndef y : ℤ := sorry  -- y is an integer such that y is even\ndef S : ℤ := x + y  -- S is defined as x + y\ndef p : ℤ := sorry  -- p is defined as j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry -- integer such that odd\ndef y : ℤ := sorry -- integer such that even\ndef S : ℤ := x + y\n\ndef j : ℤ := sorry\ndef k : ℤ := sorry\ndef p : ℤ := j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable (x : ℤ) (hx : x % 2 = 1)\nvariable (y : ℤ) (hy : y % 2 = 0)\nvariable (S : ℤ) (hS : S = x + y)\nvariable (p : ℤ) (hp : p = j + k)\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry -- integer such that x is odd\ndef y : ℤ := sorry -- integer such that y is even\ndef S : ℤ := x + y\ndef p : ℤ := j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry -- x is an odd integer\ndef y : ℤ := sorry -- y is an even integer\ndef S : ℤ := x + y\ndef p (j k : ℤ) : ℤ := j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

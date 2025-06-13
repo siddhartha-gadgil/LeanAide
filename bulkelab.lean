@@ -86,7 +86,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
       ["results", model, s!"{input_file}-elab-{pb.signature}-{chatParams.n}-{chatParams.temp.mantissa}.json"]
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}

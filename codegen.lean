@@ -13,7 +13,7 @@ set_option compiler.extract_closed false
 unsafe def main (args: List String) : IO UInt32 := do
   searchPathRef.set compile_time_search_path%
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module:= `LeanAide.AutoTactic},
@@ -28,7 +28,7 @@ unsafe def main (args: List String) : IO UInt32 := do
   let dataMap :
     EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let codeGen : CodeGenerator := {}
-  let statement := args.get! 0
+  let statement := args[0]!
   let core :=
     codeGen.statementToCode statement  |>.runWithEmbeddings dataMap
   let io? :=

@@ -1,0 +1,237 @@
+{
+  "document": [
+    {
+      "type": "Title",
+      "title": "On the Parity of the Sum of an Odd and an Even Integer"
+    },
+    {
+      "type": "Metadata",
+      "authors": [
+        {
+          "name": "A.I. Analyst",
+          "affiliation": "Institute for Foundational Mathematics"
+        }
+      ],
+      "keywords": [
+        "number theory",
+        "parity",
+        "even numbers",
+        "odd numbers",
+        "proof"
+      ],
+      "msc_codes": [
+        "11-01"
+      ]
+    },
+    {
+      "type": "Abstract",
+      "abstract": "This paper provides a rigorous proof of a fundamental theorem in elementary number theory concerning the parity of integers. We establish that the sum of an integer of odd parity and an integer of even parity results in an integer of odd parity. The proof is constructed from first principles, relying on the formal definitions of even and odd integers and the closure properties of the set of integers under addition."
+    },
+    {
+      "type": "Section",
+      "label": "sec:intro",
+      "level": 1,
+      "header": "1. Introduction",
+      "content": [
+        {
+          "type": "Paragraph",
+          "text": "The set of integers, denoted by ℤ, can be partitioned into two disjoint subsets based on the property of parity: the set of even integers and the set of odd integers. Parity is a foundational concept in number theory, computer science, and abstract algebra, providing the basis for many elementary and advanced results. The behavior of integers under arithmetic operations with respect to their parity follows a well-defined set of rules, often referred to as \"parity arithmetic.\""
+        },
+        {
+          "type": "Paragraph",
+          "text": "These rules include: even + even = even, odd + odd = even, and odd + even = odd. While these rules are intuitively understood and frequently applied, a formal demonstration is essential for mathematical rigor. This paper focuses on providing a detailed, axiomatic proof for the third rule: the sum of an odd integer and an even integer is always an odd integer."
+        }
+      ]
+    },
+    {
+      "type": "Section",
+      "label": "sec:preliminaries",
+      "level": 1,
+      "header": "2. Preliminaries and Definitions",
+      "content": [
+        {
+          "type": "Paragraph",
+          "text": "To construct our proof, we must first formally define the objects of our study. We begin with the set of integers and the definitions of parity."
+        },
+        {
+          "type": "Definition",
+          "label": "def:even",
+          "header": "Definition",
+          "definition": "An integer n ∈ ℤ is defined as **even** if it is a multiple of 2. That is, an integer n is even if there exists some integer k ∈ ℤ such that: n = 2k"
+        },
+        {
+          "type": "Definition",
+          "label": "def:odd",
+          "header": "Definition",
+          "definition": "An integer m ∈ ℤ is defined as **odd** if it is one greater than a multiple of 2. That is, an integer m is odd if there exists some integer j ∈ ℤ such that: m = 2j + 1"
+        },
+        {
+          "type": "Definition",
+          "label": "ax:closure",
+          "header": "Convention",
+          "definition": "We rely on the following fundamental axiom. **Closure of Integers under Addition**: The set of integers ℤ is closed under the operation of addition. That is, for any two integers a, b ∈ ℤ, their sum, a + b, is also an integer."
+        }
+      ]
+    },
+    {
+      "type": "Section",
+      "label": "sec:main",
+      "level": 1,
+      "header": "3. The Main Theorem and Proof",
+      "content": [
+        {
+          "type": "Theorem",
+          "label": "thm:main",
+          "header": "Theorem",
+          "hypothesis": [
+            {
+              "type": "let_statement",
+              "variable_name": "x",
+              "variable_type": "integer",
+              "properties": "odd"
+            },
+            {
+              "type": "let_statement",
+              "variable_name": "y",
+              "variable_type": "integer",
+              "properties": "even"
+            }
+          ],
+          "claim": "The sum S = x + y is an odd integer.",
+          "proof": {
+            "type": "Proof",
+            "claim_label": "thm:main",
+            "proof_steps": [
+              {
+                "type": "LogicalStepSequence",
+                "items": [
+                  {
+                    "type": "assert_statement",
+                    "claim": "There exists some integer j such that x = 2j + 1.",
+                    "label": "step:x-def",
+                    "proof_method": "From the hypothesis that x is an odd integer.",
+                    "results_used": [
+                      {
+                        "target_identifier": "def:odd",
+                        "statement": "Definition of an odd integer."
+                      }
+                    ]
+                  },
+                  {
+                    "type": "assert_statement",
+                    "claim": "There exists some integer k such that y = 2k.",
+                    "label": "step:y-def",
+                    "proof_method": "From the hypothesis that y is an even integer.",
+                    "results_used": [
+                      {
+                        "target_identifier": "def:even",
+                        "statement": "Definition of an even integer."
+                      }
+                    ]
+                  },
+                  {
+                    "type": "let_statement",
+                    "variable_name": "S",
+                    "value": "x + y"
+                  },
+                  {
+                    "type": "assert_statement",
+                    "claim": "S = 2(j + k) + 1",
+                    "label": "step:s-calc",
+                    "proof_method": "By substitution and algebraic manipulation.",
+                    "calculation": {
+                      "calculation_sequence": [
+                        "S = x + y",
+                        "S = (2j + 1) + (2k)",
+                        "S = 2j + 2k + 1",
+                        "S = 2(j + k) + 1"
+                      ]
+                    }
+                  },
+                  {
+                    "type": "let_statement",
+                    "variable_name": "p",
+                    "value": "j + k"
+                  },
+                  {
+                    "type": "assert_statement",
+                    "claim": "p is an integer.",
+                    "label": "step:p-is-int",
+                    "proof_method": "Since j and k are integers.",
+                    "results_used": [
+                      {
+                        "target_identifier": "ax:closure",
+                        "statement": "The set of integers is closed under addition."
+                      }
+                    ]
+                  },
+                  {
+                    "type": "assert_statement",
+                    "claim": "S = 2p + 1",
+                    "label": "step:s-final-form",
+                    "proof_method": "By substituting p = j + k into the expression for S.",
+                    "results_used": [
+                      {
+                        "target_identifier": "step:s-calc",
+                        "statement": "S = 2(j + k) + 1"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "assert_statement",
+                    "claim": "The sum S is an odd integer.",
+                    "proof_method": "The expression S = 2p + 1, where p is an integer, matches the definition of an odd integer.",
+                    "results_used": [
+                      {
+                        "target_identifier": "def:odd",
+                        "statement": "Definition of an odd integer."
+                      },
+                      {
+                        "target_identifier": "step:s-final-form",
+                        "statement": "S = 2p + 1"
+                      },
+                      {
+                        "target_identifier": "step:p-is-int",
+                        "statement": "p is an integer"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "conclude_statement",
+                    "claim": "The sum of an odd integer and an even integer is an odd integer."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "Section",
+      "label": "sec:conclusion",
+      "level": 1,
+      "header": "4. Conclusion",
+      "content": [
+        {
+          "type": "Paragraph",
+          "text": "We have presented a formal proof demonstrating that the sum of any odd integer and any even integer is necessarily an odd integer. The proof was constructed from the fundamental definitions of parity and relied upon the closure of integers under addition. This result, while elementary, serves as an example of how intuitive arithmetic properties can be established with mathematical rigor."
+        }
+      ]
+    },
+    {
+      "type": "Bibliography",
+      "header": "5. References",
+      "entries": [
+        {
+          "key": "[1]",
+          "formatted_entry": "Burton, D. M. (2010). *Elementary Number Theory*. 7th ed. McGraw-Hill."
+        },
+        {
+          "key": "[2]",
+          "formatted_entry": "Rosen, K. H. (2018). *Discrete Mathematics and Its Applications*. 8th ed. McGraw-Hill Education."
+        }
+      ]
+    }
+  ]
+}

@@ -24,7 +24,7 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
 unsafe def main  : IO Unit := do
   searchPathRef.set compile_time_search_path%
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
   let source ← IO.FS.readFile ("rawdata" / "premises" / "ident_pairs" / "more-frequencies.json")
