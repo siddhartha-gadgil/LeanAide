@@ -291,7 +291,7 @@ requires-dist = [
     { name = "openai", specifier = ">=1.86.0" },
     { name = "pymupdf", specifier = ">=1.26.1" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
-    { name = "st-copy", specifier = ">=1.1.0" },
+    { name = "st-copy", specifier = ">=1.1.1" },
     { name = "streamlit", specifier = ">=1.45.1" },
     { name = "streamlit-sortables", specifier = ">=0.3.1" },
     { name = "watchdog", specifier = ">=6.0.0" },
@@ -679,14 +679,14 @@ wheels = [
 
 [[package]]
 name = "st-copy"
-version = "1.1.0"
+version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "streamlit" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f0/8c/ae6e14a21f55ae134596af6035f231d7645eec95321c418ec2a90477ad67/st_copy-1.1.0.tar.gz", hash = "sha256:43f0229a5e64c7813ffd9e30a5dbc1fe25fab8263bcbc859b2eae65366ac49e8", size = 59142 }
+sdist = { url = "https://files.pythonhosted.org/packages/95/2b/ea4ce27e3f8c0fa9dc01bfa7273e0ef72f7d9495f3fddb5335df7da26df6/st_copy-1.1.1.tar.gz", hash = "sha256:6cc2914968af0d30db27464df37403d208cf7efdaee870f1b7dc66be02f0bdb0", size = 59283 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/fc/a04d7656419db7efe7a290ba8450e42ff4a58d2764505d4510f7dfce9ac4/st_copy-1.1.0-py3-none-any.whl", hash = "sha256:98f5629f59c51dfa9a72738289d11e5acf16a1e5a7981ee0aacd5207813b23be", size = 58457 },
+    { url = "https://files.pythonhosted.org/packages/46/78/e2be123764d43541c2367dae757025d427bf42e69af45f99282e10333ff4/st_copy-1.1.1-py3-none-any.whl", hash = "sha256:39393654c4c7a4216f31ac3a1631225c109edd10bfa8043668fe76adcdad98d2", size = 58612 },
 ]
 
 [[package]]

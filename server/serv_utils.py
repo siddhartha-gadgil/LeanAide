@@ -140,7 +140,6 @@ def parse_curl(curl_cmd, ignore_curl_ip_port):
                 i += 1
     return out
 
-
 def button_clicked(button_arg):
     def protector():
         """This function does not allow value to become True until the button is clicked."""
@@ -194,7 +193,7 @@ def log_server():
     """Read from the in-memory log buffer"""
     if not LOG_BUFFER:
         return "No logs available yet."
-    return "".join(LOG_BUFFER)
+    return "".join(reversed(LOG_BUFFER))
 
 def log_write(proc_name: str, log_message: str):
     """
@@ -258,10 +257,8 @@ def preview_text(key: str, default_text: str = ""):
     Display a preview of the text in a text area with a copy and download button.
     """
     with st.expander(f"Preview Text {key.capitalize()}", expanded=False):
-        lang = st.radio("Language", ["Markdown", "LateX", "Text"], horizontal = True, key = f"preview_{key}").lower()
-        if lang == "latex":
-            st.latex(st.session_state[key] if st.session_state[key] else default_text)
-        elif lang == "markdown":
+        lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}").lower()
+        if lang == "markdown":
             st.markdown(st.session_state[key] if st.session_state[key] else default_text)
         else:
             st.code(st.session_state[key] if st.session_state[key] else default_text, wrap_lines = True)

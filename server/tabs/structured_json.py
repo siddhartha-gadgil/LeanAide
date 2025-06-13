@@ -27,9 +27,14 @@ for key in ["image_paths", "proof", "theorem", "structured_proof", "paper", "mod
     if key not in st.session_state:
         st.session_state[key] = None
 
-for key in ["input_pdf", "input_images", "input_markdown", "input_txt", "input_latex", "input_text_content", "input_paper", "generation_complete"]:
+for key in ["input_paper", "generation_complete"]:
     if key not in st.session_state:
         st.session_state[key] = False
+
+for inp in ["paper", "theorem", "proof"]:
+    for key in [f"input_image_{inp}", f"input_pdf_{inp}"]:
+        if key not in st.session_state:
+            st.session_state[key] = False
 
 provider_info = {
     "OpenAI": {
@@ -177,23 +182,8 @@ def handle_image_input(key: str):
         action_copy_download(key, f"{key}.txt")
         
 # Helper function for markdown/text file input
-def handle_textual_file_input(key: str):
+def handle_textual_file_input(key: str, extension: str = "md"):
     """Handles markdown/text file input for different sections."""
-    st.subheader(f"Upload Markdown/Text file for {key.capitalize()}")
-    # file uploader with unique key
-    uploaded_file = st.file_uploader(
-        f"Upload {key} file",
-        type=["md", "txt", "tex"],
-        key=f"md_uploader_{key}"  # Unique key for each uploader
-    )
-    extension = uploaded_file.name.split('.')[-1] if uploaded_file else "md"
-    if extension not in ["md", "txt", "tex"]:
-        st.error(f"Unsupported file type: {extension}. Please upload a .md, .txt, or .tex file.")
-        return
-
-    if f"{key}_{extension}_local_key" not in st.session_state:
-        st.session_state[f"{key}_{extension}_local_key"] = False
-
     file_type = "Markdown"
     if extension == "tex":
         file_type = "LaTeX"
@@ -201,6 +191,20 @@ def handle_textual_file_input(key: str):
         file_type = "Text"
     else:
         pass
+
+    st.subheader(f"Upload {file_type} file for {key.capitalize()}")
+    # file uploader with unique key
+    uploaded_file = st.file_uploader(
+        f"Upload {key} file",
+        type=extension,
+        key=f"md_uploader_{key}"  # Unique key for each uploader
+    )
+    if extension not in ["md", "txt", "tex"]:
+        st.error(f"Unsupported file type: {extension}. Please upload a .md, .txt, or .tex file.")
+        return
+
+    if f"{key}_{extension}_local_key" not in st.session_state:
+        st.session_state[f"{key}_{extension}_local_key"] = False
 
     if uploaded_file:
         try:
@@ -234,8 +238,7 @@ def handle_textual_file_input(key: str):
         preview_text(key, f"Enter the {key} text here...")
         
         # Action buttons
-        ext = "md" if uploaded_file.name.endswith(".md") else "txt"
-        action_copy_download(key, f"{key}.{ext}")
+        action_copy_download(key, f"{key}.{extension}")
     else:
         st.warning(f"No {key} content available yet. Upload a file to begin.")
 
@@ -266,7 +269,8 @@ def handle_text_input(key: str):
 def handle_pdf_input(key:str):
     uploaded_pdf = st.file_uploader(f"Upload a PDF file for the {key}", type="pdf", key = f"pdf_uploader_{key}")
     if f"{key}_local_key" not in st.session_state:
-        st.session_state[f"{key}_local_key"] = False
+        st.session_state[f"{key}_local_key"] = ""
+
     if uploaded_pdf:
         try:
             # Create temp directory if it doesn't exist
@@ -320,22 +324,18 @@ def handle_general_input(key: str):
         index = 1 if key == "paper" else 0  # Default to PDF for paper, else default to first option
     )
     if "image" in format_opt.lower():
-        st.session_state.input_image = True
+        st.session_state[f"input_image_{key}"] = True
         handle_image_input(key) 
     elif "markdown" in format_opt.lower():
-        st.session_state.input_markdown_file = True
-        handle_textual_file_input(key)
+        handle_textual_file_input(key, extension="md")
     elif "text" in format_opt.lower():
-        st.session_state.input_txt = True
-        handle_textual_file_input(key)
+        handle_textual_file_input(key, extension="txt")
     elif "latex" in format_opt.lower():
-        st.session_state.input_latex = True
-        handle_textual_file_input(key)
+        handle_textual_file_input(key, extension="tex")
     elif "pdf" in format_opt.lower():
-        st.session_state.input_pdf_file = True
+        st.session_state[f"input_pdf_{key}"] = True
         handle_pdf_input(key)
     else: # Self typed input
-        st.session_state.input_text_content = True
         handle_text_input(key) 
 
 # PDF upload section
@@ -361,7 +361,7 @@ if st.button("Generate Structured Proof"):
                 if st.session_state.input_paper: # For mathematical papers
                     st.session_state.structured_proof = gen_paper_json(st.session_state.paper)
                 else: # Theorem Proof based
-                    st.toast("regen")
+                    # if st.session_state.input_pdf
                     st.session_state.structured_proof = gen_thmpf_json(st.session_state.theorem, st.session_state.proof)
                 st.session_state.generation_complete = True
 
