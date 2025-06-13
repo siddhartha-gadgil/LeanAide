@@ -281,8 +281,41 @@ where
     let proof? :=
       js.getObjVal? "proof" |>.toOption
     let pfGoal ← mkFreshExprMVar type
-    let proofStx? ← proof?.bindM fun
-      pf => getCode translator pfGoal.mvarId! ``tacticSeq (Json.mkObj [("proof", pf)])
+    let hypSize ←
+      match js.getObjValAs? (Array Json)  "hypothesis" with
+      | Except.ok h =>
+        IO.eprintln s!"hypothesis: {h} in proof"
+        contextRun translator none ``tacticSeq (.arr h)
+        -- IO.eprintln "Preludes added:"
+        -- IO.eprintln <| ← withPreludes ""
+        pure h.size
+      | Except.error _ => pure 0
+    IO.eprintln s!"hypothesis size: {hypSize} in proof"
+    let (pfGoal, names) ← extractIntros pfGoal.mvarId! hypSize
+    let proofStx? ← proof?.mapM fun
+      pf => do
+      let pfStx ←  match ←
+        getCode translator pfGoal ``tacticSeq (Json.mkObj [("proof", pf)]) with
+      | some pfStx =>
+        let pfStx ←  if names.isEmpty then
+            pure pfStx
+          else
+            let namesStx : List <| TSyntax `term ←
+              names.mapM fun n =>
+                if n.isInaccessibleUserName || n.isInternal then
+                  `(_)
+                else do
+                  IO.eprintln s!"Adding intro for {n}, not inaccessible"
+                  let n' := mkIdent n
+                  `($n':ident)
+            let namesStx := namesStx.toArray
+            let introTac ←
+              `(tacticSeq| intro $namesStx*)
+            appendTactics introTac pfStx
+        pure pfStx
+      | none => throwError
+        s!"codegen: no proof translation found for {pf}"
+      pure pfStx
     let name ← translator.server.theoremName thm
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
@@ -761,7 +794,8 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
 | _, kind, _ => throwError
     s!"codegen: test does not work for kind {kind}"
 where typeStx (js: Json) :
-    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) := do
+    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) :=
+      withoutModifyingState do
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in 'assertion_statement'"
   let type ← translator.translateToPropStrict claim
