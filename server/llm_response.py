@@ -137,17 +137,20 @@ def gpt_response_gen(prompt:str, task:str = "",  model:str ="gpt-4o", json_outpu
     
 def gen_thmpf_json(thm: str, pf: str, model: str = "gpt-4o"):
     response = gpt_response_gen(thmpf_prompt(thm, pf), json_output = True, model = model)
-    if response is None:
-        return "No response from model while generating structured proof"
+    # response = json.dumps({"x": 1, "y": 2}, indent = 2)  # Placeholder for actual response generation FOR DEBUGGING
+    if "no response" in response.lower():
+        return {"response" : "No response from model while generating structured proof"}
     response_cleaned = response.strip("```json").strip("```")
-    
-    return json.dumps(json.loads(response_cleaned), indent=2)
+
+    output = json.dumps(json.loads(response_cleaned), indent=2)
+    return output
 
 def gen_paper_json(paper_text: str, model: str = "gpt-4o"):
     response = gpt_response_gen(prompt = mathpaper_prompt()["prompt"], task = mathpaper_prompt()["task"], json_output=True, model=model, pdf_text=paper_text)
+    # response = json.dumps({"x": 1, "y": 2}, indent = 2)  # Placeholder for actual response generation FOR DEBUGGING
 
     if "no response" in response.lower():
-        return "No response from model while generating structured paper."
+        return {"response" : "No response from model while generating structured proof"}
     response_cleaned = response.strip("```json").strip("```")
     
     return json.dumps(json.loads(response_cleaned), indent=2)

@@ -27,12 +27,7 @@ for key in ["image_paths", "proof", "theorem", "structured_proof", "paper", "mod
     if key not in st.session_state:
         st.session_state[key] = None
 
-for key in ["input_pdf", "input_images", "input_markdown", "input_txt", "input_latex", "input_text_content", "input_paper"]:
-    if key not in st.session_state:
-        st.session_state[key] = False
-
-# For buttons only
-for key in ["gen_json_button"]:
+for key in ["input_pdf", "input_images", "input_markdown", "input_txt", "input_latex", "input_text_content", "input_paper", "generation_complete"]:
     if key not in st.session_state:
         st.session_state[key] = False
 
@@ -355,8 +350,7 @@ if input_method == input_options[1]: # Theorem-Proofs or Problems
     for key in ["theorem", "proof"]:
         handle_general_input(key) 
 
-if st.button("Generate Structured Proof") or st.session_state["gen_json_button"]:
-    st.session_state.gen_json_button = True
+if st.button("Generate Structured Proof"):
     if not st.session_state.paper and not (st.session_state.proof and  st.session_state.theorem):
         st.warning(
             "Please upload the inputs before generating the structured proof."
@@ -367,13 +361,15 @@ if st.button("Generate Structured Proof") or st.session_state["gen_json_button"]
                 if st.session_state.input_paper: # For mathematical papers
                     st.session_state.structured_proof = gen_paper_json(st.session_state.paper)
                 else: # Theorem Proof based
+                    st.toast("regen")
                     st.session_state.structured_proof = gen_thmpf_json(st.session_state.theorem, st.session_state.proof)
+                st.session_state.generation_complete = True
+
             except Exception as e:
                 st.warning(f"Failed to generate structured proof: {e}")
-else:
-    st.session_state.gen_json_button = False
+                st.session_state.generation_complete = False
 
-if st.session_state.structured_proof:
+if st.session_state.get("generation_complete", False) and st.session_state.structured_proof:
     st.subheader("Structured Proof Output (JSON):")
     try:
         structured_proof_json = json.loads(st.session_state.structured_proof)
