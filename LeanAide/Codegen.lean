@@ -280,8 +280,8 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
     for source in sources do
       let code ← getCode translator goal? kind source
       unless code.isNone do
-        throwError
-          s!"codegen: contextCode expected pure side effect, but got {code}"
+        IO.eprintln s!"codegen: contextCode expected pure side effect, but got {code}"
+        logWarning m!"codegen: contextCode expected pure side effect, but got {code}"
     return
   | .error _ => do
     throwError
