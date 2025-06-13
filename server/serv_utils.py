@@ -244,13 +244,16 @@ def copy_to_clipboard(text):
     except Exception as e:
         st.warning(f"Failed to copy: {e}", icon="⚠️")
 
-def action_copy_download(key: str, filename: str):
+def action_copy_download(key: str, filename: str, copy_text: str = ""):
     """Helper function to copy text to clipboard and download as a file."""
     col1, col2 = st.columns(2)
+    text = st.session_state[key]
+    if copy_text:
+        text = copy_text
     with col1:
-        copy_to_clipboard(st.session_state[key])
+        copy_to_clipboard(text)
     with col2:
-        download_file(st.session_state[key], filename)
+        download_file(text, filename)
 
 def preview_text(key: str, default_text: str = ""):
     """

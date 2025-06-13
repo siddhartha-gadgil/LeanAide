@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import pymupdf
 from serv_utils import SCHEMA_JSON
+import streamlit as st
 
 from llm_prompts import *
 
@@ -25,6 +26,13 @@ def get_openai_models(api_key: str = OPENAI_API_KEY):
     client = OpenAI(api_key=api_key)
     models = client.models.list()
     return [model.id for model in models.data]
+
+def get_openai_pdf_id(pdf_path: str):
+    file = client.files.create(
+        file=open(pdf_path, "rb"),
+        purpose="user_data"
+    )
+    return file
 
 ## Images
 def encode_image(image_path):
@@ -81,7 +89,7 @@ def extract_text_from_pdf(path: str) -> str:
         text = chr(12).join([page.get_text() for page in doc])
     return text
 
-def gpt_response_gen(prompt:str, task:str = "",  model:str ="gpt-4o", json_output: bool = False, json_schema = SCHEMA_JSON, pdf_text: str = ""):
+def gpt_response_gen(prompt:str, task:str = "",  model:str ="gpt-4o", json_output: bool = False, json_schema = SCHEMA_JSON, pdf_val = None, paper_input: bool = False):
     """
     GPT response generator function.
     Args:
@@ -102,11 +110,24 @@ def gpt_response_gen(prompt:str, task:str = "",  model:str ="gpt-4o", json_outpu
         "role": "user",
         "content": prompt,
     })
-    if pdf_text != "":
+    
+    ## Case 1. In case of non paper, the pdf/non-pdf content is passed in prompt.
+    ## Case 2. In case of paper, the non pdf content is passed in prompt.
+    ## Case 3. In case of paper, the pdf_val is the OpenAI File object.
+    if type(pdf_val)!= type("") and not paper_input:
+        pass # Case 1
+    elif type(pdf_val)!= type("") and paper_input: # Case 3
+        # pdf_text is not string but OpenAi File object
+        pdf_id = pdf_val.id
         messages.append({
             "role": "user",
-            "content": pdf_text
-        })
+            "content": {
+                "type": "file",
+                "file": {
+                    "file_id": pdf_id,  
+                }
+            }
+        }) 
 
     if json_output:
         response = client.chat.completions.create(
@@ -136,7 +157,11 @@ def gpt_response_gen(prompt:str, task:str = "",  model:str ="gpt-4o", json_outpu
 
     
 def gen_thmpf_json(thm: str, pf: str, model: str = "gpt-4o"):
-    response = gpt_response_gen(thmpf_prompt(thm, pf), json_output = True, model = model)
+    response = gpt_response_gen(
+        thmpf_prompt(thm, pf),
+        json_output = True, 
+        model = model
+    )
     # response = json.dumps({"x": 1, "y": 2}, indent = 2)  # Placeholder for actual response generation FOR DEBUGGING
     if "no response" in response.lower():
         return {"response" : "No response from model while generating structured proof"}
@@ -145,8 +170,16 @@ def gen_thmpf_json(thm: str, pf: str, model: str = "gpt-4o"):
     output = json.dumps(json.loads(response_cleaned), indent=2)
     return output
 
-def gen_paper_json(paper_text: str, model: str = "gpt-4o"):
-    response = gpt_response_gen(prompt = mathpaper_prompt()["prompt"], task = mathpaper_prompt()["task"], json_output=True, model=model, pdf_text=paper_text)
+def gen_paper_json(paper_text, pdf_input:bool = False, model: str = "gpt-4o"):
+    st.toast(f"Paper text: {paper_text}, PDF input: {pdf_input}")
+    response = gpt_response_gen(
+        prompt = mathpaper_prompt(paper_text, pdf_input)["prompt"],
+        task = mathpaper_prompt(paper_text, pdf_input)["task"],
+        json_output=True,
+        model=model,
+        paper_input=True,
+        pdf_val=paper_text, # the File Object goes from here in case of paper
+    )
     # response = json.dumps({"x": 1, "y": 2}, indent = 2)  # Placeholder for actual response generation FOR DEBUGGING
 
     if "no response" in response.lower():

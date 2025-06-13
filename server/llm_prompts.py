@@ -9,9 +9,13 @@ Follow the below rules while extracting text from the image:
 4. The generated proof will be used to CHECK the correctness of the original proof, so DO NOT make corrections, add unmentioned reasonings complete proofs, only clean up the language.
 """
 
-def mathpaper_prompt():
+def mathpaper_prompt(paper_text: str, pdf_input: bool = False):
+    if pdf_input:
+        non_pdf_suffix = ""
+    else:
+        non_pdf_suffix = f"\n\nThe paper content is:{paper_text}"
     return {
-        "prompt": f"Write the attached mathematics paper as a structured JSON file in the given JSON schema format. Use LaTeX for formulas but otherwise use markdown. The schema is: {str(SCHEMA_JSON)}",
+        "prompt": f"Write the attached mathematics paper as a structured JSON file in the given JSON schema format. Use LaTeX for formulas but otherwise use markdown. The schema is: {str(SCHEMA_JSON)}.{non_pdf_suffix}",
         "task": "You are an assistant that converts academic papers into structured JSON. Strictly follow the JSON schema."
     }
 
