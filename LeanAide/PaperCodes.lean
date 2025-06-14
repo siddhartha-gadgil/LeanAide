@@ -31,7 +31,7 @@ def Translator.translateToPropStrict
     | Except.ok type =>
       let type ← instantiateMVars type
       Term.synthesizeSyntheticMVarsNoPostponing
-      if type.hasSorry || type.hasExprMVar then
+      if type.hasSorry || (← type.hasUnassignedExprMVar) then
         throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
       let univ ← try
         Term.withoutErrToSorry do

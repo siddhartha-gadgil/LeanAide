@@ -289,7 +289,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
   | Except.ok type => do
     let type ← instantiateMVars type
     Term.synthesizeSyntheticMVarsNoPostponing
-    if type.hasSorry || type.hasExprMVar then
+    if type.hasSorry || (← type.hasUnassignedExprMVar) then
       return Except.error #[ElabError.parsed statement s!"Failed to infer type {type} has sorry or mvar" [] none]
     let univ ← try
       withoutErrToSorry do

@@ -215,7 +215,7 @@ def getDescriptionM (name: Name)(translator: Translator := {}) : MetaM <| Option
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    let res := contents.get? 0 |>.map fun h => (h, statement)
+    let res := contents[0]? |>.map fun h => (h, statement)
     return res
 
 def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
@@ -226,7 +226,7 @@ def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
+    let res := contents[0]? |>.map fun h => (h, statement, defBlob?)
     return res
 
 def getDefDescriptionM (type val: Expr) (name: Name)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
@@ -237,7 +237,7 @@ def getDefDescriptionM (type val: Expr) (name: Name)(translator: Translator) : M
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
+    let res := contents[0]? |>.map fun h => (h, statement, defBlob?)
     return res
 
 
@@ -252,7 +252,7 @@ def getTypeProofM (type: Expr)(translator: Translator) : MetaM <| Option (String
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
+    let res := contents[0]? |>.map fun h => (h, statement, defBlob?)
     return res
 
 
@@ -424,7 +424,7 @@ def selectedChatExamples (n: Nat) (pairs: List (Name × String)) : MetaM <|
   let examples ← allLemmaChatExamples pairs
   List.range n |>.mapM fun _ => do
     let i ← IO.rand 0 (examples.size - 1)
-    pure <| examples.get! i
+    pure <| examples[i]!
 
 def lemmaChatMessageM? (name: Name)(description: String)(n: Nat)
   (lemmaPairs: List (Name × String)) : MetaM <| Option Json := do
