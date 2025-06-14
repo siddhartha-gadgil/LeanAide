@@ -798,3 +798,19 @@ def flattenTactics (tacs: Array <| TSyntax ``tacticSeq) :
   CoreM (TSyntax ``tacticSeq) := do
   let tacs := tacs.map getTactics |>.flatten
   `(tacticSeq| $tacs*)
+
+partial def Lean.Expr.hasUnassignedExprMVar (e: Expr) : MetaM Bool := do
+  let deps ← getMVars e
+  for m in deps do
+    match (← getExprMVarAssignment? m) with
+    | some e  =>
+      if ←  e.hasUnassignedExprMVar then
+        return true
+    | none => return true
+  return false
+
+-- def checkNoLoop : MetaM Bool := do
+--   let mvar ← mkFreshExprMVar (mkConst ``Nat)
+--   mvar.hasUnassignedExprMVar
+
+-- #eval checkNoLoop
