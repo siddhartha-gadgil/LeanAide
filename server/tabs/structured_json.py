@@ -197,7 +197,7 @@ def handle_textual_file_input(key: str, extension: str = "md"):
     # file uploader with unique key
     uploaded_file = st.file_uploader(
         f"Upload {key} file",
-        type=extension,
+        type=f".{extension}",
         key=f"md_uploader_{key}"  # Unique key for each uploader
     )
     if extension not in ["md", "txt", "tex"]:
