@@ -238,7 +238,7 @@ with st.expander("Click to view Server logs", expanded=False):
         height = 500 if len(log_out) > 1000 else 150
         st.write("Server logs:")
         st.code(
-            log_out if not st.session_state.log_cleaned else "",
+            log_out if not st.session_state.log_cleaned else "No logs available yet.",
             language = "log",
             height= height,
             wrap_lines =True,
@@ -248,26 +248,17 @@ with st.expander("Click to view Server logs", expanded=False):
     else:
         st.code("No logs available yet.", language="plaintext")
         
-    @st.dialog("Confirm Server Log Cleaning")
-    def clean_log():
-        """Function to clean the server logs."""
-        st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server log file.")
+    with st.popover("Clean Server Logs", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
+        st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server.")
         if st.button("Yes"):
-            st.session_state.log_cleaned = True
-        if st.button("No"):
-            st.session_state.log_cleaned = False
-        st.info("Exit the dialog by clicking the :heavy_multiplication_x: button.")
-        if st.session_state.log_cleaned:
             try:
+                st.session_state.log_cleaned = True
                 log_buffer_clean()
                 st.success("Server logs cleaned successfully! Please UNCHECK THE BOX to avoid cleaning again.")
+                st.rerun()
             except Exception as e:
-                st.error(f"Error cleaning server logs: {e}")
-        
+                st.error(f"Error cleaning server logs: {e}") 
+        if st.button("No"):
+            pass
         st.session_state.log_cleaned = False
-
-    if st.checkbox("Clean Server Logs. Read the help text before checking this box", value=st.session_state.log_cleaned, key="clean_log", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
-        clean_log()
-        if st.session_state.log_cleaned:
-            st.rerun()
-            st.session_state.log_cleaned = False
+        st.info("Press Escape to close this popover.")

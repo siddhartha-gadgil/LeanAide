@@ -23,7 +23,7 @@ TEMP_DIR = "leanaide_st_temp"
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 # Create session state variables if they don't exist
-for key in ["image_paths", "proof", "theorem", "structured_proof", "paper", "model_text", "model_img" , "llm_provider", "llm_list"]:
+for key in ["image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", "model_text", "model_img" , "llm_provider", "llm_list", "uploaded_pdf"]:
     if key not in st.session_state:
         st.session_state[key] = None
 
@@ -255,6 +255,7 @@ def handle_text_input(key: str):
         help = "You can type your " + key + " text here. You can even write `LaTeX` code if you want to.",
         key=f"text_input_{key}" 
     ).strip()
+
     if obt_text != "" and obt_text != default_text:
         _code_suffix = "..." if len(obt_text) > 50 else ""
         st.session_state[key] = obt_text
@@ -268,30 +269,29 @@ def handle_text_input(key: str):
 
 # Helper function for PDF input
 def handle_pdf_input(key:str):
-    uploaded_pdf = st.file_uploader(f"Upload a PDF file for the {key}", type="pdf", key = f"pdf_uploader_{key}")
+    new_uploaded_pdf = st.file_uploader(f"Upload a PDF file for the {key}", type="pdf", key = f"pdf_uploader_{key}")
+    if new_uploaded_pdf:
+        st.session_state.uploaded_pdf = new_uploaded_pdf
     if f"{key}_local_key" not in st.session_state:
         st.session_state[f"{key}_local_key"] = ""
 
-    if uploaded_pdf:
-        try:
-            # Create temp directory if it doesn't exist
-            os.makedirs(TEMP_DIR, exist_ok=True)
-            
+    if st.session_state.uploaded_pdf:
+        try: 
             # Save PDF to temporary file
-            st.session_state[f"{key}_pdf_path"] = os.path.join(TEMP_DIR, f"{uploaded_pdf.name}")
-            shutil.copyfileobj(uploaded_pdf, open(st.session_state[f"{key}_pdf_path"], "wb"))
+            if new_uploaded_pdf:
+                st.session_state[f"{key}_pdf_path"] = os.path.join(TEMP_DIR, f"{st.session_state.uploaded_pdf.name}")
+                shutil.copyfileobj(st.session_state.uploaded_pdf, open(st.session_state[f"{key}_pdf_path"], "wb"))
             # The value of st.session_state[key] will change if pdf paper is uploaded
             st.session_state[f"{key}_local_key"] = extract_text_from_pdf(st.session_state[f"{key}_pdf_path"])
             
-            # Store both path and content in session state
+            st.session_state[key] = st.session_state[f"{key}_local_key"]
+            # if paper is pdf, then store in "paper_pdf" key
             if st.session_state.input_paper and st.session_state[f"input_pdf_paper"]:
-                st.session_state[key] = get_openai_pdf_id(st.session_state[f"{key}_pdf_path"])
-            else:
-                st.session_state[key] = st.session_state[f"{key}_local_key"]
-            st.success(f"PDF for {key} uploaded successfully.")
-            
+                st.session_state["paper_pdf"] = get_openai_pdf_id(st.session_state[f"{key}_pdf_path"])
+
+            st.success(f"PDF for {key} uploaded successfully.") 
             # Display PDF info
-            st.info(f"File: {uploaded_pdf.name} | Size: {len(uploaded_pdf.getvalue())//1024} KB")
+            st.info(f"File: {st.session_state.uploaded_pdf.name} | Size: {len(st.session_state.uploaded_pdf.getvalue())//1024} KB")
             
         except Exception as e:
             st.error(f"Failed to process PDF for {key}: {str(e)}")
@@ -300,7 +300,7 @@ def handle_pdf_input(key:str):
 
     if st.session_state[key] and st.session_state[f"{key}_local_key"]:
         # Paper PDF input only
-        if st.session_state.input_paper and st.session_state[f"input_pdf_paper"]:
+        if st.session_state.input_paper and st.session_state["input_pdf_paper"]:
             st.info("Note: The PDF preview content may not be great, but don't worry, LLM's are given encoded version so they can process it better.")
             st.code(
                 st.session_state[f"paper_local_key"],
@@ -320,7 +320,7 @@ def handle_pdf_input(key:str):
                 st.warning(f"Failed to display PDF content: {str(e)}. **Don't worry,** This can still be passed to LLMs for processing.")
         
         # Action buttons
-        action_copy_download(key, f"{uploaded_pdf.name}", st.session_state[f"{key}_local_key"]) # has the extension .pdf
+        action_copy_download(key, f"{st.session_state.uploaded_pdf.name}", st.session_state[f"{key}_local_key"]) # has the extension .pdf
 
 # General input handler for theorem, proof, and paper
 def handle_general_input(key: str):
@@ -328,7 +328,7 @@ def handle_general_input(key: str):
     input_formats = ["Type Input Yourself", "PDF(.pdf)", "Image(.png, .jpg, .jpeg)", "Markdown(.md)", "Text(.txt)" , "Latex(.tex)"]
 
     format_opt = st.selectbox(
-        "Choose input format for the theorem",
+        f"Choose input format for the {key}",
         options = input_formats,
         help = f"Select the format in which you want to input the {key}. You may instead type the {key} text directly.",
         placeholder = "Choose input format",
@@ -342,9 +342,9 @@ def handle_general_input(key: str):
         st.session_state[f"input_pdf_{key}"] = True
         handle_pdf_input(key)
     else:
-        for key in ["theorem", "proof", "paper"]:
-            st.session_state[f"input_pdf_{key}"] = False
-            st.session_state[f"input_image_{key}"] = False
+        for _elem in ["theorem", "proof", "paper"]:
+            st.session_state[f"input_pdf_{_elem}"] = False
+            st.session_state[f"input_image_{_elem}"] = False
         if "markdown" in format_opt.lower():
             handle_textual_file_input(key, extension="md")
         elif "text" in format_opt.lower():
@@ -354,7 +354,7 @@ def handle_general_input(key: str):
         else: # Self typed input
             handle_text_input(key) 
 
-# PDF upload section
+# Papers section
 if input_method == input_options[0]: # Papers
     st.session_state.input_paper = True
     st.info("It is recommended to upload the paper in PDF format for better processing. Though you can choose any other formats as well.")
@@ -375,8 +375,10 @@ if st.button("Generate Structured Proof"):
         with st.spinner("Generating structured proof..."):
             try:
                 if st.session_state.input_paper: # For mathematical papers
-                    st.toast(st.session_state.input_pdf_paper)
-                    st.session_state.structured_proof = gen_paper_json(st.session_state.paper, pdf_input = st.session_state.input_pdf_paper, model = st.session_state.model_text)
+                    if not st.session_state.input_pdf_paper:
+                        st.session_state.structured_proof = gen_paper_json(st.session_state.paper, pdf_input = st.session_state.input_pdf_paper, model = st.session_state.model_text)
+                    else:
+                        st.session_state.structured_proof = gen_paper_json(st.session_state.paper_pdf, pdf_input = st.session_state.input_pdf_paper, model = st.session_state.model_text)
                 else: # Theorem Proof based
                     # if st.session_state.input_pdf
                     st.session_state.structured_proof = gen_thmpf_json(st.session_state.theorem, st.session_state.proof, model = st.session_state.model_text)
