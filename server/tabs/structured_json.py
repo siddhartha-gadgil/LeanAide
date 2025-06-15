@@ -89,10 +89,12 @@ st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
 input_options = ["Mathematical Papers", "Theorem-Proofs or Problems"] 
 input_captions = ["For Research Papers", "For short Theorem Proofs or Mathematical Problems"]
+input_index = 0 if st.session_state.input_paper else 1
 input_method = st.radio("Choose what you would like to work on:",
     options = input_options,
     captions = input_captions,
     horizontal = True,
+    index = input_index,
     help = "Select what you are inputting. If you are working on a single theorem-proof or problem, select the second option. If you are working on a research paper, select the first option."
 )
 
@@ -374,8 +376,7 @@ if st.button("Generate Structured Proof"):
                 st.warning(f"Failed to generate structured proof: {e}")
                 st.session_state.generation_complete = False
 
-if st.session_state.get("generation_complete", False) and st.session_state.structured_proof:
-    st.subheader("Structured Proof Output (JSON):")
+def show_str_proof():
     try:
         structured_proof_json = json.loads(st.session_state.structured_proof)
         json_str = json.dumps(structured_proof_json, indent=2)
@@ -383,6 +384,16 @@ if st.session_state.get("generation_complete", False) and st.session_state.struc
         action_copy_download("structured_proof", "structured_proof.json")
     except Exception as e:
         st.warning(f"Failed to display structured proof: {e}")
+
+if not st.session_state.structured_proof and st.session_state.generation_complete:
+    st.subheader("Structured Proof Output (JSON):")
+    if st.session_state.get("generation_complete", False) and st.session_state.structured_proof:
+        show_str_proof()
+    else:
+        st.warning("Please generate the structured proof first by clicking the button above.")
+elif st.session_state.generation_complete:
+    st.subheader("Structured Proof Output (JSON):")
+    show_str_proof() 
 
 st.divider()
 
