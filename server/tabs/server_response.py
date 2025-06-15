@@ -45,22 +45,13 @@ with st.sidebar:
         )
         st.session_state.api_port = api_port
 
-## Initialize session state variables
-for key in ["parsed_curl", "selected_tasks", "self_selection", "curl_selection", "val_input", "result"]:
-    if key not in st.session_state:
-        st.session_state[key] = None
-for key in ["curl_botton", "request_button", "self_input_button", "ignore_curl_ip_port", "server_output_success", "valid_self_input", "log_cleaned"]:
-    if key not in st.session_state:
-        st.session_state[key] = False
-
 st.header("Server Request", divider = True, help = "You can either paste a cURL request or fill the request yourself. The request will be sent to the backend server specified by you.")
 
 st.subheader("Structured Input: Select Tasks", help = "Select the tasks you want to perform and provide the necessary inputs.")
 st.session_state.self_selection = True
 # list of tasks, each task has "name" field. use that
 
-st.session_state.selected_tasks = st.multiselect("Select tasks to be performed:", get_names_by_tasks(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.")
-st.session_state.selected_tasks = get_task_list_by_name(st.session_state.selected_tasks)
+st.session_state.selected_tasks = st.multiselect("Select tasks to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.")
 
 ## Multiselect box color set
 st.markdown("""
@@ -84,7 +75,7 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
             help = f"Please provide input for `{key}` of type `{val_type}`."
             if "json" in key.lower():
                 help += " Just paste your `json` object here."
-                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", height = 68)
+                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}")
             else:
                 val_in = st.text_input(f"{task.capitalize()} - {key} ({val_type}):", help = help)
             if val_in:
@@ -155,11 +146,11 @@ if st.checkbox(
                         "port", st.session_state.get("api_port", "7654")
                     )
 
-            st.success("cURL parsed successfully!")
             st.json(parsed_curl)
             # Update session states
             st.session_state.curl_selection = True
             st.session_state.selected_tasks = list(parsed_curl.get("data", {})["tasks"]) if "data" in parsed_curl else []
+            st.success("cURL parsed successfully!")
             log_write("Streamlit", f"Parsed cURL: Success")
         except Exception as e:
             st.session_state.selected_tasks = []
@@ -172,7 +163,8 @@ if st.button("Submit Request", on_click= button_clicked("request_button"), type 
         st.warning("Please either paste a cURL request or Input tasks.")
         st.stop()
     if st.session_state.self_selection: # Makes the request payload from self selection
-        request_payload = {"tasks": st.session_state.selected_tasks, **st.session_state.val_input}
+        server_tasks = [TASKS[task]["task_name"] for task in st.session_state.selected_tasks]
+        request_payload = {"tasks": server_tasks, **st.session_state.val_input}
     else: # Makes the request payload from cURL
         request_payload = st.session_state.parsed_curl.get("data", {})
         if not request_payload:
@@ -212,7 +204,7 @@ if st.button("Submit Request", on_click= button_clicked("request_button"), type 
             log_write("Streamlit", f"Server Output: Error - {e}")
         # Handle the output for each task
         for task in st.session_state.selected_tasks:
-            st.subheader(TASKS[task]["name"] + " Output", divider =True)
+            st.subheader(task + " Output", divider =True)
             for key, val_type in TASKS[task]["output"].items():
                 if "json" in val_type.lower().split():
                     st.write(f"{key.capitalize()} ({val_type}):")
@@ -226,7 +218,9 @@ if st.button("Submit Request", on_click= button_clicked("request_button"), type 
                     )
                     if "lean_code" in key.lower():
                         code = st.session_state.result.get(key, "-- No Lean code available")
-                        st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
+                        code = "import Mathlib\n" + code if "import Mathlib" not in code else code
+                        if code not in ["-- No Lean code available", "No data available."]:
+                            st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
     else:
         st.error(f"Error: {response.status_code}, {response.text}")
         log_write("Streamlit", f"Server Response Error: {response.status_code} - {response.text}")

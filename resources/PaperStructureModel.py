@@ -8,14 +8,14 @@ from datetime import date
 from enum import Enum
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 
 class Title(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'Title', const=True, description='The type of this document element.'
+        default='Title', frozen=True, description='The type of this document element.'
     )
     title: str = Field(..., description='The title text.')
 
@@ -24,7 +24,7 @@ class Abstract(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'Abstract', const=True, description='The type of this document element.'
+        default='Abstract', frozen=True, description='The type of this document element.'
     )
     abstract: str = Field(..., description='The abstract text.')
 
@@ -56,7 +56,7 @@ class LetStatement(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'let_statement', const=True, description='The type of this logical step.'
+        default='let_statement', frozen=True, description='The type of this logical step.'
     )
     variable_name: str = Field(
         ...,
@@ -79,7 +79,7 @@ class SomeStatement(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'some_statement', const=True, description='The type of this logical step.'
+        default='some_statement', frozen=True, description='The type of this logical step.'
     )
     variable_name: str = Field(
         ...,
@@ -105,8 +105,8 @@ class ResultsUsedItem(BaseModel):
     )
 
 
-class CalculationStep(BaseModel):
-    __root__: str = Field(
+class CalculationStep(RootModel):
+    root: str = Field(
         ...,
         description='A step, typically an equality or inequality, in a calculation or computation.',
     )
@@ -116,7 +116,7 @@ class ConcludeStatement(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'conclude_statement', const=True, description='The type of this logical step.'
+        default='conclude_statement', frozen=True, description='The type of this logical step.'
     )
     claim: str = Field(..., description='The conclusion of the proof.')
 
@@ -134,7 +134,7 @@ class Figure(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'Figure', const=True, description='The type of this document element.'
+        default='Figure', frozen=True, description='The type of this document element.'
     )
     label: str = Field(
         ...,
@@ -153,7 +153,7 @@ class Table(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'Table', const=True, description='The type of this document element.'
+        default='Table', frozen=True, description='The type of this document element.'
     )
     label: str = Field(
         ...,
@@ -188,7 +188,7 @@ class Citation(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     cite_keys: List[str] = Field(
-        ..., description='An array of bibliography keys being cited.', min_items=1
+        ..., description='An array of bibliography keys being cited.', min_length=1
     )
 
 
@@ -205,7 +205,7 @@ class Definition(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'Definition', const=True, description='The type of this document element.'
+        default='Definition', frozen=True, description='The type of this document element.'
     )
     definition: str = Field(..., description='Definition content.')
     label: str = Field(..., description='Definition identifier.')
@@ -224,7 +224,7 @@ class Remark(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'Remark', const=True, description='The type of this document element.'
+        default='Remark', frozen=True, description='The type of this document element.'
     )
     remark: str = Field(..., description='Remark content.')
     label: str = Field(..., description='Remark identifier.')
@@ -243,7 +243,7 @@ class AssumeStatement(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'assume_statement', const=True, description='The type of this logical step.'
+        default='assume_statement', frozen=True, description='The type of this logical step.'
     )
     assumption: str = Field(..., description='The assumption text.')
     label: Optional[str] = Field(
@@ -272,7 +272,7 @@ class Metadata(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'Metadata', const=True, description='The type of this document element.'
+        default='Metadata', frozen=True, description='The type of this document element.'
     )
     authors: List[Author] = Field(..., description='List of authors.')
     keywords: Optional[List[str]] = Field(
@@ -295,7 +295,7 @@ class Paragraph(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'Paragraph', const=True, description='The type of this document element.'
+        default='Paragraph', frozen=True, description='The type of this document element.'
     )
     text: str = Field(
         ...,
@@ -315,7 +315,7 @@ class Bibliography(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'Bibliography', const=True, description='The type of this document element.'
+        default='Bibliography', frozen=True, description='The type of this document element.'
     )
     header: str = Field(
         ..., description="The section header (e.g., 'References', 'Bibliography')."
@@ -329,7 +329,7 @@ class AssertStatement(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
     type: str = Field(
-        'assert_statement', const=True, description='The type of this logical step.'
+        default='assert_statement', frozen=True, description='The type of this logical step.'
     )
     claim: str = Field(
         ...,
@@ -360,6 +360,228 @@ class AssertStatement(BaseModel):
     )
 
 
+class Section(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='Section', frozen=True, description='The type of this document element.'
+    )
+    content: List[
+        Union[
+            'Section',
+            'Theorem',
+            'Definition',
+            'Remark',
+            'LogicalStepSequence',
+            'Paragraph',
+            'Proof',
+            'Figure',
+            'Table',
+        ]
+    ] = Field(..., description='The content of the section.')
+    label: str = Field(..., description='Section identifier.')
+    level: Optional[int] = Field(
+        None,
+        description='The section level such as `1` for a section, `2` for a subsection.',
+    )
+    header: str = Field(..., description='The section header.')
+
+
+class Theorem(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='Theorem', frozen=True, description='The type of this document element.'
+    )
+    hypothesis: Optional[List[Union[LetStatement, AssumeStatement, SomeStatement]]] = (
+        Field(
+            None,
+            description="(OPTIONAL) The hypothesis or assumptions of the theorem, consisting of statements like 'let', 'assume', etc.",
+        )
+    )
+    claim: str = Field(..., description='The statement.')
+    label: str = Field(
+        ...,
+        description="Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping').",
+    )
+    proof: Optional['Proof'] = Field(
+        None,
+        description='Proof of the theorems, if it is present soon after the statement.',
+    )
+    header: Header = Field(
+        ...,
+        description='The type of theorem-like environment. Must be one of the predefined values.',
+    )
+    citations: Optional[List[Citation]] = Field(
+        None,
+        description='(OPTIONAL) Explicit list of citations relevant to this statement.',
+    )
+    internal_references: Optional[List[InternalReference]] = Field(
+        None,
+        description='(OPTIONAL) Explicit list of internal references mentioned in the statement.',
+    )
+
+
+class LogicalStepSequence(RootModel):
+    root: List[
+        Union[
+            LetStatement,
+            AssertStatement,
+            AssumeStatement,
+            SomeStatement,
+            'PatternCasesStatement',
+            'BiImplicationCasesStatement',
+            'ConditionCasesStatement',
+            'MultiConditionCasesStatement',
+            'InductionStatement',
+            Calculation,
+            'ContradictionStatement',
+            ConcludeStatement,
+        ]
+    ] = Field(
+        ...,
+        description="A sequence of structured logical steps, typically used within a proof or derivation, consisting of statements like 'let', 'assert', 'assume', etc.",
+    )
+
+
+class Proof(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='Proof', frozen=True, description='The type of this document element.'
+    )
+    claim_label: str = Field(..., description='Theorem label being proved.')
+    proof_steps: List[Union[Remark, LogicalStepSequence, Paragraph, Figure, Table]] = (
+        Field(..., description='Steps in the proof.')
+    )
+
+
+class PatternCasesStatement(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='pattern_cases_statement',
+        frozen=True,
+        description='The type of this logical step.',
+    )
+    on: str = Field(
+        ...,
+        description='The variable or expression which is being matched against patterns.',
+    )
+    proof_cases: List['PatternCase'] = Field(
+        ..., description='A list of elements of type `case`.'
+    )
+
+
+class BiImplicationCasesStatement(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='bi-implication_cases_statement',
+        frozen=True,
+        description='The type of this logical step.',
+    )
+    if_proof: 'Proof' = Field(..., description='Proof that `P` implies `Q`.')
+    only_if_proof: 'Proof' = Field(..., description='Proof that `Q` implies `P`.')
+
+
+class ConditionCasesStatement(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='condition_cases_statement',
+        frozen=True,
+        description='The type of this logical step.',
+    )
+    condition: str = Field(
+        ..., description='The condition based on which the proof is split.'
+    )
+    true_case_proof: 'Proof' = Field(
+        ..., description='Proof of the case where the condition is true.'
+    )
+    false_case_proof: 'Proof' = Field(
+        ..., description='Proof of the case where the condition is false.'
+    )
+
+
+class MultiConditionCasesStatement(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='multi-condtion_cases_statement',
+        frozen=True,
+        description='The type of this logical step.',
+    )
+    proof_cases: List['ConditionCase'] = Field(
+        ..., description='The conditions and proofs in the different cases.'
+    )
+    exhaustiveness: Optional['Proof'] = Field(
+        None, description='(OPTIONAL) Proof that the cases are exhaustive.'
+    )
+
+
+class PatternCase(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='pattern_case', frozen=True, description='The type of this logical step.'
+    )
+    pattern: str = Field(..., description='The pattern determining this case.')
+    proof: 'Proof' = Field(..., description='Proof of this case.')
+
+
+class ConditionCase(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='condition_case', frozen=True, description='The type of this logical step.'
+    )
+    condition: str = Field(..., description='The condition determining this case.')
+    proof: 'Proof' = Field(..., description='Proof for this case.')
+
+
+class Case(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(default='case', frozen=True, description='The type of this logical step.')
+    condition: str = Field(
+        ...,
+        description="The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`).",
+    )
+    proof: 'Proof' = Field(..., description='Proof of this case.')
+
+
+class InductionStatement(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='induction_statement', frozen=True, description='The type of this logical step.'
+    )
+    on: str = Field(
+        ..., description='The variable or expression on which induction is being done.'
+    )
+    base_case_proof: 'Proof' = Field(..., description='Proof of the base case.')
+    induction_step_proof: 'Proof' = Field(
+        ...,
+        description='Proof of the induction step, which typically shows that if the statement holds for `n`, it holds for `n+1`.',
+    )
+
+
+class ContradictionStatement(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    type: str = Field(
+        default='contradiction_statement',
+        frozen=True,
+        description='The type of this logical step.',
+    )
+    assumption: str = Field(
+        ..., description='The assumption being made to be contradicted.'
+    )
+    proof: 'Proof' = Field(
+        ..., description='The proof of the contradiction given the assumption.'
+    )
+
 class MathematicalDocumentWrapper(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
@@ -384,230 +606,7 @@ class MathematicalDocumentWrapper(BaseModel):
         description='The root of the mathematical document, containing a sequence of environments.',
     )
 
-
-class Section(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'Section', const=True, description='The type of this document element.'
-    )
-    content: List[
-        Union[
-            Section,
-            Theorem,
-            Definition,
-            Remark,
-            LogicalStepSequence,
-            Paragraph,
-            Proof,
-            Figure,
-            Table,
-        ]
-    ] = Field(..., description='The content of the section.')
-    label: str = Field(..., description='Section identifier.')
-    level: Optional[int] = Field(
-        None,
-        description='The section level such as `1` for a section, `2` for a subsection.',
-    )
-    header: str = Field(..., description='The section header.')
-
-
-class Theorem(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'Theorem', const=True, description='The type of this document element.'
-    )
-    hypothesis: Optional[List[Union[LetStatement, AssumeStatement, SomeStatement]]] = (
-        Field(
-            None,
-            description="(OPTIONAL) The hypothesis or assumptions of the theorem, consisting of statements like 'let', 'assume', etc.",
-        )
-    )
-    claim: str = Field(..., description='The statement.')
-    label: str = Field(
-        ...,
-        description="Unique identifier/label for referencing (e.g., 'thm:main', 'lem:pumping').",
-    )
-    proof: Optional[Proof] = Field(
-        None,
-        description='Proof of the theorems, if it is present soon after the statement.',
-    )
-    header: Header = Field(
-        ...,
-        description='The type of theorem-like environment. Must be one of the predefined values.',
-    )
-    citations: Optional[List[Citation]] = Field(
-        None,
-        description='(OPTIONAL) Explicit list of citations relevant to this statement.',
-    )
-    internal_references: Optional[List[InternalReference]] = Field(
-        None,
-        description='(OPTIONAL) Explicit list of internal references mentioned in the statement.',
-    )
-
-
-class LogicalStepSequence(BaseModel):
-    __root__: List[
-        Union[
-            LetStatement,
-            AssertStatement,
-            AssumeStatement,
-            SomeStatement,
-            PatternCasesStatement,
-            BiImplicationCasesStatement,
-            ConditionCasesStatement,
-            MultiConditionCasesStatement,
-            InductionStatement,
-            Calculation,
-            ContradictionStatement,
-            ConcludeStatement,
-        ]
-    ] = Field(
-        ...,
-        description="A sequence of structured logical steps, typically used within a proof or derivation, consisting of statements like 'let', 'assert', 'assume', etc.",
-    )
-
-
-class Proof(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'Proof', const=True, description='The type of this document element.'
-    )
-    claim_label: str = Field(..., description='Theorem label being proved.')
-    proof_steps: List[Union[Remark, LogicalStepSequence, Paragraph, Figure, Table]] = (
-        Field(..., description='Steps in the proof.')
-    )
-
-
-class PatternCasesStatement(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'pattern_cases_statement',
-        const=True,
-        description='The type of this logical step.',
-    )
-    on: str = Field(
-        ...,
-        description='The variable or expression which is being matched against patterns.',
-    )
-    proof_cases: List[PatternCase] = Field(
-        ..., description='A list of elements of type `case`.'
-    )
-
-
-class BiImplicationCasesStatement(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'bi-implication_cases_statement',
-        const=True,
-        description='The type of this logical step.',
-    )
-    if_proof: Proof = Field(..., description='Proof that `P` implies `Q`.')
-    only_if_proof: Proof = Field(..., description='Proof that `Q` implies `P`.')
-
-
-class ConditionCasesStatement(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'condition_cases_statement',
-        const=True,
-        description='The type of this logical step.',
-    )
-    condition: str = Field(
-        ..., description='The condition based on which the proof is split.'
-    )
-    true_case_proof: Proof = Field(
-        ..., description='Proof of the case where the condition is true.'
-    )
-    false_case_proof: Proof = Field(
-        ..., description='Proof of the case where the condition is false.'
-    )
-
-
-class MultiConditionCasesStatement(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'multi-condtion_cases_statement',
-        const=True,
-        description='The type of this logical step.',
-    )
-    proof_cases: List[ConditionCase] = Field(
-        ..., description='The conditions and proofs in the different cases.'
-    )
-    exhaustiveness: Optional[Proof] = Field(
-        None, description='(OPTIONAL) Proof that the cases are exhaustive.'
-    )
-
-
-class PatternCase(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'pattern_case', const=True, description='The type of this logical step.'
-    )
-    pattern: str = Field(..., description='The pattern determining this case.')
-    proof: Proof = Field(..., description='Proof of this case.')
-
-
-class ConditionCase(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'condition_case', const=True, description='The type of this logical step.'
-    )
-    condition: str = Field(..., description='The condition determining this case.')
-    proof: Proof = Field(..., description='Proof for this case.')
-
-
-class Case(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field('case', const=True, description='The type of this logical step.')
-    condition: str = Field(
-        ...,
-        description="The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`).",
-    )
-    proof: Proof = Field(..., description='Proof of this case.')
-
-
-class InductionStatement(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'induction_statement', const=True, description='The type of this logical step.'
-    )
-    on: str = Field(
-        ..., description='The variable or expression on which induction is being done.'
-    )
-    base_case_proof: Proof = Field(..., description='Proof of the base case.')
-    induction_step_proof: Proof = Field(
-        ...,
-        description='Proof of the induction step, which typically shows that if the statement holds for `n`, it holds for `n+1`.',
-    )
-
-
-class ContradictionStatement(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-
-    type: str = Field(
-        'contradiction_statement',
-        const=True,
-        description='The type of this logical step.',
-    )
-    assumption: str = Field(
-        ..., description='The assumption being made to be contradicted.'
-    )
-    proof: Proof = Field(
-        ..., description='The proof of the contradiction given the assumption.'
-    )
-
-
+# Update forward references
 MathematicalDocumentWrapper.model_rebuild()
 Section.model_rebuild()
 Theorem.model_rebuild()

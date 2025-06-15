@@ -12,7 +12,7 @@ from llm_response import *
 
 load_dotenv()
 
-st.title("LeanAide: Structured Json Output")
+st.title("LeanAide: Structured JSON Output")
 st.write("Here you can input your theorem-proof/paper, etc. and generate Structured JSON output using LeanAide Schema.")
 st.info("Please fill out your API credentials in the sidebar to use the LLM's. Image OCR, Structured Json Generation, etc. will not work without valid API credentials.")
 
@@ -22,24 +22,10 @@ st.sidebar.header("Structured Json")
 TEMP_DIR = "leanaide_st_temp"
 os.makedirs(TEMP_DIR, exist_ok=True)
 
-# Create session state variables if they don't exist
-for key in ["image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", "model_text", "model_img" , "llm_provider", "llm_list", "uploaded_pdf"]:
-    if key not in st.session_state:
-        st.session_state[key] = None
-
-for key in ["input_paper", "generation_complete"]:
-    if key not in st.session_state:
-        st.session_state[key] = False
-
-for inp in ["paper", "theorem", "proof"]:
-    for key in [f"input_image_{inp}", f"input_pdf_{inp}"]:
-        if key not in st.session_state:
-            st.session_state[key] = False
-
 provider_info = {
     "OpenAI": {
         "name": "OpenAI",
-        "default_model": "gpt-4o",
+        "default_model": "o4-mini",
         "default_api_key": os.getenv("OPENAI_API_KEY", ""),
     },
     "Gemini": {
