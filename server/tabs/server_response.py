@@ -14,7 +14,7 @@ st.sidebar.header("Server Response")
 
 st.title("LeanAide: Server Response")
 st.write(
-    "Here you can send requests to the backend server and view the responses. You can either paste a cURL request or fill the request yourself."
+    "Here you can send requests to the backend server and view the responses."
 )
 st.info("Ensure the Host information of the backend server to query is correct. Check out the sidebar for host information settings.")
 
@@ -45,13 +45,11 @@ with st.sidebar:
         )
         st.session_state.api_port = api_port
 
-st.header("Server Request", divider = True, help = "You can either paste a cURL request or fill the request yourself. The request will be sent to the backend server specified by you.")
+st.header("Server Request", divider = True, help = "For your input request, this request will be sent to the backend server specified by you.")
 
 st.subheader("Structured Input: Select Tasks", help = "Select the tasks you want to perform and provide the necessary inputs.")
-st.session_state.self_selection = True
 # list of tasks, each task has "name" field. use that
-
-st.session_state.selected_tasks = st.multiselect("Select tasks to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.")
+st.session_state.selected_tasks = st.multiselect("Select tasks to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", default = st.session_state.get("selected_tasks", []))
 
 ## Multiselect box color set
 st.markdown("""
@@ -66,7 +64,9 @@ span[data-baseweb="tag"] {
 
 """, unsafe_allow_html=True)
 
-st.session_state.val_input = {}
+if not st.session_state.val_input:
+    st.session_state.val_input = {}
+
 if st.button("Give Input", help = "Provide inputs to the your selected tasks. Note: It is not compulsary to fill all of them.") or st.session_state.self_input_button:
     st.session_state.self_input_button = True
     for task in st.session_state.selected_tasks:
@@ -75,23 +75,23 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
             help = f"Please provide input for `{key}` of type `{val_type}`."
             if "json" in key.lower():
                 help += " Just paste your `json` object here."
-                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}")
+                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", value = st.session_state.val_input.get(key, ""))
             else:
-                val_in = st.text_input(f"{task.capitalize()} - {key} ({val_type}):", help = help)
+                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, value = st.session_state.val_input.get(key, ""))
             if val_in:
                 inp_type, st.session_state.val_input[key] = get_actual_input(val_in)
                 if validate_input_type(inp_type, val_type):
-                    st.session_state.valid_self_input = True
+                    st.session_state.valid_input = True
                 else:
                     st.warning(
                         f"Invalid input type for {key}. Expected `{val_type}`, got `{inp_type.__name__}`. See help for each input for more info. Please try again."
                     )
-                    st.session_state.valid_self_input = False
+                    st.session_state.valid_input = False
 
         # Parameters for each task
         for param, param_type in TASKS[task].get("parameters", {}).items():
             if "boolean" in param_type.lower() or "bool" in param_type.lower():
-                st.session_state.valid_self_input = True
+                st.session_state.valid_input = True
 
                 # Checked for True, Unchecked for False
                 default_val = True if "true" in param_type.lower() else False
@@ -106,124 +106,90 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
                 help = f"Please provide a value for `{param}` of type `{param_type}`. If you want to skip this parameter, just leave it unchecked."
                 if param_in := st.text_input(f"{task.capitalize()} - {param} ({param_type}):", help=help):
                     st.session_state.val_input[param] = param_in
-                    st.session_state.valid_self_input = True
-            
-    if st.session_state.valid_self_input:
+                    st.session_state.valid_input = True
+
+    if st.session_state.valid_input:
         st.subheader("Query Obtained", help = "Note that default values will be used for any parameters that you did not provide input for.")
         st.json(st.session_state.val_input)
         log_write("Streamlit", "Query Obtained: Success")
 
-## CURL REQUEST SECTION
-if st.checkbox(
-    "If you have a cURL request you will like to request, pls check this box. This will ignore any your entered inputs in the previous section.",
-    value=False,
-):
-    st.subheader("Raw cURL Request")
-    st.session_state.self_selection = False
-    # cURL Request Section
-    curl_input = st.text_area(
-        "Paste your cURL request here:",
-        height=150,
-        placeholder="Paste cURL command starting with curl -X POST...",
-    )
-    if st.checkbox("Ignore above cURL request's host and port, and use the host and port specified in Host Information.", value=False):
-        st.session_state.ignore_curl_ip_port = True
+# Show Response function
+def show_response():
+    for task in st.session_state.selected_tasks:
+        st.subheader(task + " Output", divider =True)
+        for key, val_type in TASKS[task]["output"].items():
+            if "json" in val_type.lower().split():
+                st.write(f"{key.capitalize()} ({val_type}):")
+                json_out = st.session_state.result.get(key) or {}
+                st.json(json_out)
+                copy_to_clipboard(str(json_out))
+            else:
+                st.write(f"{key.capitalize()} ({val_type}):")
+                st.code(
+                    st.session_state.result.get(key) or "No data available.", language="plaintext"
+                )
+                if "lean_code" in key.lower():
+                    code = st.session_state.result.get(key, "-- No Lean code available")
+                    code = "import Mathlib\n" + code if "import Mathlib" not in code else code
+                    if code not in ["-- No Lean code available", "No data available."]:
+                        st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
+
+# Submit Request Section. 
+submit_response_button =  st.button("Submit Request", on_click= button_clicked("request_button"), type = "primary", help = "You can submit your request here. The request will be sent to the backend server specified in the Host Information section.")
+if submit_response_button or st.session_state.request_button:
+    request_payload = {}
+    if not st.session_state.selected_tasks:
+        st.warning("Please Input tasks to be performed.")
+        log_write("Streamlit", "Request Payload: Invalid Input")
+    elif not st.session_state.valid_input:
+        st.warning("Please provide valid inputs for the selected tasks.")
+        log_write("Streamlit", "Request Payload: Invalid Input")
     else:
-        st.session_state.ignore_curl_ip_port = False 
-
-    if st.button("Process cURL Request", on_click = button_clicked("curl_botton")) or st.session_state.curl_botton:
-        try:
-            # Extract JSON payload from curl
-            st.session_state.parsed_curl = parsed_curl = parse_curl(curl_input, st.session_state.ignore_curl_ip_port)
-            # Update session state with host and port if they exist in the curl
-            if not st.session_state.ignore_curl_ip_port:
-                if "url_ip" in parsed_curl and parsed_curl["url_ip"]:
-                    st.session_state.api_host = parsed_curl.get(
-                        "url_ip", st.session_state.get("api_host", HOST)
-                    )
-                if "port" in parsed_curl and parsed_curl["port"]:
-                    st.session_state.api_port = parsed_curl.get(
-                        "port", st.session_state.get("api_port", "7654")
-                    )
-
-            st.json(parsed_curl)
-            # Update session states
-            st.session_state.curl_selection = True
-            st.session_state.selected_tasks = list(parsed_curl.get("data", {})["tasks"]) if "data" in parsed_curl else []
-            st.success("cURL parsed successfully!")
-            log_write("Streamlit", f"Parsed cURL: Success")
-        except Exception as e:
-            st.session_state.selected_tasks = []
-            st.error(f"Error parsing curl: {e}")
-            log_write("Streamlit", f"Parsed cURL: Error - {e}")
-
-# Submit Request Section. Common to Curl and self Selection
-if st.button("Submit Request", on_click= button_clicked("request_button"), type = "primary", help = "For both cURL and Self input, you can submit your request here. The request will be sent to the backend server specified in the Host Information section.") or st.session_state.request_button:
-    if not st.session_state.curl_selection and not st.session_state.self_selection:
-        st.warning("Please either paste a cURL request or Input tasks.")
-        st.stop()
-    if st.session_state.self_selection: # Makes the request payload from self selection
         server_tasks = [TASKS[task]["task_name"] for task in st.session_state.selected_tasks]
         request_payload = {"tasks": server_tasks, **st.session_state.val_input}
-    else: # Makes the request payload from cURL
-        request_payload = st.session_state.parsed_curl.get("data", {})
-        if not request_payload:
-            st.warning(
-                "No data found in the cURL request. Please check the cURL command."
+
+        with st.spinner("Request sent. Please wait for a short while..."):
+            log_write("Streamlit", f"Request Payload: {request_payload}")
+            response = requests.post(
+                f"http://{st.session_state.api_host}:{st.session_state.api_port}", json=request_payload
             )
-            st.stop()
-    
-    with st.spinner("Request sent. Please wait for a short while..."):
-        log_write("Streamlit", f"Request Payload: {request_payload}")
-        response = requests.post(
-            f"http://{st.session_state.api_host}:{st.session_state.api_port}", json=request_payload
-        )
 
-    if response.status_code == 200:
-        # Get the result
-        st.success("Response sent and received successfully! Request method: {}".format("cURL" if st.session_state.curl_selection else "Self Input"))
-        st.session_state.result = response.json()
-        log_write("Streamlit", f"Selected Tasks: {st.session_state.selected_tasks}")
-        log_write("Streamlit", f"Response: {st.session_state.result}")
+        if response.status_code == 200:
+            # Get the result
+            st.success("Response sent and received successfully!")
+            st.session_state.result = response.json()
+            log_write("Streamlit", f"Selected Tasks: {st.session_state.selected_tasks}")
+            log_write("Streamlit", f"Response: {st.session_state.result}")
 
-        try:
-            if st.session_state.result["result"] == "success":
-                st.session_state.server_output_success = True
-                st.success("Request processed successfully!")
-            else: # result = "error"
+            try:
+                if st.session_state.result["result"] == "success":
+                    st.session_state.server_output_success = True
+                    st.success("Request processed successfully!")
+                else: # result = "error"
+                    st.session_state.server_output_success = False
+                    st.error("Error in processing the request. Please check the input and try again.")
+                    st.write("Error (String):")
+                    st.code(st.session_state.result["error"])
+                log_write("Streamlit", f"Server Output: Success")
+            except Exception as e:
                 st.session_state.server_output_success = False
-                st.error("Error in processing the request. Please check the input and try again.")
-                st.write("Error (String):")
-                st.code(st.session_state.result["error"])
-            log_write("Streamlit", f"Server Output: Success")
-        except Exception as e:
-            st.session_state.server_output_success = False
-            st.error(f"Error in processing the request: {e}")
-            st.write("Response (String):")
-            st.code(str(st.session_state.result))
-            log_write("Streamlit", f"Server Output: Error - {e}")
-        # Handle the output for each task
-        for task in st.session_state.selected_tasks:
-            st.subheader(task + " Output", divider =True)
-            for key, val_type in TASKS[task]["output"].items():
-                if "json" in val_type.lower().split():
-                    st.write(f"{key.capitalize()} ({val_type}):")
-                    json_out = st.session_state.result.get(key, {})
-                    st.json(json_out)
-                    copy_to_clipboard(str(json_out))
-                else:
-                    st.write(f"{key.capitalize()} ({val_type}):")
-                    st.code(
-                        st.session_state.result.get(key, "No data available."), language="plaintext"
-                    )
-                    if "lean_code" in key.lower():
-                        code = st.session_state.result.get(key, "-- No Lean code available")
-                        code = "import Mathlib\n" + code if "import Mathlib" not in code else code
-                        if code not in ["-- No Lean code available", "No data available."]:
-                            st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
-    else:
-        st.error(f"Error: {response.status_code}, {response.text}")
-        log_write("Streamlit", f"Server Response Error: {response.status_code} - {response.text}")
+                st.error(f"Error in processing the request: {e}")
+                st.write("Response (String):")
+                st.code(str(st.session_state.result))
+                log_write("Streamlit", f"Server Output: Error - {e}")
+            # Handle the output for each task
+            if st.session_state.server_output_success:
+                show_response()
+            else:
+                st.error("No output available. Please check the input and try again.")
+                log_write("Streamlit", "Server Output: No output available.")
+
+        else:
+            st.error(f"Error: {response.status_code}, {response.text}")
+            log_write("Streamlit", f"Server Response Error: {response.status_code} - {response.text}")
+
+elif st.session_state.request_button:
+    show_response()
 
 ## LOGS SECTION
 st.subheader("Server Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked. If you refresh the page, the old logs will dissapear.")
@@ -241,7 +207,7 @@ with st.expander("Click to view Server logs", expanded=False):
 
     else:
         st.code("No logs available yet.", language="plaintext")
-        
+
     with st.popover("Clean Server Logs", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
         st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server.")
         if st.button("Yes"):
@@ -251,7 +217,7 @@ with st.expander("Click to view Server logs", expanded=False):
                 st.success("Server logs cleaned successfully! Please UNCHECK THE BOX to avoid cleaning again.")
                 st.rerun()
             except Exception as e:
-                st.error(f"Error cleaning server logs: {e}") 
+                st.error(f"Error cleaning server logs: {e}")
         if st.button("No"):
             pass
         st.session_state.log_cleaned = False

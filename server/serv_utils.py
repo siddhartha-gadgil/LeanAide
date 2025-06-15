@@ -80,40 +80,6 @@ TASKS = {
     },
 }
 
-def parse_curl(curl_cmd, ignore_curl_ip_port):
-    args = shlex.split(curl_cmd)
-    out = {"method": "POST", "url_ip": "", "port": "", "headers": {}, "data": {}}
-    i = 0
-    while i < len(args):
-        match args[i]:
-            case "curl":
-                i += 1
-            case "-X":
-                out["method"] = args[i + 1]
-                i += 2
-            case "-H":
-                k, v = args[i + 1].split(":", 1)
-                out["headers"][k.strip()] = v.strip()
-                i += 2
-            case "--data" | "-d":
-                try:
-                    out["data"] = json.loads(args[i + 1])
-                except Exception:
-                    out["data"] = args[i + 1]
-                i += 2
-            case x if x.startswith("http"):
-                x = x.split("://", 1)[1].split(":", 1)
-                if ignore_curl_ip_port:
-                    out["url_ip"] = st.session_state.get("api_host", HOST)
-                    out["port"] = st.session_state.get("api_port", "7654")
-                else:
-                    out["url_ip"] = x[0]
-                    out["port"] = x[1]
-                i += 1
-            case _:
-                i += 1
-    return out
-
 def button_clicked(button_arg):
     def protector():
         """This function does not allow value to become True until the button is clicked."""

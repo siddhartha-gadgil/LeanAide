@@ -3,14 +3,14 @@ import streamlit as st
 # Initialize session state variables
 # Global variables for session state initialization
 NONE_INIT_KEYS = [
-    "parsed_curl", "selected_tasks", "self_selection", "curl_selection", "val_input", "result",
+    "selected_tasks", "self_selection", "val_input", "result",
     "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", 
     "model_text", "model_img", "llm_provider", "llm_list", "uploaded_pdf"
 ]
 
 FALSE_INIT_KEYS = [
-    "curl_botton", "request_button", "self_input_button", "ignore_curl_ip_port", 
-    "server_output_success", "valid_self_input", "log_cleaned", "input_paper", 
+    "request_button", "self_input_button", 
+    "server_output_success", "valid_input", "log_cleaned", "input_paper", 
     "generation_complete", "input_image_paper", "input_pdf_paper", "input_image_proof", 
     "input_image_theorem", "input_pdf_proof", "input_pdf_theorem"
 ]
