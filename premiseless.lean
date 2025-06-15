@@ -3,7 +3,7 @@ import LeanAide.ProofSearch
 open Lean Json Data LeanAide.Meta
 
 def environment : IO Environment := do
-  importModules #[{module := `Mathlib},
+  importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `DataGenAide.PremiseData},
     {module:= `LeanAide.ProofSearch},

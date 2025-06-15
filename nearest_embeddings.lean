@@ -25,7 +25,7 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
     IO.eprintln out.stdout
 
 unsafe def main (args: List String) : IO Unit := do
-  let inp := args.get! 0
+  let inp := args[0]!
   let (descField, doc, num, penalty) :=
     match Json.parse inp with
     | Except.error _ => ("docString", inp, 10, 2.0)

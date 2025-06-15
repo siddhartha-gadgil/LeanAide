@@ -10,7 +10,7 @@ def init : IO Unit := do
   initSearchPath (← Lean.findSysroot) ([".lake/build/lib", ".lake/packages/mathlib/build/lib/",  ".lake/packages/std/build/lib/", ".lake/packages/Qq/build/lib/", ".lake/packages/aesop/build/lib/", ".lake/packages/proofwidgets/build/lib" ])
 
 def environment : IO Environment := do
-  importModules #[{module := `Mathlib},
+  importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
 
     {module:= `LeanAide.VerboseDelabs},

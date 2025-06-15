@@ -182,7 +182,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
       catch e =>
         let err ←   e.toMessageData.toString
         let errSrx := Syntax.mkStrLit <| "Error: " ++ err
-        pure <| some <| ← `(tacticSeq| have := $errSrx)
+        pure <| some <| ← `(tacticSeq| trace $errSrx)
     match code? with
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
@@ -239,7 +239,7 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
       catch e =>
         let err ←   e.toMessageData.toString
         let errSrx := Syntax.mkStrLit <| "Error: " ++ err
-        pure <| some <| ← `(commandSeq| example := $errSrx)
+        pure <| some <| ← `(commandSeq| #check $errSrx)
 
     match code? with
     | none => do -- error with obtaining commands
@@ -247,11 +247,14 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
     | some code => do
       accum := accum.push code
   if accum.isEmpty then
-    throwError
-      s!"codegen: no commands generated from {sources}"
-  let res ← flattenCommands accum
-  Translate.addCommands res
-  return res
+    let empty : Array <| TSyntax `command := #[]
+    `(commandSeq| $empty*)
+  else
+    let res ← flattenCommands accum
+    Translate.addCommands res
+    return res
+
+
 
 def noCode : CodeGenerator → Option MVarId  →
   (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
@@ -277,8 +280,8 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
     for source in sources do
       let code ← getCode translator goal? kind source
       unless code.isNone do
-        throwError
-          s!"codegen: contextCode expected pure side effect, but got {code}"
+        IO.eprintln s!"codegen: contextCode expected pure side effect, but got {code}"
+        logWarning m!"codegen: contextCode expected pure side effect, but got {code}"
     return
   | .error _ => do
     throwError

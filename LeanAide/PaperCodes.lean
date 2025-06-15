@@ -31,7 +31,7 @@ def Translator.translateToPropStrict
     | Except.ok type =>
       let type ← instantiateMVars type
       Term.synthesizeSyntheticMVarsNoPostponing
-      if type.hasSorry || type.hasExprMVar then
+      if type.hasSorry || (← type.hasUnassignedExprMVar) then
         throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
       let univ ← try
         Term.withoutErrToSorry do
@@ -276,13 +276,46 @@ where
       | Except.error _ => pure ()
     let .ok  claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no 'claim' found in 'theorem'"
-    let type ← translator.translateToPropStrict claim
     let thm ← withPreludes claim
+    let type ← translator.translateToPropStrict claim
     let proof? :=
       js.getObjVal? "proof" |>.toOption
     let pfGoal ← mkFreshExprMVar type
-    let proofStx? ← proof?.bindM fun
-      pf => getCode translator pfGoal.mvarId! ``tacticSeq (Json.mkObj [("proof", pf)])
+    let hypSize ←
+      match js.getObjValAs? (Array Json)  "hypothesis" with
+      | Except.ok h =>
+        IO.eprintln s!"hypothesis: {h} in proof"
+        contextRun translator none ``tacticSeq (.arr h)
+        -- IO.eprintln "Preludes added:"
+        -- IO.eprintln <| ← withPreludes ""
+        pure h.size
+      | Except.error _ => pure 0
+    IO.eprintln s!"hypothesis size: {hypSize} in proof"
+    let (pfGoal, names) ← extractIntros pfGoal.mvarId! hypSize
+    let proofStx? ← proof?.mapM fun
+      pf => withoutModifyingState do
+      let pfStx ←  match ←
+        getCode translator pfGoal ``tacticSeq (Json.mkObj [("proof", pf)]) with
+      | some pfStx =>
+        let pfStx ←  if names.isEmpty then
+            pure pfStx
+          else
+            let namesStx : List <| TSyntax `term ←
+              names.mapM fun n =>
+                if n.isInaccessibleUserName || n.isInternal then
+                  `(_)
+                else do
+                  IO.eprintln s!"Adding intro for {n}, not inaccessible"
+                  let n' := mkIdent n
+                  `($n':ident)
+            let namesStx := namesStx.toArray
+            let introTac ←
+              `(tacticSeq| intro $namesStx*)
+            appendTactics introTac pfStx
+        pure pfStx
+      | none => throwError
+        s!"codegen: no proof translation found for {pf}"
+      pure pfStx
     let name ← translator.server.theoremName thm
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
@@ -558,9 +591,55 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
 }
 -/
 @[codegen "let_statement"]
-def letCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, js => do
-  let statement :=
+def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
+  match s, js with
+  | ``tacticSeq, js => do
+    let statement := statement js
+    match js.getObjString? "value" with
+    | none =>
+      -- If there is no value, we do not need to return a value
+      IO.eprintln s!"codegen: No value in 'let_statement' for {js.getObjString? "variable_name" |>.getD ""}"
+      addPrelude statement
+      return none
+    | some value =>
+      -- If there is a value, we return it as a term
+      let statement' ← withPreludes statement
+      let varName ← match js.getObjString? "variable_name" with
+        | some "<anonymous>" => pure "_"
+        | some v => pure v
+        | _ => throwError s!"codegen: no 'variable_name' found in 'let_statement' for {js}"
+      let statement' := statement'.trim ++ "\n" ++ s!"Define ONLY the term {varName} with value {value}. Other terms have been defined already."
+      let letStx ←
+        match ← Translator.translateDefCmdM?
+        statement' translator.toTranslator  with
+        | .ok stx =>
+          IO.eprintln s!"codegen: 'let_statement' {statement'} translated to command:\n{← PrettyPrinter.ppCommand stx}"
+          commandToTactic stx
+        | .error es =>
+          let fallback ← try
+            CmdElabError.fallback es
+          catch _ =>
+            IO.eprintln s!"codegen: 'let_statement' {statement'} fallback failed"
+            throwError
+              s!"codegen: no fallback for 'let_statement' {statement'} "
+          match Parser.runParserCategory (← getEnv) `command fallback with
+          | .ok stx =>
+            let stx: Syntax.Command := ⟨stx⟩
+            commandToTactic stx
+          |.error er =>
+            IO.eprintln s!"codegen: 'let_statement' {statement'} translation failed with error:\n{er} and fallback:\n{fallback}"
+            IO.eprintln s!"codegen: 'let_statement' {statement'} translation attempts:\n"
+            for e in es do
+              IO.eprintln s!"codegen: not a command:\n{e.text}"
+            throwError
+              s!"codegen: no definition translation found for {statement'}"
+      let stxs := #[letStx]
+      addPrelude statement
+      return some <| ← `(tacticSeq| $stxs*)
+  | _, js =>
+      addPrelude <| statement js
+      return none
+  where statement (js: Json) : String :=
     match js.getObjValAs? String "statement" with
     | Except.ok s => s
     | Except.error _ =>
@@ -568,18 +647,16 @@ def letCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKi
       | some "<anonymous>" => "We have "
       | some v => s!"Let {v} be"
       | _ => "We have "
-    let kindSegment := match js.getObjValAs? String "variable_type" with
-      | Except.ok k => s!"a {k}"
-      | Except.error _ => s!""
-    let valueSegment := match js.getObjString? "value" with
-      | some v => s!"{v}"
-      | _ => ""
-    let propertySegment := match js.getObjString? "properties" with
-      | some p => s!"(such that) {p}"
-      | _ => ""
-    s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
-  addPrelude statement
-  return none
+      let kindSegment := match js.getObjValAs? String "variable_type" with
+        | Except.ok k => s!"a {k}"
+        | Except.error _ => s!""
+      let valueSegment := match js.getObjString? "value" with
+        | some v => s!"{v}"
+        | _ => ""
+      let propertySegment := match js.getObjString? "properties" with
+        | some p => s!"(such that) {p}"
+        | _ => ""
+      s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
 
 
 /- some_statement
@@ -613,8 +690,8 @@ def letCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKi
 }
 -/
 @[codegen "some_statement"]
-def someCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, js => do
+def someCode (translator : CodeGenerator := {})(goal : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| kind, js => do
   let statement :=
     match js.getObjValAs? String "statement" with
     | Except.ok s => s
@@ -630,8 +707,12 @@ def someCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeK
       | some p => s!"(such that) {p}"
       | _ => ""
     s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
+  let assJs := Json.mkObj [
+    ("type", "assert_statement"),
+    ("claim", .str statement)
+  ]
   addPrelude statement
-  return none
+  getCode translator goal kind assJs
 
 
 /- assume_statement
@@ -761,7 +842,8 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
 | _, kind, _ => throwError
     s!"codegen: test does not work for kind {kind}"
 where typeStx (js: Json) :
-    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) := do
+    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) :=
+      withoutModifyingState do
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in 'assertion_statement'"
   let type ← translator.translateToPropStrict claim
@@ -1406,17 +1488,17 @@ def egView : MetaM Format := do
 
 -- #eval egView
 
-def egTacs : TermElabM <|  Format := do
-  let goal := q(∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N)
-  let autoTac ← `(tactic| aesop?)
-  let tacs ← runTacticsAndGetTryThisI goal #[autoTac]
-  PrettyPrinter.ppCategory ``tacticSeq <| ← `(tacticSeq|$tacs*)
+-- def egTacs : TermElabM <|  Format := do
+--   let goal := q(∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N)
+--   let autoTac ← `(tactic| aesop?)
+--   let tacs ← runTacticsAndGetTryThisI goal #[autoTac]
+--   PrettyPrinter.ppCategory ``tacticSeq <| ← `(tacticSeq|$tacs*)
 
 
-#eval egTacs
+-- #eval egTacs
 
-example: ∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N := by
-  intro
-  aesop?
-  · sorry
-  · sorry
+-- example: ∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N := by
+--   intro
+--   aesop?
+--   · sorry
+--   · sorry

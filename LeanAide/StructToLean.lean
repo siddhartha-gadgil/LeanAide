@@ -289,7 +289,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
   | Except.ok type => do
     let type ← instantiateMVars type
     Term.synthesizeSyntheticMVarsNoPostponing
-    if type.hasSorry || type.hasExprMVar then
+    if type.hasSorry || (← type.hasUnassignedExprMVar) then
       return Except.error #[ElabError.parsed statement s!"Failed to infer type {type} has sorry or mvar" [] none]
     let univ ← try
       withoutErrToSorry do
@@ -1227,7 +1227,7 @@ def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format × Name := do
     let xs ← qp.server.structuredProofFromStatement s
-    match xs.get? 0 with
+    match xs[0]? with
     | some (pf, #[js]) =>
       thmProofStrucToCode s pf js qp
     | _ =>

@@ -13,7 +13,7 @@ def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", posi
 def main : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
-    importModules #[
+    importModules (loadExts := true) #[
     {module := `Mathlib},
     {module := `DataGenAide.ConstDeps}] {}
   let dataPath : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descs.jsonl")

@@ -101,7 +101,7 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
       else
         `(_)
       vars := vars.push term
-    IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
+    -- IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
   -- vars := vars[1:]
   let targetType ← relLCtx' mvarId
   let typeView ← PrettyPrinter.ppExpr targetType
@@ -146,21 +146,21 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic): Term
   let mvar ← mkFreshExprMVar goal
   let msgs ←
     runTacticsAndGetMessages mvar.mvarId! tactics
-  IO.eprintln "Messages:"
-  for msg in msgs.toList do
-    IO.eprintln s!"Message: {← msg.data.toString}"
+  -- IO.eprintln "Messages:"
+  -- for msg in msgs.toList do
+  --   IO.eprintln s!"Message: {← msg.data.toString}"
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 
 open PrettyPrinter
 def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): TermElabM <|  (Array Syntax.Tactic) := do
   let tacs? ← runTacticsAndGetTryThis? goal tactics
-  IO.eprintln s!"Tactics for goal: {← PrettyPrinter.ppExpr goal}"
-  if let some tacs := tacs? then
-    let view ← ppCategory ``tacticSeq <| ← `(tacticSeq|$tacs*)
-    IO.eprintln s!"Tactics:\n {view}"
-  else
-    IO.eprintln "No tactics found"
+  -- IO.eprintln s!"Tactics for goal: {← PrettyPrinter.ppExpr goal}"
+  -- if let some tacs := tacs? then
+  --   let view ← ppCategory ``tacticSeq <| ← `(tacticSeq|$tacs*)
+  --   IO.eprintln s!"Tactics:\n {view}"
+  -- else
+  --   IO.eprintln "No tactics found"
   return tacs?.getD #[(←  `(tactic| sorry))]
 
 def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :

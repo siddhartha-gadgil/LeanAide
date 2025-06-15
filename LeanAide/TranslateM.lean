@@ -67,7 +67,7 @@ def CmdElabError.fallback (errs : Array CmdElabError) :
     | _ => none)
   match bestParsed? with
   | some e => return e
-  | none => match errs.get? 0 with
+  | none => match errs[0]? with
     | some e => return e.text
     | _ => throwError "no outputs found"
 
@@ -260,7 +260,12 @@ def defsBlob : TranslateM <| Array String := do
   defs.mapM <| fun dfn => dfn.statement
 
 def addPrelude (p: String) : TranslateM Unit := do
-  modify fun s => {s with preludes := s.preludes.push p}
+  modify fun s =>
+    if s.preludes.contains p then
+      s
+    else
+      -- IO.eprintln s!"Adding prelude: {p}"
+    {s with preludes := s.preludes.push p}
 
 def clearPreludes : TranslateM Unit := do
   modify fun s => {s with preludes := #[]}

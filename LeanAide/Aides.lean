@@ -377,17 +377,20 @@ def trivialEquality : Syntax → CoreM Bool
 def codeBlock (code: String) (s: String) : String :=
   let fullSplit := s.splitOn s!"```{code}"
   let split := if fullSplit.length > 1
-    then fullSplit.get! 1 else
-    s.splitOn "```" |>.get! 1
-  split.splitOn "```" |>.get! 0
+    then fullSplit[1]! else
+    (s.splitOn "```")[1]!
+  (split.splitOn "```")[0]!
 
 def codeBlock? (code: String) (s: String) : Option String := do
-  let split ←   s.splitOn s!"```{code}" |>.get? 1 |>.orElse fun _ =>
-    s.splitOn "```" |>.get? 1
-  split.splitOn "```" |>.get? 0
+  let split ←
+    (s.splitOn s!"```{code}")[1]? |>.orElse fun _ =>
+      (s.splitOn "```")[1]?
+  (split.splitOn "```")[0]?
 
 def extractLean (s: String) : String :=
   codeBlock? "lean" s |>.getD s
+
+#eval "".splitOn "```lean"
 
 def extractJson (s: String) : Json :=
   let code := codeBlock? "json" s |>.getD s
@@ -795,3 +798,19 @@ def flattenTactics (tacs: Array <| TSyntax ``tacticSeq) :
   CoreM (TSyntax ``tacticSeq) := do
   let tacs := tacs.map getTactics |>.flatten
   `(tacticSeq| $tacs*)
+
+partial def Lean.Expr.hasUnassignedExprMVar (e: Expr) : MetaM Bool := do
+  let deps ← getMVars e
+  for m in deps do
+    match (← getExprMVarAssignment? m) with
+    | some e  =>
+      if ←  e.hasUnassignedExprMVar then
+        return true
+    | none => return true
+  return false
+
+-- def checkNoLoop : MetaM Bool := do
+--   let mvar ← mkFreshExprMVar (mkConst ``Nat)
+--   mvar.hasUnassignedExprMVar
+
+-- #eval checkNoLoop

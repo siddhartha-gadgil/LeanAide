@@ -1,0 +1,107 @@
+{"usage":
+ {"total_tokens": 5794,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 5130,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 664},
+ "system_fingerprint": "fp_a288987b44",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BhqnlKCrwofbcK9wRHMPUb5I4T4nW",
+ "created": 1749790773,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable (x y : ℤ)\n\ndef is_odd (n : ℤ) : Prop := n % 2 ≠ 0\ndef is_even (n : ℤ) : Prop := n % 2 = 0\n\ndef x_odd : Prop := is_odd x\ndef y_even : Prop := is_even y\n\ndef S : ℤ := x + y\n\nvariable (j k : ℤ)\n\ndef p : ℤ := j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable {x y : ℤ} (hx : Odd x) (hy : Even y)\nvariable {j k : ℤ}\nlet S := x + y\nlet p := j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable (x y : ℤ)\nvariable (h₁ : Odd x)\nvariable (h₂ : Even y)\nvariable (S : ℤ := x + y)\nvariable (j k : ℤ)\nvariable (p : ℤ := j + k)\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable (x : ℤ) [Fact (Odd x)]\nvariable (y : ℤ) [Fact (Even y)]\nvariable (S : ℤ) (p : ℤ)\nvariable (j k : ℤ)\n\nlet S := x + y\nlet p := j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry -- integer such that odd\ndef y : ℤ := sorry -- integer such that even\ndef S : ℤ := x + y\ndef p : ℤ := j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry  -- integer such that odd\ndef y : ℤ := sorry  -- integer such that even\ndef S : ℤ := x + y\ndef p : ℤ := sorry  -- expression j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry -- such that x is odd\ndef y : ℤ := sorry -- such that y is even\ndef S : ℤ := x + y\ndef p : ℤ := j + k -- assuming j and k are defined elsewhere\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable (x y : ℤ)\nvariable (S p j k : ℤ)\n\naxiom odd_x : Odd x\naxiom even_y : Even y\n\ndef S := x + y\ndef p := j + k\n\n#check odd_x\n#check even_y\n#check S\n#check p\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\ndef x : ℤ := sorry -- integer such that odd\ndef y : ℤ := sorry -- integer such that even\ndef S : ℤ := x + y\ndef p : ℤ := sorry -- j + k\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "```lean\nvariable {x : ℤ} (hx : Odd x)\nvariable {y : ℤ} (hy : Even y)\nlet S := x + y\nvariable {p : ℤ} (hp : p = j + k)\nvariable {x : ℤ} (hx : Odd x)\nvariable {y : ℤ} (hy : Even y)\nlet S := x + y\nvariable {p : ℤ} (hp : p = j + k)\n```",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

@@ -47,7 +47,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   if !(← dir.pathExists) then
         IO.FS.createDirAll dir
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module:= `LeanAide.Descriptions}] {}

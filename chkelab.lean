@@ -12,7 +12,7 @@ def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let completions := (args.getD 0 "thm")
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
 
     {module:= `LeanCodePrompts.Translate},

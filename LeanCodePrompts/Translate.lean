@@ -273,7 +273,7 @@ def bestElab (output: Array String) : TranslateM Expr := do
           elaborated := elaborated.push expr
           elabStrs := elabStrs.push out
           trace[Translate.info] m!"elaborated: {out}"
-          if !(← whnf expr).hasExprMVar then
+          if !( ← (← whnf expr).hasUnassignedExprMVar) then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then
     let mut errors : Array Json := #[]
@@ -330,7 +330,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
       | Except.ok expr =>
           elaborated := elaborated.push expr
           elabStrs := elabStrs.push out
-          if !(← whnf expr).hasExprMVar then
+          if !( ← (← whnf expr).hasUnassignedExprMVar) then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then
     return Except.error errors
@@ -490,7 +490,7 @@ def ElabError.fallback (errs : Array ElabError) :
     | _ => none)
   match bestParsed? with
   | some e => return e
-  | none => match errs.get? 0 with
+  | none => match errs[0]? with
     | some e => return e.text
     | _ => throwError "no outputs found"
 
@@ -615,7 +615,7 @@ def translateDefCmdM? (s: String) (translator : Translator)
   let mut checks : Array (CmdElabError) := #[]
   for s in output do
     let s := extractLean s
-    let s := s.replace "\n" " "
+    -- let s := s.replace "\n" " "
     let s := if s.startsWith "definition " then s.replace "definition " "def " else s
     let cmd? := runParserCategory (← getEnv) `command s
     match cmd? with
