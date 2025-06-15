@@ -3,7 +3,7 @@ import streamlit as st
 # Initialize session state variables
 # Global variables for session state initialization
 NONE_INIT_KEYS = [
-    "selected_tasks", "self_selection", "val_input", "result",
+    "selected_tasks", "self_selection", "val_input", "result", "temp_structured_json",
     "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", 
     "model_text", "model_img", "llm_provider", "llm_list", "uploaded_pdf"
 ]

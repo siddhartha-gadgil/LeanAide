@@ -87,9 +87,9 @@ with st.sidebar:
 
 st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
-input_options = ["Mathematical Papers", "Theorem-Proofs or Problems"] 
-input_captions = ["For Research Papers", "For short Theorem Proofs or Mathematical Problems"]
-input_index = 0 if st.session_state.input_paper else 1
+input_options = ["Theorem-Proofs or Problems", "Mathematical Papers"] 
+input_captions = ["For short Theorem Proofs or Mathematical Problems", "For Research Papers"]
+input_index = 1 if st.session_state.input_paper else 0
 input_method = st.radio("Choose what you would like to work on:",
     options = input_options,
     captions = input_captions,
@@ -343,13 +343,13 @@ def handle_general_input(key: str):
             handle_text_input(key) 
 
 # Papers section
-if input_method == input_options[0]: # Papers
+if input_method == input_options[1]: # Papers
     st.session_state.input_paper = True
     st.info("It is recommended to upload the paper in PDF format for better processing. Though you can choose any other formats as well.")
     handle_general_input("paper")
 
 # Theorem-Proof section
-if input_method == input_options[1]: # Theorem-Proofs or Problems
+if input_method == input_options[0]: # Theorem-Proofs or Problems
     st.session_state.input_paper = False
     for key in ["theorem", "proof"]:
         handle_general_input(key) 

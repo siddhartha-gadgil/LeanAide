@@ -1,5 +1,4 @@
 import socket
-from pathlib import Path
 import urllib
 import requests
 import streamlit as st
@@ -73,7 +72,17 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
         # Get input for each task
         for key, val_type in TASKS[task].get("input", {}).items():
             help = f"Please provide input for `{key}` of type `{val_type}`."
-            if "json" in key.lower():
+            # Special case for input being "json_structured"
+            if key.lower() == "json_structured":
+                help += " Just paste your `json` object here."
+                if st.button("Use Structured JSON generated", help = "Use the structured JSON generated in the `Structured Json` page of LeanAide website.", key = f"use_structured_json_{task}"):
+                    if structured_json := st.session_state.get("structured_proof", {}):
+                        st.session_state.temp_structured_json = structured_json 
+ 
+                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value'}", value = st.session_state.temp_structured_json)
+
+            # Other cases for input
+            elif "json" in key.lower() and key.lower() != "json_structured":
                 help += " Just paste your `json` object here."
                 val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", value = st.session_state.val_input.get(key, ""))
             else:

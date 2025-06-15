@@ -1,7 +1,6 @@
 import base64
 import json
 import os
-from os.path import join
 
 from dotenv import load_dotenv
 from openai import OpenAI
