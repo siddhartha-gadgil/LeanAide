@@ -23,6 +23,12 @@ Executing various tasks with Json input and output. These are for the server.
   * parameters:
     * `greedy: Bool` (default: `true`)
     * `fallback: Bool` (default: `true`)
+* `translate_thm_detailed`: Translates a theorem to natural language with detailed information, including an attempted proof using `exact?`. The `statement` is the theorem statement with proof (which may be `sorry`).
+  * input: `text: String`
+  * output: `theorem: String`, `name: String`, `proved: Bool`, `statement: String`, `definitions_used: String`
+  * parameters:
+    * `greedy: Bool` (default: `true`)
+    * `fallback: Bool` (default: `true`)
 * `translate_def`: Translates a definition to natural language.
   * input: `text: String`
   * output: `definition: String`
