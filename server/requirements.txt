@@ -1,5 +1,6 @@
 # Requirements for the project
-pyperclip>=1.9.0
 python-dotenv>=1.1.0
 streamlit>=1.45.1
 watchdog>=6.0.0
+streamlit-sortables>=0.3.1
+st-copy>=1.1.0
