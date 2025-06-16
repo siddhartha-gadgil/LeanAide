@@ -3,4 +3,6 @@ python-dotenv>=1.1.0
 streamlit>=1.45.1
 watchdog>=6.0.0
 streamlit-sortables>=0.3.1
-st-copy>=1.1.0
+st-copy>=1.1.2
+openai>=1.86.0
+pymupdf>=1.26.1

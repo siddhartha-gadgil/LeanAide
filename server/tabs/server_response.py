@@ -6,7 +6,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from api_server import HOST, PORT
-from serv_utils import *
+from serv_utils import TASKS, get_actual_input, validate_input_type, copy_to_clipboard, log_write, log_section, button_clicked
 
 load_dotenv()
 
@@ -50,7 +50,7 @@ st.header("Server Request", divider = True, help = "For your input request, this
 st.subheader("Structured Input: Select Tasks", help = "Select the tasks you want to perform and provide the necessary inputs.")
 
 # list of tasks, each task has "name" field. use that
-something = st.multiselect("Select tasks to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", default = st.session_state.get("selected_tasks", []), key = "selected_tasks")
+st.multiselect("Select task(s) to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", default = st.session_state.get("selected_tasks", []), key = "selected_tasks")
 
 ## Multiselect box color set
 st.markdown("""

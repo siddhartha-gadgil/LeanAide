@@ -7,7 +7,7 @@ import streamlit as st
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from llm_prompts import *
+from llm_prompts import thmpf_prompt, soln_from_image_prompt, mathpaper_prompt
 from serv_utils import SCHEMA_JSON
 
 load_dotenv()
