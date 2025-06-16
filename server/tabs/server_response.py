@@ -50,7 +50,8 @@ st.header("Server Request", divider = True, help = "For your input request, this
 st.subheader("Structured Input: Select Tasks", help = "Select the tasks you want to perform and provide the necessary inputs.")
 
 # list of tasks, each task has "name" field. use that
-st.multiselect("Select task(s) to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", default = st.session_state.get("selected_tasks", []), key = "selected_tasks")
+tasks_tbd = st.multiselect("Select task(s) to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", default = st.session_state.get("selected_tasks", []))
+st.session_state.selected_tasks = tasks_tbd
 
 ## Multiselect box color set
 st.markdown("""
