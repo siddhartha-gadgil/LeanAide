@@ -8,6 +8,7 @@ import sys
 import time
 from pathlib import Path
 from collections import deque
+from multiprocessing import Manager
 
 STREAMLIT_PORT = 8501
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
@@ -17,7 +18,9 @@ serv_dir = os.path.join(home_dir, "server")
 
 
 # In-memory log storage with max size (1000 lines by default)
-LOG_BUFFER = deque(maxlen=1000) 
+manager = Manager()
+LOG_BUFFER = manager.list()  # Shared log buffer for multiprocessing
+LOG_BUFFER_MAXLEN = 10000
 
 STREAMLIT_FILE = os.path.join(serv_dir, "streamlit_ui.py")
 SERVER_FILE = os.path.join(serv_dir, "api_server.py")
@@ -31,27 +34,33 @@ def is_port_in_use(port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('localhost', port)) == 0
 
-def log_write(proc_name: str, log_message: str):
+def log_write(proc_name: str, log_message: str, log_buffer=None):
     """
     Write a message to the in-memory log buffer
     Format: "[proc_name] log_message"
     """
     try:
         log_entry = f"[{proc_name}] {log_message}\n"
-        LOG_BUFFER.append(log_entry)
+        if log_buffer is None:
+            log_buffer = LOG_BUFFER
+        log_buffer.append(log_entry)
+        # Truncate if over maxlen
+        while len(log_buffer) > LOG_BUFFER_MAXLEN:
+            log_buffer.pop(0)
     except Exception as e:
         print(f"Error writing to log buffer: {e}")
 
 def run_server_api():
-    """Run Server server using uvicorn"""
+    """Run Server server using uvicorn and log output in main process"""
     process = subprocess.Popen(
         [sys.executable, SERVER_FILE, COMMAND],
         stderr=subprocess.PIPE,
         text=True
     )
-    # Write stderr to log that Streamlit can read
+    # Write stderr to log and also print to console stderr
     for line in process.stderr:
         log_write("Server Stderr", line.strip())
+        print(f"[Server Stderr] {line.strip()}", file=sys.stderr)
 
 def run_streamlit():
     """Run Streamlit app on port STREAMLIT_PORT only"""
@@ -148,8 +157,10 @@ if __name__ == "__main__":
     
     if run_server:
         print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get('HOST', 'localhost')}:{LEANAIDE_PORT}\n")
-        serv_process = multiprocessing.Process(target=run_server_api)
-        serv_process.start()
+        # Start server in a thread so we can keep main process alive
+        import threading
+        serv_thread = threading.Thread(target=run_server_api, daemon=True)
+        serv_thread.start()
     else:
         print("\033[1;34mRunning without API server\033[0m\n")
 
