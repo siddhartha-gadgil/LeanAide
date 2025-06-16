@@ -35,6 +35,21 @@ TASKS = {
         "output": {"definition": "String"},
         "parameters": {"fallback": "Bool (default: true)"},
     },
+    "Translate Theorem Detailed": {
+        "task_name": "translate_thm_detailed",
+        "input": {"text": "String"},
+        "output": {
+            "theorem": "String",
+            "name": "String", 
+            "proved": "Bool",
+            "statement": "String",
+            "definitions_used": "String"
+        },
+        "parameters": {
+            "greedy": "Bool (default: true)",
+            "fallback": "Bool (default: true)",
+        },
+    },
     "Documentation for a Theorem": {
         "task_name": "theorem_doc",
         "input": {"name": "String", "command": "String"},
@@ -126,32 +141,6 @@ def validate_input_type(input_type: Any, expected_type: str) -> bool:
             return True
     return False
 
-# In-memory log storage with max size (1000 lines by default)
-LOG_BUFFER = deque(maxlen=1000) 
-
-def log_server():
-    """Read from the in-memory log buffer"""
-    if not LOG_BUFFER:
-        return "No logs available yet."
-    return "".join(reversed(LOG_BUFFER))
-
-def log_write(proc_name: str, log_message: str):
-    """
-    Write a message to the in-memory log buffer
-    Format: "[proc_name] log_message"
-    """
-    try:
-        log_entry = f"[{proc_name}] {log_message}\n"
-        LOG_BUFFER.append(log_entry)
-    except Exception as e:
-        print(f"Error writing to log buffer: {e}")
-
-def log_buffer_clean():
-    try:
-        LOG_BUFFER.clear()
-    except Exception as e:
-        log_write("log_clean", f"Error clearing log buffer: {e}")
-
 def download_file(file_content, file_name):
     # match mime
     mime = "text/plain"
@@ -205,3 +194,63 @@ def preview_text(key: str, default_text: str = ""):
             st.markdown(st.session_state[key] if st.session_state[key] else default_text)
         else:
             st.code(st.session_state[key] if st.session_state[key] else default_text, wrap_lines = True)
+
+## LOGS SECTION
+# In-memory log storage with max size (1000 lines by default)
+LOG_BUFFER = deque(maxlen=1000) 
+
+def log_server():
+    """Read from the in-memory log buffer"""
+    if not LOG_BUFFER:
+        return "No logs available yet."
+    return "".join(reversed(LOG_BUFFER))
+
+def log_write(proc_name: str, log_message: str):
+    """
+    Write a message to the in-memory log buffer
+    Format: "[proc_name] log_message"
+    """
+    try:
+        log_entry = f"[{proc_name}] {log_message}\n"
+        LOG_BUFFER.append(log_entry)
+    except Exception as e:
+        print(f"Error writing to log buffer: {e}")
+
+def log_buffer_clean():
+    try:
+        LOG_BUFFER.clear()
+    except Exception as e:
+        log_write("log_clean", f"Error clearing log buffer: {e}")
+
+
+def log_section():
+    st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked. If you refresh the page, the old logs will dissapear.")
+    with st.expander("Click to view Server logs", expanded=False):
+        if log_out := log_server():
+            height = 500 if len(log_out) > 1000 else 150
+            st.write("Server logs:")
+            st.code(
+                log_out if not st.session_state.log_cleaned else "No logs available yet.",
+                language = "log",
+                height= height,
+                wrap_lines =True,
+                line_numbers=True,
+            )
+
+        else:
+            st.code("No logs available yet.", language="plaintext")
+
+        with st.popover("Clean Server Logs", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
+            st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server.")
+            if st.button("Yes"):
+                try:
+                    st.session_state.log_cleaned = True
+                    log_buffer_clean()
+                    st.success("Server logs cleaned successfully! Please UNCHECK THE BOX to avoid cleaning again.")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Error cleaning server logs: {e}")
+            if st.button("No"):
+                pass
+            st.session_state.log_cleaned = False
+            st.info("Press Escape to close this popover.")
