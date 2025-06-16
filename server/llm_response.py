@@ -59,7 +59,7 @@ def encode_image(image_path):
 
 def image_solution(image_path: str, provider = "openai", model: str = "gpt-4o"):
     image_encoded = encode_image(image_path) 
-    prompt = "Extract text using LaTeX from the given mathematics solution as images. GIVE ONLY THE PROOF within Latex code block."
+    prompt = "Extract text using LaTeX from the given mathematics as images. DO NOT include any other text in the response. Do not write extra proofs or explanations."
 
     client = match_provider_client(provider)
     response = client.chat.completions.create(
@@ -96,10 +96,9 @@ def solution_from_images(image_paths, provider = "openai", model: str = "gpt-4o"
     for image_path in image_paths:
         response = image_solution(image_path)
         combined_text += str(response)
+    st.toast(f"Combined text from images: {combined_text}")
 
-    prompt = f"Proof is: {combined_text}"
-
-    return str(model_response_gen(soln_from_image_prompt, prompt, provider=provider, model=model))
+    return str(model_response_gen(soln_from_image_prompt(combined_text), provider=provider, model=model))
 
 ## PDF
 def extract_text_from_pdf(path: str) -> str:
@@ -117,7 +116,9 @@ def model_response_gen(prompt:str, task:str = "", provider = "openai", model:str
         json_output (bool): Whether to format the response as JSON, else text.
         json_schema (dict): The JSON schema to use for the response format.
         model (str): The model to use for generating the response.
-        pdf_input (str): Optional text extracted from a PDF to include in the messages.
+        provider (str): The provider to use for the model (e.g., "openai", "gemini", "openrouter", "deepinfra").
+        pdf_val (str or OpenAI File object): The PDF content or OpenAI File object to be used in the prompt.
+        paper_input (bool): Whether the input is a paper (True) or non-paper (False). If True, pdf_val is expected to be an OpenAI File object.
     """
     messages = []
     if task != "":

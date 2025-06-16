@@ -153,7 +153,7 @@ def handle_image_input(key: str):
             cols = st.columns(min(3, len(st.session_state[paths_key])))
             for idx, img_path in enumerate(st.session_state[paths_key]):
                 with cols[idx % len(cols)]:
-                    st.image(img_path, use_column_width=True)
+                    st.image(img_path, use_container_width=True)
 
     # Generate text from images
     if st.session_state[paths_key] and st.button(f"Generate {key.capitalize()} text from Images", 
@@ -174,6 +174,7 @@ def handle_image_input(key: str):
             height=200,
             key=f"text_area_{key}"  # Unique key for text area
         )
+        st.info(f"Since the text is LLM Generated, you may see unnecessary text or some errors. Since the above test will be used as **{key.capitalize()}**, it is Recommended to edit the text before proceeding.")
         preview_text(key) 
         # Action buttons
         action_copy_download(key, f"{key}.txt")
@@ -415,8 +416,8 @@ st.divider()
 st.subheader("Schema Information", help = "Expand the JSON schema below to see the LeanAide `PaperStructure.json` schema followed by models.")
 st.json(SCHEMA_JSON, expanded=False)
 
+log_section()
+
 if st.session_state.structured_proof:
     if os.path.exists(TEMP_DIR):
         shutil.rmtree(TEMP_DIR)
-
-log_section()

@@ -84,3 +84,4 @@ venv/
 leanaide_logs/
 private/
 .env
+leanaide_st_temp/

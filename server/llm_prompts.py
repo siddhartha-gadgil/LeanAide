@@ -22,4 +22,5 @@ def mathpaper_prompt(paper_text: str, pdf_input: bool = False):
 def thmpf_prompt(thm, pf):
     return f"The following is a custom JSON schema, which we call `PaperStructure.json`, for mathematical documents which structures theorem-proofs. Your task is to write the theorem and proof STRICTLY in the schema provided to you. Break down the proof as much as possible according to the schema.\n\nThe theorem and proof are as follows:\n\n## Theorem:\n {thm}\n\n## Proof:\n {pf}\n. The schema is: {str(SCHEMA_JSON)}."
 
-soln_from_image_prompt = f"You are proficient in extracting Mathematical text from images. Your task is to rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. \n {ocr_rules}"
+def soln_from_image_prompt(image_text: str = ""):
+    return f"You are proficient in extracting Mathematical text from images. Your task is to rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. \n {ocr_rules}. The extracted text is:\n\n{image_text}. Do not write any extra explanations. Avoid unnecessary causal sentences."
