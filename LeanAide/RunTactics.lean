@@ -163,6 +163,26 @@ def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) :=
       let tacticCode ←  `(tacticSeq| $tacs*)
       return some tacticCode
 
+def getExactTerm? (goal: Expr) : TermElabM <| Option Syntax.Term := do
+  let tacticCode? ← getExactTactics? goal
+  tacticCode?.bindM fun tacticCode => do
+    match tacticCode with
+    | `(tacticSeq| exact $t:term) =>
+      return t
+    | _ =>
+      return none
+
+def getExactTermParts? (goal: Expr) : TermElabM <| Option <| Array Name := do
+  let tacticCode? ← getExactTactics? goal
+  tacticCode?.mapM fun tacticCode => do
+    match tacticCode with
+    | `(tacticSeq| exact $t:term) =>
+      let term ← elabTerm t none
+      defsInExpr term
+    | _ =>
+      return #[]
+
+
 elab "#exact? " goal:term : command => Command.liftTermElabM do
   let goal ← elabTerm goal none
   let tacticCode? ← getExactTactics? goal
