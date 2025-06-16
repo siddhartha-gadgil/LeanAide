@@ -8,8 +8,7 @@ from PIL import Image
 from streamlit_sortables import sort_items
 
 from llm_response import *
-# from gpt_structured import gen_structure_proof, solution_from_images
-from serv_utils import SCHEMA_JSON, action_copy_download, preview_text
+from serv_utils import SCHEMA_JSON, action_copy_download, preview_text, log_write, log_section
 
 load_dotenv()
 
@@ -34,57 +33,65 @@ provider_info = {
         "default_model": "gemini-1.5-pro",
         "default_api_key": os.getenv("GEMINI_API_KEY", ""),
     },
+    "OpenRouter": {
+        "name": "OpenRouter",
+        "default_model": "gpt-4o",
+        "default_api_key": os.getenv("OPENROUTER_API_KEY", ""),
+    },
+    "DeepInfra": {
+        "name": "DeepInfra",
+        "default_model": "deepseek-ai/DeepSeek-R1-0528",
+        "default_api_key": os.getenv("DEEPINFRA_API_KEY", ""),
+    }
 }
 
 # API Credentials Section
 with st.sidebar:
     with st.expander("Credentials"):
         # Provider selection
-        st.session_state.llm_provider = st.selectbox("Select Provider:", list(provider_info.keys()), index=0)
+        llm_provider = st.selectbox("Select Provider:", list(provider_info.keys()), index=0)
+        if llm_provider != st.session_state.get("llm_provider", ""):
+            st.session_state.llm_provider = llm_provider
+            st.session_state.llm_list = []
 
         # Dynamically update API Key and Model fields based on the provider
         selected_provider = provider_info[st.session_state.llm_provider]
 
         if not st.session_state.llm_list:
-            if st.session_state.llm_provider.lower() == "openai":
-                st.session_state.llm_list = get_openai_models()
+            st.session_state.llm_list = get_supported_models(provider=st.session_state.llm_provider)
 
-        if st.session_state.llm_provider == "Gemini":
-            # Warning if Gemini is selected
-            st.warning("Gemini API is not yet supported. Please select OpenAI for now.")
-        else:
-            # API Key Input with masked display
-            api_key_placeholder = (
-                f"{selected_provider['default_api_key'][:15]}{'*' * (len(selected_provider['default_api_key']) - 15)}"
-                if selected_provider["default_api_key"]
-                else ""
-            )
-            api_key = st.text_input(
-                "API Key:",
-                value=api_key_placeholder,
-                type="password",
-                help="Hover to see the key, edit if needed.",
-            )
+        api_key_placeholder = (
+            f"{selected_provider['default_api_key'][:15]}{'*' * (len(selected_provider['default_api_key']) - 15)}"
+            if selected_provider["default_api_key"]
+            else ""
+        )
+        api_key = st.text_input(
+            "API Key:",
+            value=api_key_placeholder,
+            type="password",
+            help="Hover to see the key, edit if needed.",
+        )
 
-            if st.session_state.llm_provider.lower() == "openai":
-                st.info("The below options are models supported by your OpenAI API Key.")
-            # Model selection text boxes
-            default_openai_model_index = st.session_state.llm_list.index(selected_provider["default_model"]) if selected_provider["default_model"] in st.session_state.llm_list else 0
+        st.info("The below options are models supported by your API Key.")
+        # Model selection text boxes
+        default_model_index = st.session_state.llm_list.index(selected_provider["default_model"]) if selected_provider["default_model"] in st.session_state.llm_list else 0
 
-            st.session_state.model_img = st.selectbox(
-                "Model for Image to Text:",
-                options = st.session_state.llm_list,
-                index = default_openai_model_index,
-                help="Specify the model for Image to Text. Check out list of OpenAI Models [↗](https://platform.openai.com/docs/models)",
-                accept_new_options = True
-            )
-            st.session_state.model_text = st.selectbox(
-                "Model for JSON Generator:",
-                options = get_openai_models(),
-                index = default_openai_model_index,
-                help="Specify the model for JSON Generator. Check out list of OpenAI Models [↗](https://platform.openai.com/docs/models)",
-                accept_new_options = True
-            )
+        model_list_help = f"Check out the list of {st.session_state.llm_provider} Models [↗](https://platform.openai.com/docs/models)" if st.session_state.llm_provider.lower() == "openai" else f"Check out the list of {st.session_state.llm_provider} Models [↗](https://ai.google.dev/gemini-api/docs/models)"
+        st.session_state.model_text = st.selectbox(
+            "Model for JSON Generator:",
+            options = st.session_state.llm_list,
+            index = default_model_index,
+            help="Specify the model for JSON Generator. " + model_list_help,
+            accept_new_options = True
+        )
+        st.session_state.model_img = st.selectbox(
+            "Model for Image to Text:",
+            options = st.session_state.llm_list,
+            index = default_model_index,
+            help="Specify the model for Image to Text. " + model_list_help,
+            accept_new_options = True
+        )
+
 
 st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
@@ -153,7 +160,7 @@ def handle_image_input(key: str):
                                               key=f"generate_btn_{key}"):
         with st.spinner("Processing images..."):
             try:
-                st.session_state[key] = solution_from_images(st.session_state[paths_key])
+                st.session_state[key] = solution_from_images(st.session_state[paths_key], provider=st.session_state.llm_provider, model = st.session_state.model_img)
             except Exception as e:
                 st.error(f"Failed to process images: {str(e)}")
                 st.session_state[key] = ""
@@ -276,7 +283,7 @@ def handle_pdf_input(key:str):
             st.session_state[key] = st.session_state[f"{key}_local_key"]
             # if paper is pdf, then store in "paper_pdf" key
             if st.session_state.input_paper and st.session_state["input_pdf_paper"]:
-                st.session_state["paper_pdf"] = get_openai_pdf_id(st.session_state[f"{key}_pdf_path"])
+                st.session_state["paper_pdf"] = get_pdf_id(st.session_state[f"{key}_pdf_path"], provider =st.session_state.llm_provider)
 
             st.success(f"PDF for {key} uploaded successfully.") 
             # Display PDF info
@@ -342,6 +349,7 @@ def handle_general_input(key: str):
             handle_textual_file_input(key, extension="tex")
         else: # Self typed input
             handle_text_input(key) 
+    log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
 
 # Papers section
 if input_method == input_options[1]: # Papers
@@ -365,17 +373,20 @@ if st.button("Generate Structured Proof"):
             try:
                 if st.session_state.input_paper: # For mathematical papers
                     if not st.session_state.input_pdf_paper:
-                        st.session_state.structured_proof = gen_paper_json(st.session_state.paper, pdf_input = st.session_state.input_pdf_paper, model = st.session_state.model_text)
+                        st.session_state.structured_proof = gen_paper_json(st.session_state.paper, pdf_input = st.session_state.input_pdf_paper, provider= st.session_state.llm_provider, model = st.session_state.model_text)
                     else:
-                        st.session_state.structured_proof = gen_paper_json(st.session_state.paper_pdf, pdf_input = st.session_state.input_pdf_paper, model = st.session_state.model_text)
+                        st.session_state.structured_proof = gen_paper_json(st.session_state.paper_pdf, pdf_input = st.session_state.input_pdf_paper, provider=st.session_state.llm_provider, model = st.session_state.model_text)
                 else: # Theorem Proof based
                     # if st.session_state.input_pdf
-                    st.session_state.structured_proof = gen_thmpf_json(st.session_state.theorem, st.session_state.proof, model = st.session_state.model_text)
+                    st.session_state.structured_proof = gen_thmpf_json(st.session_state.theorem, st.session_state.proof, provider=st.session_state.llm_provider, model = st.session_state.model_text)
                 st.session_state.generation_complete = True
+                log_write("Structured JSON Generation", "Structured proof generated successfully.")
 
             except Exception as e:
-                st.warning(f"Failed to generate structured proof: {e}")
+                st.warning(f"Failed to generate structured proof: {e}.\nMaybe try another model.")
                 st.session_state.generation_complete = False
+                log_write("Structured JSON Generation", f"Error: Failed to generate structured proof: {e}")
+                log_write("Structured JSON Generation", f"Obtained Structured Proof: {st.session_state.structured_proof}")
 
 def show_str_proof():
     try:
@@ -383,17 +394,19 @@ def show_str_proof():
         json_str = json.dumps(structured_proof_json, indent=2)
         st.json(json_str)
         action_copy_download("structured_proof", "structured_proof.json")
+        log_write("Show Structured Proof", "Structured proof displayed successfully.")
     except Exception as e:
         st.warning(f"Failed to display structured proof: {e}")
+        log_write("Show Structured Proof", f"Error: {e}")
 
 if not st.session_state.structured_proof and st.session_state.generation_complete:
-    st.subheader("Structured Proof Output (JSON):")
+    st.subheader("Structured Proof Output (JSON):", help = "The structured proof will be displayed after generation. If you see no output or errors, please try again or try a different model.")
     if st.session_state.get("generation_complete", False) and st.session_state.structured_proof:
         show_str_proof()
     else:
         st.warning("Please generate the structured proof first by clicking the button above.")
 elif st.session_state.generation_complete:
-    st.subheader("Structured Proof Output (JSON):")
+    st.subheader("Structured Proof Output (JSON):", help = "The structured proof will be displayed after generation. If you see no output or errors, please try again or try a different model.")
     show_str_proof() 
 
 st.divider()
@@ -405,3 +418,5 @@ st.json(SCHEMA_JSON, expanded=False)
 if st.session_state.structured_proof:
     if os.path.exists(TEMP_DIR):
         shutil.rmtree(TEMP_DIR)
+
+log_section()

@@ -84,6 +84,7 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
                         st.warning("No structured JSON found. Please generate it first in the 'Structured Json' page.")
  
                 val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value'}", value = st.session_state.temp_structured_json)
+                st.session_state.temp_structured_json = val_in  # Store the structured JSON input
 
             # Other cases for input
             elif "json" in key.lower() and key.lower() != "json_structured":
@@ -204,34 +205,4 @@ if submit_response_button or st.session_state.request_button:
 elif st.session_state.request_button:
     show_response()
 
-## LOGS SECTION
-st.subheader("Server Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked. If you refresh the page, the old logs will dissapear.")
-with st.expander("Click to view Server logs", expanded=False):
-    if log_out := log_server():
-        height = 500 if len(log_out) > 1000 else 150
-        st.write("Server logs:")
-        st.code(
-            log_out if not st.session_state.log_cleaned else "No logs available yet.",
-            language = "log",
-            height= height,
-            wrap_lines =True,
-            line_numbers=True,
-        )
-
-    else:
-        st.code("No logs available yet.", language="plaintext")
-
-    with st.popover("Clean Server Logs", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
-        st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server.")
-        if st.button("Yes"):
-            try:
-                st.session_state.log_cleaned = True
-                log_buffer_clean()
-                st.success("Server logs cleaned successfully! Please UNCHECK THE BOX to avoid cleaning again.")
-                st.rerun()
-            except Exception as e:
-                st.error(f"Error cleaning server logs: {e}")
-        if st.button("No"):
-            pass
-        st.session_state.log_cleaned = False
-        st.info("Press Escape to close this popover.")
+log_section()

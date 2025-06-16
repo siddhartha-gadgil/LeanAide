@@ -12,21 +12,40 @@ from serv_utils import SCHEMA_JSON
 
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(
-    api_key  = OPENAI_API_KEY,
-)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "Not Found")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "Not Found")
+OPENROUTER_API_KEY=os.getenv("OPENROUTER_API_KEY", "Not Found")
+DEEPINFRA_API_KEY = os.getenv("DEEPINFRA_API_KEY", "Not Found")
+
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
+gemini_client = OpenAI(api_key=GEMINI_API_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
+openrouter_client = OpenAI(api_key=OPENROUTER_API_KEY, base_url="https://openrouter.ai/api/v1")
+deepinfra_client = OpenAI(api_key=DEEPINFRA_API_KEY, base_url="https://api.deepinfra.com/v1/openai")
+
+def match_provider_client(provider: str = "openai"):
+    provider = provider.lower()
+    if provider == "openai":
+        return openai_client
+    elif provider == "gemini":
+        return gemini_client
+    elif provider == "openrouter":
+        return openrouter_client
+    elif provider == "deepinfra":
+        return deepinfra_client
+    else:
+        return openai_client  # Default to OpenAI if provider is not recognized
 
 ## Get model list supported by API KEY
-def get_openai_models(api_key: str = OPENAI_API_KEY):
+def get_supported_models(provider):
     """
     Get the list of models supported by the OpenAI API key.
     """
-    client = OpenAI(api_key=api_key)
+    client = match_provider_client(provider)
     models = client.models.list()
     return [model.id for model in models.data]
 
-def get_openai_pdf_id(pdf_path: str):
+def get_pdf_id(pdf_path: str, provider: str = "openai"):
+    client = match_provider_client(provider)
     file = client.files.create(
         file=open(pdf_path, "rb"),
         purpose="user_data"
@@ -38,10 +57,11 @@ def encode_image(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
 
-def image_solution(image_path: str, model: str = "gpt-4o"):
+def image_solution(image_path: str, provider = "openai", model: str = "gpt-4o"):
     image_encoded = encode_image(image_path) 
-    gpt_prompt = "Extract text using LaTeX from the given mathematics solution as images. GIVE ONLY THE PROOF within Latex code block."
+    prompt = "Extract text using LaTeX from the given mathematics solution as images. GIVE ONLY THE PROOF within Latex code block."
 
+    client = match_provider_client(provider)
     response = client.chat.completions.create(
         model=model,
         messages=[
@@ -50,7 +70,7 @@ def image_solution(image_path: str, model: str = "gpt-4o"):
                 "content": [
                     {
                         "type": "text",
-                        "text": gpt_prompt,
+                        "text": prompt,
                     },
                     {
                         "type": "image_url",
@@ -71,7 +91,7 @@ def image_solution(image_path: str, model: str = "gpt-4o"):
         response_txt = response_txt.strip("```latex").strip("```")
     return response_txt
 
-def solution_from_images(image_paths, model: str = "gpt-4o"):
+def solution_from_images(image_paths, provider = "openai", model: str = "gpt-4o"):
     combined_text = ""
     for image_path in image_paths:
         response = image_solution(image_path)
@@ -79,7 +99,7 @@ def solution_from_images(image_paths, model: str = "gpt-4o"):
 
     prompt = f"Proof is: {combined_text}"
 
-    return str(gpt_response_gen(soln_from_image_prompt, prompt, model=model))
+    return str(model_response_gen(soln_from_image_prompt, prompt, provider=provider, model=model))
 
 ## PDF
 def extract_text_from_pdf(path: str) -> str:
@@ -88,7 +108,7 @@ def extract_text_from_pdf(path: str) -> str:
         text = chr(12).join([page.get_text() for page in doc])
     return text
 
-def gpt_response_gen(prompt:str, task:str = "",  model:str ="gpt-4o", json_output: bool = False, json_schema = SCHEMA_JSON, pdf_val = None, paper_input: bool = False):
+def model_response_gen(prompt:str, task:str = "", provider = "openai", model:str ="gpt-4o", json_output: bool = False, json_schema = SCHEMA_JSON, pdf_val = None, paper_input: bool = False):
     """
     GPT response generator function.
     Args:
@@ -128,6 +148,7 @@ def gpt_response_gen(prompt:str, task:str = "",  model:str ="gpt-4o", json_outpu
             }
         }) 
 
+    client = match_provider_client(provider)
     if json_output:
         response = client.chat.completions.create(
                 model=model,
@@ -155,10 +176,11 @@ def gpt_response_gen(prompt:str, task:str = "",  model:str ="gpt-4o", json_outpu
     return response.choices[0].message.content
 
     
-def gen_thmpf_json(thm: str, pf: str, model: str = "gpt-4o"):
-    response = gpt_response_gen(
+def gen_thmpf_json(thm: str, pf: str, provider = "openai", model: str = "gpt-4o"):
+    response = model_response_gen(
         thmpf_prompt(thm, pf),
         json_output = True, 
+        provider = provider,
         model = model
     )
     # response = json.dumps({"x": 1, "y": 2}, indent = 2)  # Placeholder for actual response generation FOR DEBUGGING
@@ -169,12 +191,13 @@ def gen_thmpf_json(thm: str, pf: str, model: str = "gpt-4o"):
     output = json.dumps(json.loads(response_cleaned), indent=2)
     return output
 
-def gen_paper_json(paper_text, pdf_input:bool = False, model: str = "gpt-4o"):
-    st.toast(f"Paper text: {paper_text}, PDF input: {pdf_input}")
-    response = gpt_response_gen(
+def gen_paper_json(paper_text, pdf_input:bool = False, provider = "openai", model: str = "gpt-4o"):
+    # st.toast(f"Paper text: {paper_text}, PDF input: {pdf_input}")
+    response = model_response_gen(
         prompt = mathpaper_prompt(paper_text, pdf_input)["prompt"],
         task = mathpaper_prompt(paper_text, pdf_input)["task"],
         json_output=True,
+        provider=provider,
         model=model,
         paper_input=True,
         pdf_val=paper_text, # the File Object goes from here in case of paper
