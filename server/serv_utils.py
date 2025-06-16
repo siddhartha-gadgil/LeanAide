@@ -1,15 +1,27 @@
 import ast
 import json
-import shlex
+import os
+from collections import deque
+from pathlib import Path
 from typing import Any, Tuple, Type
-import streamlit as st
 
-from api_server import HOST, LOG_FILE
+import streamlit as st
+from st_copy import copy_button
+
+HOST = os.environ.get("HOST", "localhost")  
+HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
+schema_path = os.path.join(str(HOMEDIR), "resources", "PaperStructure.json")
+SCHEMA_JSON = json.load(open(schema_path, "r", encoding="utf-8"))
 
 # Lean Checker Tasks
-tasks = {
-    "echo": {"input": {"data": "String"}, "output": {"data": "String"}},
-    "translate_thm": {
+TASKS = {
+    "Echo": {
+        "task_name": "echo",
+        "input": {"data": "String"},
+        "output": {"data": "String"}
+    },
+    "Translate Theorem": {
+        "task_name": "translate_thm",
         "input": {"text": "String"},
         "output": {"theorem": "String"},
         "parameters": {
@@ -17,34 +29,63 @@ tasks = {
             "fallback": "Bool (default: true)",
         },
     },
-    "translate_def": {
+    "Translate Definition": {
+        "task_name": "translate_def",
         "input": {"text": "String"},
         "output": {"definition": "String"},
         "parameters": {"fallback": "Bool (default: true)"},
     },
-    "theorem_doc": {
+    "Translate Theorem Detailed": {
+        "task_name": "translate_thm_detailed",
+        "input": {"text": "String"},
+        "output": {
+            "theorem": "String",
+            "name": "String", 
+            "proved": "Bool",
+            "statement": "String",
+            "definitions_used": "String"
+        },
+        "parameters": {
+            "greedy": "Bool (default: true)",
+            "fallback": "Bool (default: true)",
+        },
+    },
+    "Documentation for a Theorem": {
+        "task_name": "theorem_doc",
         "input": {"name": "String", "command": "String"},
         "output": {"doc": "String"},
     },
-    "def_doc": {
+    "Documentation for a Definition": {
+        "task_name": "def_doc",
         "input": {"name": "String", "command": "String"},
         "output": {"doc": "String"},
     },
-    "theorem_name": {"input": {"text": "String"}, "output": {"name": "String"}},
-    "prove": {"input": {"theorem": "String"}, "output": {"proof": "String"}},
-    "structured_json_proof": {
+    "Theorem Name": {
+        "task_name": "theorem_name",
+        "input": {"text": "String"},
+        "output": {"name": "String"}
+    },
+    "Prove": {
+        "task_name": "prove",
+        "input": {"theorem": "String"},
+        "output": {"proof": "String"}
+    },
+    "Structured JSON Proof": {
+        "task_name": "structured_json_proof",
         "input": {"theorem": "String", "proof": "String"},
         "output": {"json_structured": "Json"},
     },
-    "lean_from_json_structured": {
-        "input": {"json_structured": "Json String"},
+    "Lean from JSON Structured": {
+        "task_name": "lean_from_json_structured",
+        "input": {"json_structured": "Json"},
         "output": {
             "lean_code": "String",
             "declarations": "List String",
             "top_code": "String",
         },
     },
-    "elaborate": {
+    "Elaborate Lean Code": {
+        "task_name": "elaborate",
         "input": {"lean_code": "String", "declarations": "List Name"},
         "output": {"logs": "List String", "sorries": "List Json"},
         "parameters": {
@@ -53,41 +94,6 @@ tasks = {
         },
     },
 }
-
-def parse_curl(curl_cmd, ignore_curl_ip_port):
-    args = shlex.split(curl_cmd)
-    out = {"method": "POST", "url_ip": "", "port": "", "headers": {}, "data": {}}
-    i = 0
-    while i < len(args):
-        match args[i]:
-            case "curl":
-                i += 1
-            case "-X":
-                out["method"] = args[i + 1]
-                i += 2
-            case "-H":
-                k, v = args[i + 1].split(":", 1)
-                out["headers"][k.strip()] = v.strip()
-                i += 2
-            case "--data" | "-d":
-                try:
-                    out["data"] = json.loads(args[i + 1])
-                except Exception:
-                    out["data"] = args[i + 1]
-                i += 2
-            case x if x.startswith("http"):
-                x = x.split("://", 1)[1].split(":", 1)
-                if ignore_curl_ip_port:
-                    out["url_ip"] = st.session_state.get("api_host", HOST)
-                    out["port"] = st.session_state.get("api_port", "7654")
-                else:
-                    out["url_ip"] = x[0]
-                    out["port"] = x[1]
-                i += 1
-            case _:
-                i += 1
-    return out
-
 
 def button_clicked(button_arg):
     def protector():
@@ -135,26 +141,116 @@ def validate_input_type(input_type: Any, expected_type: str) -> bool:
             return True
     return False
 
-def log_server():
-    """Read last n lines from the log file"""
+def download_file(file_content, file_name):
+    # match mime
+    mime = "text/plain"
+    match file_name.split(".")[-1].lower():
+        case "json":
+            mime = "application/json"
+        case "txt":
+            mime = "text/plain"
+        case "md":
+            mime = "text/markdown"
+        case "html":
+            mime = "text/html"
+        case "csv":
+            mime = "text/csv"
+        case _:
+            pass  # Keep default text/plain for other extensions
+    st.download_button(
+        label="Download File", data=file_content, file_name=file_name, mime=mime, help = "Click to download the file with the above text content.",
+    )
+
+# Function to copy text to clipboard and show confirmation
+def copy_to_clipboard(text):
     try:
-        with open(LOG_FILE, "r") as f:
-            # Efficiently get last n lines
-            lines = []
-            for line in f:
-                lines.append(line)
-            return "".join(lines)
-    except FileNotFoundError:
-        return "No log file found yet."
+        copy_button(
+            text,
+            tooltip="Copy to Clipboard",
+            copied_label = "Copied!",
+            icon=":material/content_copy:",
+        )
+    except Exception as e:
+        st.warning(f"Failed to copy: {e}", icon="⚠️")
+
+def action_copy_download(key: str, filename: str, copy_text: str = ""):
+    """Helper function to copy text to clipboard and download as a file."""
+    col1, col2 = st.columns(2)
+    text = st.session_state[key]
+    if copy_text:
+        text = copy_text
+    with col1:
+        copy_to_clipboard(text)
+    with col2:
+        download_file(text, filename)
+
+def preview_text(key: str, default_text: str = ""):
+    """
+    Display a preview of the text in a text area with a copy and download button.
+    """
+    with st.expander(f"Preview Text {key.capitalize()}", expanded=False):
+        lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}").lower()
+        if lang == "markdown":
+            st.markdown(st.session_state[key] if st.session_state[key] else default_text)
+        else:
+            st.code(st.session_state[key] if st.session_state[key] else default_text, wrap_lines = True)
+
+## LOGS SECTION
+
+# In-memory log storage with max size (1000 lines by default)
+LOG_BUFFER = deque(maxlen=1000)
+def log_server():
+    """Read from the in-memory log buffer"""
+    if not LOG_BUFFER:
+        return "No logs available yet."
+    return "".join(reversed(LOG_BUFFER))
 
 def log_write(proc_name: str, log_message: str):
     """
-    Write a message to the log file, in format "[proc_name] log_message".
-    proc_name: "Server stderr" or "Streamlit" are standard. You can use any name.
-    log_message: The message to log.
+    Write a message to the in-memory log buffer
+    Format: "[proc_name] log_message"
     """
     try:
-        with open(LOG_FILE, "a") as f:
-            f.write(f"[{proc_name}] {log_message}" + "\n")
+        log_entry = f"[{proc_name}] {log_message}\n"
+        LOG_BUFFER.append(log_entry)
     except Exception as e:
-        print(f"Error writing to log file: {e}")
+        print(f"Error writing to log buffer: {e}")
+
+def log_buffer_clean():
+    try:
+        LOG_BUFFER.clear()
+    except Exception as e:
+        log_write("log_clean", f"Error clearing log buffer: {e}")
+
+
+def log_section():
+    st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked. If you refresh the page, the old logs will dissapear.")
+    with st.expander("Click to view Server logs", expanded=False):
+        if log_out := log_server():
+            height = 500 if len(log_out) > 1000 else 150
+            st.write("Server logs:")
+            st.code(
+                log_out if not st.session_state.log_cleaned else "No logs available yet.",
+                language = "log",
+                height= height,
+                wrap_lines =True,
+                line_numbers=True,
+            )
+
+        else:
+            st.code("No logs available yet.", language="plaintext")
+
+        with st.popover("Clean Server Logs", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
+            st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server.")
+            if st.button("Yes"):
+                try:
+                    st.session_state.log_cleaned = True
+                    log_buffer_clean()
+                    st.success("Server logs cleaned successfully! Please UNCHECK THE BOX to avoid cleaning again.")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Error cleaning server logs: {e}")
+            if st.button("No"):
+                pass
+            st.session_state.log_cleaned = False
+            st.info("Press Escape to close this popover.")
