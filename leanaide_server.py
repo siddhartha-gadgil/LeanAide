@@ -7,14 +7,17 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-
-from server.serv_utils import log_write
+from collections import deque
 
 STREAMLIT_PORT = 8501
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
 
 home_dir = str(Path(__file__).resolve().parent)
 serv_dir = os.path.join(home_dir, "server")
+
+
+# In-memory log storage with max size (1000 lines by default)
+LOG_BUFFER = deque(maxlen=1000) 
 
 STREAMLIT_FILE = os.path.join(serv_dir, "streamlit_ui.py")
 SERVER_FILE = os.path.join(serv_dir, "api_server.py")
@@ -27,6 +30,17 @@ def is_port_in_use(port: int) -> bool:
     """Check if a port is already in use"""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('localhost', port)) == 0
+
+def log_write(proc_name: str, log_message: str):
+    """
+    Write a message to the in-memory log buffer
+    Format: "[proc_name] log_message"
+    """
+    try:
+        log_entry = f"[{proc_name}] {log_message}\n"
+        LOG_BUFFER.append(log_entry)
+    except Exception as e:
+        print(f"Error writing to log buffer: {e}")
 
 def run_server_api():
     """Run Server server using uvicorn"""
