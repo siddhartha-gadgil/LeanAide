@@ -7,7 +7,6 @@ from typing import Any, Tuple, Type
 
 import streamlit as st
 from st_copy import copy_button
-from leanaide_server import LOG_BUFFER
 
 HOST = os.environ.get("HOST", "localhost")  
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
@@ -197,6 +196,9 @@ def preview_text(key: str, default_text: str = ""):
             st.code(st.session_state[key] if st.session_state[key] else default_text, wrap_lines = True)
 
 ## LOGS SECTION
+
+# In-memory log storage with max size (1000 lines by default)
+LOG_BUFFER = deque(maxlen=1000)
 def log_server():
     """Read from the in-memory log buffer"""
     if not LOG_BUFFER:
