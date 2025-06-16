@@ -3,7 +3,7 @@ import streamlit as st
 # Initialize session state variables
 # Global variables for session state initialization
 NONE_INIT_KEYS = [
-    "selected_tasks", "self_selection", "val_input", "result", "temp_structured_json",
+    "self_selection", "val_input", "result", "temp_structured_json",
     "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", 
     "model_text", "model_img", "llm_provider", "llm_list", "uploaded_pdf"
 ]
@@ -23,6 +23,9 @@ for key in NONE_INIT_KEYS:
 for key in FALSE_INIT_KEYS:
     if key not in st.session_state:
         st.session_state[key] = False
+
+if "selected_tasks" not in st.session_state:
+    st.session_state.selected_tasks = []
 
 # Page Setup
 intro_page = st.Page(
@@ -50,7 +53,7 @@ pg = st.navigation(pages = [
     structured_json_page,
 ])
 
-for state in (NONE_INIT_KEYS + FALSE_INIT_KEYS):
+for state in (NONE_INIT_KEYS + FALSE_INIT_KEYS + ["selected_tasks"]):
     st.session_state[state] = st.session_state[state]
 
 ## Run 

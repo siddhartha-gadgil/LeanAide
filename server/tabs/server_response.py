@@ -47,8 +47,9 @@ with st.sidebar:
 st.header("Server Request", divider = True, help = "For your input request, this request will be sent to the backend server specified by you.")
 
 st.subheader("Structured Input: Select Tasks", help = "Select the tasks you want to perform and provide the necessary inputs.")
+
 # list of tasks, each task has "name" field. use that
-st.session_state.selected_tasks = st.multiselect("Select tasks to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", default = st.session_state.get("selected_tasks", []))
+something = st.multiselect("Select tasks to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", default = st.session_state.get("selected_tasks", []), key = "selected_tasks")
 
 ## Multiselect box color set
 st.markdown("""
@@ -78,6 +79,8 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
                 if st.button("Use Structured JSON generated", help = "Use the structured JSON generated in the `Structured Json` page of LeanAide website.", key = f"use_structured_json_{task}"):
                     if structured_json := st.session_state.get("structured_proof", {}):
                         st.session_state.temp_structured_json = structured_json 
+                    else:
+                        st.warning("No structured JSON found. Please generate it first in the 'Structured Json' page.")
  
                 val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value'}", value = st.session_state.temp_structured_json)
 

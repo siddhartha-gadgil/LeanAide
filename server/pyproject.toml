@@ -11,5 +11,5 @@ dependencies = [
     "watchdog>=6.0.0",
     "openai>=1.86.0",
     "pymupdf>=1.26.1",
-    "st-copy>=1.1.1",
+    "st-copy>=1.1.2",
 ]
