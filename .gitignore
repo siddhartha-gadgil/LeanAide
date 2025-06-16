@@ -83,3 +83,4 @@ target/
 venv/
 leanaide_logs/
 private/
+.env

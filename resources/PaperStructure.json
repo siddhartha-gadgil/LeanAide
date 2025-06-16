@@ -655,14 +655,14 @@
         "only_if_proof": {
           "$ref": "#/$defs/Proof",
           "description": "Proof that `Q` implies `P`."
-        },
-        "required": [
-          "type",
-          "if_proof",
-          "only_if_proof"
-        ],
-        "additionalProperties": false
-      }
+        }
+      },
+      "required": [
+        "type",
+        "if_proof",
+        "only_if_proof"
+      ],
+      "additionalProperties": false
     },
     "condition_cases_statement": {
       "type": "object",
@@ -684,15 +684,15 @@
         "false_case_proof": {
           "$ref": "#/$defs/Proof",
           "description": "Proof of the case where the condition is false."
-        },
-        "required": [
-          "type",
-          "condition",
-          "true_case_proof",
-          "false_case_proof"
-        ],
-        "additionalProperties": false
-      }
+        }
+      },
+      "required": [
+        "type",
+        "condition",
+        "true_case_proof",
+        "false_case_proof"
+      ],
+      "additionalProperties": false
     },
     "multi-condition_cases_statement": {
       "type": "object",
