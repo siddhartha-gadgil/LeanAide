@@ -25,7 +25,7 @@ Executing various tasks with Json input and output. These are for the server.
     * `fallback: Bool` (default: `true`)
 * `translate_thm_detailed`: Translates a theorem to natural language with detailed information, including an attempted proof using `exact?`. The `statement` is the theorem statement with proof (which may be `sorry`).
   * input: `text: String`
-  * output: `theorem: String`, `name: String`, `proved: Bool`, `statement: String`, `definitions_used: String`
+  * output: `theorem: String`, `name: String`, `proved: Bool`, `statement: String`, `definitions_used: String`, `definitions_in_proof: Array String`
   * parameters:
     * `greedy: Bool` (default: `true`)
     * `fallback: Bool` (default: `true`)
@@ -46,7 +46,7 @@ Executing various tasks with Json input and output. These are for the server.
 * `prove`: Attempts to prove a theorem.
   * input: `theorem: String`
   * output: `proof: String`
-* `structured_json_proof`: Converts a theorem and proof to structured JSON.
+* `structured_json_proof`: (Deprecated) Converts a theorem and proof to structured JSON.
   * input: `theorem: String`, `proof: String`
   * output: `json_structured: Json`
 * `lean_from_json_structured`: Generates Lean code from structured JSON.
@@ -58,6 +58,9 @@ Executing various tasks with Json input and output. These are for the server.
   * parameters:
     * `top_code: String` (default: `""`)
     * `describe_sorries: Bool` (default: `false`)
+* `statement_from_name`: Generates a statement from a theorem name.
+  * input: `name: String`
+  * output: `statement: String`, `is_prop: Bool`, `name: String`, `type: String`, `value: Option String`
 -/
 def runTask (data: Json) (translator : Translator) : TranslateM Json :=
   let fallback :=
@@ -123,11 +126,34 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         let thmStx ←
           `(command| theorem $thmName : $typeStx := by $pf)
         let statementFormat ← PrettyPrinter.ppCommand thmStx
-        let defsInProof ← getExactTermParts? translation
+        let defsInProof? ← getExactTermParts? translation
         return Json.mkObj [("result", "success"), ("theorem",  thmFmt.pretty),
           ("name", toJson name), ("proved", pf?.isSome),
           ("statement", statementFormat.pretty), ("definitions_used", toJson defs),
-          ("definitions_in_proof", toJson defsInProof)]
+          ("definitions_in_proof", toJson defsInProof?)]
+
+  | Except.ok "statement_from_name" => do
+    match data.getObjValAs? String "name" with
+    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no name found: {e}")]
+    | Except.ok name => do
+      let name := name.toName
+      let info ←
+        try
+          let info ← getConstInfo name
+          let type := info.type
+          let typeStx ← delabDetailed type
+          let value? := info.value?
+          let valueStx? ←  value?.mapM fun value =>
+             delabDetailed value
+          let p ← Meta.isProp type
+          let stx ← mkStatement name typeStx valueStx? p
+          let typeView ← PrettyPrinter.ppExpr type
+          let valueView? ← value?.mapM
+            fun value => PrettyPrinter.ppExpr value
+          return Json.mkObj [("result", "success"), ("statement", stx), ("is_prop", toJson p), ("name", toJson name), ("type", toJson typeView.pretty),
+            ("value", toJson <| valueView?.map (fun v => v.pretty) )]
+        catch e =>
+          return Json.mkObj [("result", "error"), ("error", s!"error in getting const info: {← e.toMessageData.format}")]
 
   | Except.ok "translate_def" => do
     match data.getObjValAs? String "text" with
