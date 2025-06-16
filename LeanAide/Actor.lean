@@ -85,6 +85,42 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
           return Json.mkObj [("result", "error"), ("errors", toJson es)]
       | Except.ok translation => do
         return Json.mkObj [("result", "success"), ("theorem", translation)]
+  | Except.ok "translate_thm_detailed" => do
+    match data.getObjValAs? String "text" with
+    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
+    | Except.ok text => do
+      let name ← translator.server.theoremName text
+      let greedy :=
+        data.getObjValAs? Bool "greedy" |>.toOption |>.getD true
+      let res? ← if greedy then
+        let (json, _) ←
+          translator.getLeanCodeJson  text
+        let output ← getMessageContents json
+        greedyBestExprWithErr? output
+        else
+          let (res'?, _) ←
+            translator.translateM  text
+          pure <| res'?.map fun res' => res'.term
+      match res? with
+      | Except.error es =>
+        if fallback then
+          fallBackThm es
+        else
+          return Json.mkObj [("result", "error"), ("errors", toJson es)]
+      | Except.ok translation => do
+        let defs ← Meta.defsBlob? translation
+        let typeStx ← delabDetailed translation
+        let thmFmt ← PrettyPrinter.ppExpr translation
+        let pf? ← getExactTactics? translation
+        let thmName := mkIdent name
+        let pf := pf?.getD (← `(tacticSeq| sorry))
+        let thmStx ←
+          `(command| theorem $thmName : $typeStx := by $pf)
+        let statementFormat ← PrettyPrinter.ppCommand thmStx
+        return Json.mkObj [("result", "success"), ("theorem",  thmFmt.pretty),
+          ("name", toJson name), ("proved", pf?.isSome),
+          ("statement", statementFormat.pretty), ("definitions_used", toJson defs)]
+
   | Except.ok "translate_def" => do
     match data.getObjValAs? String "text" with
     | Except.error e =>
