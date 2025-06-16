@@ -123,9 +123,11 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         let thmStx ←
           `(command| theorem $thmName : $typeStx := by $pf)
         let statementFormat ← PrettyPrinter.ppCommand thmStx
+        let defsInProof ← getExactTermParts? translation
         return Json.mkObj [("result", "success"), ("theorem",  thmFmt.pretty),
           ("name", toJson name), ("proved", pf?.isSome),
-          ("statement", statementFormat.pretty), ("definitions_used", toJson defs)]
+          ("statement", statementFormat.pretty), ("definitions_used", toJson defs),
+          ("definitions_in_proof", toJson defsInProof)]
 
   | Except.ok "translate_def" => do
     match data.getObjValAs? String "text" with
