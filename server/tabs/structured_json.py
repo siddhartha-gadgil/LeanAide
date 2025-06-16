@@ -1,14 +1,15 @@
-import streamlit as st
 import json
 import os
 import shutil
 
+import streamlit as st
 from dotenv import load_dotenv
 from PIL import Image
 from streamlit_sortables import sort_items
-# from gpt_structured import gen_structure_proof, solution_from_images
-from serv_utils import action_copy_download, preview_text, SCHEMA_JSON
+
 from llm_response import *
+# from gpt_structured import gen_structure_proof, solution_from_images
+from serv_utils import SCHEMA_JSON, action_copy_download, preview_text
 
 load_dotenv()
 
@@ -102,7 +103,7 @@ input_method = st.radio("Choose what you would like to work on:",
 def handle_image_input(key: str):
     """Handles image input and reordering for different sections."""
     # Create unique session state keys for this section
-    st.info(f"Note: For the uploaded images, they are sent to LLM's for OCR and processed, so please ensure they are clear and readable. Also make sure to provide LLM Credentials for the same.")
+    st.info("Note: For the uploaded images, they are sent to LLM's for OCR and processed, so please ensure they are clear and readable. Also make sure to provide LLM Credentials for the same.")
     paths_key = f"{key}_image_paths"
     if paths_key not in st.session_state:
         st.session_state[paths_key] = []
@@ -150,7 +151,7 @@ def handle_image_input(key: str):
     # Generate text from images
     if st.session_state[paths_key] and st.button(f"Generate {key.capitalize()} text from Images", 
                                               key=f"generate_btn_{key}"):
-        with st.spinner(f"Processing images..."):
+        with st.spinner("Processing images..."):
             try:
                 st.session_state[key] = solution_from_images(st.session_state[paths_key])
             except Exception as e:
@@ -274,7 +275,7 @@ def handle_pdf_input(key:str):
             
             st.session_state[key] = st.session_state[f"{key}_local_key"]
             # if paper is pdf, then store in "paper_pdf" key
-            if st.session_state.input_paper and st.session_state[f"input_pdf_paper"]:
+            if st.session_state.input_paper and st.session_state["input_pdf_paper"]:
                 st.session_state["paper_pdf"] = get_openai_pdf_id(st.session_state[f"{key}_pdf_path"])
 
             st.success(f"PDF for {key} uploaded successfully.") 
@@ -291,7 +292,7 @@ def handle_pdf_input(key:str):
         if st.session_state.input_paper and st.session_state["input_pdf_paper"]:
             st.info("Note: The PDF preview content may not be great, but don't worry, LLM's are given encoded version so they can process it better.")
             st.code(
-                st.session_state[f"paper_local_key"],
+                st.session_state["paper_local_key"],
                 height=200,
             )
         else:
@@ -312,7 +313,7 @@ def handle_pdf_input(key:str):
 
 # General input handler for theorem, proof, and paper
 def handle_general_input(key: str):
-    st.subheader(f"Input "+ key.capitalize())
+    st.subheader("Input "+ key.capitalize())
     input_formats = ["Type Input Yourself", "PDF(.pdf)", "Image(.png, .jpg, .jpeg)", "Markdown(.md)", "Text(.txt)" , "Latex(.tex)"]
 
     format_opt = st.selectbox(

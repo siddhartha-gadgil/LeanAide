@@ -7,6 +7,7 @@ import queue
 import subprocess
 import sys
 import threading
+
 from serv_utils import log_write
 
 PORT = int(os.environ.get("LEANAIDE_PORT", 7654))

@@ -2,13 +2,13 @@ import base64
 import json
 import os
 
+import pymupdf
+import streamlit as st
 from dotenv import load_dotenv
 from openai import OpenAI
-import pymupdf
-from serv_utils import SCHEMA_JSON
-import streamlit as st
 
 from llm_prompts import *
+from serv_utils import SCHEMA_JSON
 
 load_dotenv()
 

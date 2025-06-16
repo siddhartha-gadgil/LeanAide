@@ -1,5 +1,6 @@
 import socket
 import urllib
+
 import requests
 import streamlit as st
 from dotenv import load_dotenv
@@ -182,7 +183,7 @@ if submit_response_button or st.session_state.request_button:
                     st.error("Error in processing the request. Please check the input and try again.")
                     st.write("Error (String):")
                     st.code(st.session_state.result["error"])
-                log_write("Streamlit", f"Server Output: Success")
+                log_write("Streamlit", "Server Output: Success")
             except Exception as e:
                 st.session_state.server_output_success = False
                 st.error(f"Error in processing the request: {e}")
