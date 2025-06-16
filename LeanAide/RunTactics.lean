@@ -152,6 +152,27 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic): Term
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 
+def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| exact?))]
+  match tactics? with
+  | none => return none
+  | some tacs =>
+    if tacs.isEmpty then
+      return none
+    else
+      let tacticCode ←  `(tacticSeq| $tacs*)
+      return some tacticCode
+
+elab "#exact? " goal:term : command => Command.liftTermElabM do
+  let goal ← elabTerm goal none
+  let tacticCode? ← getExactTactics? goal
+  match tacticCode? with
+  | none => logWarning "exact? tactic failed to find any tactics"
+  | some tacticCode =>
+    logInfo m!"exact? tactic found tactics: {← ppCategory ``tacticSeq tacticCode}"
+
+-- #exact? ∀ (n m : Nat), n + m = m + n
+
 open PrettyPrinter
 def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): TermElabM <|  (Array Syntax.Tactic) := do
   let tacs? ← runTacticsAndGetTryThis? goal tactics
@@ -174,3 +195,6 @@ def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
     extractIntros goal' k (accum ++ [n])
   | _, _ => do
     return (goal, accum)
+
+
+end LeanAide
