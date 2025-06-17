@@ -173,6 +173,12 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
   goal.withContext do
+  match ← getExactTactics? (← goal.getType) with
+  | some code => do
+    IO.eprintln s!"codegen: exact tactics found for goal: {← ppExpr <| ← goal.getType}"
+    -- IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+    return (← appendTactics accum code, none)
+  | none => do
   match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| auto?)] (strict := true) with
   | some autoTacs => do
     let autoTac ← `(tacticSeq| $autoTacs*)
