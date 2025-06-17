@@ -1,5 +1,6 @@
 import socket
 import urllib
+import json
 
 import requests
 import streamlit as st
@@ -23,6 +24,11 @@ if "api_host" not in st.session_state:
     st.session_state.api_host = HOST
 if "api_port" not in st.session_state:
     st.session_state.api_port = PORT
+if "task_tbd" not in st.session_state:
+    st.session_state.task_tbd = []
+
+if not st.session_state.val_input:
+    st.session_state.val_input = {}
 
 # Host Information Section
 with st.sidebar:
@@ -48,10 +54,44 @@ with st.sidebar:
 
 st.header("Server Request", divider = True, help = "For your input request, this request will be sent to the backend server specified by you.")
 
-st.subheader("Structured Input: Select Tasks", help = "Select the tasks you want to perform and provide the necessary inputs.")
+with st.expander("Load input Conversation from JSON"):
+    st.write("You can fill autofill inputs with your JSON file. This will overwrite any existing input(and ). Note: You can always rewrite them and generate new output with `Submit Button`")
+    uploaded_file = st.file_uploader(
+        "Upload a JSON file with input conversation",
+        type="json",
+        help="Upload a JSON file containing the input conversation. The file should be in valid JSON format.",
+    )
+    if uploaded_file:
+        try:
+            json_data = json.load(uploaded_file)
+            st.session_state.val_input = json_data["input"]
+            st.session_state.task_tbd = json_data["tasks"]
+            st.session_state.temp_structured_json = json_data["input"]["json_structured"] if "json_structured" in json_data["input"] else {}
+            st.session_state.self_input_button = True
+            st.session_state.valid_input = True
+            try:
+                st.session_state.result = json_data["output"]
+                st.session_state.request_button = True
+                st.session_state.server_output_success = True
+            except Exception as e:
+                log_write("Streamlit", f"Error loading 'output' from JSON: {e}. Skipping")
+                st.warning("No 'output' found in the JSON file(Skipping). You can still fill inputs and generate new output.")
+ 
+            st.success("Input conversation loaded successfully.")
+            log_write("Streamlit", "Input Conversation Loaded: Success")
+        except json.JSONDecodeError as e:
+            st.error(f"Invalid JSON format: {e}")
+            log_write("Streamlit", f"Input Conversation Loaded: Error - {e}")
 
-if "task_tbd" not in st.session_state:
-    st.session_state.task_tbd = []
+    if st.checkbox("View Format. This includes all possible inputs, tasks and outputs. Your input JSON should have only a subset of these."):
+        format_data = {
+            "input": {task: {**TASKS[task].get("input", {}), **TASKS[task].get("parameters", {})} for task in TASKS},
+            "tasks": list(TASKS.keys()),
+            "output": {task: TASKS[task]["output"] for task in TASKS}
+        }
+        st.json(format_data, expanded=False)
+
+st.subheader("Structured Input: Select Tasks", help = "Select the tasks you want to perform and provide the necessary inputs.")
 
 st.session_state._task_tbd = st.session_state.task_tbd
 # list of tasks, each task has "name" field. use that
@@ -71,10 +111,7 @@ span[data-baseweb="tag"] {
 
 """, unsafe_allow_html=True)
 
-if not st.session_state.val_input:
-    st.session_state.val_input = {}
-
-if st.button("Give Input", help = "Provide inputs to the your selected tasks. Note: It is not compulsary to fill all of them.") or st.session_state.self_input_button:
+if st.button("Build Query", help = "Provide inputs to the your selected tasks. Note: It is not compulsary to fill all of them.", type = "primary") or st.session_state.self_input_button:
     st.session_state.self_input_button = True
     for task in st.session_state.selected_tasks:
         # Get input for each task
@@ -140,6 +177,7 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
         st.json(st.session_state.val_input)
         log_write("Streamlit", "Query Obtained: Success")
 
+st.write("")
 # Show Response function
 def show_response():
     for task in st.session_state.selected_tasks:
@@ -153,7 +191,7 @@ def show_response():
             else:
                 st.write(f"{key.capitalize()} ({val_type}):")
                 st.code(
-                    st.session_state.result.get(key) or "No data available.", language="plaintext"
+                    st.session_state.result.get(key) or "No data available.", language="plaintext", wrap_lines = True
                 )
                 if "lean_code" in key.lower():
                     code = st.session_state.result.get(key, "-- No Lean code available")
@@ -174,48 +212,69 @@ if submit_response_button or st.session_state.request_button:
     else:
         server_tasks = [TASKS[task]["task_name"] for task in st.session_state.selected_tasks]
         request_payload = {"tasks": server_tasks, **st.session_state.val_input}
+        
+        if submit_response_button:
+            with st.spinner("Request sent. Please wait for a short while..."):
+                log_write("Streamlit", f"Request Payload: {request_payload}")
+                response = requests.post(
+                    f"http://{st.session_state.api_host}:{st.session_state.api_port}", json=request_payload
+                )
 
-        with st.spinner("Request sent. Please wait for a short while..."):
-            log_write("Streamlit", f"Request Payload: {request_payload}")
-            response = requests.post(
-                f"http://{st.session_state.api_host}:{st.session_state.api_port}", json=request_payload
-            )
+            if response.status_code == 200:
+                # Get the result
+                st.success("Response sent and received successfully!")
+                st.session_state.result = response.json()
+                log_write("Streamlit", f"Selected Tasks: {st.session_state.selected_tasks}")
+                log_write("Streamlit", f"Response: {st.session_state.result}")
 
-        if response.status_code == 200:
-            # Get the result
-            st.success("Response sent and received successfully!")
-            st.session_state.result = response.json()
-            log_write("Streamlit", f"Selected Tasks: {st.session_state.selected_tasks}")
-            log_write("Streamlit", f"Response: {st.session_state.result}")
-
-            try:
-                if st.session_state.result["result"] == "success":
-                    st.session_state.server_output_success = True
-                    st.success("Request processed successfully!")
-                else: # result = "error"
+                try:
+                    if st.session_state.result["result"] == "success":
+                        st.session_state.server_output_success = True
+                        st.success("Request processed successfully!")
+                    else: # result = "error"
+                        st.session_state.server_output_success = False
+                        st.error("Error in processing the request. Please check the input and try again.")
+                        st.write("Error (String):")
+                        st.code(st.session_state.result["error"])
+                    log_write("Streamlit", "Server Output: Success")
+                except Exception as e:
                     st.session_state.server_output_success = False
-                    st.error("Error in processing the request. Please check the input and try again.")
-                    st.write("Error (String):")
-                    st.code(st.session_state.result["error"])
-                log_write("Streamlit", "Server Output: Success")
-            except Exception as e:
-                st.session_state.server_output_success = False
-                st.error(f"Error in processing the request: {e}")
-                st.write("Response (String):")
-                st.code(str(st.session_state.result))
-                log_write("Streamlit", f"Server Output: Error - {e}")
-            # Handle the output for each task
-            if st.session_state.server_output_success:
-                show_response()
-            else:
-                st.error("No output available. Please check the input and try again.")
-                log_write("Streamlit", "Server Output: No output available.")
+                    st.error(f"Error in processing the request: {e}")
+                    st.write("Response (String):")
+                    st.code(str(st.session_state.result))
+                    log_write("Streamlit", f"Server Output: Error - {e}")
 
+            else:
+                st.error(f"Error: {response.status_code}, {response.text}")
+                log_write("Streamlit", f"Server Response Error: {response.status_code} - {response.text}")
+                # Handle the output for each task
+        if st.session_state.server_output_success:
+            show_response()
         else:
-            st.error(f"Error: {response.status_code}, {response.text}")
-            log_write("Streamlit", f"Server Response Error: {response.status_code} - {response.text}")
+            st.error("No output available. Please check the input and try again.")
+            log_write("Streamlit", "Server Output: No output available.")
+
 
 elif st.session_state.request_button:
     show_response()
+
+st.divider()
+
+if st.checkbox("`Download Conversation:` Save your input and output response in a JSON file and download it."):
+    if st.session_state.selected_tasks and st.session_state.valid_input:
+        conversation_data = {
+            "tasks": st.session_state.selected_tasks,
+            "input": st.session_state.val_input,
+            "output": st.session_state.result if hasattr(st.session_state, 'result') else {}
+        }
+        st.download_button(
+            label="Download Conversation",
+            data=json.dumps(conversation_data),
+            file_name="conversation.json",
+            mime="application/json"
+        )
+        log_write("Streamlit", "Conversation Downloaded")
+    else:
+        st.warning("Please provide valid input and output before downloading the conversation.")
 
 log_section()

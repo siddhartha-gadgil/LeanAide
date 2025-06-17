@@ -336,9 +336,11 @@ def handle_general_input(key: str):
     if "image" in format_opt.lower():
         st.session_state[f"input_image_{key}"] = True
         handle_image_input(key) 
+        log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
     elif "pdf" in format_opt.lower():
         st.session_state[f"input_pdf_{key}"] = True
         handle_pdf_input(key)
+        log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
     else:
         for _elem in ["theorem", "proof", "paper"]:
             st.session_state[f"input_pdf_{_elem}"] = False
@@ -351,7 +353,7 @@ def handle_general_input(key: str):
             handle_textual_file_input(key, extension="tex")
         else: # Self typed input
             handle_text_input(key) 
-    log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
+        log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
 
 # Papers section
 if input_method == input_options[1]: # Papers
