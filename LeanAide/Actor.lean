@@ -2,6 +2,9 @@ import LeanAide.TranslatorParams
 import LeanCodePrompts.Translate
 import LeanAide.StructToLean
 import LeanAide.TranslatorParams
+import LeanAide.Codegen
+import LeanAide.PaperCodes
+import Lean
 
 namespace LeanAide.Actor
 open LeanAide Lean
@@ -17,6 +20,12 @@ Executing various tasks with Json input and output. These are for the server.
 * `translate_thm`: Translates a theorem to natural language.
   * input: `text: String`
   * output: `theorem: String`
+  * parameters:
+    * `greedy: Bool` (default: `true`)
+    * `fallback: Bool` (default: `true`)
+* `translate_thm_detailed`: Translates a theorem to natural language with detailed information, including an attempted proof using `exact?`. The `statement` is the theorem statement with proof (which may be `sorry`).
+  * input: `text: String`
+  * output: `theorem: String`, `name: String`, `proved: Bool`, `statement: String`, `definitions_used: String`, `definitions_in_proof: Array String`
   * parameters:
     * `greedy: Bool` (default: `true`)
     * `fallback: Bool` (default: `true`)
@@ -37,7 +46,7 @@ Executing various tasks with Json input and output. These are for the server.
 * `prove`: Attempts to prove a theorem.
   * input: `theorem: String`
   * output: `proof: String`
-* `structured_json_proof`: Converts a theorem and proof to structured JSON.
+* `structured_json_proof`: (Deprecated) Converts a theorem and proof to structured JSON.
   * input: `theorem: String`, `proof: String`
   * output: `json_structured: Json`
 * `lean_from_json_structured`: Generates Lean code from structured JSON.
@@ -49,6 +58,9 @@ Executing various tasks with Json input and output. These are for the server.
   * parameters:
     * `top_code: String` (default: `""`)
     * `describe_sorries: Bool` (default: `false`)
+* `statement_from_name`: Generates a statement from a theorem name.
+  * input: `name: String`
+  * output: `statement: String`, `is_prop: Bool`, `name: String`, `type: String`, `value: Option String`
 -/
 def runTask (data: Json) (translator : Translator) : TranslateM Json :=
   let fallback :=
@@ -82,6 +94,67 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
           return Json.mkObj [("result", "error"), ("errors", toJson es)]
       | Except.ok translation => do
         return Json.mkObj [("result", "success"), ("theorem", translation)]
+  | Except.ok "translate_thm_detailed" => do
+    match data.getObjValAs? String "text" with
+    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
+    | Except.ok text => do
+      let name ← translator.server.theoremName text
+      let greedy :=
+        data.getObjValAs? Bool "greedy" |>.toOption |>.getD true
+      let res? ← if greedy then
+        let (json, _) ←
+          translator.getLeanCodeJson  text
+        let output ← getMessageContents json
+        greedyBestExprWithErr? output
+        else
+          let (res'?, _) ←
+            translator.translateM  text
+          pure <| res'?.map fun res' => res'.term
+      match res? with
+      | Except.error es =>
+        if fallback then
+          fallBackThm es
+        else
+          return Json.mkObj [("result", "error"), ("errors", toJson es)]
+      | Except.ok translation => do
+        let defs ← Meta.defsBlob? translation
+        let typeStx ← delabDetailed translation
+        let thmFmt ← PrettyPrinter.ppExpr translation
+        let pf? ← getExactTactics? translation
+        let thmName := mkIdent name
+        let pf := pf?.getD (← `(tacticSeq| sorry))
+        let thmStx ←
+          `(command| theorem $thmName : $typeStx := by $pf)
+        let statementFormat ← PrettyPrinter.ppCommand thmStx
+        let defsInProof? ← getExactTermParts? translation
+        return Json.mkObj [("result", "success"), ("theorem",  thmFmt.pretty),
+          ("name", toJson name), ("proved", pf?.isSome),
+          ("statement", statementFormat.pretty), ("definitions_used", toJson defs),
+          ("definitions_in_proof", toJson defsInProof?)]
+
+  | Except.ok "statement_from_name" => do
+    match data.getObjValAs? String "name" with
+    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no name found: {e}")]
+    | Except.ok name => do
+      let name := name.toName
+      let info ←
+        try
+          let info ← getConstInfo name
+          let type := info.type
+          let typeStx ← delabDetailed type
+          let value? := info.value?
+          let valueStx? ←  value?.mapM fun value =>
+             delabDetailed value
+          let p ← Meta.isProp type
+          let stx ← mkStatement name typeStx valueStx? p
+          let typeView ← PrettyPrinter.ppExpr type
+          let valueView? ← value?.mapM
+            fun value => PrettyPrinter.ppExpr value
+          return Json.mkObj [("result", "success"), ("statement", stx), ("is_prop", toJson p), ("name", toJson name), ("type", toJson typeView.pretty),
+            ("value", toJson <| valueView?.map (fun v => v.pretty) )]
+        catch e =>
+          return Json.mkObj [("result", "error"), ("error", s!"error in getting const info: {← e.toMessageData.format}")]
+
   | Except.ok "translate_def" => do
     match data.getObjValAs? String "text" with
     | Except.error e =>
@@ -135,20 +208,20 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no theorem found: {e}")]
     | Except.ok thm => do
       let pfs ← translator.server.prove thm 1 translator.params
-      match pfs.get? 0 with
+      match pfs[0]? with
       | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
       | some pf => do
         return Json.mkObj [("result", "success"), ("proof", toJson pf)]
   | Except.ok "prove_prop" => do
     match data.getObjValAs? String "prop" with
     | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no `prop` found: {e}")]
-    | Except.ok prop => do
-      match Parser.runParserCategory (← getEnv) `term prop with
+    | Except.ok p => do
+      match Parser.runParserCategory (← getEnv) `term p with
       | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"error in parsing `prop`: {e}")]
       | Except.ok propStx => do
         try
-          let prop ← Elab.Term.elabType propStx
-          match ← translator.getTypeProofM prop with
+          let p ← Elab.Term.elabType propStx
+          match ← translator.getTypeProofM p with
           | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
           | some (proof, _, _) => do
             return Json.mkObj [("result", "success"), ("theorem_proof", toJson proof)]
@@ -159,7 +232,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | _, _, Except.ok block => do
       let jsons ←
         translator.server.structuredProof block 1 translator.params
-      match jsons.get? 0 with
+      match jsons[0]? with
       | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
       | some json => do
         return Json.mkObj [("result", "success"), ("json_structured", json)]
@@ -167,7 +240,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
       let block := s!"## Theorem : {statement}\n##Proof: {pf}"
       let jsons ←
         translator.server.structuredProof block 1 translator.params
-      match jsons.get? 0 with
+      match jsons[0]? with
       | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
       | some json => do
         return Json.mkObj [("result", "success"), ("json_structured", json)]
@@ -178,9 +251,25 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     | Except.ok js => do
       try
         let qp := translator.codeGenerator
-        let (code, declarations) ← qp.mathDocumentCode js
+        let some codeStx ←  Codegen.getCode qp none ``commandSeq js |
+          throwError "Did not obtain code"
+        let declarations :=
+          CodeGenerator.namesFromCommands <| commands codeStx
+        let code ←
+          PrettyPrinter.ppCategory ``commandSeq codeStx
         return Json.mkObj
           [("result", "success"), ("lean_code", code.pretty), ("declarations", toJson declarations), ("top_code", CodeGenerator.topCode)]
+      catch e =>
+        return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
+    | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
+  | Except.ok "lean_from_json_structured_old" => do
+    match data.getObjVal? "json_structured" with
+    | Except.ok js => do
+      try
+        let qp := translator.codeGenerator
+        let (code, declarations) ← qp.mathDocumentCode js
+        return Json.mkObj
+          [("result", "success"), ("le an_code", code.pretty), ("declarations", toJson declarations), ("top_code", CodeGenerator.topCode)]
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]

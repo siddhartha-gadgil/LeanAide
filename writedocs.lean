@@ -15,7 +15,7 @@ unsafe def main : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   enableInitializersExecution
   let env ←
-    importModules #[
+    importModules (loadExts := true) #[
     {module := `Mathlib},
     {module := `DataGenAide.ConstDeps}] {}
   let core := writeDocsCore

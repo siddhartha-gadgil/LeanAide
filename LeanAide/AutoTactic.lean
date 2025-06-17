@@ -10,7 +10,7 @@ open Lean Meta Tactic Parser.Tactic
 namespace LeanAide
 
 def powerTactics : CoreM <| List <| TSyntax ``tacticSeq := do
-  return [← `(tacticSeq| ring),← `(tacticSeq| omega),  ← `(tacticSeq| linarith)
+  return [← `(tacticSeq| ring),← `(tacticSeq| omega),  ← `(tacticSeq| linarith), ← `(tacticSeq| grind +ring)
   -- , ← `(tacticSeq| norm_num), ← `(tacticSeq| positivity), ← `(tacticSeq| gcongr), ←`(tacticSeq| contradiction)
   ]
 
@@ -75,9 +75,9 @@ elab "#note" "[" term,* "]" : tactic => do
   return ()
 
 def mkNoteCmd (s: String) : MetaM Syntax.Command :=
-  -- let sLit := Lean.Syntax.mkStrLit  s
-  `(command | example := "#note: " ++ s)
+  let sLit := Lean.Syntax.mkStrLit  s
+  `(command | example := "#note: " ++ $sLit)
 
 def mkNoteTactic (s: String) : MetaM Syntax.Tactic :=
-  -- let sLit := Lean.Syntax.mkStrLit  s
-  `(tactic | let _ :=  "#note: " ++ s)
+  let sLit := Lean.Syntax.mkStrLit  s
+`(tactic | let _ :=  "#note: " ++ $sLit)

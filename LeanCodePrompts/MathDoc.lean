@@ -417,7 +417,7 @@ def writeMathDoc : IO Unit := do
   IO.FS.writeFile (dir/"MathDoc.md")
     (MathParaStructure.mathDoc.toIndendentList |>.render)
 
-#eval writeMathDoc
+-- #eval writeMathDoc
 
 def MathDoc.instructions (alertErrors : Bool := false) : IO String := do
   let jsonProofInstructions := MathParaStructure.mathDoc.toIndendentList |>.render

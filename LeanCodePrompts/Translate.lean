@@ -154,10 +154,10 @@ def chatServer : CoreM ChatServer := do
 Caching, polling etc to avoid repeatedly calling servers
 -/
 
-initialize webCacheJson : IO.Ref (Std.HashMap String (Json × Json × Array (String × Json))) ← IO.mkRef (Std.HashMap.empty)
+initialize webCacheJson : IO.Ref (Std.HashMap String (Json × Json × Array (String × Json))) ← IO.mkRef (Std.HashMap.emptyWithCapacity)
 
 initialize pendingJsonQueries : IO.Ref (Std.HashSet String)
-    ← IO.mkRef (Std.HashSet.empty)
+    ← IO.mkRef (Std.HashSet.emptyWithCapacity)
 
 def getCachedJson? (s: String) : IO (Option (Json × Json × Array (String × Json))) := do
   let cache ← webCacheJson.get
@@ -256,7 +256,7 @@ def bestElab (output: Array String) : TranslateM Expr := do
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
   let mut cache : Std.HashMap String (Except ElabError Expr) :=
-    Std.HashMap.empty
+    Std.HashMap.emptyWithCapacity output.size
   for out in output do
     -- IO.println s!"elaboration called: {out}"
     let elab? ←
@@ -273,7 +273,7 @@ def bestElab (output: Array String) : TranslateM Expr := do
           elaborated := elaborated.push expr
           elabStrs := elabStrs.push out
           trace[Translate.info] m!"elaborated: {out}"
-          if !(← whnf expr).hasExprMVar then
+          if !( ← (← whnf expr).hasUnassignedExprMVar) then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then
     let mut errors : Array Json := #[]
@@ -291,7 +291,7 @@ def bestElab (output: Array String) : TranslateM Expr := do
               ("syntax", stx.reprint.get!), ("output", Json.str out)]
     let errorJson := Json.arr errors
     appendLog "translate_fail_error" errorJson
-    mkSyntheticSorry (mkSort levelZero)
+    mkAppM ``sorryAx #[(mkSort levelZero), mkConst ``true]
   else
     logTimed "elaborated outputs, starting majority voting"
     let priority :=
@@ -300,7 +300,6 @@ def bestElab (output: Array String) : TranslateM Expr := do
     logTimed "finished majority voting"
     return (groupSorted[0]!)[0]!
 
-
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
 def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (Array ElabError) ElabSuccessResult) := do
   -- IO.println s!"arrayToExpr? called with {output.size} outputs"
@@ -308,7 +307,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
   let mut elaborated : Array Expr := Array.empty
   let mut fullElaborated : Array Expr := Array.empty
   let mut cache : Std.HashMap String (Except ElabError Expr) :=
-    Std.HashMap.empty
+    Std.HashMap.emptyWithCapacity output.size
   logTimed "elaborating outputs"
   let mut errors : Array ElabError := #[]
 
@@ -329,7 +328,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
       | Except.ok expr =>
           elaborated := elaborated.push expr
           elabStrs := elabStrs.push out
-          if !(← whnf expr).hasExprMVar then
+          if !( ← (← whnf expr).hasUnassignedExprMVar) then
             fullElaborated := fullElaborated.push expr
   if elaborated.isEmpty then
     return Except.error errors
@@ -489,7 +488,7 @@ def ElabError.fallback (errs : Array ElabError) :
     | _ => none)
   match bestParsed? with
   | some e => return e
-  | none => match errs.get? 0 with
+  | none => match errs[0]? with
     | some e => return e.text
     | _ => throwError "no outputs found"
 
@@ -600,7 +599,6 @@ def translateToProp? (s: String)(translator : Translator)
     logError s prompt e
     return Except.error e
 
-
 /--
 Translating a definition greedily by parsing as a command
 -/
@@ -615,7 +613,7 @@ def translateDefCmdM? (s: String) (translator : Translator)
   let mut checks : Array (CmdElabError) := #[]
   for s in output do
     let s := extractLean s
-    let s := s.replace "\n" " "
+    -- let s := s.replace "\n" " "
     let s := if s.startsWith "definition " then s.replace "definition " "def " else s
     let cmd? := runParserCategory (← getEnv) `command s
     match cmd? with

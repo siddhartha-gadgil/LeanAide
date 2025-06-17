@@ -147,12 +147,12 @@ theorem product_conseq_odd (n: Nat): Even <| n * (n + 1) := sorry
 /-
 Every constant function `f x = c` from real numbers to real numbers is differentiable.
 -/
--- theorem constant_is_differentiable  {f: ℝ → ℝ}: ∃ c: ℝ, (∀ x : ℝ, f x = c) → Differentiable ℝ f := sorry 
+-- theorem constant_is_differentiable  {f: ℝ → ℝ}: ∃ c: ℝ, (∀ x : ℝ, f x = c) → Differentiable ℝ f := sorry
 
 /-
 Every index 2 subgroup of a group is normal
 -/
-theorem index_two_subgroup {G : Type _} [Group G] (H : Subgroup G): 
+theorem index_two_subgroup {G : Type _} [Group G] (H : Subgroup G):
       H.index = 2 → Subgroup.Normal H := sorry
 
 /-
@@ -173,11 +173,11 @@ Every non-empty subgroup of `ℤ` is isomorphic to `ℤ`
 
 /- If the coefficients of a polynomial over rationals are integral, every rational root is integral.-/
 -- theorem int_poly_rat_zeros_int (p: Polynomial ℚ) :
---   ∀ n: ℕ, IsIntegral ℚ (p.coeff n) →  
+--   ∀ n: ℕ, IsIntegral ℚ (p.coeff n) →
 --   ∀ x: ℚ, p.IsRoot x →  IsIntegral ℚ x := sorry
 
 /-
-Every natural number greater than `1` is divisible by a prime number. 
+Every natural number greater than `1` is divisible by a prime number.
 -/
 theorem has_prime_factor(n: ℕ) :
   n > 1 → ∃ p: ℕ, Nat.Prime p ∧ (∃ d: ℕ, HMul.hMul p d = n) := sorry
@@ -185,7 +185,7 @@ theorem has_prime_factor(n: ℕ) :
 /-
 Six is not the sum of two prime numbers.
 -/
-theorem six_not_prime_sum : 
+theorem six_not_prime_sum :
   ¬ (∃ n m: Nat, Nat.Prime n ∧ Nat.Prime m ∧ n ≠ m ∧ 6 = n + m) := sorry
 
 /-
@@ -197,7 +197,7 @@ A finite torsion-free group is trivial
 /-
 Any homomorphism from the additive group of rational numbers to `ℤ` is trivial
 -/
--- theorem hom_rat_Z_trivial (f : ℚ → ℤ) : 
+-- theorem hom_rat_Z_trivial (f : ℚ → ℤ) :
 --   IsAddGroupHom f →  ∀ x: ℚ, f x = 0 := sorry
 
 /-
@@ -219,7 +219,7 @@ theorem freegroup_hopfian {α : Type _} [Finite α]: (f: FreeGroup α → FreeGr
 /-
 Every polynomial of positive degree over reals is unbounded.
 -/
-theorem polys_unbounded(p: Polynomial ℝ) : p.degree > 0 → 
+theorem polys_unbounded(p: Polynomial ℝ) : p.degree > 0 →
     ∀ m: ℝ, ∃ x: ℝ, p.eval x  > m ∨ p.eval x < -m  := sorry
 
 /-
@@ -435,4 +435,3 @@ The combinator (S K K) is equal to the identity combinator.
 -/
 -- Library/Init/Core.lean not yet ported
 -- theorem combinator_I_derivable_from_S_K : Combinator.S Combinator.K Combinator.K = Combinator.I := sorry
-

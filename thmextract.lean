@@ -11,7 +11,7 @@ set_option compiler.extract_closed false
 def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
-    importModules #[
+    importModules (loadExts := true) #[
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.FirstTacticData},

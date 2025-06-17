@@ -93,15 +93,9 @@ def describeTheoremPrompt (name: Name) :
       return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
       statement)
 
-def describeAnonymousTheoremPrompt (type: Expr) :
-    MetaM <| Option (String × String × Option String) := do
+def defsBlob? (type: Expr) : MetaM <| Option String := do
   let dfns ← defsInExpr type
-  let typeStx ← PrettyPrinter.delab type
-  let statementStx ← `(command| example : $typeStx := by sorry)
-  let statement ← PrettyPrinter.ppCommand statementStx
-  let statement := statement.pretty
-  if dfns.isEmpty then
-    return some (← fromTemplate "state_theorem" [("theorem", statement)], statement, none)
+  if dfns.isEmpty then return none
   else
     let defsStrs ← dfns.filterMapM fun n => do
       let info ← getConstInfo n
@@ -113,7 +107,18 @@ def describeAnonymousTheoremPrompt (type: Expr) :
           (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
       | none =>
         mkStatement n (← PrettyPrinter.delab info.type) none false
-    let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+    return some <| defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
+
+def describeAnonymousTheoremPrompt (type: Expr) :
+    MetaM <| Option (String × String × Option String) := do
+  let typeStx ← PrettyPrinter.delab type
+  let statementStx ← `(command| example : $typeStx := by sorry)
+  let statement ← PrettyPrinter.ppCommand statementStx
+  let statement := statement.pretty
+  match (← defsBlob? type) with
+  | none =>
+    return some (← fromTemplate "state_theorem" [("theorem", statement)], statement, none)
+  | some defsBlob =>
     return some (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
     statement, some defsBlob)
 
@@ -215,7 +220,7 @@ def getDescriptionM (name: Name)(translator: Translator := {}) : MetaM <| Option
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    let res := contents.get? 0 |>.map fun h => (h, statement)
+    let res := contents[0]? |>.map fun h => (h, statement)
     return res
 
 def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
@@ -226,7 +231,7 @@ def getTypeDescriptionM (type: Expr)(translator: Translator) : MetaM <| Option (
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
+    let res := contents[0]? |>.map fun h => (h, statement, defBlob?)
     return res
 
 def getDefDescriptionM (type val: Expr) (name: Name)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
@@ -237,7 +242,7 @@ def getDefDescriptionM (type val: Expr) (name: Name)(translator: Translator) : M
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
+    let res := contents[0]? |>.map fun h => (h, statement, defBlob?)
     return res
 
 
@@ -252,7 +257,7 @@ def getTypeProofM (type: Expr)(translator: Translator) : MetaM <| Option (String
     let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
     let contents ← getMessageContents outJson
-    let res := contents.get? 0 |>.map fun h => (h, statement, defBlob?)
+    let res := contents[0]? |>.map fun h => (h, statement, defBlob?)
     return res
 
 
@@ -424,7 +429,7 @@ def selectedChatExamples (n: Nat) (pairs: List (Name × String)) : MetaM <|
   let examples ← allLemmaChatExamples pairs
   List.range n |>.mapM fun _ => do
     let i ← IO.rand 0 (examples.size - 1)
-    pure <| examples.get! i
+    pure <| examples[i]!
 
 def lemmaChatMessageM? (name: Name)(description: String)(n: Nat)
   (lemmaPairs: List (Name × String)) : MetaM <| Option Json := do

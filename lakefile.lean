@@ -181,6 +181,10 @@ lean_exe putnamelab {
   supportInterpreter := true
 }
 
+lean_exe check_command {
+  supportInterpreter := true
+}
+
 lean_lib Scratch {
 }
 
@@ -194,6 +198,8 @@ lean_exe extras.depnames{
   supportInterpreter := true
 }
 
+require Hammer from git "https://github.com/JOSHCLUNE/LeanHammer" @ "main"
+
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git"@"v4.15.0"
+  "https://github.com/leanprover-community/mathlib4.git"@"v4.20.1"

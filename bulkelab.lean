@@ -55,7 +55,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     p.flag? "query_data" |>.map (fun s => s.as! String) |>.mapM
       fun filename => do
         let lines ←  IO.FS.lines filename
-        let mut qdMap := Std.HashMap.empty
+        let mut qdMap := Std.HashMap.emptyWithCapacity lines.size
         for l in lines do
           let json? := Json.parse l
           match json? with
@@ -86,7 +86,7 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     p.flag? "output" |>.map (fun s => [s.as! String]) |>.getD
       ["results", model, s!"{input_file}-elab-{pb.signature}-{chatParams.n}-{chatParams.temp.mantissa}.json"]
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}

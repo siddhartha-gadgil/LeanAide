@@ -67,7 +67,7 @@ def CmdElabError.fallback (errs : Array CmdElabError) :
     | _ => none)
   match bestParsed? with
   | some e => return e
-  | none => match errs.get? 0 with
+  | none => match errs[0]? with
     | some e => return e.text
     | _ => throwError "no outputs found"
 
@@ -123,22 +123,36 @@ def ElabSuccessResult.withView (er: ElabSuccessResult) : MetaM TranslateSuccessR
 
 abbrev TranslateResult := Except ElabErrorData ElabSuccessResult
 
+structure LabelledTheorem where
+  /-- Name of the theorem -/
+  name : Name
+  /-- LaTeX-style label for the theorem -/
+  label : String
+  /-- Statement of the theorem -/
+  type : Expr
+  /-- Whether the theorem is proved-/
+  isProved : Bool
+  /-- source -/
+  source: Json
+deriving Repr
+
 /--
 State for translation. The main motivation for this was to avoid repeatedly loading embeddings.
 -/
 structure Translate.State where
   /-- Embeddings to preload -/
-  embedMap : EmbedMap := Std.HashMap.empty
+  embedMap : EmbedMap := Std.HashMap.emptyWithCapacity
   /-- Embedding response associated to the query -/
-  queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.empty
+  queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.emptyWithCapacity 100000
   /-- Descriptions, docstrings etc -/
-  descriptionMap : Std.HashMap Name Json := Std.HashMap.empty
-  cmdPrelude : Array String := #[]
+  descriptionMap : Std.HashMap Name Json := Std.HashMap.emptyWithCapacity 100000
+  cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
   preludes : Array String := #[]
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
+  labelledTheorems : Array LabelledTheorem := #[]
 deriving Inhabited
 
 /-- Monad with environment for translation -/
@@ -215,16 +229,27 @@ def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   | some desc => return desc
   | none => return none
 
+open PrettyPrinter
 def cmdPreludeBlob : TranslateM String := do
   let cmds := (← get).cmdPrelude
+  let cmds ←
+    cmds.mapM (fun cmd => PrettyPrinter.ppCommand cmd)
+  let cmds := cmds.map (·.pretty)
   return cmds.foldr (· ++ "\n" ++ · ) "\n\n"
 
-def runCommand (cmd: String) : TranslateM Unit := do
-  discard <|  runFrontendM cmd true
+def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
+  discard <|  runFrontendM (← ppCommand cmd).pretty true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
+def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
+  modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
+
+def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
+  let cmds := commands cmds
+  modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
+
 def addDefn (dfn: DefData) : TranslateM Unit := do
-  runCommand <| ← dfn.statement
+  runCommand <| ← dfn.statementStx
   modify fun s => {s with defs := s.defs.push dfn}
 
 def clearDefs : TranslateM Unit := do
@@ -235,7 +260,12 @@ def defsBlob : TranslateM <| Array String := do
   defs.mapM <| fun dfn => dfn.statement
 
 def addPrelude (p: String) : TranslateM Unit := do
-  modify fun s => {s with preludes := s.preludes.push p}
+  modify fun s =>
+    if s.preludes.contains p then
+      s
+    else
+      -- IO.eprintln s!"Adding prelude: {p}"
+    {s with preludes := s.preludes.push p}
 
 def clearPreludes : TranslateM Unit := do
   modify fun s => {s with preludes := #[]}
@@ -251,6 +281,28 @@ def withPreludes (s: String) : TranslateM String := do
 def defsNameBlob : TranslateM <| Array <| Name × String := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statement)
+
+def addTheorem (thm: LabelledTheorem) : TranslateM Unit := do
+  modify fun s => {s with labelledTheorems := s.labelledTheorems.push thm}
+def getTheorems : TranslateM <| Array LabelledTheorem := do
+  return (← get).labelledTheorems
+
+def findTheorem? (label: String) : TranslateM <| Option LabelledTheorem := do
+  let thms := (← get).labelledTheorems
+  return thms.find? (fun thm => thm.label == label)
+
+def allLabels : TranslateM <| Array String := do
+  let thms := (← get).labelledTheorems
+  return thms.map (·.label)
+
+def updateToProved (labelledTheorem : String) : TranslateM Unit := do
+  let newLabelledTheorems := (← get).labelledTheorems.map (fun thm =>
+    if thm.label == labelledTheorem then
+      {thm with isProved := true}
+    else
+      thm)
+  modify fun s => {s with labelledTheorems := newLabelledTheorems}
+
 end Translate
 
 namespace TranslateM
@@ -310,18 +362,17 @@ unsafe def TranslateM.runWithLoadingEmbeddings (descFields : List String)
 
 
 structure Translate.SavedState where
-  cmdPrelude : Array String := #[]
+  cmdPrelude : Array Syntax.Command := #[]
   defs : Array (DefData) := #[]
   preludes : Array String := #[]
-  errorLog : Array ElabErrorData := #[]
   context : Option String := none
 
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
     let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context}
     return (saved, σ)
-  restoreState := fun s => do
-    modify fun _ =>
-      {cmdPrelude := s.cmdPrelude, defs := s.defs, preludes := s.preludes, context := s.context}
+  restoreState := fun ss => do
+    modify fun s =>
+      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, preludes := ss.preludes, context := ss.context}
 
 end LeanAide

@@ -1,5 +1,4 @@
 import Lean
-import Cache.IO
 import LeanAide.Aides
 import LeanAide.Template
 import LeanCodePrompts.MathDoc
@@ -86,7 +85,7 @@ def url : ChatServer → IO String
       return "https://api.openai.com/v1/chat/completions"
   | azure deployment _ _ =>
       azureURL deployment
-  | gemini _ key? => do
+  | gemini _ _ => do
       let url ←  pure s!"https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
       -- IO.eprintln s!"Google URL: {url}"
       return url
@@ -162,7 +161,8 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
     | some h => #["-H", h] ++ baseArgs
     | none => baseArgs
   -- logInfo s!"Querying {url} with {data}"
-  let output ← Cache.IO.runCurl (args ++ #["--data", data])
+  let output ← IO.Process.output {cmd := "curl", args := (args ++ #["--data", data])}
+  let output := output.stdout
   trace[Translate.info] "Model response: {output}"
   let queryJs := Json.mkObj [
     ("url", Json.str url),
@@ -187,7 +187,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     (← cachePath) / "chat" /
       s!"{hash server}_{hash params}_{hash messages}.json"
   if ← file.pathExists then
-    -- IO.eprintln s!"Reading from cache: {file}"
+    IO.eprintln s!"Reading from cache: {file}"
     -- logInfo s!"Reading from cache: {file}"
     let output ← IO.FS.readFile file
     match Json.parse output with
@@ -570,7 +570,7 @@ def theoremName (server: ChatServer)
   (statement: String): CoreM Name := do
     let query := s!"Give a name following the conventions of the Lean Prover 4 and Mathlib for the theorem: \n{statement}\n\nNote that types and propositions are capitalized in Lean 4. Give ONLY the name of the theorem."
     let namesArr ←  server.mathCompletions query 1
-    let llm_name := namesArr.get! 0 |>.replace "`" ""
+    let llm_name := namesArr[0]! |>.replace "`" ""
           |>.replace "\""  "" |>.trim
         -- logInfo llm_name
     return llm_name.toName

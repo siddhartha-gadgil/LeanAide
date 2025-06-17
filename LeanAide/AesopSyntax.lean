@@ -82,21 +82,21 @@ elab "aesop_fold" "["ts:term ,*"]"* ";" "["tacs:tacticSeq ,*"]"*  : tactic => do
 
 set_option linter.unreachableTactic false
 
-example (n m : Nat) : n + m = m + n := by
-  aesop_fold []; [simp [Nat.add_comm]]
+-- example (n m : Nat) : n + m = m + n := by
+--   aesop_fold []; [simp [Nat.add_comm]]
 
-example (n m : Nat) : n + m = m + n := by
-  aesop_fold [Nat.add_comm]; []
+-- example (n m : Nat) : n + m = m + n := by
+--   aesop_fold [Nat.add_comm]; []
 
 opaque p : Nat
 opaque q : Nat
 axiom p_eq_q : p = q
 
-example : p = q := by
-  aesop_fold [p_eq_q]; []
+-- example : p = q := by
+--   aesop_fold [p_eq_q]; []
 
-example : False := by
-  aesop_fold []; [sorry]
+-- example : False := by
+--   aesop_fold []; [sorry]
 
 end AesopSyntax
 end LeanAide.Meta

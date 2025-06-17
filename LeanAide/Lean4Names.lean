@@ -1,4 +1,3 @@
-import Lean
 import Mathlib
 import LeanAide.TheoremElab
 import LeanAide.SimpleFrontend
@@ -35,45 +34,48 @@ partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => pure stx
 --   return mkNode k args
 -- | stx => pure stx
 
+open Lean.Parser.Category
+
 def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   let env ← getEnv
-  let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
+  let stx? := Lean.Parser.runParserCategory env ``theorem_statement  s
   match stx? with
   | Except.error err => return Except.error err
   | Except.ok stx => return Except.ok <| ← lean4NamesSyntax stx
 
 def elabThm4Aux (s : String)
-  (levelNames : List Lean.Name := levelNames)
+  (_levelNames : List Lean.Name := levelNames)
   : TranslateM <| Except ElabError Expr := do
-  let s := s.replace "\n" " "
-  let env ← getEnv
-  let ctx? ← getContext
-  let stx? :=
-    Lean.Parser.runParserCategory env `theorem_statement  s
-  match stx? with
-  | Except.error err =>
-      let res := .unparsed s err ctx?
-      appendLog "elab_errors" <| toJson res
-      return .error <| res
-  | Except.ok stx =>
-    elaborate stx
-  where elaborate (stx) := do
+  -- let s := s.replace "\n" " "
+  -- let env ← getEnv
+  -- let ctx? ← getContext
+  -- let stx? :=
+  --   Lean.Parser.runParserCategory env ``theorem_statement  s
+  -- match stx? with
+  -- | Except.error err =>
+  --     let res := .unparsed s err ctx?
+  --     appendLog "elab_errors" <| toJson res
+  --     return .error <| res
+  -- | Except.ok stx =>
+  elaborate
+  where elaborate  := do
     let ctx? ← getContext
-    match ← elabThmFromStx stx levelNames with
-    | Except.error err₁ =>
+    -- match ← elabThmFromStx stx levelNames with
+    -- | Except.error err₁ =>
+      let s := s.replace "\n" " "
       let frontEndErrs ← checkTypeElabFrontM s
       if frontEndErrs.isEmpty then
         match ← elabFrontTheoremExprM s with
         | Except.error err₂ =>
-          let res := .parsed s err₁ err₂ ctx?
+          let res := .parsed s "" err₂ ctx?
           appendLog "elab_errors" <| toJson res
           return Except.error res
         | Except.ok e => return Except.ok e
       else
-        let res := .parsed s err₁ frontEndErrs ctx?
+        let res := .parsed s "" frontEndErrs ctx?
         appendLog "elab_errors" <| toJson res
         return Except.error res
-    | Except.ok e => return  Except.ok e
+    -- | Except.ok e => return  Except.ok e
 
 -- for testing
 

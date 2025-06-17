@@ -31,14 +31,15 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
 
 
 unsafe def launchProcess (p : Parsed) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let translator : Translator ←  Translator.ofCli p
   IO.eprintln <| toJson translator
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
-    {module:= `LeanAide.StructToLean}] {}
+    {module:= `LeanAide.StructToLean},
+    {module:= `LeanAide.PaperCodes}] {}
   withUnpickle (← picklePath "docString")
     <|fun (docStringData : EmbedData) => do
   withUnpickle (← picklePath "description")

@@ -12,7 +12,7 @@ set_option compiler.extract_closed false
 def main : IO Unit := do
   initSearchPath (← Lean.findSysroot) initFiles
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.StructToLean},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}

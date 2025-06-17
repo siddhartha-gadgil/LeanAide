@@ -11,7 +11,7 @@ namespace LeanAide
 open Translate
 
 def clearEmbedQueries : TranslateM Unit := do
-  modify fun st => {st with queryEmbeddingCache := Std.HashMap.empty}
+  modify fun st => {st with queryEmbeddingCache := Std.HashMap.emptyWithCapacity 100000}
 
 def embedQueryCached (s: String)(retry : Bool := false) : TranslateM (Except String Json) := do
   match (← get).queryEmbeddingCache.get? s with
@@ -61,7 +61,7 @@ def getLeanSearchQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <|
         return arr[0:num_results]
       | Except.error e => IO.throwServerError s!"Could not obtain array from {js}; error: {e}"
 
-#eval getLeanSearchQueryJsonArray "prime numbers" 10
+-- #eval getLeanSearchQueryJsonArray "prime numbers" 10
 
 def getMoogleQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Array Json := do
   let apiUrl := "https://www.moogle.ai/api/search"

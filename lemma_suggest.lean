@@ -1,10 +1,9 @@
 import LeanCodePrompts.NearestEmbeddings
 import LeanAide.Descriptions
-import Cache.IO
 import LeanAide.Aides
 import Lean.Data.Json
 import Batteries.Util.Pickle
-open Lean Cache.IO LeanAide.Meta
+open Lean LeanAide.Meta LeanAide Translator
 
 unsafe def checkAndFetch (descField: String) : IO Unit := do
   let picklePath ← picklePath descField
@@ -18,14 +17,14 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
      else pure false
   unless picklePresent do
     IO.eprintln "Fetching embeddings ..."
-    let out ← runCurl #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]
+    let out ← IO.Process.output {cmd:= "curl", args := #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]}
     IO.eprintln "Fetched embeddings"
-    IO.eprintln out
+    IO.eprintln out.stdout
 
 unsafe def main  : IO Unit := do
   searchPathRef.set compile_time_search_path%
   let env ←
-    importModules #[{module := `Mathlib},
+    importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate}] {}
   let source ← IO.FS.readFile ("rawdata" / "premises" / "ident_pairs" / "more-frequencies.json")
@@ -79,7 +78,7 @@ unsafe def main  : IO Unit := do
       IO.println s!"{count} {name}"
       count := count + 1
       IO.println s!"{cacheMap.size} descriptions in cache\n"
-      let core := getDescriptionCachedCore name  (cacheMap := cacheMap)
+      let core := getDescriptionCachedCore name  (cacheMap := cacheMap) {}
       let io? ←
         core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000} {env := env} |>.runToIO'
       match io? with

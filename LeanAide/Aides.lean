@@ -29,7 +29,7 @@ def cachePath : IO System.FilePath := do
   else
     return leanAidePath / path
 
-#eval cachePath
+-- #eval cachePath
 
 def reroutePath (fp : System.FilePath) : IO System.FilePath := do
   if ← fp.pathExists then
@@ -144,6 +144,12 @@ def consTactics (h: TSyntax `tactic)(s : TSyntax ``tacticSeq):
       `(tacticSeq| $[$ts']*)
   | _ => pure s
 
+def endsWithDone (t: TSyntax ``tacticSeq) : MetaM Bool := do
+  match getTactics t |>.back? with
+  | some t =>
+    let fmt ← PrettyPrinter.ppTactic t
+    pure <| fmt.pretty.trim.endsWith "done"
+  | _ => pure false
 
 def threadNum : IO Nat := do
   try
@@ -206,7 +212,7 @@ def Array.batches' (l: Array α)(numBatches: Nat) : Array (Array α) :=
 /-
 Obtaining names of constants
 -/
-#check Name.isInternalDetail
+-- #check Name.isInternalDetail
 
 def isBlackListed  (declName : Name) : MetaM  Bool := do
   let env ← getEnv
@@ -378,14 +384,15 @@ def trivialEquality : Syntax → CoreM Bool
 def codeBlock (code: String) (s: String) : String :=
   let fullSplit := s.splitOn s!"```{code}"
   let split := if fullSplit.length > 1
-    then fullSplit.get! 1 else
-    s.splitOn "```" |>.get! 1
-  split.splitOn "```" |>.get! 0
+    then fullSplit[1]! else
+    (s.splitOn "```")[1]!
+  (split.splitOn "```")[0]!
 
 def codeBlock? (code: String) (s: String) : Option String := do
-  let split ←   s.splitOn s!"```{code}" |>.get? 1 |>.orElse fun _ =>
-    s.splitOn "```" |>.get? 1
-  split.splitOn "```" |>.get? 0
+  let split ←
+    (s.splitOn s!"```{code}")[1]? |>.orElse fun _ =>
+      (s.splitOn "```")[1]?
+  (split.splitOn "```")[0]?
 
 def extractLean (s: String) : String :=
   codeBlock? "lean" s |>.getD s
@@ -762,11 +769,18 @@ def Lean.Json.getKVorType? (js : Json) : Option (String × Json) :=
     | #[⟨k, v⟩] => some (k, v)
     | jsArr =>
       let keys := jsArr.map (fun ⟨k, _⟩ => k)
+      let keyVals := jsArr.map (fun ⟨k, v⟩ => (k, v))
       if keys.contains "type" then
         let purged := jsArr.filter (fun ⟨k, _⟩ => k != "type")
         let purged : Array (String × Json) :=
           purged.map fun ⟨k, v⟩ => (k, v)
-        some ("type", Json.mkObj purged.toList)
+        let typeVal? := keyVals.findSome? (fun (k, v) => if k == "type" then some v else none)
+        match typeVal? with
+          | some typeVal =>
+            let type? := typeVal.getStr?.toOption
+            type?.map fun type =>
+              (type, Json.mkObj purged.toList)
+          | none => none
       else
         none
   | _ => none
@@ -789,3 +803,19 @@ def flattenTactics (tacs: Array <| TSyntax ``tacticSeq) :
   CoreM (TSyntax ``tacticSeq) := do
   let tacs := tacs.map getTactics |>.flatten
   `(tacticSeq| $tacs*)
+
+partial def Lean.Expr.hasUnassignedExprMVar (e: Expr) : MetaM Bool := do
+  let deps ← getMVars e
+  for m in deps do
+    match (← getExprMVarAssignment? m) with
+    | some e  =>
+      if ←  e.hasUnassignedExprMVar then
+        return true
+    | none => return true
+  return false
+
+-- def checkNoLoop : MetaM Bool := do
+--   let mvar ← mkFreshExprMVar (mkConst ``Nat)
+--   mvar.hasUnassignedExprMVar
+
+-- #eval checkNoLoop

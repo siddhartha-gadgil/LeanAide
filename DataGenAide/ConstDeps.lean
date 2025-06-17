@@ -113,7 +113,7 @@ def withSorry' (n m: Nat) : n + m = m + n := by
   | zero => simp
   | succ n ih => sorry
 
-#check show_sorries# LeanAide.Meta.withSorry'
+-- #check show_sorries# LeanAide.Meta.withSorry'
 
 /-- names that are offspring of the constant with a given name -/
 def offSpring? (name: Name) : MetaM (Option (Array Name)) := do
@@ -128,7 +128,7 @@ def offSpring? (name: Name) : MetaM (Option (Array Name)) := do
     IO.eprintln s!"no expr for {name}"
     return none
 
-initialize simplifyCache : IO.Ref (Std.HashMap Expr Expr) ← IO.mkRef Std.HashMap.empty
+initialize simplifyCache : IO.Ref (Std.HashMap Expr Expr) ← IO.mkRef Std.HashMap.emptyWithCapacity
 
 def Lean.Expr.simplify(e: Expr) : MetaM Expr := do
   try
@@ -406,7 +406,7 @@ def getPropMapStr : MetaM <| Std.HashMap String (String × String) := do
       IO.FS.Handle.mk omittedPath IO.FS.Mode.append
     propOmittedHandle.putStrLn "import Mathlib"
     let cs ← constantNameValueTypes
-    let mut m : Std.HashMap String (String × String) := Std.HashMap.empty
+    let mut m : Std.HashMap String (String × String) := Std.HashMap.emptyWithCapacity 10000
     let mut dfs : Array DefDataRepr := #[]
     for (name, value, type, doc?) in cs do
       if !(excludePrefixes.any (fun pfx => pfx.isPrefixOf name)) && type.approxDepth < 60 then
@@ -498,7 +498,7 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
     IO.eprintln s!"Found {cs.size} constants"
     let mut count := 0
     let mut m : Std.HashMap Name (Nat × (Array (Name × Nat × String × Bool × String)) ×
-         Array (Name × Nat × String × Bool)) := Std.HashMap.empty
+         Array (Name × Nat × String × Bool)) := Std.HashMap.emptyWithCapacity 10000
     for ⟨name, type, doc?⟩ in cs do
         count := count + 1
         if count % 400 == 0 then

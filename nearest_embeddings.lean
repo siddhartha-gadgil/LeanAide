@@ -1,10 +1,9 @@
 import LeanCodePrompts.NearestEmbeddings
 import LeanCodePrompts.EpsilonClusters
-import Cache.IO
 import LeanAide.Aides
 import Lean.Data.Json
 import Batteries.Util.Pickle
-open Lean Cache.IO
+open Lean
 
 unsafe def checkAndFetch (descField: String) : IO Unit := do
   let picklePath ← picklePath descField
@@ -21,12 +20,12 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
      else pure false
   unless picklePresent do
     IO.eprintln s!"Fetching embeddings ... ({picklePath})"
-    let out ← runCurl #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]
+    let out ← IO.Process.output {cmd:= "curl", args := #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]}
     IO.eprintln "Fetched embeddings"
-    IO.eprintln out
+    IO.eprintln out.stdout
 
 unsafe def main (args: List String) : IO Unit := do
-  let inp := args.get! 0
+  let inp := args[0]!
   let (descField, doc, num, penalty) :=
     match Json.parse inp with
     | Except.error _ => ("docString", inp, 10, 2.0)
