@@ -269,7 +269,7 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         let qp := translator.codeGenerator
         let (code, declarations) ← qp.mathDocumentCode js
         return Json.mkObj
-          [("result", "success"), ("lean_code", code.pretty), ("declarations", toJson declarations), ("top_code", CodeGenerator.topCode)]
+          [("result", "success"), ("le an_code", code.pretty), ("declarations", toJson declarations), ("top_code", CodeGenerator.topCode)]
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]

@@ -128,5 +128,3 @@ def newDeclarations (s: String) : MetaM <| List Name := do
   return newConstants.filter (· ∉ constants)
 
 -- #eval newDeclarations "def x : Nat := 0"
-
-#check Elab.runFrontend
