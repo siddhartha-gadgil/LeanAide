@@ -351,8 +351,7 @@ def handle_ai_proof_input(key: str):
         else:
             st.markdown(st.session_state.prompt_proof_guide)
 
-    gen_ai = st.button("Generate AI Proof", key=f"generate_ai_proof_{key}")
-    if gen_ai:
+    if st.button("Generate AI Proof"):
         with st.spinner("Generating AI proof. Please wait for a short while..."):
             try:
                 st.session_state.proof = model_response_gen(
@@ -392,19 +391,24 @@ def handle_general_input(key: str):
         input_formats.insert(1, "Generate AI Proof from Theorem")
         selectbox_text += " or Generate AI Proof from Theorem"
 
+    if not st.session_state.format_index or not st.session_state.input_paper:
+        st.session_state.format_index = 1 if key == "paper" else 0
+
     format_opt = st.selectbox(
         selectbox_text,
         options = input_formats,
         help = f"Select the format in which you want to input the {key}. You may instead type the {key} text directly.",
         placeholder = "Choose input format",
         key = f"input_format_{key}",
-        index = 1 if key == "paper" else 0  # Default to PDF for paper, else default to first option
+        index = st.session_state.format_index  # Default to PDF for paper, else default to first option
     )
     if "image" in format_opt.lower():
         st.session_state[f"input_image_{key}"] = True
+        st.session_state.format_index = input_formats.index(format_opt)
         handle_image_input(key) 
         log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
     elif "pdf" in format_opt.lower():
+        st.session_state.format_index = input_formats.index(format_opt)
         st.session_state[f"input_pdf_{key}"] = True
         handle_pdf_input(key)
         log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
@@ -413,14 +417,19 @@ def handle_general_input(key: str):
             st.session_state[f"input_pdf_{_elem}"] = False
             st.session_state[f"input_image_{_elem}"] = False
         if "markdown" in format_opt.lower():
+            st.session_state.format_index = input_formats.index(format_opt)
             handle_textual_file_input(key, extension="md")
         elif "text" in format_opt.lower():
+            st.session_state.format_index = input_formats.index(format_opt)
             handle_textual_file_input(key, extension="txt")
         elif "latex" in format_opt.lower():
+            st.session_state.format_index = input_formats.index(format_opt)
             handle_textual_file_input(key, extension="tex")
         elif "ai proof" in format_opt.lower() and key.lower() == "proof": # Only for Proof
+            st.session_state.format_index = input_formats.index(format_opt)
             handle_ai_proof_input(key)
         else: # Self typed input
+            st.session_state.format_index = input_formats.index(format_opt)
             handle_text_input(key) 
         log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
 
