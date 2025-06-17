@@ -438,7 +438,7 @@
         },
         "value": {
           "type": "string",
-          "description": "(OPTIONAL) The value of the variable being defined"
+          "description": "(OPTIONAL) The value of the variable being defined. This MUST BE an explicit value. If the value is the obtained from an existence statement, use `assert_statement` instead."
         },
         "variable_type": {
           "type": "string",
@@ -447,6 +447,10 @@
         "properties": {
           "type": "string",
           "description": "(OPTIONAL) Specific properties of the variable beyond the type"
+        },
+        "statement": {
+          "type": "string",
+          "description": "The full statement made."
         }
       },
       "required": [
@@ -457,7 +461,7 @@
     },
     "some_statement": {
       "type": "object",
-      "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'",
+      "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'. **NOTE:** It is better to use `assert_statement` instead if the variable is not being defined but rather asserted to exist.",
       "properties": {
         "type": {
           "type": "string",
@@ -475,6 +479,10 @@
         "properties": {
           "type": "string",
           "description": "(OPTIONAL) Specific properties of the variable beyond the type"
+        },
+        "statement": {
+          "type": "string",
+          "description": "The full statement made."
         }
       },
       "required": [
@@ -485,7 +493,7 @@
     },
     "assume_statement": {
       "type": "object",
-      "description": "A mathematical assumption being made. Use 'let_statement' or 'some_statement' if introducing variables.",
+      "description": "A mathematical assumption being made. Use 'let_statement' or 'some_statement' if introducing variables or 'assert_statement' to introduce a variable in terms of a property.",
       "properties": {
         "type": {
           "type": "string",
@@ -561,7 +569,11 @@
               },
               "target_identifier": {
                 "type": "string",
-                "description": "(OPTIONAL) The unique 'label' of the document element being referenced (e.g., 'sec:intro', 'thm:main', 'fig:diagram')."
+                "description": "(OPTIONAL) The unique 'label' of the document element being referenced (e.g., 'sec:intro', 'thm:main', 'fig:,diagram')."
+              },
+              "mathlib_identifier": {
+                "type": "string",
+                "description": "(OPTIONAL) The name of the result being used in Lean Prover or its library Mathlib)."
               }
             },
             "required": [

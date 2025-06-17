@@ -653,9 +653,12 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
       let valueSegment := match js.getObjString? "value" with
         | some v => s!"{v}"
         | _ => ""
-      let propertySegment := match js.getObjString? "properties" with
-        | some p => s!"(such that) {p}"
-        | _ => ""
+      let propertySegment := match js.getObjString? "properties", js.getObjString? "variable_name" with
+        | some p, some v =>
+          if v != "<anonymous>"
+            then s!"(such that) ({v} is) {p}"
+            else s!"(such that) {p}"
+        | _, _ => ""
       s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
 
 
