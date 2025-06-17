@@ -876,7 +876,7 @@ where typeStx (js: Json) :
       findTheorem? target
   let usedNames := labelledTheorems.map (·.name)
   let ids := (usedNames ++ names').map mkIdent
-  let tac ← `(tactic| auto? [ $ids,* ])
+  let tac ← `(tactic| hammer [ $ids,* ])
   let tacs ← runTacticsAndGetTryThisI (type) #[tac]
   return (← delabDetailed type, ← `(tacticSeq| $tacs*))
 
@@ -1122,7 +1122,7 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
 
 def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json)) (exhaustiveness: Option <| Syntax.Tactic) : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
-    let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
+    let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer)]
     let pf := match exhaustiveness with
       | some e => #[e] ++ pf
       | none => pf
@@ -1354,7 +1354,7 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
     s!"codegen: no 'claim' found in 'conclude_statement'"
   let type ← translator.translateToPropStrict claim
   let stx ← delabDetailed type
-  let pf ← runTacticsAndGetTryThisI type #[← `(tactic| auto?)]
+  let pf ← runTacticsAndGetTryThisI type #[← `(tactic| hammer)]
   `(tacticSeq| have : $stx := by $pf*)
 | none, ``tacticSeq, _ => do return none
 | _, kind, _ => throwError

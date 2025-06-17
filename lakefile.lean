@@ -198,6 +198,8 @@ lean_exe extras.depnames{
   supportInterpreter := true
 }
 
+require Hammer from git "https://github.com/JOSHCLUNE/LeanHammer" @ "main"
+
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"@"v4.20.1"

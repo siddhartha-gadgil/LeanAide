@@ -5,6 +5,7 @@ import LeanAide.TranslateM
 import LeanCodePrompts.Translate
 import LeanAide.RunTactics
 import LeanAide.AutoTactic
+import Hammer
 /-!
 ## Code generation from JSON data
 
@@ -179,7 +180,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     -- IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
     return (← appendTactics accum code, none)
   | none => do
-  match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| auto?)] (strict := true) with
+  match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer)] (strict := true) with
   | some autoTacs => do
     let autoTac ← `(tacticSeq| $autoTacs*)
     IO.eprintln s!"codegen: automation closes the goal"
@@ -241,7 +242,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     for decl in lctx do
       IO.eprintln s!"{decl.userName}: {← ppExpr <| decl.type}"
     let autoTacs ←
-      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
+      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer)]
     IO.eprintln s!"codegen: auto tactics:"
     for tac in autoTacs do
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
