@@ -1,7 +1,7 @@
 import ast
 import json
 import os
-from collections import deque
+import sys
 from pathlib import Path
 from typing import Any, Tuple, Type
 
@@ -23,6 +23,16 @@ TASKS = {
         "input": {"data": "String"},
         "output": {"data": "String"}
     },
+    "Documentation for a Theorem": {
+        "task_name": "theorem_doc",
+        "input": {"name": "String", "command": "String"},
+        "output": {"doc": "String"},
+    },
+    "Documentation for a Definition": {
+        "task_name": "def_doc",
+        "input": {"name": "String", "command": "String"},
+        "output": {"doc": "String"},
+    },
     "Translate Theorem": {
         "task_name": "translate_thm",
         "input": {"text": "String"},
@@ -37,6 +47,16 @@ TASKS = {
         "input": {"text": "String"},
         "output": {"definition": "String"},
         "parameters": {"fallback": "Bool (default: true)"},
+    },
+    "Theorem Name": {
+        "task_name": "theorem_name",
+        "input": {"text": "String"},
+        "output": {"name": "String"}
+    },
+    "Prove": {
+        "task_name": "prove",
+        "input": {"theorem": "String"},
+        "output": {"proof": "String"}
     },
     "Translate Theorem Detailed": {
         "task_name": "translate_thm_detailed",
@@ -53,39 +73,10 @@ TASKS = {
             "fallback": "Bool (default: true)",
         },
     },
-    "Documentation for a Theorem": {
-        "task_name": "theorem_doc",
-        "input": {"name": "String", "command": "String"},
-        "output": {"doc": "String"},
-    },
-    "Documentation for a Definition": {
-        "task_name": "def_doc",
-        "input": {"name": "String", "command": "String"},
-        "output": {"doc": "String"},
-    },
-    "Theorem Name": {
-        "task_name": "theorem_name",
-        "input": {"text": "String"},
-        "output": {"name": "String"}
-    },
-    "Prove": {
-        "task_name": "prove",
-        "input": {"theorem": "String"},
-        "output": {"proof": "String"}
-    },
     "Structured JSON Proof": {
         "task_name": "structured_json_proof",
         "input": {"theorem": "String", "proof": "String"},
         "output": {"json_structured": "Json"},
-    },
-    "Lean from JSON Structured": {
-        "task_name": "lean_from_json_structured",
-        "input": {"json_structured": "Json"},
-        "output": {
-            "lean_code": "String",
-            "declarations": "List String",
-            "top_code": "String",
-        },
     },
     "Elaborate Lean Code": {
         "task_name": "elaborate",
@@ -94,6 +85,15 @@ TASKS = {
         "parameters": {
             "top_code": 'String (default: "")',
             "describe_sorries": "Bool (default: false)",
+        },
+    },
+    "Lean from JSON Structured": {
+        "task_name": "lean_from_json_structured",
+        "input": {"json_structured": "Json"},
+        "output": {
+            "lean_code": "String",
+            "declarations": "List String",
+            "top_code": "String",
         },
     },
 }
@@ -199,8 +199,8 @@ def preview_text(key: str, default_text: str = ""):
             st.code(st.session_state[key] if st.session_state[key] else default_text, wrap_lines = True)
 
 def log_section():
-    st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked. If you refresh the page, the old logs will dissapear.")
-    with st.expander("Click to view Server logs", expanded=False):
+    st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked.")
+    with st.expander("Click to view Server-Streamlit logs.", expanded=False):
         if log_out := log_server():
             height = 500 if len(log_out) > 1000 else 150
             st.write("Server logs:")

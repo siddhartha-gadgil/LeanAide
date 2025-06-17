@@ -28,7 +28,7 @@ def process_reader(process, output_queue):
             break  # Process terminated
         output_queue.put(line.strip())
         print(f"process stdout: {line.strip()}")
-        log_write("Server stdout", line.strip())
+        log_write("Server stdout", line.strip(), log_file=True)
 
 def process_error_reader(process):  # New function for stderr
     while True:
@@ -36,8 +36,7 @@ def process_error_reader(process):  # New function for stderr
         if not line:
             break  # Process terminated
         print(f"process stderr: {line.strip()}")
-        log_write("Server stderr", line.strip())
-        print("yo")
+        log_write("Server stderr", line.strip(), log_file=True)
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):

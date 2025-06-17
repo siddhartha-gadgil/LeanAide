@@ -55,7 +55,7 @@ if "task_tbd" not in st.session_state:
 
 st.session_state._task_tbd = st.session_state.task_tbd
 # list of tasks, each task has "name" field. use that
-st.multiselect("Select task(s) to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", key = "_task_tbd", on_change=lambda: setattr(st.session_state, "task_tbd", st.session_state._task_tbd))
+st.multiselect("Select task(s) to be performed:", list(reversed(list(TASKS.keys()))), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", key = "_task_tbd", on_change=lambda: setattr(st.session_state, "task_tbd", st.session_state._task_tbd))
 st.session_state.selected_tasks = st.session_state.task_tbd
 
 ## Multiselect box color set

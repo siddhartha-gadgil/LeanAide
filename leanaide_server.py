@@ -39,12 +39,12 @@ def run_server_api():
     if process.stdout:
         for line in process.stdout:
             print(line.strip())
-            log_write("Server Stdout", line.strip())
+            log_write("Server Stdout", line.strip(), True)
 
     if process.stderr:
         for line in process.stderr:
             print(line.strip())
-            log_write("Server Stderr", line.strip())
+            log_write("Server Stderr", line.strip(), True)
 
 def run_streamlit():
     """Run Streamlit app on port STREAMLIT_PORT only"""
@@ -61,7 +61,8 @@ def run_streamlit():
 
     # Write stderr to a file that Streamlit can read
     for line in process.stderr:
-        log_write("Streamlit", line)
+        print("Streamlit Stderr", line.strip())
+        log_write("Streamlit Stderr", line.strip(), log_file=True)
 
     # Force Streamlit to use only port STREAMLIT_PORT
     subprocess.run([
@@ -73,8 +74,8 @@ def run_streamlit():
     ])
     if process.stdout:
         for line in process.stdout:
-            print(line.strip())
-            log_write("Streamlit Stderr", line.strip())
+            print("Streamlit Stdout", line.strip())
+            log_write("Streamlit Stdout", line.strip(), log_file=True)
 
 def signal_handler(sig, frame):
     """Handle Ctrl+C to terminate both processes"""
