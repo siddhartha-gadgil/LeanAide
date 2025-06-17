@@ -11,7 +11,7 @@ namespace LeanAide
 open Translate
 
 def clearEmbedQueries : TranslateM Unit := do
-  modify fun st => {st with queryEmbeddingCache := Std.HashMap.empty}
+  modify fun st => {st with queryEmbeddingCache := Std.HashMap.emptyWithCapacity 100000}
 
 def embedQueryCached (s: String)(retry : Bool := false) : TranslateM (Except String Json) := do
   match (← get).queryEmbeddingCache.get? s with

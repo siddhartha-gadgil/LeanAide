@@ -317,6 +317,14 @@ where
         s!"codegen: no proof translation found for {pf}"
       pure pfStx
     let name ← translator.server.theoremName thm
+    let name :=
+      if name.toString = "[anonymous]" then
+        let hash := thm.hash
+        let name := s!"thm_{hash}"
+        name.toName
+      else
+        name
+    IO.eprintln s!"codegen: Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := true, source:= js}

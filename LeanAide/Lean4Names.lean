@@ -44,7 +44,7 @@ def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   | Except.ok stx => return Except.ok <| ← lean4NamesSyntax stx
 
 def elabThm4Aux (s : String)
-  (levelNames : List Lean.Name := levelNames)
+  (_levelNames : List Lean.Name := levelNames)
   : TranslateM <| Except ElabError Expr := do
   -- let s := s.replace "\n" " "
   -- let env ← getEnv
