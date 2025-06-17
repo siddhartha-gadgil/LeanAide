@@ -7,20 +7,13 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from collections import deque
-from multiprocessing import Manager
+from server.logging_utils import log_write
 
 STREAMLIT_PORT = 8501
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
 
 home_dir = str(Path(__file__).resolve().parent)
 serv_dir = os.path.join(home_dir, "server")
-
-
-# In-memory log storage with max size (1000 lines by default)
-manager = Manager()
-LOG_BUFFER = manager.list()  # Shared log buffer for multiprocessing
-LOG_BUFFER_MAXLEN = 10000
 
 STREAMLIT_FILE = os.path.join(serv_dir, "streamlit_ui.py")
 SERVER_FILE = os.path.join(serv_dir, "api_server.py")
@@ -34,33 +27,24 @@ def is_port_in_use(port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('localhost', port)) == 0
 
-def log_write(proc_name: str, log_message: str, log_buffer=None):
-    """
-    Write a message to the in-memory log buffer
-    Format: "[proc_name] log_message"
-    """
-    try:
-        log_entry = f"[{proc_name}] {log_message}\n"
-        if log_buffer is None:
-            log_buffer = LOG_BUFFER
-        log_buffer.append(log_entry)
-        # Truncate if over maxlen
-        while len(log_buffer) > LOG_BUFFER_MAXLEN:
-            log_buffer.pop(0)
-    except Exception as e:
-        print(f"Error writing to log buffer: {e}")
-
 def run_server_api():
-    """Run Server server using uvicorn and log output in main process"""
+    """Run Server server using uvicorn"""
     process = subprocess.Popen(
         [sys.executable, SERVER_FILE, COMMAND],
         stderr=subprocess.PIPE,
         text=True
     )
-    # Write stderr to log and also print to console stderr
-    for line in process.stderr:
-        log_write("Server Stderr", line.strip())
-        print(f"[Server Stderr] {line.strip()}", file=sys.stderr)
+
+    # Log stderr
+    if process.stdout:
+        for line in process.stdout:
+            print(line.strip())
+            log_write("Server Stdout", line.strip(), True)
+
+    if process.stderr:
+        for line in process.stderr:
+            print(line.strip())
+            log_write("Server Stderr", line.strip(), True)
 
 def run_streamlit():
     """Run Streamlit app on port STREAMLIT_PORT only"""
@@ -74,10 +58,11 @@ def run_streamlit():
         "--server.headless=true",
         "--browser.gatherUsageStats=false"
     ], stderr=subprocess.PIPE, text=True)
-    
+
     # Write stderr to a file that Streamlit can read
     for line in process.stderr:
-        log_write("Streamlit", line)
+        print("Streamlit Stderr", line.strip())
+        log_write("Streamlit Stderr", line.strip(), log_file=True)
 
     # Force Streamlit to use only port STREAMLIT_PORT
     subprocess.run([
@@ -87,6 +72,10 @@ def run_streamlit():
         "--server.headless=true",
         "--browser.gatherUsageStats=false"
     ])
+    if process.stdout:
+        for line in process.stdout:
+            print("Streamlit Stdout", line.strip())
+            log_write("Streamlit Stdout", line.strip(), log_file=True)
 
 def signal_handler(sig, frame):
     """Handle Ctrl+C to terminate both processes"""
@@ -108,7 +97,7 @@ def check_dependencies():
         required_packages = [pkg.replace('-', '_') for pkg in required_packages]
     except Exception as e:
         print(f"Error reading requirements.txt: {e}")
-    
+
     missing_packages = []
     for package in required_packages:
         if "dotenv" in package:
@@ -116,7 +105,7 @@ def check_dependencies():
         spec = importlib.util.find_spec(package)
         if spec is None:
             missing_packages.append(package)
-    
+
     return missing_packages
 
 if __name__ == "__main__":
@@ -133,7 +122,7 @@ if __name__ == "__main__":
             print("  --help | -h            Show this help message")
             print("Any other argument will be passed on to the process `lake exe leanaide_process` as it is.")
             sys.exit(0)
-    
+
     run_ui = "--ui" in sys.argv
     run_server = "--no-server" not in sys.argv and "--ns" not in sys.argv
     missing_st = True
@@ -150,17 +139,15 @@ if __name__ == "__main__":
             print("\033[1;32mDependencies satisfied. Streamlit UI can be run.\033[0m")
 
     print("\n\033[1;34mStarting servers:\033[0m")
-    
+
     # Start processes
     serv_process = None
     streamlit_process = None
-    
+
     if run_server:
         print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get('HOST', 'localhost')}:{LEANAIDE_PORT}\n")
-        # Start server in a thread so we can keep main process alive
-        import threading
-        serv_thread = threading.Thread(target=run_server_api, daemon=True)
-        serv_thread.start()
+        serv_process = multiprocessing.Process(target=run_server_api)
+        serv_process.start()
     else:
         print("\033[1;34mRunning without API server\033[0m\n")
 

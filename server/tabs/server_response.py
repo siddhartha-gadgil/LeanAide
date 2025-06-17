@@ -6,7 +6,8 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from api_server import HOST, PORT
-from serv_utils import TASKS, get_actual_input, validate_input_type, copy_to_clipboard, log_write, log_section, button_clicked
+from serv_utils import TASKS, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked
+from logging_utils import log_write
 
 load_dotenv()
 
@@ -49,9 +50,13 @@ st.header("Server Request", divider = True, help = "For your input request, this
 
 st.subheader("Structured Input: Select Tasks", help = "Select the tasks you want to perform and provide the necessary inputs.")
 
+if "task_tbd" not in st.session_state:
+    st.session_state.task_tbd = []
+
+st.session_state._task_tbd = st.session_state.task_tbd
 # list of tasks, each task has "name" field. use that
-tasks_tbd = st.multiselect("Select task(s) to be performed:", TASKS.keys(), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", default = st.session_state.get("selected_tasks", []))
-st.session_state.selected_tasks = tasks_tbd
+st.multiselect("Select task(s) to be performed:", list(reversed(list(TASKS.keys()))), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", key = "_task_tbd", on_change=lambda: setattr(st.session_state, "task_tbd", st.session_state._task_tbd))
+st.session_state.selected_tasks = st.session_state.task_tbd
 
 ## Multiselect box color set
 st.markdown("""
@@ -73,7 +78,7 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
     st.session_state.self_input_button = True
     for task in st.session_state.selected_tasks:
         # Get input for each task
-        for key, val_type in TASKS[task].get("input", {}).items():
+        for key, val_type in TASKS[task].get("input",{}).items():
             help = f"Please provide input for `{key}` of type `{val_type}`."
             # Special case for input being "json_structured"
             if key.lower() == "json_structured":
@@ -93,6 +98,10 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
                 val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", value = st.session_state.val_input.get(key, ""))
             else:
                 val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, value = st.session_state.val_input.get(key, ""))
+
+            if str(val_in).strip() == "":
+                st.session_state.val_input[key] = None
+            ## Put input value in session state
             if val_in:
                 inp_type, st.session_state.val_input[key] = get_actual_input(val_in)
                 if validate_input_type(inp_type, val_type):
@@ -102,6 +111,7 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
                         f"Invalid input type for {key}. Expected `{val_type}`, got `{inp_type.__name__}`. See help for each input for more info. Please try again."
                     )
                     st.session_state.valid_input = False
+                    st.session_state.val_input[key] = None
 
         # Parameters for each task
         for param, param_type in TASKS[task].get("parameters", {}).items():
@@ -125,6 +135,8 @@ if st.button("Give Input", help = "Provide inputs to the your selected tasks. No
 
     if st.session_state.valid_input:
         st.subheader("Query Obtained", help = "Note that default values will be used for any parameters that you did not provide input for.")
+        # Remove the values in val_input that are empty strings or None
+        st.session_state.val_input = {k: v for k, v in st.session_state.val_input.items() if v not in ["", None]}
         st.json(st.session_state.val_input)
         log_write("Streamlit", "Query Obtained: Success")
 

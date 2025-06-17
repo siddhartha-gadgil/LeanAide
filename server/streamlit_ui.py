@@ -9,7 +9,7 @@ NONE_INIT_KEYS = [
 ]
 
 FALSE_INIT_KEYS = [
-    "request_button", "self_input_button", 
+    "request_button", "self_input_button", "log_server_cleaned", "log_order",
     "server_output_success", "valid_input", "log_cleaned", "input_paper", 
     "generation_complete", "input_image_paper", "input_pdf_paper", "input_image_proof", 
     "input_image_theorem", "input_pdf_proof", "input_pdf_theorem"
@@ -45,12 +45,17 @@ structured_json_page = st.Page(
     title = "Structured Json",
     icon = ":material/code:"
 )
-
+logs_page = st.Page(
+    page = "tabs/logs_display.py",
+    title = "Logs",
+    icon = ":material/bug_report:",
+)
 ## Navigation
 pg = st.navigation(pages = [
     intro_page,
     server_response_page,
     structured_json_page,
+    logs_page
 ])
 
 for state in (NONE_INIT_KEYS + FALSE_INIT_KEYS + ["selected_tasks"]):

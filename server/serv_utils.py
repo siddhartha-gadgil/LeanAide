@@ -1,15 +1,18 @@
 import ast
 import json
 import os
-from collections import deque
+import sys
 from pathlib import Path
 from typing import Any, Tuple, Type
 
 import streamlit as st
 from st_copy import copy_button
 
-HOST = os.environ.get("HOST", "localhost")  
+from logging_utils import log_server, log_buffer_clean
+
+HOST = os.environ.get("HOST", "localhost")
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
+sys.path.append(HOMEDIR)
 schema_path = os.path.join(str(HOMEDIR), "resources", "PaperStructure.json")
 SCHEMA_JSON = json.load(open(schema_path, "r", encoding="utf-8"))
 
@@ -19,6 +22,16 @@ TASKS = {
         "task_name": "echo",
         "input": {"data": "String"},
         "output": {"data": "String"}
+    },
+    "Documentation for a Theorem": {
+        "task_name": "theorem_doc",
+        "input": {"name": "String", "command": "String"},
+        "output": {"doc": "String"},
+    },
+    "Documentation for a Definition": {
+        "task_name": "def_doc",
+        "input": {"name": "String", "command": "String"},
+        "output": {"doc": "String"},
     },
     "Translate Theorem": {
         "task_name": "translate_thm",
@@ -35,31 +48,6 @@ TASKS = {
         "output": {"definition": "String"},
         "parameters": {"fallback": "Bool (default: true)"},
     },
-    "Translate Theorem Detailed": {
-        "task_name": "translate_thm_detailed",
-        "input": {"text": "String"},
-        "output": {
-            "theorem": "String",
-            "name": "String", 
-            "proved": "Bool",
-            "statement": "String",
-            "definitions_used": "String"
-        },
-        "parameters": {
-            "greedy": "Bool (default: true)",
-            "fallback": "Bool (default: true)",
-        },
-    },
-    "Documentation for a Theorem": {
-        "task_name": "theorem_doc",
-        "input": {"name": "String", "command": "String"},
-        "output": {"doc": "String"},
-    },
-    "Documentation for a Definition": {
-        "task_name": "def_doc",
-        "input": {"name": "String", "command": "String"},
-        "output": {"doc": "String"},
-    },
     "Theorem Name": {
         "task_name": "theorem_name",
         "input": {"text": "String"},
@@ -70,19 +58,25 @@ TASKS = {
         "input": {"theorem": "String"},
         "output": {"proof": "String"}
     },
+    "Translate Theorem Detailed": {
+        "task_name": "translate_thm_detailed",
+        "input": {"text": "String"},
+        "output": {
+            "theorem": "String",
+            "name": "String",
+            "proved": "Bool",
+            "statement": "String",
+            "definitions_used": "String"
+        },
+        "parameters": {
+            "greedy": "Bool (default: true)",
+            "fallback": "Bool (default: true)",
+        },
+    },
     "Structured JSON Proof": {
         "task_name": "structured_json_proof",
         "input": {"theorem": "String", "proof": "String"},
         "output": {"json_structured": "Json"},
-    },
-    "Lean from JSON Structured": {
-        "task_name": "lean_from_json_structured",
-        "input": {"json_structured": "Json"},
-        "output": {
-            "lean_code": "String",
-            "declarations": "List String",
-            "top_code": "String",
-        },
     },
     "Elaborate Lean Code": {
         "task_name": "elaborate",
@@ -91,6 +85,15 @@ TASKS = {
         "parameters": {
             "top_code": 'String (default: "")',
             "describe_sorries": "Bool (default: false)",
+        },
+    },
+    "Lean from JSON Structured": {
+        "task_name": "lean_from_json_structured",
+        "input": {"json_structured": "Json"},
+        "output": {
+            "lean_code": "String",
+            "declarations": "List String",
+            "top_code": "String",
         },
     },
 }
@@ -195,37 +198,9 @@ def preview_text(key: str, default_text: str = ""):
         else:
             st.code(st.session_state[key] if st.session_state[key] else default_text, wrap_lines = True)
 
-## LOGS SECTION
-
-# In-memory log storage with max size (1000 lines by default)
-LOG_BUFFER = deque(maxlen=1000)
-def log_server():
-    """Read from the in-memory log buffer"""
-    if not LOG_BUFFER:
-        return "No logs available yet."
-    return "".join(reversed(LOG_BUFFER))
-
-def log_write(proc_name: str, log_message: str):
-    """
-    Write a message to the in-memory log buffer
-    Format: "[proc_name] log_message"
-    """
-    try:
-        log_entry = f"[{proc_name}] {log_message}\n"
-        LOG_BUFFER.append(log_entry)
-    except Exception as e:
-        print(f"Error writing to log buffer: {e}")
-
-def log_buffer_clean():
-    try:
-        LOG_BUFFER.clear()
-    except Exception as e:
-        log_write("log_clean", f"Error clearing log buffer: {e}")
-
-
 def log_section():
-    st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked. If you refresh the page, the old logs will dissapear.")
-    with st.expander("Click to view Server logs", expanded=False):
+    st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked.")
+    with st.expander("Click to view Server-Streamlit logs.", expanded=False):
         if log_out := log_server():
             height = 500 if len(log_out) > 1000 else 150
             st.write("Server logs:")
