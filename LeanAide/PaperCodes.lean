@@ -1,5 +1,6 @@
 import LeanAide.Codegen
 import LeanAide.StructToLean
+import Hammer
 /-!
 # Code generation for LeanAide "PaperStructure" schema
 
@@ -317,6 +318,14 @@ where
         s!"codegen: no proof translation found for {pf}"
       pure pfStx
     let name ← translator.server.theoremName thm
+    let name :=
+      if name.toString = "[anonymous]" then
+        let hash := thm.hash
+        let name := s!"thm_{hash}"
+        name.toName
+      else
+        name
+    IO.eprintln s!"codegen: Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := true, source:= js}
@@ -653,9 +662,12 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
       let valueSegment := match js.getObjString? "value" with
         | some v => s!"{v}"
         | _ => ""
-      let propertySegment := match js.getObjString? "properties" with
-        | some p => s!"(such that) {p}"
-        | _ => ""
+      let propertySegment := match js.getObjString? "properties", js.getObjString? "variable_name" with
+        | some p, some v =>
+          if v != "<anonymous>"
+            then s!"(such that) ({v} is) {p}"
+            else s!"(such that) {p}"
+        | _, _ => ""
       s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
 
 
@@ -865,7 +877,7 @@ where typeStx (js: Json) :
       findTheorem? target
   let usedNames := labelledTheorems.map (·.name)
   let ids := (usedNames ++ names').map mkIdent
-  let tac ← `(tactic| auto? [ $ids,* ])
+  let tac ← `(tactic| hammer [ $ids,* ])
   let tacs ← runTacticsAndGetTryThisI (type) #[tac]
   return (← delabDetailed type, ← `(tacticSeq| $tacs*))
 
@@ -905,13 +917,11 @@ def calculationCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
     let tacSeq := #[headTac]
     `(tacticSeq| $tacSeq*)
   | Except.error _ =>
-    let .ok steps := js.getObjValAs? (Array Json) "calculation_sequence" | throwError
+    let .ok steps := js.getObjValAs? (Array String) "calculation_sequence" | throwError
       s!"codegen: no 'calculation_sequence' found in 'calculation'"
     let mut tacs : Array <| Syntax.Tactic := #[]
     for step in steps do
-      let .ok stepStx := step.getObjValAs? String "step" | throwError
-        s!"codegen: no 'step' found in 'calculation_step'"
-      let stx ← typeStx stepStx
+      let stx ← typeStx step
       let hash₀ := hash stx.raw.reprint
       let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
       let headTac ← `(tactic| have $name : $stx := by $tac)
@@ -1104,14 +1114,14 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
   let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
   let conditionBinder ←
     `(Lean.binderIdent| $conditionId:ident)
-  let tacs := #[← `(tactic| if $conditionBinder :  $conditionStx then $trueCaseProofStx else $falseCaseProofStx)]
+  let tacs := #[← `(tactic| if $conditionBinder :  $conditionStx then $trueCaseProofStx else $falseCaseProofStx), ← `(tactic| done)]
   `(tacticSeq| $tacs*)
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
 def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json)) (exhaustiveness: Option <| Syntax.Tactic) : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
-    let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
+    let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer)]
     let pf := match exhaustiveness with
       | some e => #[e] ++ pf
       | none => pf
@@ -1192,7 +1202,8 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
           s!"codegen: no translation found for exhaustiveness {e}"
         `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
   IO.eprintln s!"number of cases (after exhaustiveness): {cases.length}"
-  multiConditionCasesAux translator goal cases exhaustiveTac
+  let tacs ← multiConditionCasesAux translator goal cases exhaustiveTac
+  appendTactics tacs <| ← `(tacticSeq| done)
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
@@ -1258,7 +1269,7 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let tacs := #[← `(tactic|
     induction discrTerm' with
     | $zeroId => $baseCaseProofStx
-    | $succId:ident $ihId:ident => $inductionStepProofStx)]
+    | $succId:ident $ihId:ident => $inductionStepProofStx), ← `(tactic| done)]
   `(tacticSeq| $tacs*)
 | goal?, kind ,_ => throwError
     s!"codegen: induction does not work for kind {kind} with goal present: {goal?.isSome}"
@@ -1342,7 +1353,7 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
     s!"codegen: no 'claim' found in 'conclude_statement'"
   let type ← translator.translateToPropStrict claim
   let stx ← delabDetailed type
-  let pf ← runTacticsAndGetTryThisI type #[← `(tactic| auto?)]
+  let pf ← runTacticsAndGetTryThisI type #[← `(tactic| hammer)]
   `(tacticSeq| have : $stx := by $pf*)
 | none, ``tacticSeq, _ => do return none
 | _, kind, _ => throwError

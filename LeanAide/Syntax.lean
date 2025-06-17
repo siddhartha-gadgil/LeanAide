@@ -269,6 +269,6 @@ def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) :
     logInfo m!"Proof comment: {view}"
   | _ => throwUnsupportedSyntax
 
-/proof Hello there -/
+-- /proof Hello there -/
 
 end LeanAide.Meta

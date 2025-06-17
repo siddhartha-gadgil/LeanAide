@@ -5,6 +5,7 @@ import LeanAide.TranslateM
 import LeanCodePrompts.Translate
 import LeanAide.RunTactics
 import LeanAide.AutoTactic
+import Hammer
 /-!
 ## Code generation from JSON data
 
@@ -173,6 +174,21 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
   goal.withContext do
+  IO.eprintln "Trying exact tactics or automation"
+  match ← getExactTactics? (← goal.getType) with
+  | some code => do
+    IO.eprintln s!"codegen: exact tactics found for goal: {← ppExpr <| ← goal.getType}"
+    -- IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+    return (← appendTactics accum code, none)
+  | none => do
+  -- IO.eprintln "Trying automation tactics"
+  -- match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer)] (strict := true) with
+  -- | some autoTacs => do
+  --   let autoTac ← `(tacticSeq| $autoTacs*)
+  --   IO.eprintln s!"codegen: automation closes the goal"
+  --   return (← appendTactics accum autoTac, none)
+  -- | none => do
+  IO.eprintln "No exact or automation tactics found, trying sources"
   match sources with
   | [] => do
     return (accum, goal)
@@ -191,6 +207,14 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         -- no tactics generated, but side effect
         getCodeTacticsAux translator goal sources accum
       else
+        if ← endsWithDone code then
+          -- the source is done, so we can return the accumulated tactics
+          IO.eprintln s!"codegen: goal still open after tactics, but source is done"
+          IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
+          IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+          return (← appendTactics accum code, none)
+        else
+            -- continue with the next source
         let goal? ← runForSingleGoal goal code
         match goal? with
         | none => do -- tactics closed the goal
@@ -226,8 +250,6 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     for tac in autoTacs do
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
     appendTactics tacs (← `(tacticSeq| $autoTacs*))
-
-#check LocalContext
 
 def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   (sources: List Json) :
