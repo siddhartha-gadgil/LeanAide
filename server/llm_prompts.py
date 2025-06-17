@@ -24,3 +24,15 @@ def thmpf_prompt(thm, pf):
 
 def soln_from_image_prompt(image_text: str = ""):
     return f"You are proficient in extracting Mathematical text from images. Your task is to rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. \n {ocr_rules}. The extracted text is:\n\n{image_text}. Do not write any extra explanations. Avoid unnecessary causal sentences."
+
+def proof_for_thm_task():
+    return """
+You are a mathematical assistant specializing in writing clear, human-readable proofs.
+Your task is to write a formal proof in English for the given theorem.
+
+Follow these instructions strictly:
+1.  Write the entire proof in formal English.
+2.  Use LaTeX for all mathematical formulas and expressions, enclosing them in `$`.
+3.  Provide step-by-step reasoning using English sentences. Do not use Lean code or any other programming language for justifications.
+4.  Do not include any conversational text, introductory phrases, or concluding summaries. Output only the human understandable proof itself.
+"""

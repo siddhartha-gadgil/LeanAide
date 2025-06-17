@@ -7,8 +7,9 @@ from dotenv import load_dotenv
 from PIL import Image
 from streamlit_sortables import sort_items
 
-from llm_response import get_supported_models, gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf
-from serv_utils import SCHEMA_JSON, action_copy_download, preview_text, log_section
+from llm_prompts import proof_for_thm_task
+from llm_response import get_supported_models, gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf, model_response_gen
+from serv_utils import SCHEMA_JSON, HOMEDIR, action_copy_download, preview_text, log_section
 from logging_utils import log_write
 
 load_dotenv()
@@ -320,13 +321,79 @@ def handle_pdf_input(key:str):
         # Action buttons
         action_copy_download(key, f"{st.session_state.uploaded_pdf.name}", st.session_state[f"{key}_local_key"]) # has the extension .pdf
 
+# Helper function for AI proof output
+def handle_ai_proof_input(key: str):
+    """Handles AI proof generation from theorem input."""
+    st.subheader("Generate AI Proof from Theorem")
+
+    if "theorem" not in st.session_state or not st.session_state.theorem:
+        st.warning("Please enter a theorem before generating the proof.")
+        return
+
+    prompt_proof_guide_path = os.path.join(HOMEDIR, "resources", "ProofGuidelines.md")
+    st.session_state.prompt_proof_guide = ""
+    try:
+        with open(prompt_proof_guide_path, "r") as file:
+            st.session_state.prompt_proof_guide = file.read()
+    except FileNotFoundError:
+        st.session_state.prompt_proof_guide = "Write a proof for the theorem provided. It should be more declarative and structured so that it can be converted to Lean code."
+    
+    st.session_state.prompt_proof_guide = st.session_state.prompt_proof_guide+ "\n\nThe Theorem you have to prove is:\n" + st.session_state.theorem
+
+    with st.expander("Preview: AI Prompt for Generating Proof", expanded = False):
+        if st.checkbox("Edit Prompt", value = False):
+            st.session_state.prompt_proof_guide = st.text_area(
+                "AI Proof Generation Prompt",
+                value=st.session_state.prompt_proof_guide,
+                height=250,
+                help="You can edit the prompt for AI proof generation. It should be more declarative and structured so that it can be converted to Lean code.",
+            )
+        else:
+            st.markdown(st.session_state.prompt_proof_guide)
+
+    gen_ai = st.button("Generate AI Proof", key=f"generate_ai_proof_{key}")
+    if gen_ai:
+        with st.spinner("Generating AI proof. Please wait for a short while..."):
+            try:
+                st.session_state.proof = model_response_gen(
+                    prompt=st.session_state.prompt_proof_guide,
+                    task = proof_for_thm_task(),
+                    provider=st.session_state.llm_provider,
+                    model=st.session_state.model_text,
+                )
+                log_write("AI Proof Generation", "Success: Generated AI proof for theorem")
+            except Exception as e:
+                st.error(f"Failed to generate AI proof: {str(e)}")
+                st.session_state.proof = ""
+                log_write("AI Proof Generation", f"Error: Failed to generate AI proof: {e}")
+                return
+
+    if st.session_state.proof:
+        st.session_state.proof = st.text_area(
+            "AI Generated Proof",
+            value=st.session_state.proof,
+            height=200,
+            help="This is the AI generated proof for the theorem. You can edit it if needed.",
+            key=f"ai_proof_text_area_{key}"  # Unique key for text area
+        )
+        preview_text(key, "No Proof text available yet. Please generate or input the proof text.")
+        st.success(f"{key.capitalize()} received successfully")
+        action_copy_download(key, f"{key}.txt")
+    else:
+        st.warning(f"No {key} content available yet. Please generate or input the proof text.")
+        st.session_state[key] = ""
+
 # General input handler for theorem, proof, and paper
 def handle_general_input(key: str):
     st.subheader("Input "+ key.capitalize())
     input_formats = ["Type Input Yourself", "PDF(.pdf)", "Image(.png, .jpg, .jpeg)", "Markdown(.md)", "Text(.txt)" , "Latex(.tex)"]
+    selectbox_text = f"Choose input format for the {key}"
+    if key.lower() == "proof":
+        input_formats.insert(1, "Generate AI Proof from Theorem")
+        selectbox_text += " or Generate AI Proof from Theorem"
 
     format_opt = st.selectbox(
-        f"Choose input format for the {key}",
+        selectbox_text,
         options = input_formats,
         help = f"Select the format in which you want to input the {key}. You may instead type the {key} text directly.",
         placeholder = "Choose input format",
@@ -351,6 +418,8 @@ def handle_general_input(key: str):
             handle_textual_file_input(key, extension="txt")
         elif "latex" in format_opt.lower():
             handle_textual_file_input(key, extension="tex")
+        elif "ai proof" in format_opt.lower() and key.lower() == "proof": # Only for Proof
+            handle_ai_proof_input(key)
         else: # Self typed input
             handle_text_input(key) 
         log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
@@ -367,7 +436,7 @@ if input_method == input_options[0]: # Theorem-Proofs or Problems
     for key in ["theorem", "proof"]:
         handle_general_input(key) 
 
-if st.button("Generate Structured Proof"):
+if st.button("Generate Structured Proof", type = "primary"):
     if not st.session_state.paper and not (st.session_state.proof and  st.session_state.theorem):
         st.warning(
             "Please upload the inputs before generating the structured proof."

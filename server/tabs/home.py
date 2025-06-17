@@ -15,7 +15,7 @@ st.write(
 To use different services, you can visit the different pages in the sidebar.
 
 - `Server Response`: POST requests to the server and get response.
-- `Structured Json`: Input your theorem-proof and obtain structured JSON output with LeanAide Schema's.
+- `Structured Json`: Input your theorem & proof(or generate it using LLM's) and obtain structured JSON output based on LeanAide Schema's.
 - `Logs`: View the Server and Streamlit logs.
 
 Visit the official GitHub [LeanAide](https://github.com/siddhartha-gadgil/LeanAide) repository for more information and documentation.
