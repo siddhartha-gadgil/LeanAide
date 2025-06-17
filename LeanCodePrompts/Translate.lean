@@ -154,10 +154,10 @@ def chatServer : CoreM ChatServer := do
 Caching, polling etc to avoid repeatedly calling servers
 -/
 
-initialize webCacheJson : IO.Ref (Std.HashMap String (Json × Json × Array (String × Json))) ← IO.mkRef (Std.HashMap.empty)
+initialize webCacheJson : IO.Ref (Std.HashMap String (Json × Json × Array (String × Json))) ← IO.mkRef (Std.HashMap.emptyWithCapacity)
 
 initialize pendingJsonQueries : IO.Ref (Std.HashSet String)
-    ← IO.mkRef (Std.HashSet.empty)
+    ← IO.mkRef (Std.HashSet.emptyWithCapacity)
 
 def getCachedJson? (s: String) : IO (Option (Json × Json × Array (String × Json))) := do
   let cache ← webCacheJson.get
@@ -299,8 +299,6 @@ def bestElab (output: Array String) : TranslateM Expr := do
     let groupSorted ← groupThmExprsSorted priority
     logTimed "finished majority voting"
     return (groupSorted[0]!)[0]!
-
-#check sorryAx
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
 def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (Array ElabError) ElabSuccessResult) := do

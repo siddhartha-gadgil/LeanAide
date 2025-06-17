@@ -141,11 +141,11 @@ State for translation. The main motivation for this was to avoid repeatedly load
 -/
 structure Translate.State where
   /-- Embeddings to preload -/
-  embedMap : EmbedMap := Std.HashMap.empty
+  embedMap : EmbedMap := Std.HashMap.emptyWithCapacity
   /-- Embedding response associated to the query -/
-  queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.empty
+  queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.emptyWithCapacity 100000
   /-- Descriptions, docstrings etc -/
-  descriptionMap : Std.HashMap Name Json := Std.HashMap.empty
+  descriptionMap : Std.HashMap Name Json := Std.HashMap.emptyWithCapacity 100000
   cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]

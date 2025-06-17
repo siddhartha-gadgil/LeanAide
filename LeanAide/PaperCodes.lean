@@ -317,6 +317,14 @@ where
         s!"codegen: no proof translation found for {pf}"
       pure pfStx
     let name ← translator.server.theoremName thm
+    let name :=
+      if name.toString = "[anonymous]" then
+        let hash := thm.hash
+        let name := s!"thm_{hash}"
+        name.toName
+      else
+        name
+    IO.eprintln s!"codegen: Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := true, source:= js}
@@ -653,9 +661,12 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
       let valueSegment := match js.getObjString? "value" with
         | some v => s!"{v}"
         | _ => ""
-      let propertySegment := match js.getObjString? "properties" with
-        | some p => s!"(such that) {p}"
-        | _ => ""
+      let propertySegment := match js.getObjString? "properties", js.getObjString? "variable_name" with
+        | some p, some v =>
+          if v != "<anonymous>"
+            then s!"(such that) ({v} is) {p}"
+            else s!"(such that) {p}"
+        | _, _ => ""
       s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
 
 
@@ -1104,7 +1115,7 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
   let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
   let conditionBinder ←
     `(Lean.binderIdent| $conditionId:ident)
-  let tacs := #[← `(tactic| if $conditionBinder :  $conditionStx then $trueCaseProofStx else $falseCaseProofStx)]
+  let tacs := #[← `(tactic| if $conditionBinder :  $conditionStx then $trueCaseProofStx else $falseCaseProofStx), ← `(tactic| done)]
   `(tacticSeq| $tacs*)
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
@@ -1192,7 +1203,8 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
           s!"codegen: no translation found for exhaustiveness {e}"
         `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
   IO.eprintln s!"number of cases (after exhaustiveness): {cases.length}"
-  multiConditionCasesAux translator goal cases exhaustiveTac
+  let tacs ← multiConditionCasesAux translator goal cases exhaustiveTac
+  appendTactics tacs <| ← `(tacticSeq| done)
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
@@ -1258,7 +1270,7 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let tacs := #[← `(tactic|
     induction discrTerm' with
     | $zeroId => $baseCaseProofStx
-    | $succId:ident $ihId:ident => $inductionStepProofStx)]
+    | $succId:ident $ihId:ident => $inductionStepProofStx), ← `(tactic| done)]
   `(tacticSeq| $tacs*)
 | goal?, kind ,_ => throwError
     s!"codegen: induction does not work for kind {kind} with goal present: {goal?.isSome}"

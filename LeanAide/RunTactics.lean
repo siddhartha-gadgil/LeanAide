@@ -141,7 +141,7 @@ def getTacticsFromMessage? (msg: Message) :
     -- IO.eprintln s!"Message: {s} does not start with Try this:"
     return none
 
-def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic): TermElabM <| Option (Array Syntax.Tactic) :=
+def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
   let mvar ← mkFreshExprMVar goal
   let msgs ←
@@ -149,6 +149,15 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic): Term
   -- IO.eprintln "Messages:"
   -- for msg in msgs.toList do
   --   IO.eprintln s!"Message: {← msg.data.toString}"
+  if strict then
+    for msg in msgs.toList do
+      if msg.severity == MessageSeverity.error then
+        -- IO.eprintln s!"Error message: {← msg.data.toString}"
+        return none
+      if msg.severity == MessageSeverity.warning then
+        if (← msg.data.toString).trim == "declaration uses 'sorry'" then
+          -- IO.eprintln s!"Warning message with Try this: {← msg.data.toString}"
+          return none
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 

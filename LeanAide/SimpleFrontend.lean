@@ -100,7 +100,7 @@ def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
 
 def checkElabFrontM(s: String) : MetaM <| List String := do
   -- IO.eprintln  s!"Checking command elaboration for: {s}"
-  let (env, log) ← runFrontendM  s
+  let (_, log) ← runFrontendM  s
   let mut l := []
   for msg in log.toList do
     if msg.severity == MessageSeverity.error then
@@ -128,5 +128,3 @@ def newDeclarations (s: String) : MetaM <| List Name := do
   return newConstants.filter (· ∉ constants)
 
 -- #eval newDeclarations "def x : Nat := 0"
-
-#check Elab.runFrontend
