@@ -12,8 +12,6 @@ from logging_utils import log_write
 
 load_dotenv()
 
-st.sidebar.header("Server Response")
-
 st.title("LeanAide: Server Response")
 st.write(
     "Here you can send requests to the backend server and view the responses."
@@ -32,6 +30,7 @@ if not st.session_state.val_input:
 
 # Host Information Section
 with st.sidebar:
+    st.header("Server Response", divider = True)
     with st.expander("Host Information"):
         localhost_serv = st.checkbox(
             "Your backend server is running on localhost", value=False, help="Check this if you want to call the backend API running on localhost.",
@@ -51,6 +50,8 @@ with st.sidebar:
             help="Specify the port number where the proof server is running. Default is 7654.",
         )
         st.session_state.api_port = api_port
+
+    st.divider()
 
 st.header("Server Request", divider = True, help = "For your input request, this request will be sent to the backend server specified by you.")
 

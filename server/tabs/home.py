@@ -2,8 +2,10 @@ import streamlit as st
 
 st.title("LeanAide Server [![Repo](https://badgen.net/badge/icon/LeanAide?icon=github&label)](https://github.com/siddhartha-gadgil/LeanAide)", anchor = "LeanAide Server")
 
-st.sidebar.title("LeanAide Services")
-st.sidebar.success("Please select a task page above.")
+with st.sidebar:
+    st.title("LeanAide Services")
+    st.success("Please select a task page above.")
+    st.divider()
 
 st.write("LeanAide Streamlit Server provides a user interface for interacting with LeanAide server.")
 

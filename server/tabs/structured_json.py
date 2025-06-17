@@ -17,8 +17,6 @@ st.title("LeanAide: Structured JSON Output")
 st.write("Here you can input your theorem-proof/paper, etc. and generate Structured JSON output using LeanAide Schema.")
 st.info("Please fill out your API credentials in the sidebar to use the LLM's. Image OCR, Structured Json Generation, etc. will not work without valid API credentials.")
 
-st.sidebar.header("Structured Json")
-
 # Create a temporary directory if it doesn't exist
 TEMP_DIR = "leanaide_st_temp"
 os.makedirs(TEMP_DIR, exist_ok=True)
@@ -48,6 +46,7 @@ provider_info = {
 
 # API Credentials Section
 with st.sidebar:
+    st.header("Structured Json", divider = "orange")
     with st.expander("Credentials"):
         # Provider selection
         llm_provider = st.selectbox("Select Provider:", list(provider_info.keys()), index=0)
@@ -92,7 +91,8 @@ with st.sidebar:
             help="Specify the model for Image to Text. " + model_list_help,
             accept_new_options = True
         )
-
+    
+    st.divider()
 
 st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
