@@ -1107,7 +1107,7 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
   let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
   let conditionBinder ←
     `(Lean.binderIdent| $conditionId:ident)
-  let tacs := #[← `(tactic| if $conditionBinder :  $conditionStx then $trueCaseProofStx else $falseCaseProofStx)]
+  let tacs := #[← `(tactic| if $conditionBinder :  $conditionStx then $trueCaseProofStx else $falseCaseProofStx), ← `(tactic| done)]
   `(tacticSeq| $tacs*)
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
@@ -1195,7 +1195,8 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
           s!"codegen: no translation found for exhaustiveness {e}"
         `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
   IO.eprintln s!"number of cases (after exhaustiveness): {cases.length}"
-  multiConditionCasesAux translator goal cases exhaustiveTac
+  let tacs ← multiConditionCasesAux translator goal cases exhaustiveTac
+  appendTactics tacs <| ← `(tacticSeq| done)
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
@@ -1261,7 +1262,7 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let tacs := #[← `(tactic|
     induction discrTerm' with
     | $zeroId => $baseCaseProofStx
-    | $succId:ident $ihId:ident => $inductionStepProofStx)]
+    | $succId:ident $ihId:ident => $inductionStepProofStx), ← `(tactic| done)]
   `(tacticSeq| $tacs*)
 | goal?, kind ,_ => throwError
     s!"codegen: induction does not work for kind {kind} with goal present: {goal?.isSome}"

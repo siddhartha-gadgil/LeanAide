@@ -144,6 +144,12 @@ def consTactics (h: TSyntax `tactic)(s : TSyntax ``tacticSeq):
       `(tacticSeq| $[$ts']*)
   | _ => pure s
 
+def endsWithDone (t: TSyntax ``tacticSeq) : MetaM Bool := do
+  match getTactics t |>.back? with
+  | some t =>
+    let fmt ← PrettyPrinter.ppTactic t
+    pure <| fmt.pretty.trim.endsWith "done"
+  | _ => pure false
 
 def threadNum : IO Nat := do
   try

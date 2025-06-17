@@ -191,6 +191,14 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         -- no tactics generated, but side effect
         getCodeTacticsAux translator goal sources accum
       else
+        if ← endsWithDone code then
+          -- the source is done, so we can return the accumulated tactics
+          IO.eprintln s!"codegen: goal still open after tactics, but source is done"
+          IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
+          IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+          return (← appendTactics accum code, none)
+        else
+            -- continue with the next source
         let goal? ← runForSingleGoal goal code
         match goal? with
         | none => do -- tactics closed the goal
@@ -226,8 +234,6 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     for tac in autoTacs do
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
     appendTactics tacs (← `(tacticSeq| $autoTacs*))
-
-#check LocalContext
 
 def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   (sources: List Json) :
