@@ -173,6 +173,12 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
   goal.withContext do
+  match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| auto?)] (strict := true) with
+  | some autoTacs => do
+    let autoTac ← `(tacticSeq| $autoTacs*)
+    IO.eprintln s!"codegen: automation closes the goal"
+    return (← appendTactics accum autoTac, none)
+  | none => do
   match sources with
   | [] => do
     return (accum, goal)
