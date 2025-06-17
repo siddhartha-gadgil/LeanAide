@@ -174,18 +174,21 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
   goal.withContext do
+  IO.eprintln "Trying exact tactics or automation"
   match ← getExactTactics? (← goal.getType) with
   | some code => do
     IO.eprintln s!"codegen: exact tactics found for goal: {← ppExpr <| ← goal.getType}"
     -- IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
     return (← appendTactics accum code, none)
   | none => do
-  match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer)] (strict := true) with
-  | some autoTacs => do
-    let autoTac ← `(tacticSeq| $autoTacs*)
-    IO.eprintln s!"codegen: automation closes the goal"
-    return (← appendTactics accum autoTac, none)
-  | none => do
+  -- IO.eprintln "Trying automation tactics"
+  -- match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer)] (strict := true) with
+  -- | some autoTacs => do
+  --   let autoTac ← `(tacticSeq| $autoTacs*)
+  --   IO.eprintln s!"codegen: automation closes the goal"
+  --   return (← appendTactics accum autoTac, none)
+  -- | none => do
+  IO.eprintln "No exact or automation tactics found, trying sources"
   match sources with
   | [] => do
     return (accum, goal)
@@ -242,7 +245,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     for decl in lctx do
       IO.eprintln s!"{decl.userName}: {← ppExpr <| decl.type}"
     let autoTacs ←
-      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer)]
+      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
     IO.eprintln s!"codegen: auto tactics:"
     for tac in autoTacs do
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"

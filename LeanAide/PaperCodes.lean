@@ -1,5 +1,6 @@
 import LeanAide.Codegen
 import LeanAide.StructToLean
+import Hammer
 /-!
 # Code generation for LeanAide "PaperStructure" schema
 

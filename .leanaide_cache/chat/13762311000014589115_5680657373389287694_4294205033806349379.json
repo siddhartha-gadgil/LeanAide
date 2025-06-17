@@ -1,0 +1,105 @@
+{"usage":
+ {"total_tokens": 3483,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 3078,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 405},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BjOjuHnVkQC1gzesvvr6CFBixeLTs",
+ "created": 1750159558,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {x y : ℤ} (hx : Odd x) (hy : Even y), ∃ p : ℤ, x + y = 2 * p + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {x y j k : ℤ}, Odd x → Even y → x + y = 2 * (j + k) + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (x y p : ℤ), Odd x → Even y → ∃ (j k : ℤ), x = 2 * j + 1 ∧ y = 2 * k ∧ x + y = 2 * p + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (x y S p j k : ℤ), Odd x → Even y → S = x + y → p = j + k → S = 2 * p + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {x y p j k : ℤ}, Odd x → Even y → x + y = j + k → x + y = 2 * p + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content": "∀ {x y : ℤ}, Odd x → Even y → ∃ p : ℤ, x + y = 2 * p + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (x y : ℤ) (h₁ : x % 2 = 1) (h₂ : y % 2 = 0), ∃ (p : ℤ), x + y = 2 * p + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {x y p : ℤ}, Odd x → Even y → S = x + y → p = j + k → S = 2 * p + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {x y : ℤ} (h₁ : Odd x) (h₂ : Even y), ∃ p : ℤ, x + y = 2 * p + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (x y S p : ℤ), Odd x → Even y → S = x + y → ∃ j k : ℤ, p = j + k ∧ S = 2 * p + 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}
