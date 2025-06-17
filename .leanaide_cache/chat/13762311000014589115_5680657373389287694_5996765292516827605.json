@@ -1,0 +1,107 @@
+{"usage":
+ {"total_tokens": 3331,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2551,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 780},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BjRw2brWUIEk7TgAcGqNynU6M509U",
+ "created": 1750171842,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "let I₂ := ![![1, 0], ![0, 1]] in\nlet A := ![![a, b], ![c, d]] in\nmatrix.det I₂ = 1 * 1 - 0 * 0",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "let I_2 : Matrix (Fin 2) (Fin 2) ℝ := ![![1, 0], ![0, 1]]\nlet A : Matrix (Fin 2) (Fin 2) ℝ := ![![a, b], ![c, d]]\nhave : Matrix.det I_2 = 1 * 1 - 0 * 0 := rfl",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (a b c d : ℝ),\n  let I₂ := Matrix.vecCons (Matrix.vecCons 1 (Matrix.vecCons 0 Matrix.vecEmpty))\n                             (Matrix.vecCons (Matrix.vecCons 0 (Matrix.vecCons 1 Matrix.vecEmpty)) Matrix.vecEmpty) in\n  let A := Matrix.vecCons (Matrix.vecCons a (Matrix.vecCons b Matrix.vecEmpty))\n                           (Matrix.vecCons (Matrix.vecCons c (Matrix.vecCons d Matrix.vecEmpty)) Matrix.vecEmpty) in\n  Matrix.det I₂ = 1 * 1 - 0 * 0",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u} [inst : CommRing R] (a b c d : R),\n  Matrix.det ![![1, 0], ![0, 1]] = 1 * 1 - 0 * 0",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type} [CommRing R]\n\nexample : Matrix.det ![![1, 0], ![0, 1]] = (1 : R) * (1 : R) - (0 : R) * (0 : R) := rfl",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (a b c d : ℝ), Matrix.det ![![1, 0], ![0, 1]] = (1 : ℝ) * (1 : ℝ) - (0 : ℝ) * (0 : ℝ)",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (a b c d : ℝ), Matrix.det ![![1, 0], ![0, 1]] = 1 * 1 - 0 * 0",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ (a b c d : ℝ), Matrix.det ![![1, 0], ![0, 1]] = 1 * 1 - 0 * 0",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variables {α : Type*} [CommRing α]\ntheorem det_identity_matrix : \n  let I_2 := matrix.vec_cons (1 : α) (matrix.vec_cons 0 matrix.vec_empty),\n      A := matrix.vec_cons (matrix.vec_cons a (matrix.vec_cons b matrix.vec_empty))\n                           (matrix.vec_cons (matrix.vec_cons c (matrix.vec_cons d matrix.vec_empty)) matrix.vec_empty) in\n  matrix.det I_2 = 1 * 1 - 0 * 0 := by simp [matrix.det, matrix.vec_cons, matrix.vec_empty]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variables {R : Type*} [comm_ring R]\n\ntheorem det_identity_matrix : ∀ (a b c d : R), \n  let I_2 := matrix.vec_cons (1 ::ᵥ 0 ::ᵥ 0) (0 ::ᵥ 1 ::ᵥ 0) in\n  let A := matrix.vec_cons (a ::ᵥ b ::ᵥ 0) (c ::ᵥ d ::ᵥ 0) in\n  matrix.det I_2 = (1 : R) * (1 : R) - (0 : R) * (0 : R) :=\nbegin\n  intros,\n  simp [matrix.det_fin_two],\nend",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

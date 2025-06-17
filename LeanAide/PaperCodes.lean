@@ -917,13 +917,11 @@ def calculationCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
     let tacSeq := #[headTac]
     `(tacticSeq| $tacSeq*)
   | Except.error _ =>
-    let .ok steps := js.getObjValAs? (Array Json) "calculation_sequence" | throwError
+    let .ok steps := js.getObjValAs? (Array String) "calculation_sequence" | throwError
       s!"codegen: no 'calculation_sequence' found in 'calculation'"
     let mut tacs : Array <| Syntax.Tactic := #[]
     for step in steps do
-      let .ok stepStx := step.getObjValAs? String "step" | throwError
-        s!"codegen: no 'step' found in 'calculation_step'"
-      let stx ← typeStx stepStx
+      let stx ← typeStx step
       let hash₀ := hash stx.raw.reprint
       let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
       let headTac ← `(tactic| have $name : $stx := by $tac)
