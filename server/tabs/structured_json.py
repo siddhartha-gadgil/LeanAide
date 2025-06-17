@@ -8,7 +8,8 @@ from PIL import Image
 from streamlit_sortables import sort_items
 
 from llm_response import get_supported_models, gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf
-from serv_utils import SCHEMA_JSON, action_copy_download, preview_text, log_write, log_section
+from serv_utils import SCHEMA_JSON, action_copy_download, preview_text, log_section
+from logging_utils import log_write
 
 load_dotenv()
 

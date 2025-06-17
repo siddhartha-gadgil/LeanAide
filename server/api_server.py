@@ -8,10 +8,10 @@ import subprocess
 import sys
 import threading
 
-from serv_utils import log_write
+from logging_utils import log_write
 
 PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
-HOST = os.environ.get("HOST", "localhost")  
+HOST = os.environ.get("HOST", "localhost")
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     COMMAND = " " + arg
@@ -27,14 +27,17 @@ def process_reader(process, output_queue):
         if not line:
             break  # Process terminated
         output_queue.put(line.strip())
+        print(f"process stdout: {line.strip()}")
+        log_write("Server stdout", line.strip())
 
 def process_error_reader(process):  # New function for stderr
     while True:
         line = process.stderr.readline()
         if not line:
             break  # Process terminated
-        print(f"Process stderr: {line.strip()}", file=sys.stderr)  # Print to server's stderr
+        print(f"process stderr: {line.strip()}")
         log_write("Server stderr", line.strip())
+        print("yo")
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
