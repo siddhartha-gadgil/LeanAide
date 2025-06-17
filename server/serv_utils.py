@@ -215,7 +215,7 @@ def log_section():
         else:
             st.code("No logs available yet.", language="plaintext")
 
-        with st.popover("Clean Server Logs", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
+        with st.popover("Clean Server Logs", help="Click and select Yes to clean the server logs. This will delete all the logs in the Log Buffer for Streamlit."):
             st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server.")
             if st.button("Yes"):
                 try:
