@@ -1,0 +1,107 @@
+{"usage":
+ {"total_tokens": 3188,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 2638,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 550},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BjfrJNqLzOz3vwWydPWIXqYQneB9Q",
+ "created": 1750225365,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type _} [CommRing R]\n\ntheorem det₂_I : Matrix.det (1 : Matrix (Fin 2) (Fin 2) R) = 1 := by\n  simp [Matrix.det_fin_two]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u} [inst : CommRing R] (I : Matrix (Fin 2) (Fin 2) R),\n  det (1 : Matrix (Fin 2) (Fin 2) R) = 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable (R : Type u) [CommRing R]\n\ndef det₂ (M : Matrix (Fin 2) (Fin 2) R) : R :=\n  M 0 0 * M 1 1 - M 0 1 * M 1 0\n\ntheorem det₂_identity : det₂ (1 : Matrix (Fin 2) (Fin 2) R) = 1 := by\n  simp [det₂, Matrix.one_apply, Fin.one_eq_zero, Fin.zero_eq_one]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type u} [CommRing R]\n\ntheorem det₂_identity (I : Matrix (Fin 2) (Fin 2) R) (h : I = 1) : Matrix.det I = 1 :=\n  by simp [h, Matrix.det_fin_two, Matrix.one_apply]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type u_1} [CommRing R]\n\ntheorem det2_identity : Matrix.det ![![1, 0], ![0, 1]] = (1 : R) :=\nbegin\n  -- The determinant of a 2x2 identity matrix is 1\n  exact rfl,\nend",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type _} [CommRing R] \n\ntheorem det₂_identity : Matrix.det (1 : Matrix (Fin 2) (Fin 2) R) = 1 := by simp\n\n#check det₂_identity",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u} [inst : CommRing R],\n  Matrix.det ![![1, 0], ![0, 1]] = 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u} [inst : CommRing R] (I : Matrix (Fin 2) (Fin 2) R),\n  I = ![![1, 0], ![0, 1]] → Matrix.det I = 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u} [inst : CommRing R], Matrix.det ![![1, 0], ![0, 1]] = 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "∀ {R : Type u} [inst : CommRing R],\n  Matrix.det ![![1, 0], ![0, 1]] = 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}
