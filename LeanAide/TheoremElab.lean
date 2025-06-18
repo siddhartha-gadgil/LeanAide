@@ -77,6 +77,28 @@ def levelNames :=
   [`u, `v, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `v₁, `v₂, `uι, `W₁, `W₂, `w₁, `w₂, `u', `v', `uu, `w, `w', `wE, `uE, `x]
 
 
+def typeFromThmSyntax (stx : Syntax)
+  : TermElabM  Syntax.Term := do
+    match stx with
+    | `(theorem_statement| $_:docComment $[$_:theorem_head]? $args:bracketedBinder* : $type:term) =>
+      typeStx type args
+    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
+      typeStx type args
+    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]?   $args:bracketedBinder* : $type:term := $_:term) =>
+      typeStx type args
+    | `(theorem_statement|$vars:bracketedBinder* $_:docComment  $[$_:theorem_head]? $args:bracketedBinder* : $type:term ) =>
+      typeStx type (vars ++ args)
+    | `(theorem_statement|$type:term ) =>
+      return type
+    | _ => throwError s!"parsed to unmatched syntax {stx}"
+  where typeStx (type: Term)
+  (args : TSyntaxArray `Lean.Parser.Term.bracketedBinder) : MetaM <| TSyntax `term := do
+    let mut typeStx : TSyntax `term := type
+    for arg in args.reverse do
+      let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
+      typeStx := ⟨stx.raw⟩
+    typeStx ← expandExistsUnique typeStx
+    return typeStx
 
 
 /--
