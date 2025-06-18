@@ -615,6 +615,29 @@ def resolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Tactic :=
     fun ((name, tId), rhs) =>
       `(tactic| have ⟨$name, $tId⟩  := $rhs:term)
 
+def cmdResolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Command := do
+  let existsVarTypes? ← existsVarTypes type
+  let existsVarTypes := existsVarTypes?.getD #[]
+  let mut cmds : Array Syntax.Command := #[]
+  let existsFst := mkIdent ``Exists.fst
+  let existsSnd := mkIdent ``Exists.snd
+  let existsVarTypeIdents : Array (Ident ×  Ident × Term) := existsVarTypes.map fun (n, t) =>
+    let hsh := hash t.raw.reprint
+    let tId := mkIdent <| Name.mkSimple s!"assert_{hsh}"
+    (n, tId, type)
+  let hash₀ := hash type.raw.reprint
+  let typeIdent : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let mut prevTypeIdent := typeIdent
+  for (name, tId, type) in existsVarTypeIdents do
+    let defCmd ←
+      `(command| def $name  := $existsFst $prevTypeIdent:term)
+    cmds := cmds.push defCmd
+    let thmCmd ← `(command| theorem $tId : $type  := $existsSnd $prevTypeIdent:term)
+    cmds := cmds.push thmCmd
+    prevTypeIdent := tId
+  return cmds
+
+
 def haveForAssertion (goal: Expr)
   (premises: List Name) :
     TermElabM <| Array Syntax.Tactic := do
@@ -631,6 +654,7 @@ def haveForAssertion (goal: Expr)
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
   let head ← `(tactic| have $name : $type := by $headTacs*)
   return #[head] ++ existsTacs
+
 
 def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
     TranslateM <| Array Syntax.Tactic := do

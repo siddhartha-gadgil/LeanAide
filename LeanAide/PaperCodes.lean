@@ -858,7 +858,12 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   `(command| example : $stx := by $tac)
 | _, `commandSeq, js => do
   let (stx, tac) ← typeStx js
-  `(commandSeq| example : $stx := by $tac)
+  let hash₀ := hash stx.raw.reprint
+  let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let head ← `(command| theorem $name : $stx := by $tac)
+  let resolvedCmds ←
+    CodeGenerator.cmdResolveExistsHave stx
+  toCommandSeq <| #[head] ++ resolvedCmds
 | _, ``tacticSeq, js => do
   let (stx, tac) ← typeStx js
   let hash₀ := hash stx.raw.reprint

@@ -633,7 +633,7 @@
     },
     "calculation_step": {
       "type": "string",
-      "description": "A step, typically an equality or inequality, in a calculation or computation."
+      "description": "A step, typically an equality or inequality, in a calculation or computation. Write the step fully: e.g. in the sequence `a=b\n=c`, write `a=b` and `b=c` as two separate steps and DO NOT OMIT `b` in the second step."
     },
     "pattern_cases_statement": {
       "type": "object",
