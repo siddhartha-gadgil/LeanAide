@@ -907,15 +907,18 @@ def calculationCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
 | _, ``tacticSeq, js => do
   let tac ← `(tacticSeq | first | linarith | ring | norm_num | simp | omega | rfl)
   match js.getObjVal? "inline_calculation" with
-  | Except.ok inlineJs =>
-    let .ok inline := inlineJs.getObjValAs? String "inline_calculation" | throwError
-      s!"codegen: no 'inline_calculation' string found in 'calculation'"
+  | Except.ok <| .str inline =>
+    -- let .ok inline := inlineJs.getObjValAs? String "inline_calculation" | throwError
+    --   s!"codegen: no 'inline_calculation' string found in 'calculation'"
     let stx ← typeStx inline
     let hash₀ := hash stx.raw.reprint
     let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
     let headTac ← `(tactic| have $name : $stx := by $tac)
     let tacSeq := #[headTac]
     `(tacticSeq| $tacSeq*)
+  | Except.ok js =>
+    throwError
+      s!"codegen: 'calculation' must have 'inline_calculation' as a string, got {js}"
   | Except.error _ =>
     let .ok steps := js.getObjValAs? (Array String) "calculation_sequence" | throwError
       s!"codegen: no 'calculation_sequence' found in 'calculation'"
