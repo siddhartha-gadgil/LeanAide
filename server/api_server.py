@@ -8,7 +8,7 @@ import subprocess
 import sys
 import threading
 
-from logging_utils import log_write, filter_logs, get_env, post_env
+from logging_utils import log_write, filter_logs, get_env, post_env, delete_env_file
 
 PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
 HOST = os.environ.get("HOST", "localhost")
@@ -158,12 +158,14 @@ def run(server_class=http.server.HTTPServer, handler_class=Handler, port=PORT, h
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
+        delete_env_file()
         print("Stopping server...")
     finally:
         global process
         if process:
             process.terminate()
             process.wait()
+            delete_env_file()
             print("Process terminated.")
 
 if __name__ == "__main__":

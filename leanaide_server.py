@@ -7,7 +7,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from server.logging_utils import log_write, filter_logs, create_env_file
+from server.logging_utils import log_write, filter_logs, create_env_file, delete_env_file
 
 STREAMLIT_PORT = 8501
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
@@ -180,3 +180,5 @@ if __name__ == "__main__":
         if streamlit_process:
             streamlit_process.terminate()
             streamlit_process.join()
+
+    delete_env_file()  # Clean up environment file

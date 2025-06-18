@@ -80,7 +80,7 @@ def filter_logs(msg: str):
             next_param_pos = msg.find("--", start_redact)
             
             if next_param_pos != -1:
-                redacted_msg = msg[:start_redact] + "***REDACTED***" + msg[next_param_pos:]
+                redacted_msg = msg[:start_redact] + "***REDACTED***" + msg[next_param_pos - 1:]
             else:
                 redacted_msg = msg[:start_redact] + "***REDACTED***"
             break
@@ -217,3 +217,12 @@ def post_env_args(provider: str, auth_key: str, **kwargs):
     for key, value in kwargs.items():
         post_env(f"LEANAIDE_{key.upper()}", value)
 
+def delete_env_file():
+    """
+    Delete the env_vars.json file.
+    """
+    if os.path.exists(ENV_FILE):
+        os.remove(ENV_FILE)
+        log_write("delete_env_file", "Environment file deleted successfully.")
+    else:
+        log_write("delete_env_file", "Environment file does not exist.")
