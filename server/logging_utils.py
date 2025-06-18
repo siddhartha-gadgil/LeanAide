@@ -38,7 +38,7 @@ class LogBufferHandler(logging.Handler):
             if line_count >= MAX_FILE_LINES:
                 rotated_file = f"{LEANAIDE_LOG_FILE}.{int(time.time())}"
                 os.rename(LEANAIDE_LOG_FILE, rotated_file)
-            
+
             # Write new entry
             with open(LEANAIDE_LOG_FILE, 'a') as f:
                 f.write(log_entry + "\n")
@@ -55,7 +55,7 @@ def setup_logger(name: str):
 
     # Add our custom handler
     handler = LogBufferHandler(LOG_BUFFER)
-    formatter = logging.Formatter('[%(name)s] %(message)s')
+    formatter = logging.Formatter('[%(asctime)s] [%(name)s] %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
@@ -66,7 +66,12 @@ def log_write(proc_name: str, msg: str, log_file: bool = False):
     if log_file:
         # Directly write to file when file=True is specified
         with open(LEANAIDE_LOG_FILE, 'a') as f:
-            f.write(f"[{proc_name}] {msg}\n")
+            if "Server ready. Waiting for input".lower() in msg.lower():
+                f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [{proc_name}] {"#"*len(msg)}\n")
+                f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [{proc_name}] {msg}\n")
+                f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [{proc_name}] {"#"*len(msg)}\n")
+            else: 
+                f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] [{proc_name}] {msg}\n")
     else:
         logger.error(msg)
 
@@ -114,8 +119,8 @@ def log_server(log_file: bool = False, order: bool = True):
                         log_content.extend(recent_lines)
             except Exception as e:
                 log_write("log_server", f"Error reading log file: {e}")
-    
+
     if not log_content:
         return "No logs available yet."
-    
+
     return "".join(log_content)
