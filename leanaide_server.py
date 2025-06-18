@@ -7,7 +7,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from server.logging_utils import log_write
+from server.logging_utils import log_write, filter_logs
 
 STREAMLIT_PORT = 8501
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
@@ -18,17 +18,10 @@ serv_dir = os.path.join(home_dir, "server")
 STREAMLIT_FILE = os.path.join(serv_dir, "streamlit_ui.py")
 SERVER_FILE = os.path.join(serv_dir, "api_server.py")
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
+
 for arg in sys.argv[1:]:
     if arg not in ["--ui", "--no-server", "--ns", "--help", "-h"]:
         COMMAND += " " + arg
-
-def get_env_args():
-    """Get environment variables for the server, mainly LLM details"""
-    env_args = []
-    for key, value in os.environ.items():
-        if key.startswith("LEANAIDE_"):
-            env_args.append(f"{key}={value}")
-    return env_args
 
 def is_port_in_use(port: int) -> bool:
     """Check if a port is already in use"""
@@ -46,13 +39,15 @@ def run_server_api():
     # Log stderr
     if process.stdout:
         for line in process.stdout:
-            print(line.strip())
-            log_write("Server Stdout", line.strip(), True)
+            line = filter_logs(line.strip())
+            print(line)
+            log_write("Server Stdout", line, True)
 
     if process.stderr:
         for line in process.stderr:
-            print(line.strip())
-            log_write("Server Stderr", line.strip(), True)
+            line = filter_logs(line.strip()) 
+            print(line)
+            log_write("Server Stderr", line, True)
 
 def run_streamlit():
     """Run Streamlit app on port STREAMLIT_PORT only"""
@@ -69,8 +64,9 @@ def run_streamlit():
 
     # Write stderr to a file that Streamlit can read
     for line in process.stderr:
-        print("Streamlit Stderr", line.strip())
-        log_write("Streamlit Stderr", line.strip(), log_file=True)
+        line = filter_logs(line.strip())
+        print("Streamlit Stderr", line)
+        log_write("Streamlit Stderr", line, log_file=True)
 
     # Force Streamlit to use only port STREAMLIT_PORT
     subprocess.run([
@@ -82,8 +78,9 @@ def run_streamlit():
     ])
     if process.stdout:
         for line in process.stdout:
-            print("Streamlit Stdout", line.strip())
-            log_write("Streamlit Stdout", line.strip(), log_file=True)
+            line = filter_logs(line.strip())
+            print("Streamlit Stdout", line)
+            log_write("Streamlit Stdout", line, log_file=True)
 
 def signal_handler(sig, frame):
     """Handle Ctrl+C to terminate both processes"""
@@ -128,7 +125,7 @@ if __name__ == "__main__":
             print("  --ui                   Run the Streamlit UI (default: API server only)")
             print("  --no-server | --ns     Don't run the backend server (use with --ui)")
             print("  --help | -h            Show this help message")
-            print("Any other argument will be passed on to the process `lake exe leanaide_process` as it is.")
+            print("Any other argument will be passed on to the process `lake exe leanaide_process` as it is. Check out `lake exe leanaide_process --help` for more details.")
             sys.exit(0)
 
     run_ui = "--ui" in sys.argv

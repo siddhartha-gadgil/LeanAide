@@ -8,9 +8,9 @@ from PIL import Image
 from streamlit_sortables import sort_items
 
 from llm_prompts import proof_thm_task_lean
-from llm_response import get_supported_models, gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf, model_response_gen, env_add_args
+from llm_response import gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf, model_response_gen
 from serv_utils import SCHEMA_JSON, HOMEDIR, action_copy_download, preview_text, log_section
-from logging_utils import log_write
+from logging_utils import log_write, post_env_args
 
 load_dotenv(os.path.join(HOMEDIR, ".env"))
 
@@ -24,7 +24,7 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 
 # Write to env API KEY
 if st.session_state.llm_api_key:
-    env_add_args(provider = st.session_state.llm_provider, api_key = st.session_state.llm_api_key)
+    post_env_args(provider = st.session_state.llm_provider, auth_key = st.session_state.llm_api_key)
  
 st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
@@ -338,12 +338,10 @@ def handle_general_input(key: str):
         st.session_state[f"input_image_{key}"] = True
         st.session_state.format_index = input_formats.index(format_opt)
         handle_image_input(key) 
-        log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
     elif "pdf" in format_opt.lower():
         st.session_state.format_index = input_formats.index(format_opt)
         st.session_state[f"input_pdf_{key}"] = True
         handle_pdf_input(key)
-        log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
     else:
         for _elem in ["theorem", "proof", "paper"]:
             st.session_state[f"input_pdf_{_elem}"] = False
@@ -360,6 +358,8 @@ def handle_general_input(key: str):
         else: # Self typed input
             st.session_state.format_index = input_formats.index(format_opt)
             handle_text_input(key) 
+
+    if st.session_state[key] and st.session_state[key].strip():
         log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
 
 # Guide prompt for AI

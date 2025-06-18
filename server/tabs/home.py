@@ -5,7 +5,6 @@ st.title("LeanAide Server [![Repo](https://badgen.net/badge/icon/LeanAide?icon=g
 with st.sidebar:
     st.title("LeanAide Services")
     st.success("Please select a task page above.")
-    st.divider()
 
 st.write("LeanAide Streamlit Server provides a user interface for interacting with LeanAide server.")
 

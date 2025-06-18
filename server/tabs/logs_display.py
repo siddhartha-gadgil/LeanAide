@@ -37,7 +37,6 @@ with st.sidebar:
         st.session_state.log_server_cleaned = False
         st.info("Press Escape to close this popover.")
 
-    st.divider()
         
 if log_out := log_server(log_file=True, order = st.session_state.log_order):
     if st.session_state.log_order:

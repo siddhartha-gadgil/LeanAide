@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from api_server import HOST, PORT
 from serv_utils import TASKS, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked
-from logging_utils import log_write
+from logging_utils import log_write, get_env
 
 load_dotenv()
 
@@ -50,8 +50,6 @@ with st.sidebar:
             help="Specify the port number where the proof server is running. Default is 7654.",
         )
         st.session_state.api_port = api_port
-
-    st.divider()
 
 st.header("Server Request", divider = True, help = "For your input request, this request will be sent to the backend server specified by you.")
 
@@ -200,6 +198,29 @@ def show_response():
                     if code not in ["-- No Lean code available", "No data available."]:
                         st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
 
+def dummy_request():
+    command = get_env("LEANAIDE_COMMAND", "lake exe leanaide_process")
+    for flag in ["--auth_key", "--model"]:
+        if flag not in command:
+            break
+    else:
+        return
+        
+    request_payload = {
+        "tasks": ["echo"],
+        "data": "Dummy Request."
+    }
+    response = requests.post(
+        f"http://{st.session_state.api_host}:{st.session_state.api_port}", json=request_payload
+    )
+
+    if response.status_code == 200:
+        log_write("Streamlit", "Dummy Request: Success")
+    else:
+        log_write("Streamlit", f"Dummy Request: Error - {response.status_code} - {response.text}")
+
+    return
+
 # Submit Request Section. 
 submit_response_button =  st.button("Submit Request", on_click= button_clicked("request_button"), type = "primary", help = "You can submit your request here. The request will be sent to the backend server specified in the Host Information section.")
 if submit_response_button or st.session_state.request_button:
@@ -213,9 +234,9 @@ if submit_response_button or st.session_state.request_button:
     else:
         server_tasks = [TASKS[task]["task_name"] for task in st.session_state.selected_tasks]
         request_payload = {"tasks": server_tasks, **st.session_state.val_input}
-        
+
         if submit_response_button:
-            with st.spinner("Request sent. Please wait for a short while..."):
+            with st.spinner("Request sent. Please wait for a short while..."): 
                 log_write("Streamlit", f"Request Payload: {request_payload}")
                 response = requests.post(
                     f"http://{st.session_state.api_host}:{st.session_state.api_port}", json=request_payload

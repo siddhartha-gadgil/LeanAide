@@ -12,10 +12,34 @@ from serv_utils import SCHEMA_JSON, HOMEDIR
 
 load_dotenv(os.path.join(HOMEDIR, ".env"))
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "Key Not Found")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "Key Not Found")
-OPENROUTER_API_KEY=os.getenv("OPENROUTER_API_KEY", "Key Not Found")
-DEEPINFRA_API_KEY = os.getenv("DEEPINFRA_API_KEY", "Key Not Found")
+provider_info = {
+    "OpenAI": {
+        "name": "OpenAI",
+        "default_model": "o4-mini",
+        "api_key": os.getenv("OPENAI_API_KEY", "Key Not Found"),
+    },
+    "Gemini": {
+        "name": "Gemini",
+        "default_model": "gemini-1.5-pro",
+        "api_key": os.getenv("GEMINI_API_KEY", "Key Not Found"),
+    },
+    "OpenRouter": {
+        "name": "OpenRouter",
+        "default_model": "gpt-4o",
+        "api_key": os.getenv("OPENROUTER_API_KEY", "Key Not Found"),
+    },
+    "DeepInfra": {
+        "name": "DeepInfra",
+        "default_model": "deepseek-ai/DeepSeek-R1-0528",
+        "api_key": os.getenv("DEEPINFRA_API_KEY", "Key Not Found"),
+    }
+}
+
+# Extract API keys for backwards compatibility
+OPENAI_API_KEY = provider_info["OpenAI"]["api_key"]
+GEMINI_API_KEY = provider_info["Gemini"]["api_key"]
+OPENROUTER_API_KEY = provider_info["OpenRouter"]["api_key"]
+DEEPINFRA_API_KEY = provider_info["DeepInfra"]["api_key"]
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 gemini_client = OpenAI(api_key=GEMINI_API_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
@@ -35,24 +59,6 @@ def match_provider_client(provider: str = "openai"):
     else:
         return openai_client  # Default to OpenAI if provider is not recognized
 
-def env_add_args(provider: str, api_key: str, **kwargs):
-    """
-    Kwargs:
-    - model: str, the model to use for the provider
-    """
-    if provider.lower() == "openai":
-        os.environ["OPENAI_API_KEY"] = api_key
-    elif provider.lower() == "gemini":
-        os.environ["GEMINI_API_KEY"] = api_key
-    elif provider.lower() == "openrouter":
-        os.environ["OPENROUTER_API_KEY"] = api_key
-    elif provider.lower() == "deepinfra":
-        os.environ["DEEPINFRA_API_KEY"] = api_key
-    else:
-        pass
-
-    for key, value in kwargs.items():
-        pass
 
 ## Get model list supported by API KEY
 def get_supported_models(provider):
@@ -60,8 +66,12 @@ def get_supported_models(provider):
     Get the list of models supported by the OpenAI API key.
     """
     client = match_provider_client(provider)
-    models = client.models.list()
-    return [model.id for model in models.data]
+    try:
+        models = client.models.list()
+        return [model.id for model in models.data]
+    except Exception as e:
+        st.error(f"Error fetching models: {e}")
+        return []
 
 def get_pdf_id(pdf_path: str, provider: str = "openai"):
     client = match_provider_client(provider)
@@ -152,7 +162,7 @@ def model_response_gen(prompt:str, task:str = "", provider = "openai", model:str
     ## Case 1. In case of non paper, the pdf/non-pdf content is passed in prompt.
     ## Case 2. In case of paper, the non pdf content is passed in prompt.
     ## Case 3. In case of paper, the pdf_val is the OpenAI File object.
-    if type(pdf_val)!= type("") and not paper_input:
+    if type(pdf_val) is not type("") and not paper_input:
         pass # Case 1
     elif type(pdf_val)!= type("") and paper_input: # Case 3
         # pdf_text is not string but OpenAi File object

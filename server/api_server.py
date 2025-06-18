@@ -8,7 +8,7 @@ import subprocess
 import sys
 import threading
 
-from logging_utils import log_write
+from logging_utils import log_write, filter_logs, get_env, post_env
 
 PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
 HOST = os.environ.get("HOST", "localhost")
@@ -16,7 +16,48 @@ COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     COMMAND = " " + arg
 
-print(f"Command: {COMMAND}")
+def get_env_args():
+    """Get environment variables for the server, mainly LLM details"""
+    env_args = {}
+    for key, value in get_env().items():
+        if key.startswith("LEANAIDE_") and key not in ["LEANAIDE_COMMAND", "LEANAIDE_PORT", "LEANAIDE_PROVIDER"]:
+            key = key.replace("LEANAIDE_", "").lower()
+            env_args[key] = value
+        elif key.endswith("API_KEY"):
+            provider = get_env("LEANAIDE_PROVIDER", "openai").lower()
+            if provider == "openai" and key == "OPENAI_API_KEY":
+                env_args["auth_key"] = value
+            elif provider == "gemini" and key == "GEMINI_API_KEY":
+                env_args["auth_key"] = value
+            elif provider == "openrouter" and key == "OPENROUTER_API_KEY":
+                env_args["auth_key"] = value
+            elif provider == "deepinfra" and key == "DEEPINFRA_API_KEY":
+                env_args["auth_key"] = value
+                 
+        else:
+            pass # Ignore others
+
+    return env_args
+
+def updated_leanaide_command():
+    COMMAND = get_env("LEANAIDE_COMMAND", "lake exe leanaide_process")
+    existing_flags = set(COMMAND.split())
+    for key, value in get_env_args().items():
+        flag = f"--{key}"
+        if flag not in existing_flags:
+            COMMAND += f" {flag} {value}"
+
+    post_env("LEANAIDE_COMMAND", COMMAND)
+    return COMMAND
+
+command = updated_leanaide_command()
+# Hide auth_key value for security
+if "--auth_key" in command:
+    auth_key_part = command.split("--auth_key ")[1].split()[0]
+    hidden_key = auth_key_part[:6] + "...key_hidden..." if len(auth_key_part) > 6 else auth_key_part
+    command = command.replace(auth_key_part, hidden_key)
+print(f"Command: {command}")
+log_write("Server command", command, log_file=True)
 process = None
 process_lock = threading.Lock()
 output_queue = queue.Queue()
@@ -27,6 +68,7 @@ def process_reader(process, output_queue):
         if not line:
             break  # Process terminated
         output_queue.put(line.strip())
+        line = filter_logs(line.strip())
         print(f"process stdout: {line.strip()}")
         log_write("Server stdout", line.strip(), log_file=True)
 
@@ -35,6 +77,7 @@ def process_error_reader(process):  # New function for stderr
         line = process.stderr.readline()
         if not line:
             break  # Process terminated
+        line = filter_logs(line.strip())
         print(f"process stderr: {line.strip()}")
         log_write("Server stderr", line.strip(), log_file=True)
 
@@ -49,7 +92,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 if process is None or process.poll() is not None:
                     try:
                         process = subprocess.Popen(
-                            COMMAND.split(),
+                            updated_leanaide_command().split(),
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
@@ -62,7 +105,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                         self.send_response(500)
                         self.send_header('Content-type', 'text/plain')
                         self.end_headers()
-                        self.wfile.write(f"Command not found: {COMMAND}".encode())
+                        self.wfile.write(f"Command not found: {updated_leanaide_command()}".encode())
                         return
             try:
                 json_data = json.loads(post_data)
@@ -108,7 +151,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 def run(server_class=http.server.HTTPServer, handler_class=Handler, port=PORT, host=HOST):
     server_address = (host, port) # Use the host
     httpd = server_class(server_address, handler_class)
-    print(f"Starting httpd on port {port}, command: {COMMAND}")
+    print(f"Starting httpd on port {port}, command: {updated_leanaide_command()}")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

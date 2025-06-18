@@ -3,12 +3,18 @@ from collections import deque
 import tempfile
 import os
 import time
+import json
+from pathlib import Path
 
 # In-memory log storage with max size (1000 lines by default)
 LOG_BUFFER_LINES = 1000
 LOG_BUFFER = deque(maxlen=LOG_BUFFER_LINES)
 LEANAIDE_LOG_FILE = tempfile.gettempdir() + "/leanaide.log"
 MAX_FILE_LINES = 10000
+
+## Environment File
+HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
+ENV_FILE = os.path.join(HOMEDIR, "server", "private", "env_vars.json")
 
 # Custom log handler that writes to LOG_BUFFER
 class LogBufferHandler(logging.Handler):
@@ -61,7 +67,19 @@ def setup_logger(name: str):
 
     return logger
 
+def filter_logs(msg: str):
+    redacted_msg = msg
+    for sensitive_word in ["api_key", "auth_key", "authorization"]:
+        if sensitive_word in msg.lower():
+            # Find the position and redact everything after the sensitive word
+            pos = msg.lower().find(sensitive_word)
+            allow_char = 10# Give some characters of allowing
+            redacted_msg = msg[:allow_char+pos + len(sensitive_word)] + "=***SUSPECTED OF SECRET INFORMATION***="
+            break
+    return redacted_msg
+
 def log_write(proc_name: str, msg: str, log_file: bool = False):
+    msg = filter_logs(msg)
     logger = setup_logger(proc_name)
     if log_file:
         # Directly write to file when file=True is specified
@@ -124,3 +142,65 @@ def log_server(log_file: bool = False, order: bool = True):
         return "No logs available yet."
 
     return "".join(log_content)
+
+## These are not related to logging, but Environment variables based functions
+def _create_env_file():
+    """
+    Create the env_vars.json file if it does not exist.
+    """
+    # Create the directory if it doesn't exist
+    os.makedirs(os.path.dirname(ENV_FILE), exist_ok=True)
+
+    if not os.path.exists(ENV_FILE):
+        with open(ENV_FILE, 'w') as f:
+            initial_data = {
+                "LEANAIDE_COMMAND": "lake exe leanaide_process",
+                "LEANAIDE_PORT": "7654",
+            }
+            json.dump(initial_data, f, indent=4)
+
+def get_env(var:str = "", default=None):
+    """
+    Get environment variable with a default value.
+    """
+    _create_env_file()
+    with open(ENV_FILE, 'r') as f:
+        env_vars = json.load(f)
+    if var:
+        return env_vars.get(var, default)
+    else:
+        return env_vars
+
+def post_env(var: str, value: str):
+    """
+    Post environment variable to the env_vars.json file.
+    """
+    _create_env_file()
+    with open(ENV_FILE, 'r') as f:
+        env_vars = json.load(f) 
+    env_vars[var] = value 
+    with open(ENV_FILE, 'w') as f:
+        json.dump(env_vars, f, indent=4) 
+
+def post_env_args(provider: str, auth_key: str, **kwargs):
+    """
+    Kwargs:
+    - model: str, the model to use for the provider
+    - temperature: float, the temperature for the model
+    """
+    if provider.lower() == "gemini":
+        post_env("GEMINI_API_KEY", auth_key)
+        post_env("LEANAIDE_PROVIDER", "gemini")
+    elif provider.lower() == "openrouter":
+        post_env("OPENROUTER_API_KEY", auth_key)
+        post_env("LEANAIDE_PROVIDER", "openrouter")
+    elif provider.lower() == "deepinfra":
+        post_env("DEEPINFRA_API_KEY", auth_key)
+        post_env("LEANAIDE_PROVIDER", "deepinfra")
+    else: # In case of "openai" and default
+        post_env("OPENAI_API_KEY", auth_key)
+        post_env("LEANAIDE_PROVIDER", "openai")
+
+    for key, value in kwargs.items():
+        post_env(f"LEANAIDE_{key.upper()}", value)
+
