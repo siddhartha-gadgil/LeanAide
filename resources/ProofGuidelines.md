@@ -96,6 +96,9 @@ Expressions like “this”, “that one”, or “the former” create ambiguit
 * Instead of “the set of all xx such that ...”, say
   “Let S:={x∈N∣P(x)}S := \{ x \in \mathbb{N} \mid P(x) \}.”
   
+### Define only ONE object per definition
+
+* Avoid a chain of definitions in a single statement, such as "let $p(x)$ be the minimal polynomial of the field $F$ and let $a$ be its root". Instead split into two or more definitions.
 
 ### Avoid Overloaded Language
 
