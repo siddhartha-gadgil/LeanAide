@@ -38,7 +38,7 @@ open Lean.Parser.Category
 
 def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   let env ← getEnv
-  let stx? := Lean.Parser.runParserCategory env ``theorem_statement  s
+  let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with
   | Except.error err => return Except.error err
   | Except.ok stx => return Except.ok <| ← lean4NamesSyntax stx
@@ -47,18 +47,10 @@ def elabThm4Aux (s : String)
   (_levelNames : List Lean.Name := levelNames)
   : TranslateM <| Except ElabError Expr := do
   -- let s := s.replace "\n" " "
-  -- let env ← getEnv
-  -- let ctx? ← getContext
-  -- let stx? :=
-  --   Lean.Parser.runParserCategory env ``theorem_statement  s
-  -- match stx? with
-  -- | Except.error err =>
-  --     let res := .unparsed s err ctx?
-  --     appendLog "elab_errors" <| toJson res
-  --     return .error <| res
-  -- | Except.ok stx =>
-  elaborate
-  where elaborate  := do
+  let env ← getEnv
+  let s ← typeFromThm s
+  elaborate (← ppTerm {env:= env} s).pretty
+  where elaborate (s: String) := do
     let ctx? ← getContext
     -- match ← elabThmFromStx stx levelNames with
     -- | Except.error err₁ =>
@@ -106,5 +98,10 @@ def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensio
 
      Please note that `Module.rank K V = 2` is the way to express that the vector space `V` over the field `K` has dimension `2` in Lean. The `→` is logical implication."
 
--- #eval elabThm4 egLines
+-- #eval elabThm4 "theorem : (0: Nat) =1"
+-- #eval elabThm4 "theorem hello : (0: Nat) =1"
+-- #eval elabThm4 "(0: Nat) = 1"
+-- #eval elabThm4 "theorem (x: Nat) : x =1"
+-- #eval elabThm4 "theorem hi (x: Nat) : x =1"
+
 -- #eval lineBlocks egLines

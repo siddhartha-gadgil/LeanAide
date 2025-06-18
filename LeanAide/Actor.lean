@@ -63,6 +63,7 @@ Executing various tasks with Json input and output. These are for the server.
   * output: `statement: String`, `is_prop: Bool`, `name: String`, `type: String`, `value: Option String`
 -/
 def runTask (data: Json) (translator : Translator) : TranslateM Json :=
+  let translator := translator.configure data
   let fallback :=
     data.getObjValAs? Bool "fallback" |>.toOption |>.getD true
   match data.getObjVal? "task" with
