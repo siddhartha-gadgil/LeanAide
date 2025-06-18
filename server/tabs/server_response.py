@@ -224,6 +224,7 @@ def dummy_request():
 # Submit Request Section. 
 submit_response_button =  st.button("Submit Request", on_click= button_clicked("request_button"), type = "primary", help = "You can submit your request here. The request will be sent to the backend server specified in the Host Information section.")
 if submit_response_button or st.session_state.request_button:
+    dummy_request() # Just a dummy request
     request_payload = {}
     if not st.session_state.selected_tasks:
         st.warning("Please Input tasks to be performed.")
@@ -275,6 +276,10 @@ if submit_response_button or st.session_state.request_button:
             show_response()
         else:
             st.error("No output available. Please check the input and try again.")
+            try:
+                st.error(st.session_state.result.get("error", "No error message provided."))
+            except Exception as e:
+                pass
             log_write("Streamlit", "Server Output: No output available.")
 
 

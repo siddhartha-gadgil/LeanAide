@@ -7,7 +7,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from server.logging_utils import log_write, filter_logs
+from server.logging_utils import log_write, filter_logs, create_env_file
 
 STREAMLIT_PORT = 8501
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
@@ -22,6 +22,9 @@ COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     if arg not in ["--ui", "--no-server", "--ns", "--help", "-h"]:
         COMMAND += " " + arg
+
+# Ensure the environment file exists
+create_env_file(fresh=True)
 
 def is_port_in_use(port: int) -> bool:
     """Check if a port is already in use"""

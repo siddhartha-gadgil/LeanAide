@@ -40,12 +40,15 @@ def get_env_args():
     return env_args
 
 def updated_leanaide_command():
-    COMMAND = get_env("LEANAIDE_COMMAND", "lake exe leanaide_process")
+    COMMAND = "lake exe leanaide_process" # Make Fresh command
     existing_flags = set(COMMAND.split())
     for key, value in get_env_args().items():
         flag = f"--{key}"
-        if flag not in existing_flags:
-            COMMAND += f" {flag} {value}"
+        if value:
+            if flag not in existing_flags:
+                COMMAND += f" {flag} {value}"
+            else:
+                COMMAND = COMMAND.replace(f"{flag} {existing_flags.intersection({value}).pop()}", f"{flag} {value}")
 
     post_env("LEANAIDE_COMMAND", COMMAND)
     return COMMAND

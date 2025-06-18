@@ -71,11 +71,20 @@ def filter_logs(msg: str):
     redacted_msg = msg
     for sensitive_word in ["api_key", "auth_key", "authorization"]:
         if sensitive_word in msg.lower():
-            # Find the position and redact everything after the sensitive word
+            # Find the position of the sensitive word
             pos = msg.lower().find(sensitive_word)
-            allow_char = 10# Give some characters of allowing
-            redacted_msg = msg[:allow_char+pos + len(sensitive_word)] + "=***SUSPECTED OF SECRET INFORMATION***="
+            allow_char = 10  # Give some characters of allowing
+            
+            # Detect till "--" for redaction
+            start_redact = pos + len(sensitive_word) + allow_char
+            next_param_pos = msg.find("--", start_redact)
+            
+            if next_param_pos != -1:
+                redacted_msg = msg[:start_redact] + "***REDACTED***" + msg[next_param_pos:]
+            else:
+                redacted_msg = msg[:start_redact] + "***REDACTED***"
             break
+    
     return redacted_msg
 
 def log_write(proc_name: str, msg: str, log_file: bool = False):
@@ -144,26 +153,30 @@ def log_server(log_file: bool = False, order: bool = True):
     return "".join(log_content)
 
 ## These are not related to logging, but Environment variables based functions
-def _create_env_file():
+def create_env_file(fresh: bool = False):
     """
     Create the env_vars.json file if it does not exist.
     """
     # Create the directory if it doesn't exist
     os.makedirs(os.path.dirname(ENV_FILE), exist_ok=True)
-
-    if not os.path.exists(ENV_FILE):
+    initial_data = {
+        "LEANAIDE_COMMAND": "lake exe leanaide_process",
+        "LEANAIDE_PORT": "7654",
+    }
+    if fresh:
         with open(ENV_FILE, 'w') as f:
-            initial_data = {
-                "LEANAIDE_COMMAND": "lake exe leanaide_process",
-                "LEANAIDE_PORT": "7654",
-            }
             json.dump(initial_data, f, indent=4)
+    
+    else:
+        if not os.path.exists(ENV_FILE):
+            with open(ENV_FILE, 'w') as f:
+                json.dump(initial_data, f, indent=4)
 
 def get_env(var:str = "", default=None):
     """
     Get environment variable with a default value.
     """
-    _create_env_file()
+    create_env_file()
     with open(ENV_FILE, 'r') as f:
         env_vars = json.load(f)
     if var:
@@ -175,7 +188,7 @@ def post_env(var: str, value: str):
     """
     Post environment variable to the env_vars.json file.
     """
-    _create_env_file()
+    create_env_file()
     with open(ENV_FILE, 'r') as f:
         env_vars = json.load(f) 
     env_vars[var] = value 
