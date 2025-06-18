@@ -28,6 +28,12 @@
             "$ref": "#/$defs/Definition"
           },
           {
+            "$ref": "#/$defs/let_statement"
+          },
+          {
+            "$ref": "#/$defs/assume_statement"
+          },
+          {
             "$ref": "#/$defs/Remark"
           },
           {
@@ -119,6 +125,12 @@
               },
               {
                 "$ref": "#/$defs/Definition"
+              },
+              {
+                "$ref": "#/$defs/let_statement"
+              },
+              {
+                "$ref": "#/$defs/assume_statement"
               },
               {
                 "$ref": "#/$defs/Remark"
@@ -353,7 +365,7 @@
             "$ref": "#/$defs/some_statement"
           },
           {
-            "$ref" : "#/$defs/pattern_cases_statement" 
+            "$ref": "#/$defs/pattern_cases_statement"
           },
           {
             "$ref": "#/$defs/bi-implication_cases_statement"

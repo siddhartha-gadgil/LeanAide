@@ -611,19 +611,66 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
       addPrelude statement
       return none
     | some value =>
-      -- If there is a value, we return it as a term
-      let statement' ← withPreludes statement
-      let varName ← match js.getObjString? "variable_name" with
+      let letStx ←
+        commandToTactic
+          (← defStx translator js statement value)
+      let stxs := #[letStx]
+      addPrelude statement
+      return some <| ← `(tacticSeq| $stxs*)
+  | ``commandSeq, js => do
+    let statement := statement js
+    match js.getObjString? "value" with
+    | none =>
+      -- If there is no value, we do not need to return a value
+      IO.eprintln s!"codegen: No value in 'let_statement' for {js.getObjString? "variable_name" |>.getD ""}"
+      addPrelude statement
+      return none
+    | some value =>
+      let defStx ←
+          defStx translator js statement value
+      let stxs := #[defStx]
+      addPrelude statement
+      return some <| ← `(commandSeq| $stxs*)
+
+  | _, js =>
+      addPrelude <| statement js
+      return none
+  where
+    statement (js: Json) : String :=
+      match js.getObjValAs? String "statement" with
+      | Except.ok s => s
+      | Except.error _ =>
+        let varSegment := match js.getObjString? "variable_name" with
+        | some "<anonymous>" => "We have "
+        | some v => s!"Let {v} be"
+        | _ => "We have "
+        let kindSegment := match js.getObjValAs? String "variable_type" with
+          | Except.ok k => s!"a {k}"
+          | Except.error _ => s!""
+        let valueSegment := match js.getObjString? "value" with
+          | some v => s!"{v}"
+          | _ => ""
+        let propertySegment := match js.getObjString? "properties", js.getObjString? "variable_name" with
+          | some p, some v =>
+            if v != "<anonymous>"
+              then s!"(such that) ({v} is) {p}"
+              else s!"(such that) {p}"
+          | _, _ => ""
+        s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
+    defStx (translator: CodeGenerator) (js: Json) (statement: String)  (value: String) : TranslateM Syntax.Command :=
+      withoutModifyingState do
+        let statement' ← withPreludes statement
+        let varName ← match js.getObjString? "variable_name" with
         | some "<anonymous>" => pure "_"
         | some v => pure v
         | _ => throwError s!"codegen: no 'variable_name' found in 'let_statement' for {js}"
-      let statement' := statement'.trim ++ "\n" ++ s!"Define ONLY the term {varName} with value {value}. Other terms have been defined already."
-      let letStx ←
-        match ← Translator.translateDefCmdM?
-        statement' translator.toTranslator  with
+        let statement' := statement'.trim ++ "\n" ++ s!"Define ONLY the term {varName} with value {value}. Other terms have been defined already."
+
+        let stx? ← translator.translateDefCmdM? statement'
+        match stx? with
         | .ok stx =>
           IO.eprintln s!"codegen: 'let_statement' {statement'} translated to command:\n{← PrettyPrinter.ppCommand stx}"
-          commandToTactic stx
+          return stx
         | .error es =>
           let fallback ← try
             CmdElabError.fallback es
@@ -634,7 +681,7 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
           match Parser.runParserCategory (← getEnv) `command fallback with
           | .ok stx =>
             let stx: Syntax.Command := ⟨stx⟩
-            commandToTactic stx
+            return stx
           |.error er =>
             IO.eprintln s!"codegen: 'let_statement' {statement'} translation failed with error:\n{er} and fallback:\n{fallback}"
             IO.eprintln s!"codegen: 'let_statement' {statement'} translation attempts:\n"
@@ -642,34 +689,6 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
               IO.eprintln s!"codegen: not a command:\n{e.text}"
             throwError
               s!"codegen: no definition translation found for {statement'}"
-      let stxs := #[letStx]
-      addPrelude statement
-      return some <| ← `(tacticSeq| $stxs*)
-  | _, js =>
-      addPrelude <| statement js
-      return none
-  where statement (js: Json) : String :=
-    match js.getObjValAs? String "statement" with
-    | Except.ok s => s
-    | Except.error _ =>
-      let varSegment := match js.getObjString? "variable_name" with
-      | some "<anonymous>" => "We have "
-      | some v => s!"Let {v} be"
-      | _ => "We have "
-      let kindSegment := match js.getObjValAs? String "variable_type" with
-        | Except.ok k => s!"a {k}"
-        | Except.error _ => s!""
-      let valueSegment := match js.getObjString? "value" with
-        | some v => s!"{v}"
-        | _ => ""
-      let propertySegment := match js.getObjString? "properties", js.getObjString? "variable_name" with
-        | some p, some v =>
-          if v != "<anonymous>"
-            then s!"(such that) ({v} is) {p}"
-            else s!"(such that) {p}"
-        | _, _ => ""
-      s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
-
 
 /- some_statement
 {
