@@ -100,6 +100,16 @@ def typeFromThmSyntax (stx : Syntax)
     typeStx ← expandExistsUnique typeStx
     return typeStx
 
+def typeFromThm (s : String)
+  : TermElabM  Syntax.Term := do
+  let env ← getEnv
+  let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
+  match stx? with
+  | Except.ok stx  =>
+      typeFromThmSyntax stx
+  | Except.error e  => throwError e
+
+#eval typeFromThm "Nat"
 
 /--
 Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
