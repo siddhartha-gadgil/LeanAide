@@ -8,14 +8,14 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 from llm_prompts import thmpf_prompt, soln_from_image_prompt, mathpaper_prompt
-from serv_utils import SCHEMA_JSON
+from serv_utils import SCHEMA_JSON, HOMEDIR
 
-load_dotenv()
+load_dotenv(os.path.join(HOMEDIR, ".env"))
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "Not Found")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "Not Found")
-OPENROUTER_API_KEY=os.getenv("OPENROUTER_API_KEY", "Not Found")
-DEEPINFRA_API_KEY = os.getenv("DEEPINFRA_API_KEY", "Not Found")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "Key Not Found")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "Key Not Found")
+OPENROUTER_API_KEY=os.getenv("OPENROUTER_API_KEY", "Key Not Found")
+DEEPINFRA_API_KEY = os.getenv("DEEPINFRA_API_KEY", "Key Not Found")
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 gemini_client = OpenAI(api_key=GEMINI_API_KEY, base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
@@ -34,6 +34,25 @@ def match_provider_client(provider: str = "openai"):
         return deepinfra_client
     else:
         return openai_client  # Default to OpenAI if provider is not recognized
+
+def env_add_args(provider: str, api_key: str, **kwargs):
+    """
+    Kwargs:
+    - model: str, the model to use for the provider
+    """
+    if provider.lower() == "openai":
+        os.environ["OPENAI_API_KEY"] = api_key
+    elif provider.lower() == "gemini":
+        os.environ["GEMINI_API_KEY"] = api_key
+    elif provider.lower() == "openrouter":
+        os.environ["OPENROUTER_API_KEY"] = api_key
+    elif provider.lower() == "deepinfra":
+        os.environ["DEEPINFRA_API_KEY"] = api_key
+    else:
+        pass
+
+    for key, value in kwargs.items():
+        pass
 
 ## Get model list supported by API KEY
 def get_supported_models(provider):
@@ -96,7 +115,6 @@ def solution_from_images(image_paths, provider = "openai", model: str = "gpt-4o"
     for image_path in image_paths:
         response = image_solution(image_path)
         combined_text += str(response)
-    st.toast(f"Combined text from images: {combined_text}")
 
     return str(model_response_gen(soln_from_image_prompt(combined_text), provider=provider, model=model))
 

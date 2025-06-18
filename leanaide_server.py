@@ -22,6 +22,14 @@ for arg in sys.argv[1:]:
     if arg not in ["--ui", "--no-server", "--ns", "--help", "-h"]:
         COMMAND += " " + arg
 
+def get_env_args():
+    """Get environment variables for the server, mainly LLM details"""
+    env_args = []
+    for key, value in os.environ.items():
+        if key.startswith("LEANAIDE_"):
+            env_args.append(f"{key}={value}")
+    return env_args
+
 def is_port_in_use(port: int) -> bool:
     """Check if a port is already in use"""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
