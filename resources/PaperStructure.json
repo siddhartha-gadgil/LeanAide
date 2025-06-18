@@ -28,6 +28,12 @@
             "$ref": "#/$defs/Definition"
           },
           {
+            "$ref": "#/$defs/let_statement"
+          },
+          {
+            "$ref": "#/$defs/assume_statement"
+          },
+          {
             "$ref": "#/$defs/Remark"
           },
           {
@@ -119,6 +125,12 @@
               },
               {
                 "$ref": "#/$defs/Definition"
+              },
+              {
+                "$ref": "#/$defs/let_statement"
+              },
+              {
+                "$ref": "#/$defs/assume_statement"
               },
               {
                 "$ref": "#/$defs/Remark"
@@ -353,7 +365,7 @@
             "$ref": "#/$defs/some_statement"
           },
           {
-            "$ref" : "#/$defs/pattern_cases_statement" 
+            "$ref": "#/$defs/pattern_cases_statement"
           },
           {
             "$ref": "#/$defs/bi-implication_cases_statement"
@@ -621,7 +633,7 @@
     },
     "calculation_step": {
       "type": "string",
-      "description": "A step, typically an equality or inequality, in a calculation or computation."
+      "description": "A step, typically an equality or inequality, in a calculation or computation. Write the step fully: e.g. in the sequence `a=b\n=c`, write `a=b` and `b=c` as two separate steps and DO NOT OMIT `b` in the second step."
     },
     "pattern_cases_statement": {
       "type": "object",

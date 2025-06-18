@@ -13,6 +13,7 @@ set_option compiler.extract_closed false
 
 unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
     (translator : Translator) (dataMap : EmbedMap) : IO UInt32 := do
+  IO.eprintln "Server ready. Waiting for input..."
   let inp ← stdin.getLine
   match Json.parse inp with
   | Except.error e =>
@@ -26,6 +27,7 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
     -- IO.eprintln "Ran successfully"
     stdout.putStrLn <| result.compress
     stdout.flush
+    IO.eprintln "Output sent."
     process_loop env stdin stdout translator dataMap
   return 0
 
