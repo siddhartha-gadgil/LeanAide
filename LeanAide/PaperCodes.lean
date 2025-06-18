@@ -1351,7 +1351,7 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | some _, ``tacticSeq, js => do
   let .ok claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no 'claim' found in 'conclude_statement'"
-  let type ← translator.translateToPropStrict claim
+  let type ← translator.translateToPropStrict <| "We  have: " ++claim
   let stx ← delabDetailed type
   let pf ← runTacticsAndGetTryThisI type #[← `(tactic| hammer)]
   `(tacticSeq| have : $stx := by $pf*)
