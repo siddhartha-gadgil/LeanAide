@@ -12,7 +12,7 @@ FALSE_INIT_KEYS = [
     "request_button", "self_input_button", "log_server_cleaned", "log_order",
     "server_output_success", "valid_input", "log_cleaned", "input_paper",
     "generation_complete", "input_image_paper", "input_pdf_paper", "input_image_proof", 
-    "input_image_theorem", "input_pdf_proof", "input_pdf_theorem"
+    "input_image_theorem", "input_pdf_proof", "input_pdf_theorem", "gen_ai_proof",
 ]
 
 # Initialize session state variables
@@ -65,6 +65,7 @@ for state in (NONE_INIT_KEYS + FALSE_INIT_KEYS + ["selected_tasks"]):
 pg.run()
 
 with st.sidebar:
+    st.warning("The Website is Under Development.")
     if st.checkbox("Show Session State", value=False, help = "Session State values, used for debugging."):
         st.sidebar.write("Session State:")
         st.sidebar.json(st.session_state)
