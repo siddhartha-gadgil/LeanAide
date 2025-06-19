@@ -144,7 +144,7 @@ def validate_input_type(input_type: Any, expected_type: str) -> bool:
             return True
     return False
 
-def download_file(file_content, file_name):
+def download_file(file_content, file_name, key:str = "", usage:str = ""):
     # match mime
     mime = "text/plain"
     match file_name.split(".")[-1].lower():
@@ -161,7 +161,7 @@ def download_file(file_content, file_name):
         case _:
             pass  # Keep default text/plain for other extensions
     st.download_button(
-        label="Download File", data=file_content, file_name=file_name, mime=mime, help = "Click to download the file with the above text content.",
+        label="Download File", data=file_content, file_name=file_name, mime=mime, help = "Click to download the file with the above text content.", key = f"download_{key}_{usage}",
     )
 
 # Function to copy text to clipboard and show confirmation
@@ -176,7 +176,7 @@ def copy_to_clipboard(text):
     except Exception as e:
         st.warning(f"Failed to copy: {e}", icon="⚠️")
 
-def action_copy_download(key: str, filename: str, copy_text: str = ""):
+def action_copy_download(key: str, filename: str, copy_text: str = "", usage: str = ""):
     """Helper function to copy text to clipboard and download as a file."""
     col1, col2 = st.columns(2)
     text = st.session_state[key]
@@ -185,14 +185,14 @@ def action_copy_download(key: str, filename: str, copy_text: str = ""):
     with col1:
         copy_to_clipboard(text)
     with col2:
-        download_file(text, filename)
+        download_file(text, filename, key= key, usage=usage)
 
-def preview_text(key: str, default_text: str = ""):
+def preview_text(key: str, default_text: str = "", usage: str = ""):
     """
     Display a preview of the text in a text area with a copy and download button.
     """
     with st.expander(f"Preview Text {key.capitalize()}", expanded=False):
-        lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}").lower()
+        lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}_{usage}").lower()
         if lang == "markdown":
             st.markdown(st.session_state[key] if st.session_state[key] else default_text)
         else:
@@ -215,7 +215,7 @@ def log_section():
         else:
             st.code("No logs available yet.", language="plaintext")
 
-        with st.popover("Clean Server Logs", help="Check this box to clean the server logs. This will delete all the logs in the server log file."):
+        with st.popover("Clean Server Logs", help="Click and select Yes to clean the server logs. This will delete all the logs in the Log Buffer for Streamlit."):
             st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server.")
             if st.button("Yes"):
                 try:

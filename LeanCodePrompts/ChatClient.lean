@@ -576,6 +576,12 @@ def theoremName (server: ChatServer)
         -- logInfo llm_name
     return llm_name.toName
 
+def fullStatement (server: ChatServer)
+  (statement: String): CoreM String := do
+    let query := s!"Rewrite the following in typical mathematical English using LaTeX if necessary:\n{statement}\nGive ONLY the English statement."
+    let statementsArr ←  server.mathCompletions query 1
+    return statementsArr[0]? |>.getD statement
+
 -- @[deprecated structuredProof]
 -- def structuredProofFull (server: ChatServer)
 --   (pf: String)(n: Nat := 1)
