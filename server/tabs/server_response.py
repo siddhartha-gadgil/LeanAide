@@ -68,6 +68,8 @@ with st.expander("Load input Conversation from JSON"):
             sts.val_input = json_data["input"]
             sts.task_tbd = json_data["tasks"]
             sts.temp_structured_json = json_data["input"]["json_structured"] if "json_structured" in json_data["input"] else {}
+            sts.proof = json_data.get("proof", "")
+            sts.theorem = json_data.get("theorem", "")
             sts.self_input_button = True
             sts.valid_input = True
             try:
@@ -121,11 +123,18 @@ if st.button("Build Query", help = "Provide inputs to the your selected tasks. N
             # Special case for input being "json_structured"
             if key.lower() == "json_structured":
                 help += " Just paste your `json` object here."
-                if st.button("Use Structured JSON generated", help = "Use the structured JSON generated in the `Structured Json` page of LeanAide website.", key = f"use_structured_json_{task}"):
-                    if structured_json := sts.get("structured_proof", {}):
-                        sts.temp_structured_json = structured_json 
-                    else:
-                        st.warning("No structured JSON found. Please generate it first in the 'Structured Json' page.")
+                
+                jsbtn, clbtn = st.columns([1, 1])
+                with jsbtn:
+                    if st.button("Use Structured JSON generated", help = "Use the structured JSON generated in the `Structured Json` page of LeanAide website.", key = f"use_structured_json_{task}"):
+                        if structured_json := sts.get("structured_proof", {}):
+                            sts.temp_structured_json = structured_json 
+                        else:
+                            st.warning("No structured JSON found. Please generate it first in the 'Structured Json' page.")
+                with clbtn:
+                    if st.button("Clear Current Query", help = "Clear the current query and start fresh."):
+                        sts.temp_structured_json = ""
+                        sts.val_input = {}
  
                 val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value'}", value = sts.temp_structured_json)
                 sts.temp_structured_json = val_in  # Store the structured JSON input
@@ -239,7 +248,7 @@ if submit_response_button or sts.request_button:
         request_payload = {"tasks": server_tasks, **sts.val_input}
 
         if submit_response_button:
-            with st.spinner("Request sent. Please wait for a short while..."): 
+            with st.spinner("Request sent. Check the server logs for activity. Please wait for short while..."): 
                 log_write("Streamlit", f"Request Payload: {request_payload}")
                 response = requests.post(
                     f"http://{sts.api_host}:{sts.api_port}", json=request_payload
@@ -296,7 +305,9 @@ if st.checkbox("`Download Conversation:` Save your input and output response in 
         conversation_data = {
             "tasks": sts.selected_tasks,
             "input": sts.val_input,
-            "output": sts.result if hasattr(sts, 'result') else {}
+            "output": sts.result if hasattr(sts, 'result') else {},
+            "theorem": sts.theorem if hasattr(sts, 'theorem') else "",
+            "proof": sts.proof if  hasattr(sts, 'proof') else "",
         }
         st.download_button(
             label="Download Conversation",

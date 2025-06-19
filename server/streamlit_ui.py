@@ -7,7 +7,7 @@ from logging_utils import post_env_args
 
 NONE_INIT_KEYS = [
     "self_selection", "val_input", "result", "temp_structured_json", "prompt_proof_guide", "prompt_proof_task",
-    "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", "format_index",
+    "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", "format_index", "thm_details", 
     "uploaded_pdf", "genai_proof_button"
 ]
 
@@ -15,7 +15,7 @@ FALSE_INIT_KEYS = [
     "request_button", "self_input_button", "log_server_cleaned",
     "server_output_success", "valid_input", "log_cleaned", "input_paper",
     "generation_complete", "input_image_paper", "input_pdf_paper", "input_image_proof", 
-    "input_image_theorem", "input_pdf_proof", "input_pdf_theorem", "gen_ai_proof",
+    "input_image_theorem", "input_pdf_proof", "input_pdf_theorem", "gen_ai_proof", "server_thm_details",
 ]
 
 LLM_INIT_KEYS = [

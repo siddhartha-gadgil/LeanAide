@@ -7,8 +7,10 @@ from streamlit import session_state as sts
 from dotenv import load_dotenv
 from PIL import Image
 from streamlit_sortables import sort_items
+import requests
 
-from llm_prompts import proof_thm_task_eng
+from api_server import HOST, PORT
+from llm_prompts import proof_thm_task_eng, proof_guidelines_prompt
 from llm_response import gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf, model_response_gen
 from serv_utils import SCHEMA_JSON, HOMEDIR, action_copy_download, preview_text, log_section
 from logging_utils import log_write, post_env_args
@@ -26,6 +28,10 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 # Write to env API KEY
 if sts.llm_api_key:
     post_env_args(provider = sts.llm_provider, auth_key = sts.llm_api_key)
+if "api_host" not in sts:
+    sts.api_host = HOST
+if "api_port" not in sts:
+    sts.api_port = PORT
  
 st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
@@ -257,21 +263,74 @@ def handle_pdf_input(key:str):
 def handle_ai_proof_input(key: str, rewrite: bool = False):
     """Handles AI proof generation from theorem input."""
     if rewrite:
-        st.subheader("Rewrite Proof using AI")
-        if not sts.proof.strip():
+        if not sts.proof and not sts.theorem:
             st.warning("Proof has not been inputted yet. Please input the proof first.")
             return
-
-        prompt_guide_thm = sts.prompt_proof_guide
     else:
-        st.subheader("Generate AI Proof from Theorem")
-
         if "theorem" not in sts or not sts.theorem:
             st.warning("Please enter a theorem before generating the proof.")
             return
 
-        # Theorem is given in the prompt HERE.
-        prompt_guide_thm = sts.prompt_proof_guide+ "\n\nThe Theorem you have to prove is:\n" + sts.theorem
+    # Get Theorem Details
+    request_payload = {
+        "tasks": ["translate_thm_detailed"],
+        "text": sts.theorem.strip(),
+    }
+    with st.spinner("Fetching theorem details..."):
+        response = requests.post(
+            f"http://{sts.api_host}:{sts.api_port}", json=request_payload
+        )
+    sts.thm_details = {}
+    if response.status_code == 200:
+        sts.thm_details = response.json()
+        try:
+            if sts.thm_details["result"] == "success":
+                sts.server_thm_details = True
+                st.success("Theorem details fetched successfully.")
+                log_write("Theorem Details Fetch", "Success: Fetched theorem details successfully.")
+            else:
+                sts.server_thm_details = False
+                st.error("Error in processing the request for theorem details.")
+                st.write("Error (String):")
+                st.code(sts.result["error"])
+                log_write("Theorem Details Fetch", f"Error: {sts.thm_details.get('error', 'Unknown error')}")
+        except Exception as e:
+            sts.server_thm_details = False
+            st.error(f"Error processing theorem details: {str(e)}")
+            st.code(str(sts.thm_details))
+            log_write("Theorem Details Fetch", f"Error: {str(e)}")
+
+    else:
+        st.error(f"Failed to get theorem details: {response.text}\nIgnoring details for now, but this might affect quality for further proof generation.")
+        log_write("Theorem Details Fetch", f"Error: {response.text}")
+
+    # Preview and edit theorem details
+    with st.expander("Theorem Details", expanded = False):
+        if sts.server_thm_details:
+            if st.checkbox("Edit Theorem Details", value = False):
+                st.thm_details["definitions_used"] = st.text_area(
+                    "Theorem Details: Definitions Used",
+                    value=sts.thm_details.get("definitions_used", ""),
+                    height=150,
+                    help="You can edit the definitions used in the theorem.",
+                )
+                st.thm_details["statement"] = st.text_area(
+                    "Theorem Details: Statement",
+                    value=sts.thm_details.get("statement", ""),
+                    height=150,
+                    help="You can edit the statement of the theorem.",
+                )
+            else:
+                st.subheader("Theorem Details: Definitions Used", divider = True)
+                st.markdown(sts.thm_details.get("definitions_used", "No definitions provided."))
+                st.subheader("Theorem Details: Statement", divider = True)
+                st.markdown(sts.thm_details.get("statement", "No statement provided."))
+        else:
+            st.warning("Theorem details could not be fetched from the server. Please check your server connection or input a valid theorem.")
+            sts.thm_details = {}
+    
+    # Theorem is given in the prompt HERE.
+    prompt_guide_thm = proof_guidelines_prompt(thm = sts.theorem, details= sts.thm_details)
 
     sts.prompt_proof_task = proof_thm_task_eng(sts.proof, rewrite=rewrite)
     with st.expander("Preview: AI Prompt for Generating Proof", expanded = False):
@@ -311,7 +370,7 @@ def handle_ai_proof_input(key: str, rewrite: bool = False):
                 log_write("AI Proof Generation", f"Error: Failed to generate AI proof: {e}")
                 return
 
-    if sts.proof and gen_ai_proof_button:
+    if sts.proof or gen_ai_proof_button:
         sts.proof = st.text_area(
             "AI Generated Proof",
             value=sts.proof,
@@ -332,7 +391,7 @@ def handle_general_input(key: str):
     selectbox_text = f"Choose input format for the {key}"
     input_formats = ["Type Input Yourself", "PDF(.pdf)", "Image(.png, .jpg, .jpeg)", "Markdown(.md)", "Text(.txt)" , "Latex(.tex)"]
     if key.lower() == "proof":
-        st.info("Input the Proof of your input Theorem, or Generate it using AI below. You may skip this section in the latter case.")
+        st.info("Input the Proof of your input Theorem, or Generate it using AI below. You may skip this section in the latter case. You may see previously inputted/generated proof text below.")
 
     if not sts.format_index or not sts.input_paper:
         sts.format_index = 1 if key == "paper" else 0
@@ -373,16 +432,6 @@ def handle_general_input(key: str):
     if sts[key] and sts[key].strip():
         log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
 
-# Guide prompt for AI
-prompt_proof_guide_path = os.path.join(HOMEDIR, "resources", "ProofGuidelines.md")
-if not sts.prompt_proof_guide:
-    try:
-        with open(prompt_proof_guide_path, "r") as file:
-            sts.prompt_proof_guide = file.read()
-    except FileNotFoundError:
-        sts.prompt_proof_guide = "Write a proof for the theorem provided. It should be more declarative and structured so that it can be converted to Lean code."
-
-
 # Papers section
 if input_method == input_options[1]: # Papers
     sts.input_paper = True
@@ -397,7 +446,8 @@ if input_method == input_options[0]: # Theorem-Proofs or Problems
 
 st.info("**Recommended:** For your input proof, it is advised to rewrite the proof based on our Guidelines for easier conversion to Lean Code. You can also generate the proof using AI based on the theorem you provided(if proof not provided previously).")
 
-if st.button("Generate/Rewrite Proof using AI", type = "primary") or sts.gen_ai_proof:
+st.subheader("Generate/Rewrite Proof from theorem using AI", divider = True)
+if st.button("Generate/Rewrite AI Proof", type = "primary") or sts.gen_ai_proof:
     sts.gen_ai_proof = True
     if not sts.proof.strip():
         st.success("You have not inputted any proof previously. Let's Generate the Proof!")

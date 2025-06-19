@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 # In-memory log storage with max size (1000 lines by default)
-LOG_BUFFER_LINES = 1000
+LOG_BUFFER_LINES = 10000
 LOG_BUFFER = deque(maxlen=LOG_BUFFER_LINES)
 LEANAIDE_LOG_FILE = tempfile.gettempdir() + "/leanaide.log"
 MAX_FILE_LINES = 10000
@@ -87,7 +87,7 @@ def filter_logs(msg: str):
     
     return redacted_msg
 
-def log_write(proc_name: str, msg: str, log_file: bool = False):
+def log_write(proc_name: str, msg: str, log_file: bool = True):
     msg = filter_logs(msg)
     logger = setup_logger(proc_name)
     if log_file:
@@ -138,7 +138,7 @@ def log_server(log_file: bool = False, order: bool = True):
             try:
                 with open(LEANAIDE_LOG_FILE, 'r') as f:
                     file_lines = f.readlines()
-                    # Take last 1000 lines from file
+                    # Take last LOG_BUFFER_LINES lines from file
                     recent_lines = file_lines[-LOG_BUFFER_LINES:]
                     if order:
                         log_content.extend(reversed(recent_lines))
