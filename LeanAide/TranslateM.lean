@@ -259,6 +259,10 @@ def defsBlob : TranslateM <| Array String := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => dfn.statement
 
+def defsNames : TranslateM <| Array Name := do
+  let defs := (← get).defs
+  defs.mapM <| fun dfn => do pure dfn.name
+
 def addPrelude (p: String) : TranslateM Unit := do
   modify fun s =>
     if s.preludes.contains p then

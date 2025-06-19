@@ -208,8 +208,8 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         getCodeTacticsAux translator goal sources accum
       else
         if ← endsWithDone code then
-          -- the source is done, so we can return the accumulated tactics
-          IO.eprintln s!"codegen: goal still open after tactics, but source is done"
+          -- the tactics are "done", so we can return the accumulated tactics
+          IO.eprintln s!"codegen: goal still open after tactics, but tactics end with 'done' so no further tactics generated."
           IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
           IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
           return (← appendTactics accum code, none)

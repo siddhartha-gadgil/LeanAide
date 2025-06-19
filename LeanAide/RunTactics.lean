@@ -12,20 +12,24 @@ def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : Term
     mvarId.withContext do
   -- let tacticCode ← `(tacticSeq| skip)
   let s₀ ← saveState
+  let s₀' : Meta.SavedState ←  Meta.saveState
   try
     let ctx ← read
     let (mvars, s) ←
       withoutErrToSorry do
       Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode}
-        {}  (s:= ← get)
+         (s:= ← get)
     match mvars with
     | [] =>
+      IO.eprintln s!"Tactics returned no goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
       set s
       return none
     | [mvar] =>
       set s
       return mvar
     | _ =>
+      s₀'.restore
+      IO.eprintln s!"Tactics returned multiple goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {mvars.length} instead of 1"
       s₀.restore
       return none
   catch e =>
@@ -40,20 +44,6 @@ def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : Term
     s₀.restore
     return mvarId
 
--- Actually not useful, need to integrate with `getCode`.
-def runTacticSeqList (mvarId : MVarId) (tacticCodeList : List <| TSyntax ``tacticSeq) : TermElabM <| Option MVarId :=
-    mvarId.withContext do
-  match tacticCodeList with
-  | [] =>
-    return none
-  | head :: tail =>
-    let mvar ← runForSingleGoal mvarId head
-    match mvar with
-    | none =>
-      return none
-    | some mvarId' =>
-      runTacticSeqList mvarId' tail
-
 def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId :=
     mvarId.withContext do
@@ -64,19 +54,21 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     let (mvars, s) ←
       withoutErrToSorry do
       Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode}
-        {}  (s:= ← get)
+        (s:= ← get)
     if allowClosure && mvars.isEmpty then
       set s
       IO.eprintln s!"Tactics returned no goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
       IO.eprintln s!"Assignment: {← mvarId.isAssigned}; {← PrettyPrinter.ppExpr <| mkMVar mvarId} "
       for tac in tacs do
         IO.eprintln s!"Tactic: {← ppTactic tac}"
-      return mvars
+      throwError
+        s!"Tactics returned no goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}, but allowClosure is true"
     unless mvars.length == n do
       IO.eprintln s!"Tactics returned wrong number of goals on {← mvarId.getType}: {mvars.length} instead of {n}"
       for tac in tacs do
         IO.eprintln s!"Tactic: {← ppTactic tac}"
-      return List.replicate n mvarId
+      throwError
+        s!"Tactics returned wrong number of goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {mvars.length} instead of {n}"
     set s
     -- IO.eprintln s!"Tactics succeeded on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
     return mvars
@@ -85,7 +77,8 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     IO.eprintln s!"Tactic code: {← ppCategory ``tacticSeq tacticCode}"
     for tac in tacs do
       IO.eprintln s!"Tactic: {← ppTactic tac}"
-    return List.replicate n mvarId
+    throwError
+      s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString} when expecting {n} goals."
 
 def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
     mvarId.withContext do
