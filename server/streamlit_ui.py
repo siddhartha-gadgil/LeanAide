@@ -18,7 +18,8 @@ FALSE_INIT_KEYS = [
 ]
 
 LLM_INIT_KEYS = [
-    "llm_provider", "llm_list", "llm_api_key", "model_text", "model_img", "temperature", "llm_url"
+    "llm_provider", "llm_list", "llm_api_key", "model_text", "model_img", "temperature", "llm_url",
+    "model_leanaide",
 ]
 
 # Initialize session state variables
@@ -110,9 +111,17 @@ with st.sidebar:
         # Model selection text boxes
         default_model_index = st.session_state.llm_list.index(selected_provider["default_model"]) if selected_provider["default_model"] in st.session_state.llm_list else 0
 
-        model_list_help = f"Check out the list of {st.session_state.llm_provider} Models [↗](https://platform.openai.com/docs/models)" if st.session_state.llm_provider.lower() == "openai" else f"Check out the list of {st.session_state.llm_provider} Models [↗](https://ai.google.dev/gemini-api/docs/models)"
+        model_list_help = f"Check out the list of {st.session_state.llm_provider} Models [↗]({selected_provider['models_url']})"
+
+        st.session_state.model_leanaide = st.selectbox(
+            "Model for LeanAide Code generation:",
+            options = st.session_state.llm_list,
+            index = (st.session_state.llm_list.index(selected_provider["default_leanaide_model"]) if selected_provider["default_leanaide_model"] in st.session_state.llm_list else 0),
+            help="Specify the model for LeanAide Codegen. " + model_list_help,
+            accept_new_options = True
+        )
         st.session_state.model_text = st.selectbox(
-            "Model for JSON Generator:",
+            "Model for Proof/JSON Generator:",
             options = st.session_state.llm_list,
             index = default_model_index,
             help="Specify the model for JSON Generator. " + model_list_help,
@@ -151,8 +160,8 @@ with st.sidebar:
 if st.session_state.llm_api_key and st.session_state.llm_provider:
     # Post environment arguments to the server
     env_kwargs = {}
-    if st.session_state.model_text:
-        env_kwargs["model"] = st.session_state.model_text
+    if st.session_state.model_leanaide:
+        env_kwargs["model"] = st.session_state.model_leanaide
     if st.session_state.temperature is not None and not st.session_state.temperature == 0.8:
         env_kwargs["temperature"] = int(10*st.session_state.temperature)
     if st.session_state.llm_url:

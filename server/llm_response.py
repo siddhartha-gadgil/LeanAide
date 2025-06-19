@@ -9,6 +9,7 @@ from openai import OpenAI
 
 from llm_prompts import thmpf_prompt, soln_from_image_prompt, mathpaper_prompt
 from serv_utils import SCHEMA_JSON, HOMEDIR
+from logging_utils import log_write
 
 load_dotenv(os.path.join(HOMEDIR, ".env"))
 
@@ -16,22 +17,30 @@ provider_info = {
     "OpenAI": {
         "name": "OpenAI",
         "default_model": "o4-mini",
+        "default_leanaide_model": "gpt-4o",
         "api_key": os.getenv("OPENAI_API_KEY", "Key Not Found"),
+        "models_url":"https://platform.openai.com/docs/models"
     },
     "Gemini": {
         "name": "Gemini",
         "default_model": "gemini-1.5-pro",
+        "default_leanaide_model": "gemini-1.5-pro",
         "api_key": os.getenv("GEMINI_API_KEY", "Key Not Found"),
+        "models_url": "https://developers.generativeai.google/models"
     },
     "OpenRouter": {
         "name": "OpenRouter",
-        "default_model": "gpt-4o",
+        "default_model": "openai/gpt-4o",
+        "default_leanaide_model": "openai/gpt-4o",
         "api_key": os.getenv("OPENROUTER_API_KEY", "Key Not Found"),
+        "models_url": "https://openrouter.ai/models"
     },
     "DeepInfra": {
         "name": "DeepInfra",
         "default_model": "deepseek-ai/DeepSeek-R1-0528",
+        "default_leanaide_model": "deepseek-ai/DeepSeek-R1-0528",
         "api_key": os.getenv("DEEPINFRA_API_KEY", "Key Not Found"),
+        "models_url": "https://deepinfra.com/models"
     }
 }
 
@@ -91,6 +100,7 @@ def image_solution(image_path: str, provider = "openai", model: str = "gpt-4o"):
     prompt = "Extract text using LaTeX from the given mathematics as images. DO NOT include any other text in the response. Do not write extra proofs or explanations."
 
     client = match_provider_client(provider)
+    log_write("llm_query", f"Querying model {model} for image solution with prompt: {prompt[:25]}...")
     response = client.chat.completions.create(
         model=model,
         messages=[
@@ -164,7 +174,7 @@ def model_response_gen(prompt:str, task:str = "", provider = "openai", model:str
     ## Case 3. In case of paper, the pdf_val is the OpenAI File object.
     if type(pdf_val) is not type("") and not paper_input:
         pass # Case 1
-    elif type(pdf_val)!= type("") and paper_input: # Case 3
+    elif type(pdf_val) is not type("") and paper_input: # Case 3
         # pdf_text is not string but OpenAi File object
         pdf_id = pdf_val.id
         messages.append({
@@ -179,6 +189,7 @@ def model_response_gen(prompt:str, task:str = "", provider = "openai", model:str
 
     client = match_provider_client(provider)
     if json_output:
+        log_write("llm_query", f"Querying model {model} for JSON output with prompt: {prompt[:25]}...")
         response = client.chat.completions.create(
                 model=model,
                 messages=messages,
@@ -195,6 +206,7 @@ def model_response_gen(prompt:str, task:str = "", provider = "openai", model:str
         ) 
         
     else:
+        log_write("llm_query", f"Querying model {model} for text output with prompt: {prompt[:25]}...")
         response = client.chat.completions.create(
             model=model,
             messages=messages,

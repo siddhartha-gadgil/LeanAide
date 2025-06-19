@@ -279,6 +279,7 @@ if submit_response_button or st.session_state.request_button:
             try:
                 st.error(st.session_state.result.get("error", "No error message provided."))
             except Exception as e:
+                st.error(f"Error retrieving error from server: {e}")
                 pass
             log_write("Streamlit", "Server Output: No output available.")
 
