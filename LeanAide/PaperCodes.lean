@@ -629,6 +629,13 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
       let defStx ←
           defStx translator js statement value
       let stxs := #[defStx]
+      match ← DefData.ofSyntax? defStx with
+      | some data =>
+        -- If we have a definition, we add it to the definitions
+        -- and return the command
+        addDefn data
+      | none =>
+        IO.eprintln s!"codegen: No definition found for 'let_statement' {statement} with value {value}"
       addPrelude statement
       return some <| ← `(commandSeq| $stxs*)
 
@@ -861,6 +868,9 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let hash₀ := hash stx.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let head ← `(command| theorem $name : $stx := by $tac)
+  let dfn: DefData :=
+    { name := "assert_{hash₀}".toName, type := stx, value := stx, isProp := true, isNoncomputable := false, doc? := none}
+  addDefn dfn
   let resolvedCmds ←
     CodeGenerator.cmdResolveExistsHave stx
   toCommandSeq <| #[head] ++ resolvedCmds
@@ -900,7 +910,8 @@ where typeStx (js: Json) :
     targets.filterMapM fun target =>
       findTheorem? target
   let usedNames := labelledTheorems.map (·.name)
-  let ids := (usedNames ++ names').map mkIdent
+  let envNames ← defsNames
+  let ids := (envNames ++  usedNames ++ names').map mkIdent
   let tac ← `(tactic| hammer [ $ids,* ])
   let tacs ← runTacticsAndGetTryThisI (type) #[tac]
   return (← delabDetailed type, ← `(tacticSeq| $tacs*))

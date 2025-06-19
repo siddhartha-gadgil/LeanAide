@@ -31,6 +31,9 @@
             "$ref": "#/$defs/let_statement"
           },
           {
+            "$ref": "#/$defs/assert_statement"
+          },
+          {
             "$ref": "#/$defs/assume_statement"
           },
           {
@@ -128,6 +131,9 @@
               },
               {
                 "$ref": "#/$defs/let_statement"
+              },
+              {
+                "$ref": "#/$defs/assert_statement"
               },
               {
                 "$ref": "#/$defs/assume_statement"
