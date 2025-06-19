@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Tuple, Type
 
 import streamlit as st
+from streamlit import session_state as sts
 from st_copy import copy_button
 
 from logging_utils import log_server, log_buffer_clean
@@ -101,7 +102,7 @@ TASKS = {
 def button_clicked(button_arg):
     def protector():
         """This function does not allow value to become True until the button is clicked."""
-        st.session_state[button_arg] = True
+        sts[button_arg] = True
     return protector
 
 def get_actual_input(input_str: str) -> Tuple[Type, Any]:
@@ -179,7 +180,7 @@ def copy_to_clipboard(text):
 def action_copy_download(key: str, filename: str, copy_text: str = "", usage: str = ""):
     """Helper function to copy text to clipboard and download as a file."""
     col1, col2 = st.columns(2)
-    text = st.session_state[key]
+    text = sts[key]
     if copy_text:
         text = copy_text
     with col1:
@@ -194,9 +195,9 @@ def preview_text(key: str, default_text: str = "", usage: str = ""):
     with st.expander(f"Preview Text {key.capitalize()}", expanded=False):
         lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}_{usage}").lower()
         if lang == "markdown":
-            st.markdown(st.session_state[key] if st.session_state[key] else default_text)
+            st.markdown(sts[key] if sts[key] else default_text)
         else:
-            st.code(st.session_state[key] if st.session_state[key] else default_text, wrap_lines = True)
+            st.code(sts[key] if sts[key] else default_text, wrap_lines = True)
 
 def log_section():
     st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked.")
@@ -205,7 +206,7 @@ def log_section():
             height = 500 if len(log_out) > 1000 else 150
             st.write("Server logs:")
             st.code(
-                log_out if not st.session_state.log_cleaned else "No logs available yet.",
+                log_out if not sts.log_cleaned else "No logs available yet.",
                 language = "log",
                 height= height,
                 wrap_lines =True,
@@ -219,7 +220,7 @@ def log_section():
             st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server.")
             if st.button("Yes"):
                 try:
-                    st.session_state.log_cleaned = True
+                    sts.log_cleaned = True
                     log_buffer_clean()
                     st.success("Server logs cleaned successfully! Please UNCHECK THE BOX to avoid cleaning again.")
                     st.rerun()
@@ -227,5 +228,5 @@ def log_section():
                     st.error(f"Error cleaning server logs: {e}")
             if st.button("No"):
                 pass
-            st.session_state.log_cleaned = False
+            sts.log_cleaned = False
             st.info("Press Escape to close this popover.")
