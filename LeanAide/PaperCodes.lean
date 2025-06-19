@@ -413,9 +413,12 @@ where
     let .ok statement :=
       js.getObjValAs? String "definition" | throwError
         s!"codegen: no 'definition' found in 'definition'"
-    let .ok cmd ←
-      translator.translateDefCmdM? statement | throwError
-        s!"codegen: no definition translation found for {statement}"
+    let cmd ← match
+      ← translator.translateDefCmdM? statement with
+      | .ok cmd => pure cmd
+      | .error errs => throwError
+        let outputs := errs.map (·.text)
+        s!"codegen: no definition translation found for {statement}; outputs: {outputs}"
     return cmd
 
 
@@ -683,8 +686,9 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
             CmdElabError.fallback es
           catch _ =>
             IO.eprintln s!"codegen: 'let_statement' {statement'} fallback failed"
+            let output := es.map fun e => e.text
             throwError
-              s!"codegen: no fallback for 'let_statement' {statement'} "
+              s!"codegen: no fallback for 'let_statement' {statement'}; output: {output} "
           match Parser.runParserCategory (← getEnv) `command fallback with
           | .ok stx =>
             let stx: Syntax.Command := ⟨stx⟩
