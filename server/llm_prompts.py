@@ -21,10 +21,11 @@ def thmpf_prompt(thm, pf):
 def soln_from_image_prompt(image_text: str = ""):
     return f"You are proficient in extracting Mathematical text from images. Your task is to rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. \n {ocr_rules}. The extracted text is:\n\n{image_text}. Do not write any extra explanations. Avoid unnecessary causal sentences."
 
-def proof_thm_task_eng():
-    return """
-You are a mathematical assistant specializing in writing clear for the given theorem.
-
+def proof_thm_task_eng(pf: str = "", rewrite: bool = False):
+    rewrite_proof = f"Rewrite the following proof:\n\n{pf}\n\n" if rewrite else ""
+    return f"""
+You are a mathematics assistant for research mathematicians and advanced students who also helps with computer-assisted mathematics. Answer mathematical questions with the level of precision and detail expected in graduate level mathematics courses and in mathematics research papers. Be concise and give only what is asked for, avoiding phrases like 'Here is the proof'. Some of your output is designed to be used as input to programs, so give answers to questions as best as you can in the form requested. Do not explain the process by which the answer can be obtained instead of giving the answer.
+{rewrite_proof}
 Follow these instructions strictly:
 1.  Write the entire proof in formal English following the given Guidelines.
 2.  Use LaTeX for all mathematical formulas and expressions, enclosing them in `$`.

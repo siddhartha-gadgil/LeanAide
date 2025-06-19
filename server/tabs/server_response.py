@@ -194,7 +194,7 @@ def show_response():
                 )
                 if "lean_code" in key.lower():
                     code = st.session_state.result.get(key, "-- No Lean code available")
-                    code = "import Mathlib\n" + code if "import Mathlib" not in code else code
+                    code = f"import Mathlib\n{code.strip()}" if "import Mathlib" not in code else code
                     if code not in ["-- No Lean code available", "No data available."]:
                         st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
 

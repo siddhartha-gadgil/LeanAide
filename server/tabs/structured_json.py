@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from PIL import Image
 from streamlit_sortables import sort_items
 
-from llm_prompts import proof_thm_task_lean
+from llm_prompts import proof_thm_task_eng
 from llm_response import gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf, model_response_gen
 from serv_utils import SCHEMA_JSON, HOMEDIR, action_copy_download, preview_text, log_section
 from logging_utils import log_write, post_env_args
@@ -289,7 +289,7 @@ def handle_ai_proof_input(key: str, rewrite: bool = False):
             try:
                 st.session_state.proof = model_response_gen(
                     prompt=prompt_guide_thm,
-                    task = proof_thm_task_lean() if not rewrite else proof_thm_task_lean(st.session_state.proof, rewrite=True),
+                    task = proof_thm_task_eng() if not rewrite else proof_thm_task_eng(st.session_state.proof, rewrite=True),
                     provider=st.session_state.llm_provider,
                     model=st.session_state.model_text,
                 )
