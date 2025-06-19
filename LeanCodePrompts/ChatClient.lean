@@ -169,7 +169,7 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
     ("arguments", Json.arr <| baseArgs.map (Json.str)),
     ("data", data)]
   IO.eprintln s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
-  -- IO.eprintln s!"Response: {output}" -- uncomment for debugging
+  IO.eprintln s!"Response: {output}" -- uncomment for debugging
   match Lean.Json.parse output with
   | Except.ok j =>
     appendLog "chat_queries"
