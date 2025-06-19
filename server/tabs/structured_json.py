@@ -272,8 +272,15 @@ def handle_ai_proof_input(key: str, rewrite: bool = False):
         # Theorem is given in the prompt HERE.
         prompt_guide_thm = st.session_state.prompt_proof_guide+ "\n\nThe Theorem you have to prove is:\n" + st.session_state.theorem
 
+    st.session_state.prompt_proof_task = proof_thm_task_eng(st.session_state.proof, rewrite=rewrite)
     with st.expander("Preview: AI Prompt for Generating Proof", expanded = False):
         if st.checkbox("Edit Prompt", value = False):
+            st.session_state.prompt_proof_task = st.text_area(
+                "AI Proof Generation System Task",
+                value=st.session_state.prompt_proof_task,
+                height=150,
+                help="You can edit the system task for AI proof generation."
+            )
             st.session_state.prompt_proof_guide = st.text_area(
                 "AI Proof Generation Prompt",
                 value=prompt_guide_thm,
@@ -281,6 +288,9 @@ def handle_ai_proof_input(key: str, rewrite: bool = False):
                 help="You can edit the prompt for AI proof generation. It should be more declarative and structured so that it can be converted to Lean code.",
             )
         else:
+            st.subheader("AI Proof Generation System Task", divider = True)
+            st.markdown(st.session_state.prompt_proof_task, unsafe_allow_html=True)
+            st.subheader("AI Proof Generation Prompt", divider = True)
             st.markdown(prompt_guide_thm, unsafe_allow_html=True)
 
     gen_ai_proof_button = st.button("Generate AI Proof")
@@ -289,7 +299,7 @@ def handle_ai_proof_input(key: str, rewrite: bool = False):
             try:
                 st.session_state.proof = model_response_gen(
                     prompt=prompt_guide_thm,
-                    task = proof_thm_task_eng() if not rewrite else proof_thm_task_eng(st.session_state.proof, rewrite=True),
+                    task = st.session_state.prompt_proof_task,
                     provider=st.session_state.llm_provider,
                     model=st.session_state.model_text,
                 )

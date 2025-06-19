@@ -5,7 +5,7 @@ from logging_utils import post_env_args
 # Global variables for session state initialization
 
 NONE_INIT_KEYS = [
-    "self_selection", "val_input", "result", "temp_structured_json", "prompt_proof_guide",
+    "self_selection", "val_input", "result", "temp_structured_json", "prompt_proof_guide", "prompt_proof_task",
     "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", "format_index",
     "uploaded_pdf"
 ]
@@ -140,10 +140,16 @@ with st.sidebar:
 
     st.divider()
     st.warning("The Website is Under Development.")
+
+    ## Session State visibility
     if st.checkbox("Show Session State", value=False, help = "Session State values, used for debugging."):
         st.sidebar.write("Session State:")
-        # Create a copy of session state with masked API keys
+        # session state with masked API keys
         masked_state = {k: (v[:6] + "*" * (len(v) - 6) if "api_key" in k.lower() and isinstance(v, str) and len(v) > 6 else v) for k, v in st.session_state.items()}
+        # Hide very long texts
+        for k, v in masked_state.items():
+            if isinstance(v, str) and len(v) > 400:
+                masked_state[k] = f"{v[:150]} ... =**Truncated**= ... {v[-150:]}"
         st.sidebar.json(masked_state)
 
     with st.expander("Other Settings", expanded=False):
