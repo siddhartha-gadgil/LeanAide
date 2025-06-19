@@ -7,93 +7,25 @@ from dotenv import load_dotenv
 from PIL import Image
 from streamlit_sortables import sort_items
 
-from llm_response import get_supported_models, gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf
-from serv_utils import SCHEMA_JSON, action_copy_download, preview_text, log_section
-from logging_utils import log_write
+from llm_prompts import proof_thm_task_eng
+from llm_response import gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf, model_response_gen
+from serv_utils import SCHEMA_JSON, HOMEDIR, action_copy_download, preview_text, log_section
+from logging_utils import log_write, post_env_args
 
-load_dotenv()
+load_dotenv(os.path.join(HOMEDIR, ".env"))
 
 st.title("LeanAide: Structured JSON Output")
 st.write("Here you can input your theorem-proof/paper, etc. and generate Structured JSON output using LeanAide Schema.")
 st.info("Please fill out your API credentials in the sidebar to use the LLM's. Image OCR, Structured Json Generation, etc. will not work without valid API credentials.")
 
-st.sidebar.header("Structured Json")
-
 # Create a temporary directory if it doesn't exist
 TEMP_DIR = "leanaide_st_temp"
 os.makedirs(TEMP_DIR, exist_ok=True)
 
-provider_info = {
-    "OpenAI": {
-        "name": "OpenAI",
-        "default_model": "o4-mini",
-        "default_api_key": os.getenv("OPENAI_API_KEY", ""),
-    },
-    "Gemini": {
-        "name": "Gemini",
-        "default_model": "gemini-1.5-pro",
-        "default_api_key": os.getenv("GEMINI_API_KEY", ""),
-    },
-    "OpenRouter": {
-        "name": "OpenRouter",
-        "default_model": "gpt-4o",
-        "default_api_key": os.getenv("OPENROUTER_API_KEY", ""),
-    },
-    "DeepInfra": {
-        "name": "DeepInfra",
-        "default_model": "deepseek-ai/DeepSeek-R1-0528",
-        "default_api_key": os.getenv("DEEPINFRA_API_KEY", ""),
-    }
-}
-
-# API Credentials Section
-with st.sidebar:
-    with st.expander("Credentials"):
-        # Provider selection
-        llm_provider = st.selectbox("Select Provider:", list(provider_info.keys()), index=0)
-        if llm_provider != st.session_state.get("llm_provider", ""):
-            st.session_state.llm_provider = llm_provider
-            st.session_state.llm_list = []
-
-        # Dynamically update API Key and Model fields based on the provider
-        selected_provider = provider_info[st.session_state.llm_provider]
-
-        if not st.session_state.llm_list:
-            st.session_state.llm_list = get_supported_models(provider=st.session_state.llm_provider)
-
-        api_key_placeholder = (
-            f"{selected_provider['default_api_key'][:15]}{'*' * (len(selected_provider['default_api_key']) - 15)}"
-            if selected_provider["default_api_key"]
-            else ""
-        )
-        api_key = st.text_input(
-            "API Key:",
-            value=api_key_placeholder,
-            type="password",
-            help="Hover to see the key, edit if needed.",
-        )
-
-        st.info("The below options are models supported by your API Key.")
-        # Model selection text boxes
-        default_model_index = st.session_state.llm_list.index(selected_provider["default_model"]) if selected_provider["default_model"] in st.session_state.llm_list else 0
-
-        model_list_help = f"Check out the list of {st.session_state.llm_provider} Models [↗](https://platform.openai.com/docs/models)" if st.session_state.llm_provider.lower() == "openai" else f"Check out the list of {st.session_state.llm_provider} Models [↗](https://ai.google.dev/gemini-api/docs/models)"
-        st.session_state.model_text = st.selectbox(
-            "Model for JSON Generator:",
-            options = st.session_state.llm_list,
-            index = default_model_index,
-            help="Specify the model for JSON Generator. " + model_list_help,
-            accept_new_options = True
-        )
-        st.session_state.model_img = st.selectbox(
-            "Model for Image to Text:",
-            options = st.session_state.llm_list,
-            index = default_model_index,
-            help="Specify the model for Image to Text. " + model_list_help,
-            accept_new_options = True
-        )
-
-
+# Write to env API KEY
+if st.session_state.llm_api_key:
+    post_env_args(provider = st.session_state.llm_provider, auth_key = st.session_state.llm_api_key)
+ 
 st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
 input_options = ["Theorem-Proofs or Problems", "Mathematical Papers"] 
@@ -176,9 +108,9 @@ def handle_image_input(key: str):
             key=f"text_area_{key}"  # Unique key for text area
         )
         st.info(f"Since the text is LLM Generated, you may see unnecessary text or some errors. Since the above test will be used as **{key.capitalize()}**, it is Recommended to edit the text before proceeding.")
-        preview_text(key) 
+        preview_text(key, usage = "imggen") 
         # Action buttons
-        action_copy_download(key, f"{key}.txt")
+        action_copy_download(key, f"{key}.txt", usage = "imggen")
         
 # Helper function for markdown/text file input
 def handle_textual_file_input(key: str, extension: str = "md"):
@@ -234,10 +166,10 @@ def handle_textual_file_input(key: str, extension: str = "md"):
             height=200,
             key=f"md_content_{key}"  # Unique key for text area
         )
-        preview_text(key, f"Enter the {key} text here...")
+        preview_text(key, f"Enter the {key} text here...", usage = "filegen")
         
         # Action buttons
-        action_copy_download(key, f"{key}.{extension}")
+        action_copy_download(key, f"{key}.{extension}", usage = "filegen")
     else:
         st.warning(f"No {key} content available yet. Upload a file to begin.")
 
@@ -258,9 +190,9 @@ def handle_text_input(key: str):
         _code_suffix = "..." if len(obt_text) > 50 else ""
         st.session_state[key] = obt_text
         # After components
-        preview_text(key, default_text)
+        preview_text(key, default_text, usage = "textgen")
         st.success(f"{key.capitalize()} received successfully: {obt_text[:50]}" + _code_suffix)
-        action_copy_download(key, f"{key}.txt")
+        action_copy_download(key, f"{key}.txt", usage = "textgen")
     else:
         st.warning(f"Please enter {key.capitalize()} text before proceeding.")
         st.session_state[key] = ""
@@ -318,25 +250,96 @@ def handle_pdf_input(key:str):
                 st.warning(f"Failed to display PDF content: {str(e)}. **Don't worry,** This can still be passed to LLMs for processing.")
         
         # Action buttons
-        action_copy_download(key, f"{st.session_state.uploaded_pdf.name}", st.session_state[f"{key}_local_key"]) # has the extension .pdf
+        action_copy_download(key, f"{st.session_state.uploaded_pdf.name}", st.session_state[f"{key}_local_key"], usage="pdfgen") # has the extension .pdf
 
+# Helper function for AI proof output
+def handle_ai_proof_input(key: str, rewrite: bool = False):
+    """Handles AI proof generation from theorem input."""
+    if rewrite:
+        st.subheader("Rewrite Proof using AI")
+        if not st.session_state.proof.strip():
+            st.warning("Proof has not been inputted yet. Please input the proof first.")
+            return
+
+        prompt_guide_thm = st.session_state.prompt_proof_guide
+    else:
+        st.subheader("Generate AI Proof from Theorem")
+
+        if "theorem" not in st.session_state or not st.session_state.theorem:
+            st.warning("Please enter a theorem before generating the proof.")
+            return
+
+        # Theorem is given in the prompt HERE.
+        prompt_guide_thm = st.session_state.prompt_proof_guide+ "\n\nThe Theorem you have to prove is:\n" + st.session_state.theorem
+
+    with st.expander("Preview: AI Prompt for Generating Proof", expanded = False):
+        if st.checkbox("Edit Prompt", value = False):
+            st.session_state.prompt_proof_guide = st.text_area(
+                "AI Proof Generation Prompt",
+                value=prompt_guide_thm,
+                height=250,
+                help="You can edit the prompt for AI proof generation. It should be more declarative and structured so that it can be converted to Lean code.",
+            )
+        else:
+            st.markdown(prompt_guide_thm, unsafe_allow_html=True)
+
+    gen_ai_proof_button = st.button("Generate AI Proof")
+    if gen_ai_proof_button:
+        with st.spinner("Generating AI proof. Please wait for a short while..."):
+            try:
+                st.session_state.proof = model_response_gen(
+                    prompt=prompt_guide_thm,
+                    task = proof_thm_task_eng() if not rewrite else proof_thm_task_eng(st.session_state.proof, rewrite=True),
+                    provider=st.session_state.llm_provider,
+                    model=st.session_state.model_text,
+                )
+                log_write("AI Proof Generation", "Success: Generated AI proof for theorem")
+            except Exception as e:
+                st.error(f"Failed to generate AI proof: {str(e)}")
+                st.session_state.proof = ""
+                log_write("AI Proof Generation", f"Error: Failed to generate AI proof: {e}")
+                return
+
+    if st.session_state.proof or gen_ai_proof_button:
+        st.session_state.proof = st.text_area(
+            "AI Generated Proof",
+            value=st.session_state.proof,
+            height=200,
+            help="This is the AI generated proof for the theorem. You can edit it if needed.",
+            key=f"ai_proof_text_area_{key}"  # Unique key for text area
+        )
+        preview_text(key, "No Proof text available yet. Please generate or input the proof text.", usage = f"aigen_{rewrite}")
+        st.success(f"{key.capitalize()} received successfully")
+        action_copy_download(key, f"{key}.txt", usage = f"aigen_{rewrite}")
+    else:
+        st.warning(f"No {key} content available yet. Please generate or input the proof text.")
+        st.session_state[key] = ""
+    
 # General input handler for theorem, proof, and paper
 def handle_general_input(key: str):
     st.subheader("Input "+ key.capitalize())
+    selectbox_text = f"Choose input format for the {key}"
     input_formats = ["Type Input Yourself", "PDF(.pdf)", "Image(.png, .jpg, .jpeg)", "Markdown(.md)", "Text(.txt)" , "Latex(.tex)"]
+    if key.lower() == "proof":
+        st.info("Input the Proof of your input Theorem, or Generate it using AI below. You may skip this section in the latter case.")
+
+    if not st.session_state.format_index or not st.session_state.input_paper:
+        st.session_state.format_index = 1 if key == "paper" else 0
 
     format_opt = st.selectbox(
-        f"Choose input format for the {key}",
+        selectbox_text,
         options = input_formats,
         help = f"Select the format in which you want to input the {key}. You may instead type the {key} text directly.",
         placeholder = "Choose input format",
         key = f"input_format_{key}",
-        index = 1 if key == "paper" else 0  # Default to PDF for paper, else default to first option
+        index = st.session_state.format_index  # Default to PDF for paper, else default to first option
     )
     if "image" in format_opt.lower():
         st.session_state[f"input_image_{key}"] = True
+        st.session_state.format_index = input_formats.index(format_opt)
         handle_image_input(key) 
     elif "pdf" in format_opt.lower():
+        st.session_state.format_index = input_formats.index(format_opt)
         st.session_state[f"input_pdf_{key}"] = True
         handle_pdf_input(key)
     else:
@@ -344,14 +347,30 @@ def handle_general_input(key: str):
             st.session_state[f"input_pdf_{_elem}"] = False
             st.session_state[f"input_image_{_elem}"] = False
         if "markdown" in format_opt.lower():
+            st.session_state.format_index = input_formats.index(format_opt)
             handle_textual_file_input(key, extension="md")
         elif "text" in format_opt.lower():
+            st.session_state.format_index = input_formats.index(format_opt)
             handle_textual_file_input(key, extension="txt")
         elif "latex" in format_opt.lower():
+            st.session_state.format_index = input_formats.index(format_opt)
             handle_textual_file_input(key, extension="tex")
         else: # Self typed input
+            st.session_state.format_index = input_formats.index(format_opt)
             handle_text_input(key) 
-    log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
+
+    if st.session_state[key] and st.session_state[key].strip():
+        log_write("Structured JSON Input", f"Input {key} format: {format_opt}")
+
+# Guide prompt for AI
+prompt_proof_guide_path = os.path.join(HOMEDIR, "resources", "ProofGuidelines.md")
+if not st.session_state.prompt_proof_guide:
+    try:
+        with open(prompt_proof_guide_path, "r") as file:
+            st.session_state.prompt_proof_guide = file.read()
+    except FileNotFoundError:
+        st.session_state.prompt_proof_guide = "Write a proof for the theorem provided. It should be more declarative and structured so that it can be converted to Lean code."
+
 
 # Papers section
 if input_method == input_options[1]: # Papers
@@ -365,7 +384,19 @@ if input_method == input_options[0]: # Theorem-Proofs or Problems
     for key in ["theorem", "proof"]:
         handle_general_input(key) 
 
-if st.button("Generate Structured Proof"):
+st.info("**Recommended:** For your input proof, it is advised to rewrite the proof based on our Guidelines for easier conversion to Lean Code. You can also generate the proof using AI based on the theorem you provided(if proof not provided previously).")
+
+if st.button("Generate/Rewrite Proof using AI", type = "primary") or st.session_state.gen_ai_proof:
+    st.session_state.gen_ai_proof = True
+    if not st.session_state.proof.strip():
+        st.success("You have not inputted any proof previously. Let's Generate the Proof!")
+        handle_ai_proof_input("proof")
+    else:
+        st.success("You have inputted a proof previously. Let's Rewrite the Proof!")
+        handle_ai_proof_input("proof", rewrite=True)
+
+st.header("Generate Structured JSON Proof", divider = True)
+if st.button("Generate Structured Proof", type = "primary"):
     if not st.session_state.paper and not (st.session_state.proof and  st.session_state.theorem):
         st.warning(
             "Please upload the inputs before generating the structured proof."
@@ -395,7 +426,7 @@ def show_str_proof():
         structured_proof_json = json.loads(st.session_state.structured_proof)
         json_str = json.dumps(structured_proof_json, indent=2)
         st.json(json_str)
-        action_copy_download("structured_proof", "structured_proof.json")
+        action_copy_download("structured_proof", "structured_proof.json", usage = "strproof")
         log_write("Show Structured Proof", "Structured proof displayed successfully.")
     except Exception as e:
         st.warning(f"Failed to display structured proof: {e}")
