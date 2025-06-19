@@ -48,7 +48,7 @@ def Translator.translateToPropStrict
         return type
       else
         throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
-  throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}"
+  throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}; all translations: {output}"
 
 open Lean.Parser.Tactic
 
