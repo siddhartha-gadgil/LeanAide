@@ -17,7 +17,7 @@ open Codegen Translate
 /--
 Translating to a proposition in Lean, using the `translateToProp?` method of the `Translator`. Various checks are performed to ensure the type is valid and does not contain `sorry` or metavariables. An error is thrown if the translation fails or if the type is not valid.
 -/
-def Translator.translateToPropStrict
+def Translator.translateToPropStrictAux
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
   let thm ← withPreludes claim
@@ -49,6 +49,20 @@ def Translator.translateToPropStrict
       else
         throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
   throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}; all translations: {output}"
+
+def Translator.translateToPropStrict
+    (claim: String)(translator : Translator)
+    : TranslateM Expr := do
+    try
+      Translator.translateToPropStrictAux claim translator
+    catch e =>
+      let fullClaim ← translator.server.fullStatement claim
+      try
+        Translator.translateToPropStrictAux fullClaim translator
+      catch e' =>
+        -- If the translation fails, we throw an error with the original claim and the error message.
+        -- This is useful for debugging and understanding what went wrong.
+        throwError s!"codegen: failed to translate '{claim}' to a proposition even with 'full statement', error: {← e.toMessageData.format}; full claim: {fullClaim}, error: {← e'.toMessageData.format}"
 
 open Lean.Parser.Tactic
 
