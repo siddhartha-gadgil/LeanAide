@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit import session_state as sts
 from logging_utils import log_server, log_buffer_clean
 
-st.markdown("<div id='log_top'></div>", unsafe_allow_html=True)    
+st.markdown("<div id='log_top'></div>", unsafe_allow_html=True)
 st.title("LeanAide Logs")
 
 st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide Server LOGFILE and new logs are updated after SUBMIT REQUEST button is clicked.")
@@ -20,7 +20,7 @@ with st.sidebar:
     # Reverse order
     sts.log_order = st.checkbox("Reverse Order", value=True, help="Check this box to display the logs in reverse order. Default: Display the new logs at the top.")
     sts.log_wrap = st.checkbox("Wrap Lines", value=True, help="Check this box to wrap the lines in the logs. Default: True")
-    
+
     st.write("")
     # Clean logs
     with st.popover("Clean Server Logs", help="Click and select Yes to clean the server logs. This will delete all the logs in the server log file."):
@@ -38,7 +38,7 @@ with st.sidebar:
         sts.log_server_cleaned = False
         st.info("Press Escape to close this popover.")
 
-        
+
 if log_out := log_server(log_file=True, order = sts.log_order):
     if sts.log_order:
         st.write("Logs are displayed in newest first order.")
@@ -53,4 +53,4 @@ if log_out := log_server(log_file=True, order = sts.log_order):
 else:
     st.code("No logs available yet.", language="plaintext")
 
-st.markdown("<div id='log_bottom'></div>", unsafe_allow_html=True)    
+st.markdown("<div id='log_bottom'></div>", unsafe_allow_html=True)
