@@ -84,6 +84,52 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
     return (goal, accum)
 open Lean.Parser.Tactic
 
+
+/-
+"ResultUsed": {
+  "type": "object",
+  "properties": {
+    "statement": {
+      "type": "string",
+      "description": "The statement of the result used."
+    },
+    "target_identifier": {
+      "type": "string",
+      "description": "(OPTIONAL) The unique 'label' of the document element being referenced (e.g., 'sec:intro', 'thm:main', 'fig:,diagram')."
+    },
+    "mathlib_identifier": {
+      "type": "string",
+      "description": "(OPTIONAL) The name of the result being used in Lean Prover or its library Mathlib)."
+    }
+  },
+  "required": [
+    "statement"
+  ],
+  "additionalProperties": false
+},
+-/
+def getResultUsed? (translator: Translator) (js: Json) : TranslateM (Option Syntax.Term) := do
+  let targetIdentifier? := js.getObjValAs? String "target_identifier"
+  let mathlibIdentifier? := js.getObjValAs? String "mathlib_identifier"
+  match targetIdentifier?, mathlibIdentifier? with
+  | .error _, .error _ =>
+    let .ok statement := js.getObjValAs? String "statement" | throwError "'ResultUsed' must have 'statement'"
+    let type ← translator.translateToPropStrict statement
+    getExactTerm? type
+  | _, .ok mathlibIdentifier =>
+    return mkIdent mathlibIdentifier.toName
+  | .ok targetIdentifier, _ =>
+    let l? ← findTheorem? targetIdentifier
+    return l?.map fun l =>
+      mkIdent l.name
+
+def getResultsUsed (translator: Translator) (js: Json) : TranslateM (Array Syntax.Term) := do
+  match js.getObjValAs? (Array Json) "results_used" with
+  | .error _ => return #[]
+  | .ok resultsUsed =>
+    resultsUsed.filterMapM fun js =>
+      getResultUsed? translator js
+
 @[codegen "document"]
 def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
@@ -930,26 +976,9 @@ where typeStx (js: Json) :
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in 'assertion_statement'"
   let type ← translator.translateToPropStrict claim
-  let resultsUsed :=
-    js.getObjValAs? (Array Json) "results_used" |>.toOption |>.getD #[]
-  let statementsUsed :=
-    resultsUsed.filterMap fun
-      res =>
-        res.getObjValAs? String "statement" |>.toOption
-  let names' ← statementsUsed.mapM fun s =>
-                Translator.matchingTheoremsAI   (s := s) (qp:= translator)
-  let names' := names'.toList.flatten
-  let targets :=
-    resultsUsed.filterMap fun
-      res =>
-        res.getObjValAs? String "target_identifier" |>.toOption
-  let labelledTheorems ←
-    targets.filterMapM fun target =>
-      findTheorem? target
-  let usedNames := labelledTheorems.map (·.name)
-  let envNames ← defsNames
-  let ids := (envNames ++  usedNames ++ names').map mkIdent
-  let tac ← `(tactic| hammer [ $ids,* ])
+  let resultsUsed ←
+    getResultsUsed translator.toTranslator js
+  let tac ← `(tactic| hammer [ $resultsUsed,* ])
   let tacs ← runTacticsAndGetTryThisI (type) #[tac]
   return (← delabDetailed type, ← `(tacticSeq| $tacs*))
 
@@ -1078,7 +1107,7 @@ def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (ki
   let mut provedAlts : Array <| TSyntax ``matchAltTac := #[]
   for (patTerm, pf) in patTerms.zip proofStxs do
     let m ← `(matchAltTac| | $patTerm => $pf)
-    alts := alts.push m
+    provedAlts := provedAlts.push m
   let alts' : Array <| TSyntax ``matchAlt := provedAlts.map fun alt => ⟨alt⟩
   let c := mkIdent <| ("c" ++ s!"_{hash}").toName
   `(tacticSeq| match $c:ident : $discrTerm':term with $alts':matchAlt*)
@@ -1423,12 +1452,19 @@ def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind
 -/
 @[codegen "conclude_statement"]
 def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| some _, ``tacticSeq, js => do
-  let .ok claim := js.getObjValAs? String "claim" | throwError
-    s!"codegen: no 'claim' found in 'conclude_statement'"
-  let type ← translator.translateToPropStrict <| "We  have: " ++claim
+| some goal, ``tacticSeq, js => do
+  let type ←
+    match js.getObjValAs? String "claim" with
+    | .ok claim =>
+      let claim := "We have: " ++ claim
+      translator.translateToPropStrict claim
+    | .error _ =>
+      goal.getType
   let stx ← delabDetailed type
-  let pf ← runTacticsAndGetTryThisI type #[← `(tactic| hammer)]
+  let resultsUsed ←
+    getResultsUsed translator.toTranslator js
+  let tac ← `(tactic| hammer [ $resultsUsed,* ])
+  let pf ← runTacticsAndGetTryThisI type #[tac]
   `(tacticSeq| have : $stx := by $pf*)
 | none, ``tacticSeq, _ => do return none
 | _, kind, _ => throwError
