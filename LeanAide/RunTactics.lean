@@ -215,6 +215,10 @@ def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
     let n := if n.isInternal then n.components[0]! else n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
+  | k + 1, Expr.letE n _ _ _ _ => do
+    let n := if n.isInternal then n.components[0]! else n
+    let (_, goal') ← goal.intro n
+    extractIntros goal' k (accum ++ [n])
   | _, _ => do
     return (goal, accum)
 
