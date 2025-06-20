@@ -272,11 +272,6 @@ def request_server(request_payload: dict, task_header: str, success_key: str, re
         # Handle the output for each tasks
 
 
-if "api_host" not in sts:
-    sts.api_host = HOST
-if "api_port" not in sts:
-    sts.api_port = PORT
-
 def host_information():
     localhost_serv = st.checkbox(
         "Your backend server is running on localhost", value=False, help="Check this if you want to call the backend API running on localhost.",

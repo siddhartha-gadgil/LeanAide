@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit import session_state as sts
 from llm_response import get_supported_models, provider_info
 from logging_utils import post_env_args
+from api_server import HOST, PORT
 # Initialize session state variables
 # Global variables for session state initialization
 
@@ -35,6 +36,11 @@ for key in FALSE_INIT_KEYS:
 if "selected_tasks" not in sts:
     sts.selected_tasks = []
 
+if "api_host" not in sts:
+    sts.api_host = HOST
+if "api_port" not in sts:
+    sts.api_port = PORT
+
 # Page Setup
 intro_page = st.Page(
     page = "tabs/home.py",
@@ -61,8 +67,8 @@ logs_page = st.Page(
 ## Navigation
 pg = st.navigation(pages = [
     intro_page,
-    server_response_page,
     structured_json_page,
+    server_response_page,
     logs_page
 ])
 
