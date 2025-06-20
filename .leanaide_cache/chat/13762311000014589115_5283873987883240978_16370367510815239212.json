@@ -1,0 +1,26 @@
+{"usage":
+ {"total_tokens": 175,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 150,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 25},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BkKlhFs48nKr7ogGke3wcq0kSbm0s",
+ "created": 1750382621,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "Sure, please provide the mathematical statement or content you would like rewritten in typical mathematical English, and I'll be happy to help!",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"}]}
