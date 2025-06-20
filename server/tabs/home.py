@@ -28,7 +28,8 @@ st.write(
 `1.` Check the help text on each option by hovering or clicking the question mark icon next to it.\n
 `2.` Input Host Information or LLM Credentials in the sidebar to configure the server.\n
 `3.` If your sent request takes too long to get output(when you know it shoudn't), Wait a bit or **Refresh** and try again.\n
-`4.` If you encounter any issues, check the logs for more information.
+`4.` If the process seems to get stuck, the timeout is set to 10 minutes. The previous process might still be running in the background so you will have to wait for it.\n
+`5.` If you encounter any issues, check the logs for more information. Or make an issue on the [GitHub repository](https://github.com/siddhartha-gadgil/LeanAide/issues) with the details.
 
 """)
 st.divider()

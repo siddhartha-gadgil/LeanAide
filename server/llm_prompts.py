@@ -1,5 +1,6 @@
 # File just contains the prompts used in the application.
-from serv_utils import SCHEMA_JSON
+from serv_utils import SCHEMA_JSON, HOMEDIR
+import os
 
 ocr_rules = """
 Follow the below rules while extracting text from the image:
@@ -20,6 +21,21 @@ def thmpf_prompt(thm, pf):
 
 def soln_from_image_prompt(image_text: str = ""):
     return f"You are proficient in extracting Mathematical text from images. Your task is to rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. \n {ocr_rules}. The extracted text is:\n\n{image_text}. Do not write any extra explanations. Avoid unnecessary causal sentences."
+
+def proof_guidelines_prompt(thm: str, details: dict = {}):
+    prompt_proof_guide_path = os.path.join(HOMEDIR, "resources", "ProofGuidelines.md")
+    proof_guidelines = open(prompt_proof_guide_path, "r", encoding="utf-8").read()
+
+    if details:
+        statement = details.get("statement", "")
+        definitions = details.get("definitions_used", "")
+        name = details.get("name", "")
+    else:
+        statement = "sorry"
+        definitions = ""
+        name = "sorry"
+
+    return f"Your goal is to give a natural language proof of a theorem so that the proof can be further processed to generate Lean Code. To facilitate formalisation, follow the following guidelines:\n\n{proof_guidelines}.\n\nThe theorem you need to prove is the following:\n\nTheorem: {thm}\n\n The statement of the theorem (with proof given as sorry) in Lean and some definitions in Lean4 that are involved in the statement of the theorem are below.\n\nLean Theorem:/-- ${name}$--/\n\nStatements:{statement}\n\nDefinitions used:{definitions}\n\n\nGive a proof of the theorem in natural language following the guidelines and using definitions as in Lean (as given above). The proof can use markdown, which may contain LaTeX mathematics (enclosed in $ signs) and unicode characters for mathematics."
 
 def proof_thm_task_eng(pf: str = "", rewrite: bool = False):
     rewrite_proof = f"Rewrite the following proof:\n\n{pf}\n\n" if rewrite else ""
