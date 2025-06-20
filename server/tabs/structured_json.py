@@ -7,12 +7,10 @@ from streamlit import session_state as sts
 from dotenv import load_dotenv
 from PIL import Image
 from streamlit_sortables import sort_items
-import requests
 
-from api_server import HOST, PORT
 from llm_prompts import proof_thm_task_eng, proof_guidelines_prompt
 from llm_response import gen_paper_json, gen_thmpf_json, solution_from_images, get_pdf_id, extract_text_from_pdf, model_response_gen
-from serv_utils import SCHEMA_JSON, HOMEDIR, action_copy_download, preview_text, log_section
+from serv_utils import SCHEMA_JSON, HOMEDIR, action_copy_download, preview_text, log_section, request_server
 from logging_utils import log_write, post_env_args
 
 load_dotenv(os.path.join(HOMEDIR, ".env"))
@@ -28,11 +26,7 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 # Write to env API KEY
 if sts.llm_api_key:
     post_env_args(provider = sts.llm_provider, auth_key = sts.llm_api_key)
-if "api_host" not in sts:
-    sts.api_host = HOST
-if "api_port" not in sts:
-    sts.api_port = PORT
- 
+
 st.header("Input your Paper/Theorem-Proof", divider = True)
 # Get input method from user
 input_options = ["Theorem-Proofs or Problems", "Mathematical Papers"] 
@@ -276,34 +270,14 @@ def handle_ai_proof_input(key: str, rewrite: bool = False):
         "tasks": ["translate_thm_detailed"],
         "text": sts.theorem.strip(),
     }
-    with st.spinner("Fetching theorem details..."):
-        response = requests.post(
-            f"http://{sts.api_host}:{sts.api_port}", json=request_payload
-        )
-    sts.thm_details = {}
-    if response.status_code == 200:
-        sts.thm_details = response.json()
-        try:
-            if sts.thm_details["result"] == "success":
-                sts.server_thm_details = True
-                st.success("Theorem details fetched successfully.")
-                log_write("Theorem Details Fetch", "Success: Fetched theorem details successfully.")
-            else:
-                sts.server_thm_details = False
-                st.error("Error in processing the request for theorem details.")
-                st.write("Error (String):")
-                st.code(sts.result["error"])
-                log_write("Theorem Details Fetch", f"Error: {sts.thm_details.get('error', 'Unknown error')}")
-        except Exception as e:
-            sts.server_thm_details = False
-            st.error(f"Error processing theorem details: {str(e)}")
-            st.code(str(sts.thm_details))
-            log_write("Theorem Details Fetch", f"Error: {str(e)}")
-
-    else:
-        st.error(f"Failed to get theorem details: {response.text}\nIgnoring details for now, but this might affect quality for further proof generation.")
-        log_write("Theorem Details Fetch", f"Error: {response.text}")
-
+    try:
+        request_server(request_payload=request_payload, task_header="Theorem Details Fetch", success_key="server_thm_details", result_key="thm_details")
+    except Exception as e:
+        st.error(f"Failed to fetch theorem details: {str(e)}")
+        sts.server_thm_details = False
+        sts.thm_details = {}
+        log_write("Theorem Details Fetch", f"Error: {e}")
+    
     # Preview and edit theorem details
     with st.expander("Theorem Details", expanded = False):
         if sts.server_thm_details:

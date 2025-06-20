@@ -1,4 +1,3 @@
-import socket
 import urllib
 import json
 
@@ -7,8 +6,7 @@ import streamlit as st
 from streamlit import session_state as sts
 from dotenv import load_dotenv
 
-from api_server import HOST, PORT
-from serv_utils import TASKS, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked
+from serv_utils import TASKS, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked, request_server, host_information
 from logging_utils import log_write, get_env
 
 load_dotenv()
@@ -19,10 +17,6 @@ st.write(
 )
 st.info("Ensure the Host information of the backend server to query is correct. Check out the sidebar for host information settings.")
 
-if "api_host" not in sts:
-    sts.api_host = HOST
-if "api_port" not in sts:
-    sts.api_port = PORT
 if "task_tbd" not in sts:
     sts.task_tbd = []
 
@@ -32,26 +26,8 @@ if not sts.val_input:
 # Host Information Section
 with st.sidebar:
     st.header("Server Response", divider = True)
-    with st.expander("Host Information"):
-        localhost_serv = st.checkbox(
-            "Your backend server is running on localhost", value=False, help="Check this if you want to call the backend API running on localhost.",
-        )
-
-        if not localhost_serv:
-            local_ip = socket.gethostbyname(socket.gethostname())
-            local_ip = "localhost" if str(local_ip).strip() == "127.0.0.1" else local_ip
-            api_host = st.text_input(
-                "Backend API Host: (default: HOST or localhost IP)",
-                value= HOST if HOST not in ["localhost", "127.0.0.1"] else local_ip,
-                help="Specify the hostname or IP address where the proof server is running. Default is localhost.",
-            )
-            sts.api_host = api_host
-        api_port = st.text_input(
-            "API Port:",
-            value="7654",
-            help="Specify the port number where the proof server is running. Default is 7654.",
-        )
-        sts.api_port = api_port
+    with st.expander("Host Information", expanded=False):
+        host_information()
 
 st.header("Server Request", divider = True, help = "For your input request, this request will be sent to the backend server specified by you.")
 
@@ -248,41 +224,14 @@ if submit_response_button or sts.request_button:
         request_payload = {"tasks": server_tasks, **sts.val_input}
 
         if submit_response_button:
-            with st.spinner("Request sent. Check the server logs for activity. Please wait for short while..."): 
-                log_write("Streamlit", f"Request Payload: {request_payload}")
-                response = requests.post(
-                    f"http://{sts.api_host}:{sts.api_port}", json=request_payload
-                )
-
-            if response.status_code == 200:
-                # Get the result
-                st.success("Response sent and received successfully!")
-                sts.result = response.json()
-                log_write("Streamlit", f"Selected Tasks: {sts.selected_tasks}")
-                log_write("Streamlit", f"Response: {sts.result}")
-
-                try:
-                    if sts.result["result"] == "success":
-                        sts.server_output_success = True
-                        st.success("Request processed successfully!")
-                    else: # result = "error"
-                        sts.server_output_success = False
-                        st.error("Error in processing the request. Please check the input and try again.")
-                        st.write("Error (String):")
-                        st.code(sts.result["error"])
-                    log_write("Streamlit", "Server Output: Success")
-                except Exception as e:
-                    sts.server_output_success = False
-                    st.error(f"Error in processing the request: {e}")
-                    st.write("Response (String):")
-                    st.code(str(sts.result))
-                    log_write("Streamlit", f"Server Output: Error - {e}")
-
-            else:
+            try:
+                request_server(request_payload=request_payload, task_header="Streamlit", success_key="server_output_success", result_key="result")
+            except Exception as e:
+                st.error(f"Error while sending request to server: {e}")
+                log_write("Streamlit", f"Request Payload: Error - {e}")
                 sts.server_output_success = False
-                st.error(f"Error: {response.status_code}, {response.text}")
-                log_write("Streamlit", f"Server Response Error: {response.status_code} - {response.text}")
-                # Handle the output for each task
+                sts.result = {}
+
         if sts.server_output_success:
             show_response()
         else:

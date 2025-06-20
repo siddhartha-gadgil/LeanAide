@@ -5,11 +5,15 @@ import sys
 from pathlib import Path
 from typing import Any, Tuple, Type
 
+import socket
 import streamlit as st
 from streamlit import session_state as sts
 from st_copy import copy_button
+from logging_utils import log_write
+import requests
 
 from logging_utils import log_server, log_buffer_clean
+from api_server import HOST, PORT
 
 HOST = os.environ.get("HOST", "localhost")
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
@@ -230,3 +234,66 @@ def log_section():
                 pass
             sts.log_cleaned = False
             st.info("Press Escape to close this popover.")
+
+def request_server(request_payload: dict, task_header: str, success_key: str, result_key: str):
+    with st.spinner("Request sent. Check the server logs for activity. Please wait for short while...", show_time = True): 
+        log_write(task_header, f"Request Payload: {request_payload}")
+        response = requests.post(
+            f"http://{sts.api_host}:{sts.api_port}", json=request_payload
+        )
+
+    if response.status_code == 200:
+        # Get the result
+        st.success("Response sent and received successfully!")
+        sts[result_key] = response.json()
+        log_write(task_header, f"Response: {sts[result_key]}")
+
+        try:
+            if sts[result_key]["result"] == "success":
+                sts[success_key] = True
+                st.success("Request processed successfully!")
+            else: # result = "error"
+                sts[success_key] = False
+                st.error("Error in processing the request. Please check the input and try again.")
+                st.write("Error (String):")
+                st.code(sts[result_key]["error"])
+            log_write("Streamlit", "Server Output: Success")
+        except Exception as e:
+            sts[success_key] = False
+            st.error(f"Error in processing the request: {e}")
+            st.write("Response (String):")
+            st.code(str(sts[result_key]))
+            log_write(task_header, f"Server Output: Error - {e}")
+
+    else:
+        sts[success_key] = False
+        st.error(f"Error: {response.status_code}, {response.text}")
+        log_write(task_header, f"Server Response Error: {response.status_code} - {response.text}")
+        # Handle the output for each tasks
+
+
+if "api_host" not in sts:
+    sts.api_host = HOST
+if "api_port" not in sts:
+    sts.api_port = PORT
+
+def host_information():
+    localhost_serv = st.checkbox(
+        "Your backend server is running on localhost", value=False, help="Check this if you want to call the backend API running on localhost.",
+    )
+
+    if not localhost_serv:
+        local_ip = socket.gethostbyname(socket.gethostname())
+        local_ip = "localhost" if str(local_ip).strip() == "127.0.0.1" else local_ip
+        api_host = st.text_input(
+            "Backend API Host: (default: HOST or localhost IP)",
+            value= HOST if HOST not in ["localhost", "127.0.0.1"] else local_ip,
+            help="Specify the hostname or IP address where the proof server is running. Default is localhost.",
+        )
+        sts.api_host = api_host
+    api_port = st.text_input(
+        "API Port:",
+        value="7654",
+        help="Specify the port number where the proof server is running. Default is 7654.",
+    )
+    sts.api_port = api_port
