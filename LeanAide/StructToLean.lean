@@ -620,7 +620,7 @@ def resolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Tactic :=
     #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
   (existsVarTypeIdents.zip rhsIdents).mapM
     fun ((name, tId), rhs) =>
-      `(tactic| have ⟨$name, $tId⟩  := $rhs:term)
+      `(tactic| let ⟨$name, $tId⟩  := $rhs:term)
 
 def cmdResolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Command := do
   let existsVarTypes? ← existsVarTypes type

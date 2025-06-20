@@ -5,10 +5,15 @@ import sys
 from pathlib import Path
 from typing import Any, Tuple, Type
 
+import socket
 import streamlit as st
+from streamlit import session_state as sts
 from st_copy import copy_button
+from logging_utils import log_write
+import requests
 
 from logging_utils import log_server, log_buffer_clean
+from api_server import HOST, PORT
 
 HOST = os.environ.get("HOST", "localhost")
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
@@ -101,7 +106,7 @@ TASKS = {
 def button_clicked(button_arg):
     def protector():
         """This function does not allow value to become True until the button is clicked."""
-        st.session_state[button_arg] = True
+        sts[button_arg] = True
     return protector
 
 def get_actual_input(input_str: str) -> Tuple[Type, Any]:
@@ -179,7 +184,7 @@ def copy_to_clipboard(text):
 def action_copy_download(key: str, filename: str, copy_text: str = "", usage: str = ""):
     """Helper function to copy text to clipboard and download as a file."""
     col1, col2 = st.columns(2)
-    text = st.session_state[key]
+    text = sts[key]
     if copy_text:
         text = copy_text
     with col1:
@@ -194,9 +199,9 @@ def preview_text(key: str, default_text: str = "", usage: str = ""):
     with st.expander(f"Preview Text {key.capitalize()}", expanded=False):
         lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}_{usage}").lower()
         if lang == "markdown":
-            st.markdown(st.session_state[key] if st.session_state[key] else default_text)
+            st.markdown(sts[key] if sts[key] else default_text)
         else:
-            st.code(st.session_state[key] if st.session_state[key] else default_text, wrap_lines = True)
+            st.code(sts[key] if sts[key] else default_text, wrap_lines = True)
 
 def log_section():
     st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked.")
@@ -205,7 +210,7 @@ def log_section():
             height = 500 if len(log_out) > 1000 else 150
             st.write("Server logs:")
             st.code(
-                log_out if not st.session_state.log_cleaned else "No logs available yet.",
+                log_out if not sts.log_cleaned else "No logs available yet.",
                 language = "log",
                 height= height,
                 wrap_lines =True,
@@ -219,7 +224,7 @@ def log_section():
             st.write("Are you sure you want to clean the server logs? This will delete all the logs in the server.")
             if st.button("Yes"):
                 try:
-                    st.session_state.log_cleaned = True
+                    sts.log_cleaned = True
                     log_buffer_clean()
                     st.success("Server logs cleaned successfully! Please UNCHECK THE BOX to avoid cleaning again.")
                     st.rerun()
@@ -227,5 +232,68 @@ def log_section():
                     st.error(f"Error cleaning server logs: {e}")
             if st.button("No"):
                 pass
-            st.session_state.log_cleaned = False
+            sts.log_cleaned = False
             st.info("Press Escape to close this popover.")
+
+def request_server(request_payload: dict, task_header: str, success_key: str, result_key: str):
+    with st.spinner("Request sent. Check the server logs for activity. Please wait for short while...", show_time = True): 
+        log_write(task_header, f"Request Payload: {request_payload}")
+        response = requests.post(
+            f"http://{sts.api_host}:{sts.api_port}", json=request_payload
+        )
+
+    if response.status_code == 200:
+        # Get the result
+        st.success("Response sent and received successfully!")
+        sts[result_key] = response.json()
+        log_write(task_header, f"Response: {sts[result_key]}")
+
+        try:
+            if sts[result_key]["result"] == "success":
+                sts[success_key] = True
+                st.success("Request processed successfully!")
+            else: # result = "error"
+                sts[success_key] = False
+                st.error("Error in processing the request. Please check the input and try again.")
+                st.write("Error (String):")
+                st.code(sts[result_key]["error"])
+            log_write("Streamlit", "Server Output: Success")
+        except Exception as e:
+            sts[success_key] = False
+            st.error(f"Error in processing the request: {e}")
+            st.write("Response (String):")
+            st.code(str(sts[result_key]))
+            log_write(task_header, f"Server Output: Error - {e}")
+
+    else:
+        sts[success_key] = False
+        st.error(f"Error: {response.status_code}, {response.text}")
+        log_write(task_header, f"Server Response Error: {response.status_code} - {response.text}")
+        # Handle the output for each tasks
+
+
+if "api_host" not in sts:
+    sts.api_host = HOST
+if "api_port" not in sts:
+    sts.api_port = PORT
+
+def host_information():
+    localhost_serv = st.checkbox(
+        "Your backend server is running on localhost", value=False, help="Check this if you want to call the backend API running on localhost.",
+    )
+
+    if not localhost_serv:
+        local_ip = socket.gethostbyname(socket.gethostname())
+        local_ip = "localhost" if str(local_ip).strip() == "127.0.0.1" else local_ip
+        api_host = st.text_input(
+            "Backend API Host: (default: HOST or localhost IP)",
+            value= HOST if HOST not in ["localhost", "127.0.0.1"] else local_ip,
+            help="Specify the hostname or IP address where the proof server is running. Default is localhost.",
+        )
+        sts.api_host = api_host
+    api_port = st.text_input(
+        "API Port:",
+        value="7654",
+        help="Specify the port number where the proof server is running. Default is 7654.",
+    )
+    sts.api_port = api_port

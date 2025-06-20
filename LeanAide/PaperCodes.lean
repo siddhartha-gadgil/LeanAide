@@ -64,6 +64,24 @@ def Translator.translateToPropStrict
         -- This is useful for debugging and understanding what went wrong.
         throwError s!"codegen: failed to translate '{claim}' to a proposition even with 'full statement', error: {← e.toMessageData.format}; full claim: {fullClaim}, error: {← e'.toMessageData.format}"
 
+
+def consumeIntros (goal: MVarId) (maxDepth : Nat)
+    (accum: List Name) : TranslateM <| MVarId × List Name := do
+  match maxDepth, ← goal.getType with
+  | 0, _ =>
+    return (goal, accum)
+  | k + 1, Expr.forallE n type _ _ => do
+    let n := if n.isInternal then n.components[0]! else n
+    addPrelude s!"Fix {n} : {← ppExpr type}"
+    let (_, goal') ← goal.intro n
+    consumeIntros goal' k (accum ++ [n])
+  | k + 1, Expr.letE n type value _ _ => do
+    let n := if n.isInternal then n.components[0]! else n
+    addPrelude s!"Fix {n} : {← ppExpr type} := {← ppExpr value}"
+    let (_, goal') ← goal.intro n
+    consumeIntros goal' k (accum ++ [n])
+  | _, _ => do
+    return (goal, accum)
 open Lean.Parser.Tactic
 
 @[codegen "document"]
@@ -306,7 +324,8 @@ where
         pure h.size
       | Except.error _ => pure 0
     IO.eprintln s!"hypothesis size: {hypSize} in proof"
-    let (pfGoal, names) ← extractIntros pfGoal.mvarId! hypSize
+    let (pfGoal', names') ← extractIntros pfGoal.mvarId! hypSize
+    let (pfGoal, names) ← consumeIntros pfGoal' 10 names'
     let proofStx? ← proof?.mapM fun
       pf => withoutModifyingState do
       let pfStx ←  match ←
