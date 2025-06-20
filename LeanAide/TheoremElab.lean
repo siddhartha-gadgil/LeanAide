@@ -97,7 +97,7 @@ def typeFromThmSyntax (stx : Syntax)
     for arg in args.reverse do
       let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
       typeStx := ⟨stx.raw⟩
-    typeStx ← expandExistsUnique typeStx
+    typeStx ← fixSyntax typeStx
     return typeStx
 
 def typeFromThm (s : String)
@@ -136,7 +136,7 @@ def elabThmFromStx (stx : Syntax)
         for arg in args.reverse do
           let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
           typeStx := ⟨stx.raw⟩
-        typeStx ← expandExistsUnique typeStx
+        typeStx ← fixSyntax typeStx
         Term.withLevelNames levelNames <|
         try
           let expr ← Term.withoutErrToSorry <|
