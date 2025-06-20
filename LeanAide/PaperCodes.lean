@@ -1078,7 +1078,7 @@ def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (ki
   let mut provedAlts : Array <| TSyntax ``matchAltTac := #[]
   for (patTerm, pf) in patTerms.zip proofStxs do
     let m ← `(matchAltTac| | $patTerm => $pf)
-    alts := alts.push m
+    provedAlts := provedAlts.push m
   let alts' : Array <| TSyntax ``matchAlt := provedAlts.map fun alt => ⟨alt⟩
   let c := mkIdent <| ("c" ++ s!"_{hash}").toName
   `(tacticSeq| match $c:ident : $discrTerm':term with $alts':matchAlt*)
