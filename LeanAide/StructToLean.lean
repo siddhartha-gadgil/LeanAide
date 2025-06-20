@@ -474,12 +474,13 @@ partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term)
     let t' ← `(∃ $ms':binderIdent*, $t)
     return some <| #[n] ++ ((← existsVars t').getD #[])
   | `(∃ ($n:ident $ms* : $type), $t) => do
-    let ms' := ms.toList.toArray
-    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    let t' ← `(∃ ($ms* : $type), $t)
+    return some <| #[n] ++ ((← existsVars t').getD #[])
+  | `(∃ ($n:ident $ms* : $type), $t) => do
+    let t' ← `(∃ ($ms* : $type), $t)
     return some <| #[n] ++ ((← existsVars t').getD #[])
   | `(∃ $n:ident $ms* : $type, $t) => do
-    let ms' := ms.toList.toArray
-    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    let t' ← `(∃ ($ms* : $type), $t)
     return some <| #[n] ++ ((← existsVars t').getD #[])
   | _ =>
     logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
@@ -497,6 +498,9 @@ partial def existsVarTypes (type: Syntax.Term) : MetaM <| Option (Array <| Synta
     let ms' := ms.toList.toArray
     let t' ← `(∃ $ms':binderIdent*, $t)
     return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
+  | `(∃ ($n:ident :  $_) $ms*, $t) => do
+    let t' ← `(∃ $ms*, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
   | `(∃ ($n:ident $ms* : $type), $t) => do
     let ms' := ms.toList.toArray
     let t' ← `(∃ $ms':binderIdent* : $type, $t)
@@ -506,20 +510,23 @@ partial def existsVarTypes (type: Syntax.Term) : MetaM <| Option (Array <| Synta
     let t' ← `(∃ $ms':binderIdent* : $type, $t)
     return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
   | _ =>
-    logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
+    -- logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
 
 elab "#exists_vars" type:term : command => do
   Command.liftTermElabM do
-  match ← existsVars type with
+  match ← existsVarTypes type with
   | some vars =>
-      logInfo s!"Vars: {vars}"
+      logInfo s!"Vars: {vars.map (·.1)}"
       return
   | none =>
       logInfo s!"No vars"
       return
 
--- #exists_vars ∃ n m : Nat, ∃ k: Nat, n + m  = 3
+#exists_vars ∃ n m : Nat, ∃ k: Nat, n + m  = 3
+
+#exists_vars ∃ (n : Nat) (m: Nat), ∃ k: Nat, n + m  = 3
+
 
 example (h : ∃ n m : Nat, ∃ _k: Nat, n + m  = 3) : True := by
   rcases h with ⟨n, m, k, h⟩
