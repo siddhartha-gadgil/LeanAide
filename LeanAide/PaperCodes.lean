@@ -1305,9 +1305,10 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let ihId := mkIdent `ih
   let discrTerm : Syntax.Term := ⟨discrTerm'⟩
   let dicrTerm' ← `(elimTarget| $discrTerm:term)
+  let discrTerm'' : TSyntax ``elimTarget := ⟨dicrTerm'⟩
   let zeroId := mkIdent ``Nat.zero
   let tac ← `(tactic|
-    induction discrTerm' with
+    induction $discrTerm'' with
     | $zeroId => _
     | $succId:ident $ihId:ident => _)
 
@@ -1321,9 +1322,8 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     s!"codegen: no translation found for base_case_proof {baseCaseProof}"
   let some inductionStepProofStx ← getCode translator (some stepGoal) ``tacticSeq inductionStepProof | throwError
     s!"codegen: no translation found for induction_step_proof {inductionStepProof}"
-    let dicrTerm' ← `(elimTarget| $discrTerm:term)
   let tacs := #[← `(tactic|
-    induction discrTerm' with
+    induction $discrTerm'' with
     | $zeroId => $baseCaseProofStx
     | $succId:ident $ihId:ident => $inductionStepProofStx), ← `(tactic| done)]
   `(tacticSeq| $tacs*)
