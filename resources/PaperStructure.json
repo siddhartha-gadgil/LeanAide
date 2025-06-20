@@ -579,25 +579,7 @@
           "type": "array",
           "description": "(OPTIONAL) Explicit list of results used in the proof, for example where the assertion says \"using ...\". Include both standard results and results from the document itself, with references where available.",
           "items": {
-            "type": "object",
-            "properties": {
-              "statement": {
-                "type": "string",
-                "description": "The statement of the result used."
-              },
-              "target_identifier": {
-                "type": "string",
-                "description": "(OPTIONAL) The unique 'label' of the document element being referenced (e.g., 'sec:intro', 'thm:main', 'fig:,diagram')."
-              },
-              "mathlib_identifier": {
-                "type": "string",
-                "description": "(OPTIONAL) The name of the result being used in Lean Prover or its library Mathlib)."
-              }
-            },
-            "required": [
-              "statement"
-            ],
-            "additionalProperties": false
+            "$ref": "#/$defs/ResultUsed"
           }
         },
         "internal_references": {
@@ -892,12 +874,18 @@
         },
         "claim": {
           "type": "string",
-          "description": "The conclusion of the proof."
+          "description": "(OPTIONAL) conclusion of the proof.This is typically the final statement of a proof giving the conclusion of the theorem. If this is not given, it is assumed to be the claim of the theorem being proved."
+        },
+        "results_used": {
+          "type": "array",
+          "description": "(OPTIONAL) Explicit list of results used in the proof, for example where the assertion says \"using ...\". Include both standard results and results from the document itself, with references where available.",
+          "items": {
+            "$ref": "#/$defs/ResultUsed"
+          }
         }
       },
       "required": [
-        "type",
-        "claim"
+        "type"
       ],
       "additionalProperties": false
     },
@@ -944,6 +932,27 @@
       "required": [
         "type",
         "authors"
+      ],
+      "additionalProperties": false
+    },
+    "ResultUsed": {
+      "type": "object",
+      "properties": {
+        "statement": {
+          "type": "string",
+          "description": "The statement of the result used."
+        },
+        "target_identifier": {
+          "type": "string",
+          "description": "(OPTIONAL) The unique 'label' of the document element being referenced (e.g., 'sec:intro', 'thm:main', 'fig:,diagram')."
+        },
+        "mathlib_identifier": {
+          "type": "string",
+          "description": "(OPTIONAL) The name of the result being used in Lean Prover or its library Mathlib)."
+        }
+      },
+      "required": [
+        "statement"
       ],
       "additionalProperties": false
     },
