@@ -569,7 +569,7 @@ def structuredProofFromStatement (server: ChatServer)
 
 def theoremName (server: ChatServer)
   (statement: String): CoreM Name := do
-    let query := s!"Give a name following the conventions of the Lean Prover 4 and Mathlib for the theorem: \n{statement}\n\nNote that types and propositions are capitalized in Lean 4. Give ONLY the name of the theorem."
+    let query := s!"Give a name following the conventions of the Lean Prover 4 and Mathlib for the theorem: \n{statement}\n\nUse snakecase and ensure that there are no whitespaces. Give ONLY the name of the theorem."
     let namesArr ←  server.mathCompletions query 1
     let llm_name := namesArr[0]! |>.replace "`" ""
           |>.replace "\""  "" |>.trim
