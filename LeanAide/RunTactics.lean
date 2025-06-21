@@ -1,6 +1,8 @@
 import Lean
 import LeanAide.Aides
 import LeanAide.SimpleFrontend
+import LeanAide.DefData
+import Hammer
 
 open Lean Meta Elab Term PrettyPrinter
 
@@ -221,6 +223,42 @@ def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
     extractIntros goal' k (accum ++ [n])
   | _, _ => do
     return (goal, accum)
+
+open Lean PremiseSelection Tactic Elab
+def getPremiseNames (goalType: Expr)
+    (selector: Option Selector := none)
+    (maxSuggestions: Option Nat := none) : MetaM (Array Name) := do
+  let mvar ← mkFreshExprMVar goalType
+  let defaultSelector := Cloud.premiseSelector <|> mepoSelector (useRarity := true) (p := 0.6) (c := 0.9)
+  let selector := selector.getD defaultSelector
+  let mut config : PremiseSelection.Config :=
+    { maxSuggestions := maxSuggestions
+      caller := `premises }
+  let suggestions ← selector mvar.mvarId! config
+  return suggestions.map (fun s => s.name)
+
+def getPremiseStatements (goalType: Expr)
+    (selector: Option Selector := none)
+    (maxSuggestions: Option Nat := none) : MetaM (Array String) := do
+  let names ← getPremiseNames goalType selector maxSuggestions
+  let mut statements : Array String := #[]
+  for name in names do
+    try
+      let defData : DefData ← DefData.ofNameM name
+      let view ← defData.statement
+      statements := statements.push view
+    catch _ =>
+      IO.eprintln s!"Failed to get statement for {name}"
+  return statements
+
+elab "#premises" goal:term : command =>
+ Command.liftTermElabM do
+ do
+  let goalType ← elabType goal
+  let ss ← getPremiseStatements goalType (maxSuggestions := some 5)
+  for s in ss do
+    logInfo s
+
 
 
 end LeanAide

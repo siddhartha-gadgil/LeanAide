@@ -1627,7 +1627,7 @@ def egView : MetaM Format := do
 
 -- #eval (ChatServer.default).fullStatement "p ∤ m!"
 
-#eval Translator.translateToPropStrict "p ∤ m!" {}
+-- #eval Translator.translateToPropStrict "p ∤ m!" {}
 
 def thr : MetaM Unit := do
   throwError "This is a test error"
@@ -1639,3 +1639,4 @@ def ctch : MetaM Unit := do
     throwError s!"Caught error: {← e.toMessageData.toString}"
 
 -- #eval ctch
+-- #premises (∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N)
