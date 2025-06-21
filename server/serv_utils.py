@@ -202,6 +202,17 @@ def preview_text(key: str, default_text: str = "", usage: str = ""):
             st.markdown(sts[key] if sts[key] else default_text)
         else:
             st.code(sts[key] if sts[key] else default_text, wrap_lines = True)
+            
+def lean_code_cleanup(lean_code: str) -> str:
+    """
+    Cleans up the error texts in the lean code.
+    """          
+    final_code = []
+    keywords_to_remove = ["#check", "#trace", "\"Error: codegen:"]
+    for line in lean_code.splitlines():
+        if not any(keyword in line for keyword in keywords_to_remove):
+            final_code.append(line)
+    return "import Mathlib" + "\n".join(final_code) if "import Mathlib" not in lean_code else "\n".join(final_code)
 
 def log_section():
     st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked.")
