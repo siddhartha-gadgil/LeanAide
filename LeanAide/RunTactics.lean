@@ -259,6 +259,12 @@ elab "#premises" goal:term : command =>
   for s in ss do
     logInfo s
 
-
+elab "supergrind" : tactic => do
+  let premiseNames ← getPremiseNames (← getMainTarget)
+  let ids ←  premiseNames.mapM (fun n=>
+      let id := mkIdent n
+      `(grindParam| $id:ident)
+    )
+  evalTactic <| ← `(tactic| grind +ring +splitIndPred +splitImp [$ids,*] )
 
 end LeanAide
