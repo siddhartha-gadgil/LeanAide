@@ -1203,15 +1203,32 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
     s!"codegen: no 'condition' found in 'condition_cases_statement'"
   let conditionType ← translator.translateToPropStrict condition
   let conditionStx ← delabDetailed conditionType
-  let tac ← `(tactic|if $conditionStx then ?_ else ?_)
+  let hash₀ := hash conditionStx.raw.reprint
+  let conditionId := mkIdent <| Name.mkSimple s!"condition_{hash₀}"
+  let conditionBinder ←
+    `(Lean.binderIdent| $conditionId:ident)
+  let tac ← `(tactic|if $conditionBinder:binderIdent : $conditionStx then ?_ else ?_)
   let [thenGoal, elseGoal] ←
     runAndGetMVars goal #[tac] 2 | throwError "codegen:  `if _ then _ else _` failed to get two goals, goal: {← ppExpr <| ← goal.getType}"
+  let resolution ←
+    CodeGenerator.resolveExistsHave conditionStx conditionId
   let .ok trueCaseProof := js.getObjValAs? Json "true_case_proof" | throwError
     s!"codegen: no 'true_case_proof' found in 'condition_cases_statement'"
   let .ok falseCaseProof := js.getObjValAs? Json "false_case_proof" | throwError
     s!"codegen: no 'false_case_proof' found in 'condition_cases_statement'"
+  let thenGoal ← if resolution.isEmpty then
+    pure thenGoal
+  else
+    let [goal] ← runAndGetMVars thenGoal resolution 1 | throwError
+      s!"codegen: have tactics resolving exact failed to get one goal, goal: {← ppExpr <| ← thenGoal.getType}"
+    pure goal
   let some trueCaseProofStx ← getCode translator (some thenGoal) ``tacticSeq trueCaseProof | throwError
     s!"codegen: no translation found for true_case_proof {trueCaseProof}"
+  let trueCaseProofStx ← if resolution.isEmpty then
+    pure trueCaseProofStx
+  else
+    appendTactics
+      (← `(tacticSeq| $resolution*)) trueCaseProofStx
   let some falseCaseProofStx ← getCode translator (some elseGoal) ``tacticSeq falseCaseProof | throwError
     s!"codegen: no translation found for false_case_proof {falseCaseProof}"
   let hash := hash conditionStx.raw.reprint
@@ -1233,11 +1250,28 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
   | (conditionType, trueCaseProof) :: tail => goal.withContext do
     IO.eprintln s!"number of cases (remaining): {tail.length + 1}"
     let conditionStx ← delabDetailed conditionType
-    let tac ← `(tactic|if $conditionStx then ?_ else ?_)
+    let hash₀ := hash conditionStx.raw.reprint
+    let conditionId := mkIdent <| Name.mkSimple s!"condition_{hash₀}"
+    let conditionBinder ←
+      `(Lean.binderIdent| $conditionId:ident)
+    let tac ← `(tactic|if $conditionBinder : $conditionStx then ?_ else ?_)
     let [thenGoal, elseGoal] ←
       runAndGetMVars goal #[tac] 2 | throwError "codegen:  `if _ then _ else _` failed to get two goals, goal: {← ppExpr <| ← goal.getType}"
+    let resolution ←
+      CodeGenerator.resolveExistsHave conditionStx conditionId
+    let thenGoal ← if resolution.isEmpty then
+      pure thenGoal
+    else
+      let [goal] ← runAndGetMVars thenGoal resolution 1 | throwError
+        s!"codegen: have tactics resolving exact failed to get one goal, goal: {← ppExpr <| ← thenGoal.getType}"
+      pure goal
     let some trueCaseProofStx ← getCode translator (some thenGoal) ``tacticSeq trueCaseProof | throwError
       s!"codegen: no translation found for true_case_proof {trueCaseProof}"
+    let trueCaseProofStx ← if resolution.isEmpty then
+      pure trueCaseProofStx
+    else
+      appendTactics
+        (← `(tacticSeq| $resolution*)) trueCaseProofStx
     let falseCaseProofStx ←
       multiConditionCasesAux translator elseGoal tail exhaustiveness
     let hash := hash conditionStx.raw.reprint

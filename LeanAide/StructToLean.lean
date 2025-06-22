@@ -607,7 +607,7 @@ elab "#tactic_trythis" goal:term "by" tacticCode:tactic "log" : command =>
       logInfo "No tactics found"
       return ()
 
-def resolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Tactic := do
+def resolveExistsHave (type : Syntax.Term) (typeTerm? : Option Syntax.Term :=none) : TermElabM <| Array Syntax.Tactic := do
   let existsVarTypes? ← existsVarTypes type
   let existsVarTypes := existsVarTypes?.getD #[]
   let existsVarTypeIdents := existsVarTypes.map fun (n, t) =>
@@ -615,7 +615,7 @@ def resolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Tactic :=
     let tId := mkIdent <| Name.mkSimple s!"assert_{hsh}"
     (n, tId)
   let hash₀ := hash type.raw.reprint
-  let typeIdent : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let typeIdent : Syntax.Term := typeTerm?.getD <| mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let rhsIdents :=
     #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
   (existsVarTypeIdents.zip rhsIdents).mapM
