@@ -783,6 +783,39 @@
       ],
       "additionalProperties": false
     },
+    "induction_case": {
+      "type": "object",
+      "description": "A case in a proof by a general form of induction, such as strong induction or structural induction.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "condition_case",
+          "description": "The type of this logical step."
+        },
+        "condition": {
+          "type": "string",
+          "description": "The condition determining this case."
+        },
+        "induction_hypotheses": {
+          "type": "array",
+          "description": "(OPTIONAL) The induction hypotheses. Give the full assumption for the case. Omit for base cases.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof for this case."
+        }
+      },
+      "required": [
+        "type",
+        "condition",
+        "proof"
+      ],
+      "additionalProperties": false
+    },
+
     "case": {
       "type": "object",
       "description": "A case in a proof by cases or proof by induction.",

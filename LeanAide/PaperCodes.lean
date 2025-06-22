@@ -1101,7 +1101,7 @@ def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (ki
   let newGoals ←
     runAndGetMVars goal #[tac] proofData.size
   let proofStxs ← proofData.zip newGoals.toArray |>.mapM fun (proof, newGoal) => do
-    let some proofStx ← getCode translator (some newGoal) ``tacticSeq proof |
+    let some proofStx ← withoutModifyingState do getCode translator (some newGoal) ``tacticSeq proof |
       throwError s!"codegen: no translation found for {proof}"
     return proofStx
   let mut provedAlts : Array <| TSyntax ``matchAltTac := #[]
@@ -1155,9 +1155,9 @@ def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (k
   let tac ← `(tactic|constructor)
   let [ifGoal, onlyIfGoal] ←
     runAndGetMVars goal #[tac] 2 | throwError "codegen: in 'biequivalenceCode' `constructor` failed to get two goals; goal: {← ppExpr <| ← goal.getType}"
-  let some ifProofStx ← getCode translator (some ifGoal) ``tacticSeq ifProof | throwError
+  let some ifProofStx ← withoutModifyingState do getCode translator (some ifGoal) ``tacticSeq ifProof | throwError
     s!"codegen: no translation found for if_proof {ifProof}"
-  let some onlyIfProofStx ← getCode translator (some onlyIfGoal) ``tacticSeq onlyIfProof | throwError
+  let some onlyIfProofStx ← withoutModifyingState do getCode translator (some onlyIfGoal) ``tacticSeq onlyIfProof | throwError
     s!"codegen: no translation found for only_if_proof {onlyIfProof}"
   let tacs := #[tac, ← `(tactic| · $ifProofStx), ← `(tactic| · $onlyIfProofStx)]
   `(tacticSeq| $tacs*)
@@ -1222,14 +1222,14 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
     let [goal] ← runAndGetMVars thenGoal resolution 1 | throwError
       s!"codegen: have tactics resolving exact failed to get one goal, goal: {← ppExpr <| ← thenGoal.getType}"
     pure goal
-  let some trueCaseProofStx ← getCode translator (some thenGoal) ``tacticSeq trueCaseProof | throwError
+  let some trueCaseProofStx ← withoutModifyingState do getCode translator (some thenGoal) ``tacticSeq trueCaseProof | throwError
     s!"codegen: no translation found for true_case_proof {trueCaseProof}"
   let trueCaseProofStx ← if resolution.isEmpty then
     pure trueCaseProofStx
   else
     appendTactics
       (← `(tacticSeq| $resolution*)) trueCaseProofStx
-  let some falseCaseProofStx ← getCode translator (some elseGoal) ``tacticSeq falseCaseProof | throwError
+  let some falseCaseProofStx ← withoutModifyingState do getCode translator (some elseGoal) ``tacticSeq falseCaseProof | throwError
     s!"codegen: no translation found for false_case_proof {falseCaseProof}"
   let hash := hash conditionStx.raw.reprint
   let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
@@ -1265,7 +1265,7 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
       let [goal] ← runAndGetMVars thenGoal resolution 1 | throwError
         s!"codegen: have tactics resolving exact failed to get one goal, goal: {← ppExpr <| ← thenGoal.getType}"
       pure goal
-    let some trueCaseProofStx ← getCode translator (some thenGoal) ``tacticSeq trueCaseProof | throwError
+    let some trueCaseProofStx ← withoutModifyingState do getCode translator (some thenGoal) ``tacticSeq trueCaseProof | throwError
       s!"codegen: no translation found for true_case_proof {trueCaseProof}"
     let trueCaseProofStx ← if resolution.isEmpty then
       pure trueCaseProofStx
@@ -1336,7 +1336,7 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
         let exhaustGoalExpr ← mkFreshExprMVar
           exhaustGoalType
         let exhaustGoal := exhaustGoalExpr.mvarId!
-        let some pfStx ← getCode translator (some exhaustGoal) ``tacticSeq e | throwError
+        let some pfStx ← withoutModifyingState do getCode translator (some exhaustGoal) ``tacticSeq e | throwError
           s!"codegen: no translation found for exhaustiveness {e}"
         `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
   IO.eprintln s!"number of cases (after exhaustiveness): {cases.length}"
@@ -1402,7 +1402,7 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     s!"codegen: no true_case_proof found in {js}"
   let .ok inductionStepProof := js.getObjValAs? Json "induction_step_proof" | throwError
     s!"codegen: no false_case_proof found in {js}"
-  let some baseCaseProofStx ← getCode translator (some baseGoal) ``tacticSeq baseCaseProof | throwError
+  let some baseCaseProofStx ← withoutModifyingState do getCode translator (some baseGoal) ``tacticSeq baseCaseProof | throwError
     s!"codegen: no translation found for base_case_proof {baseCaseProof}"
   let some inductionStepProofStx ← getCode translator (some stepGoal) ``tacticSeq inductionStepProof | throwError
     s!"codegen: no translation found for induction_step_proof {inductionStepProof}"
@@ -1455,7 +1455,7 @@ def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind
     s!"codegen: contradiction_statement failed to get goal, goalType: {← ppExpr <| goalType}"
   let .ok proof := js.getObjValAs? Json "proof" | throwError
     s!"codegen: no 'proof' found in 'contradiction_statement'"
-  let some tacs ← getCode translator (some goal) ``tacticSeq proof | throwError
+  let some tacs ← withoutModifyingState do getCode translator (some goal) ``tacticSeq proof | throwError
     s!"codegen: no tactics found for proof {proof}"
   let fullTacs ←  appendTactics (← `(tacticSeq| intro $contraId:term)) tacs
   let stx ← delabDetailed assumptionType
