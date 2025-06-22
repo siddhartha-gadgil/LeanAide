@@ -733,6 +733,34 @@
       ],
       "additionalProperties": false
     },
+    "general_induction_statement": {
+      "type": "object",
+      "description": "A proof by cases given by three or more conditions.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "multi-condtion_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "induction_principle": {
+          "type": "string",
+          "description": "The induction principle being used, such as 'strong induction for natural numbers' or 'structural induction for binary trees'."
+        },
+        "proof_cases": {
+          "type": "array",
+          "description": "The conditions and proofs in the different cases.",
+          "items": {
+            "$ref": "#/$defs/induction_case"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "induction_principle",
+        "proof_cases"
+      ],
+      "additionalProperties": false
+    },
     "pattern_case": {
       "type": "object",
       "description": "A case in a proof by cases with cases determined by matching patterns.",
@@ -843,7 +871,7 @@
     },
     "induction_statement": {
       "type": "object",
-      "description": "A proof by induction, with a base case and an induction step.",
+      "description": "A proof by induction, with a base case and an induction step. For strong induction or structural induction, USE INSTEAD 'general_induction_statement'.",
       "properties": {
         "type": {
           "type": "string",

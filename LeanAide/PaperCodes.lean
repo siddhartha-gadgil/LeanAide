@@ -1505,6 +1505,102 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | none, ``tacticSeq, _ => do return none
 | _, kind, _ => throwError
     s!"codegen: conclude_statement does not work for kind {kind}"
+
+
+def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json)) (inductionNames: Array Name)  : TranslateM (TSyntax ``tacticSeq) := match cases with
+  | [] => goal.withContext do
+    let inductionIds := inductionNames.map Lean.mkIdent
+    let pf ← runTacticsAndGetTryThisI
+      (← goal.getType) #[← `(tactic| hammer [$inductionIds,*])]
+    `(tacticSeq| $pf*)
+  | (conditionType, trueCaseProof) :: tail => goal.withContext do
+    IO.eprintln s!"number of cases (remaining): {tail.length + 1}"
+    let conditionStx ← delabDetailed conditionType
+    let hash₀ := hash conditionStx.raw.reprint
+    let conditionId := mkIdent <| Name.mkSimple s!"condition_{hash₀}"
+    let conditionBinder ←
+      `(Lean.binderIdent| $conditionId:ident)
+    let tac ← `(tactic|if $conditionBinder : $conditionStx then ?_ else ?_)
+    let [thenGoal, elseGoal] ←
+      runAndGetMVars goal #[tac] 2 | throwError "codegen:  `if _ then _ else _` failed to get two goals, goal: {← ppExpr <| ← goal.getType}"
+    let resolution ←
+      CodeGenerator.resolveExistsHave conditionStx conditionId
+    let thenGoal ← if resolution.isEmpty then
+      pure thenGoal
+    else
+      let [goal] ← runAndGetMVars thenGoal resolution 1 | throwError
+        s!"codegen: have tactics resolving exact failed to get one goal, goal: {← ppExpr <| ← thenGoal.getType}"
+      pure goal
+    let some trueCaseProofStx ← withoutModifyingState do getCode translator (some thenGoal) ``tacticSeq trueCaseProof | throwError
+      s!"codegen: no translation found for true_case_proof {trueCaseProof}"
+    let trueCaseProofStx ← if resolution.isEmpty then
+      pure trueCaseProofStx
+    else
+      appendTactics
+        (← `(tacticSeq| $resolution*)) trueCaseProofStx
+    let falseCaseProofStx ←
+      generalInductionAux translator elseGoal tail inductionNames
+    let hash := hash conditionStx.raw.reprint
+    let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
+    let conditionBinder ←
+      `(Lean.binderIdent| $conditionId:ident)
+    let tacs := #[← `(tactic| if $conditionBinder :  $conditionStx then $trueCaseProofStx else $falseCaseProofStx)]
+    `(tacticSeq| $tacs*)
+
+/-
+    "general_induction_statement": {
+      "type": "object",
+      "description": "A proof by cases given by three or more conditions.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "multi-condtion_cases_statement",
+          "description": "The type of this logical step."
+        },
+        "induction_principle": {
+          "type": "string",
+          "description": "The induction principle being used, such as 'strong induction for natural numbers' or 'structural induction for binary trees'."
+        },
+        "proof_cases": {
+          "type": "array",
+          "description": "The conditions and proofs in the different cases.",
+          "items": {
+            "$ref": "#/$defs/induction_case"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "induction_principle",
+        "proof_cases"
+      ],
+      "additionalProperties": false
+    },
+-/
+
+
+@[codegen "general_induction_statement"]
+def generalInductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| some goal, ``tacticSeq, js => goal.withContext do
+  let .ok proofCases := js.getObjValAs? (List Json) "proof_cases" | throwError
+    s!"codegen: no 'proof_cases' found in 'multi-condition_cases_statement'"
+  let .ok inductionPrinciple :=  js.getObjValAs? String "induction_principle" | throwError
+    s!"codegen: no 'induction_principle' found in 'general_induction_statement'"
+  let inductionPrincipleNames ← Translator.matchingTheorems inductionPrinciple (qp := translator)
+  let cases ←  proofCases.mapM fun
+    c => do
+      let .ok condition := c.getObjValAs? String "condition" | throwError
+        s!"codegen: no 'condition' found in 'condition_case'"
+      let conditionType ← translator.translateToPropStrict condition
+      let .ok proof := c.getObjValAs? Json "proof" | throwError
+        s!"codegen: no 'proof' found in 'condition_case'"
+      pure (conditionType, proof)
+  let tacs ← generalInductionAux translator goal cases inductionPrincipleNames.toArray
+  appendTactics tacs <| ← `(tacticSeq| done)
+| goal?, kind ,_ => throwError
+    s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
+
+
 /- Figure
 {
   "type": "object",
