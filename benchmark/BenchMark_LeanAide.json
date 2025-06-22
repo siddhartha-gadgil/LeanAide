@@ -1,1 +1,10 @@
-{}
+{
+    "1": {
+        "theorem": "The determinant of a 2x2 Identity Matrix is 1",
+        "proof": "To prove that the determinant of a 2x2 identity matrix is 1, let's first define the 2 × 2 identity matrix:\n\nI_2 = [[1, 0], [0, 1]]\n\nThe determinant of a 2 × 2 matrix A = [[a, b], [c, d]] is given by the formula:\n\ndet(A) = ad - bc\n\nApplying this formula to the identity matrix I_2, we have:\n\ndet(I_2) = (1)(1) - (0)(0) = 1 - 0 = 1\n\nTherefore, the determinant of the 2 × 2 identity matrix is indeed 1."
+    },
+    "2": {
+        "theorem": "The sum of 2 even numbers is even",
+        "proof": "Let a and b be two even numbers, say a = 2m and b = 2n for some integers m and n. Then their sum is:\n\nS = a + b = 2m + 2n = 2(m + n)\n\nSince m + n is an integer > 0 and 2 divides an integral multiple of 2. Thus, S is even.\n\nTherefore, the sum of two even numbers is even."
+    }
+}
