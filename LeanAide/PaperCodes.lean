@@ -1507,14 +1507,16 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
     s!"codegen: conclude_statement does not work for kind {kind}"
 
 
-def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json)) (inductionNames: Array Name)  : TranslateM (TSyntax ``tacticSeq) := match cases with
+def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json × (Array String))) (inductionNames: Array Name)  : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
     let inductionIds := inductionNames.map Lean.mkIdent
     let pf ← runTacticsAndGetTryThisI
       (← goal.getType) #[← `(tactic| hammer [$inductionIds,*])]
     `(tacticSeq| $pf*)
-  | (conditionType, trueCaseProof) :: tail => goal.withContext do
+  | (conditionType, trueCaseProof, inductionHyps) :: tail => goal.withContext do
     IO.eprintln s!"number of cases (remaining): {tail.length + 1}"
+    for hyp in inductionHyps do
+      addPrelude <| s!"Assume (inductively): {hyp}"
     let conditionStx ← delabDetailed conditionType
     let hash₀ := hash conditionStx.raw.reprint
     let conditionId := mkIdent <| Name.mkSimple s!"condition_{hash₀}"
@@ -1594,7 +1596,8 @@ def generalInductionCode (translator : CodeGenerator := {}) : Option MVarId → 
       let conditionType ← translator.translateToPropStrict condition
       let .ok proof := c.getObjValAs? Json "proof" | throwError
         s!"codegen: no 'proof' found in 'condition_case'"
-      pure (conditionType, proof)
+      let inductionHyps := c.getObjValAs? (Array String) "induction_hyps" |>.toOption |>.getD #[]
+      pure (conditionType, proof, inductionHyps)
   let tacs ← generalInductionAux translator goal cases inductionPrincipleNames.toArray
   appendTactics tacs <| ← `(tacticSeq| done)
 | goal?, kind ,_ => throwError

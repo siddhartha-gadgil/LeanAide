@@ -739,7 +739,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "const": "multi-condtion_cases_statement",
+          "const": "general_induction_statement",
           "description": "The type of this logical step."
         },
         "induction_principle": {
