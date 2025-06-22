@@ -120,7 +120,8 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         let defs ← Meta.defsBlob? translation
         let typeStx ← delabDetailed translation
         let thmFmt ← PrettyPrinter.ppExpr translation
-        let pf? ← getExactTactics? translation
+        let pf? ←
+          getExactTactics? translation <||> getHammerTactics? translation
         let name ← try
           translator.server.theoremName text
           catch e =>

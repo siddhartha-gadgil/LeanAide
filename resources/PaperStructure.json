@@ -821,6 +821,11 @@
           "type": "string",
           "description": "The variable or expression on which induction is being done."
         },
+        "prev_var": {
+          "type": "string",
+          "description": "(OPTIONAL) The variable `m` so that the induction case if `m + 1`. If omitted it is assumed that it is the same as the 'on' variable, i.e., the induction step is `n + 1` where `n` is the variable on which induction is done."
+
+        },
         "base_case_proof": {
           "$ref": "#/$defs/Proof",
           "description": "Proof of the base case."

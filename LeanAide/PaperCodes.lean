@@ -1355,10 +1355,12 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let dicrTerm' ← `(elimTarget| $discrTerm:term)
   let discrTerm'' : TSyntax ``elimTarget := ⟨dicrTerm'⟩
   let zeroId := mkIdent ``Nat.zero
+  let prevVar := js.getObjValAs? String "prev_var" |>.toOption |>.getD discr
+  let prevVarId :=  mkIdent <| prevVar.toName
   let tac ← `(tactic|
     induction $discrTerm'' with
     | $zeroId => _
-    | $succId:ident $ihId:ident => _)
+    | $succId:ident $prevVarId:ident $ihId:ident => _)
 
   let [baseGoal, stepGoal] ←
     runAndGetMVars goal #[tac] 2 | throwError s!"codegen: induction failed to get two goals, goal: {← ppExpr <| ← goal.getType}"
@@ -1373,7 +1375,7 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let tacs := #[← `(tactic|
     induction $discrTerm'' with
     | $zeroId => $baseCaseProofStx
-    | $succId:ident $ihId:ident => $inductionStepProofStx), ← `(tactic| done)]
+    | $succId:ident $prevVarId:ident $ihId:ident => $inductionStepProofStx), ← `(tactic| done)]
   `(tacticSeq| $tacs*)
 | goal?, kind ,_ => throwError
     s!"codegen: induction does not work for kind {kind} with goal present: {goal?.isSome}"
@@ -1637,6 +1639,3 @@ def ctch : MetaM Unit := do
     thr
   catch e =>
     throwError s!"Caught error: {← e.toMessageData.toString}"
-
--- #eval ctch
--- #premises (∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N)
