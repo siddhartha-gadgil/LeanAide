@@ -167,6 +167,17 @@ def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) :=
       let tacticCode ←  `(tacticSeq| $tacs*)
       return some tacticCode
 
+def getHammerTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| hammer))]
+  match tactics? with
+  | none => return none
+  | some tacs =>
+    if tacs.isEmpty then
+      return none
+    else
+      let tacticCode ←  `(tacticSeq| $tacs*)
+      return some tacticCode
+
 def getExactTerm? (goal: Expr) : TermElabM <| Option Syntax.Term := do
   let tacticCode? ← getExactTactics? goal
   tacticCode?.bindM fun tacticCode => do
