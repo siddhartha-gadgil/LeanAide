@@ -59,8 +59,20 @@ def inferType?(e: Expr) : MetaM (Option Expr) := do
 
 partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
   match e with
-  | .app (.const ``sorryAx _) a => return #[a]
+  | .app (.const ``sorryAx _) a =>
+    -- logInfo s!"Found sorryAx in {← ppExpr e}; type: {← ppExpr a}"
+    match a with
+    | .forallE _ (.const ``Name []) body _ =>
+      -- logInfo s!"Found sorryAx in forallE"
+      -- logInfo s!"Type for tag: {← ppExpr type}"
+      return #[body]
+    | _ =>
+      logInfo s!"Found sorryAx in app, but not forallE"
+      return #[a]
   | Expr.app f a  =>
+    -- logInfo s!"App: {← ppExpr f} ; {← ppExpr a}"
+    -- logInfo s!"From f: {← getSorryTypes f}"
+    -- logInfo s!"From a: {← getSorryTypes a}"
     return (← getSorryTypes f) ++ (← getSorryTypes a)
   | Expr.lam name type body bi =>
     withLocalDecl name bi type fun x => do
@@ -68,20 +80,26 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
       let inner ← getSorryTypes body
       inner.mapM <| mkForallFVars #[x]
   | Expr.letE name type value bdy nondep =>
-      withLetDecl name type value fun x => do
+      logInfo s!"Let {name} : {type} := {value}"
+      let inner ← withLetDecl name type value fun x => do
+        logInfo s!"Let body: {bdy}"
         let bdy := bdy.instantiate1 x
+        logInfo s!"Let body after instantiation: {bdy}"
         let inner ← getSorryTypes bdy
         inner.mapM <| fun type => do
           let y ←  mkLetFVars #[x] type
           pure <| .letE name type value y nondep
+      let outer ← getSorryTypes value
+      return inner ++ outer
   | .proj _ _ s => getSorryTypes s
   | _ => pure #[]
 
 elab "show_sorries" t:term : term => do
   let value ← Term.elabTerm t none
-  let value' ← reduce value
-  logInfo s!"{← ppExpr value'}"
-  let sorries ← getSorryTypes value'
+  let value ← instantiateExprMVars value
+  -- let value' ← reduce value
+  logInfo s!"{← ppExpr value}"
+  let sorries ← getSorryTypes value
   logInfo s!"{sorries.size} sorries in {← ppExpr value} with types:"
   for s in sorries do
     logInfo s!"{← ppExpr s}"
@@ -577,3 +595,12 @@ def termKindExamplesCore (choices: Nat := 3) : CoreM <| List Json := do
 
 
 end LeanAide.Meta
+
+-- set_option pp.funBinderTypes true in
+#check show_sorries (have h₀ : Nat := (sorry : Nat)
+  sorry: True)
+
+#check Expr.letFun?
+-- #check sorryAx
+
+#check show_sorries (sorry : True)
