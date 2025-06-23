@@ -148,17 +148,6 @@ with st.sidebar:
     st.divider()
     st.warning("The Website is Under Development.")
 
-    ## Session State visibility
-    if st.checkbox("Show Session State", value=False, help = "Session State values, used for debugging."):
-        st.sidebar.write("Session State:")
-        # session state with masked API keys
-        masked_state = {k: (v[:6] + "*" * (len(v) - 6) if "api_key" in k.lower() and isinstance(v, str) and len(v) > 6 else v) for k, v in sts.items()}
-        # Hide very long texts
-        for k, v in masked_state.items():
-            if isinstance(v, str) and len(v) > 400:
-                masked_state[k] = f"{v[:150]} ... =**Truncated**= ... {v[-150:]}"
-        st.sidebar.json(masked_state)
-
     with st.expander("Other Settings", expanded=False):
         st.info("These are side default settings, you may safely ignore them. More settings on top-right 3-dot menu.")
         sts.temperature = st.slider("Temperature:",
@@ -169,6 +158,17 @@ with st.sidebar:
             "URL to query (for a local server)",
             help="Specify the URL for the LLM API. Example: `https://api.mistral.ai/v1/chat/completions`"
         )
+
+    ## Session State visibility
+    if st.checkbox("Show Session State", value=False, help = "Session State values, used for debugging."):
+        st.sidebar.write("Session State:")
+        # session state with masked API keys
+        masked_state = {k: (v[:6] + "*" * (len(v) - 6) if "api_key" in k.lower() and isinstance(v, str) and len(v) > 6 else v) for k, v in sts.items()}
+        # Hide very long texts
+        for k, v in masked_state.items():
+            if isinstance(v, str) and len(v) > 400:
+                masked_state[k] = f"{v[:150]} ... =**Truncated**= ... {v[-150:]}"
+        st.sidebar.json(masked_state)
 
 if sts.llm_api_key and sts.llm_provider:
     # Post environment arguments to the server

@@ -290,10 +290,10 @@ def host_information():
 
     if not localhost_serv:
         local_ip = socket.gethostbyname(socket.gethostname())
-        local_ip = "localhost" if str(local_ip).strip() == "127.0.0.1" else local_ip
+        local_ip = "localhost" if str(local_ip).strip().startswith("127.") else local_ip
         api_host = st.text_input(
             "Backend API Host: (default: HOST or localhost IP)",
-            value= HOST if HOST not in ["localhost", "127.0.0.1"] else local_ip,
+            value= HOST if not HOST.strip().startswith("127.") else local_ip,
             help="Specify the hostname or IP address where the proof server is running. Default is localhost.",
         )
         sts.api_host = api_host
