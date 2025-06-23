@@ -97,6 +97,8 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
       let inner ← withLetDecl name type value fun x => do
         -- logInfo s!"Let body: {bdy}"
         let bdy := bdy.instantiate1 x
+        let check ←  exprDependsOn bdy x.fvarId!
+        logInfo s!"Checking dependence: {check}"
         -- logInfo s!"Let body after instantiation: {bdy}"
         let inner ← getSorryTypes bdy
         inner.mapM <| fun type => do
@@ -105,7 +107,56 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
       let outer ← getSorryTypes value
       return inner ++ outer
   | .proj _ _ s => getSorryTypes s
+  | .mdata _ e => getSorryTypes e
   | _ => pure #[]
+
+partial def purgeLets (e: Expr) : MetaM Expr := do
+  match e.letFun? with
+  | some (name, type, value, body) =>
+      withLetDecl name type value fun x => do
+        -- logInfo s!"Let body: {bdy}"
+        let bdy := body.instantiate1 x
+        -- logInfo s!"Let body after instantiation: {bdy}"
+        if ← exprDependsOn bdy x.fvarId! then
+          let inner ← purgeLets bdy
+          mkLetFun x value inner
+        else
+          purgeLets bdy
+  | none =>
+  match e with
+  | Expr.app f a  =>
+    -- logInfo s!"App: {← ppExpr f} ; {← ppExpr a}"
+    -- logInfo s!"From f: {← getSorryTypes f}"
+    -- logInfo s!"From a: {← getSorryTypes a}"
+    return .app (← purgeLets f)  (← purgeLets a)
+  | Expr.lam name type body bi =>
+    withLocalDecl name bi type fun x => do
+      let body := body.instantiate1 x
+      let inner ← purgeLets body
+      mkForallFVars #[x] inner
+  | Expr.letE name type value bdy nondep =>
+      -- logInfo s!"Let {name} : {type} := {value}"
+      withLetDecl name type value fun x => do
+        -- logInfo s!"Let body: {bdy}"
+        let bdy := bdy.instantiate1 x
+        -- logInfo s!"Let body after instantiation: {bdy}"
+        if ← exprDependsOn bdy x.fvarId! then
+          let inner ← purgeLets bdy
+          mkLetFVars #[x] inner nondep
+        else
+          purgeLets bdy
+  | .proj _ _ s => purgeLets s
+  | .mdata _ e => purgeLets e
+  | e => return e
+
+elab "purge_lets" t:term : term => do
+  let value ← Term.elabTerm t none
+  let value ← instantiateExprMVars value
+  -- let value' ← reduce value
+  -- logInfo s!"{← ppExpr value}"
+  let value' ← purgeLets value
+  logInfo s!"Purged lets in \n{← ppExpr value}\n to \n{← ppExpr value'}"
+  return value'
 
 elab "show_sorries" t:term : term => do
   let value ← Term.elabTerm t none
@@ -610,8 +661,8 @@ def termKindExamplesCore (choices: Nat := 3) : CoreM <| List Json := do
 end LeanAide.Meta
 
 -- set_option pp.funBinderTypes true in
-#check show_sorries (have h₀ : Nat := (sorry : Nat)
-  sorry: True)
+#check show_sorries (let h₀ : Nat := (sorry : Nat)
+  sorry : Nat)
 
 #check Expr.letFun?
 -- #check sorryAx
@@ -619,3 +670,15 @@ end LeanAide.Meta
 #check show_sorries (sorry : True)
 
 #check mkLetFun
+
+#check purge_lets (let a : Nat := (sorry : Nat)
+  sorry : Nat)
+
+#check purge_lets (let a : Nat := (sorry : Nat)
+  sorry + a : Nat)
+
+#check purge_lets (let a : Nat := (sorry : Nat)
+  3 : Nat)
+
+#check purge_lets (let a : Nat := (sorry : Nat)
+  3 + a : Nat)
