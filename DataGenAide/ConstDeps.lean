@@ -58,6 +58,19 @@ def inferType?(e: Expr) : MetaM (Option Expr) := do
 
 
 partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
+  match e.letFun? with
+  | some (name, type, value, body) =>
+      let inner ← withLetDecl name type value fun x => do
+        -- logInfo s!"Let body: {bdy}"
+        let bdy := body.instantiate1 x
+        -- logInfo s!"Let body after instantiation: {bdy}"
+        let inner ← getSorryTypes bdy
+        inner.mapM <| fun type => do
+          let y ←  mkLetFVars #[x] type
+          mkLetFun x  value y
+      let outer ← getSorryTypes value
+      return inner ++ outer
+  | none =>
   match e with
   | .app (.const ``sorryAx _) a =>
     -- logInfo s!"Found sorryAx in {← ppExpr e}; type: {← ppExpr a}"
@@ -67,7 +80,7 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
       -- logInfo s!"Type for tag: {← ppExpr type}"
       return #[body]
     | _ =>
-      logInfo s!"Found sorryAx in app, but not forallE"
+      logWarning s!"Found sorryAx in app, but not forallE"
       return #[a]
   | Expr.app f a  =>
     -- logInfo s!"App: {← ppExpr f} ; {← ppExpr a}"
@@ -80,11 +93,11 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
       let inner ← getSorryTypes body
       inner.mapM <| mkForallFVars #[x]
   | Expr.letE name type value bdy nondep =>
-      logInfo s!"Let {name} : {type} := {value}"
+      -- logInfo s!"Let {name} : {type} := {value}"
       let inner ← withLetDecl name type value fun x => do
-        logInfo s!"Let body: {bdy}"
+        -- logInfo s!"Let body: {bdy}"
         let bdy := bdy.instantiate1 x
-        logInfo s!"Let body after instantiation: {bdy}"
+        -- logInfo s!"Let body after instantiation: {bdy}"
         let inner ← getSorryTypes bdy
         inner.mapM <| fun type => do
           let y ←  mkLetFVars #[x] type
@@ -98,7 +111,7 @@ elab "show_sorries" t:term : term => do
   let value ← Term.elabTerm t none
   let value ← instantiateExprMVars value
   -- let value' ← reduce value
-  logInfo s!"{← ppExpr value}"
+  -- logInfo s!"{← ppExpr value}"
   let sorries ← getSorryTypes value
   logInfo s!"{sorries.size} sorries in {← ppExpr value} with types:"
   for s in sorries do
@@ -604,3 +617,5 @@ end LeanAide.Meta
 -- #check sorryAx
 
 #check show_sorries (sorry : True)
+
+#check mkLetFun
