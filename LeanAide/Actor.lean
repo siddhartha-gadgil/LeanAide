@@ -99,7 +99,6 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
     match data.getObjValAs? String "text" with
     | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
     | Except.ok text => do
-      let name ← translator.server.theoremName text
       let greedy :=
         data.getObjValAs? Bool "greedy" |>.toOption |>.getD true
       let res? ← if greedy then
@@ -121,7 +120,15 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
         let defs ← Meta.defsBlob? translation
         let typeStx ← delabDetailed translation
         let thmFmt ← PrettyPrinter.ppExpr translation
-        let pf? ← getExactTactics? translation
+        let pf? ←
+          getExactTactics? translation <||> getHammerTactics? translation
+        let name ← try
+          translator.server.theoremName text
+          catch e =>
+            IO.eprintln s!"Error in theorem name: {← e.toMessageData.format}"
+            let hash := hash thmFmt.pretty
+            let name := s!"thm_{hash}"
+            pure name.toName
         let thmName := mkIdent name
         let pf := pf?.getD (← `(tacticSeq| sorry))
         let thmStx ←
@@ -297,7 +304,28 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
               match desc with
               | some (desc, _) =>
                 let res := res.mergeObj <| Json.mkObj [("sorry_description", desc)]
-                pure res
+                let defs ← Meta.defsBlob? expr
+                let typeStx ← delabDetailed expr
+                let thmFmt ← PrettyPrinter.ppExpr expr
+                let pf? ←
+                  getExactTactics? expr <||> getHammerTactics? expr
+                let name ← try
+                  translator.server.theoremName desc
+                  catch e =>
+                    IO.eprintln s!"Error in theorem name: {← e.toMessageData.format}"
+                    let hash := hash thmFmt.pretty
+                    let name := s!"thm_{hash}"
+                    pure name.toName
+                let thmName := mkIdent name
+                let pf := pf?.getD (← `(tacticSeq| sorry))
+                let thmStx ←
+                  `(command| theorem $thmName : $typeStx := by $pf)
+                let statementFormat ← PrettyPrinter.ppCommand thmStx
+                let defsInProof? ← getExactTermParts? expr
+                return res.mergeObj <| Json.mkObj [("theorem",  thmFmt.pretty),
+                  ("name", toJson name), ("proved", pf?.isSome),
+                  ("statement", statementFormat.pretty), ("definitions_used", toJson defs),
+                  ("definitions_in_proof", toJson defsInProof?)]
               | none => pure res
             else
               pure res

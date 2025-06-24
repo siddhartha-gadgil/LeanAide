@@ -58,9 +58,34 @@ def inferType?(e: Expr) : MetaM (Option Expr) := do
 
 
 partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
+  match e.letFun? with
+  | some (name, type, value, body) =>
+      let inner ← withLetDecl name type value fun x => do
+        -- logInfo s!"Let body: {bdy}"
+        let bdy := body.instantiate1 x
+        -- logInfo s!"Let body after instantiation: {bdy}"
+        let inner ← getSorryTypes bdy
+        inner.mapM <| fun type => do
+          let y ←  mkLetFVars #[x] type
+          mkLetFun x  value y
+      let outer ← getSorryTypes value
+      return inner ++ outer
+  | none =>
   match e with
-  | .app (.const ``sorryAx _) a => return #[a]
+  | .app (.const ``sorryAx _) a =>
+    -- logInfo s!"Found sorryAx in {← ppExpr e}; type: {← ppExpr a}"
+    match a with
+    | .forallE _ (.const ``Name []) body _ =>
+      -- logInfo s!"Found sorryAx in forallE"
+      -- logInfo s!"Type for tag: {← ppExpr type}"
+      return #[body]
+    | _ =>
+      logWarning s!"Found sorryAx in app, but not forallE"
+      return #[a]
   | Expr.app f a  =>
+    -- logInfo s!"App: {← ppExpr f} ; {← ppExpr a}"
+    -- logInfo s!"From f: {← getSorryTypes f}"
+    -- logInfo s!"From a: {← getSorryTypes a}"
     return (← getSorryTypes f) ++ (← getSorryTypes a)
   | Expr.lam name type body bi =>
     withLocalDecl name bi type fun x => do
@@ -68,20 +93,77 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
       let inner ← getSorryTypes body
       inner.mapM <| mkForallFVars #[x]
   | Expr.letE name type value bdy nondep =>
-      withLetDecl name type value fun x => do
+      -- logInfo s!"Let {name} : {type} := {value}"
+      let inner ← withLetDecl name type value fun x => do
+        -- logInfo s!"Let body: {bdy}"
         let bdy := bdy.instantiate1 x
+        let check ←  exprDependsOn bdy x.fvarId!
+        logInfo s!"Checking dependence: {check}"
+        -- logInfo s!"Let body after instantiation: {bdy}"
         let inner ← getSorryTypes bdy
         inner.mapM <| fun type => do
           let y ←  mkLetFVars #[x] type
           pure <| .letE name type value y nondep
+      let outer ← getSorryTypes value
+      return inner ++ outer
   | .proj _ _ s => getSorryTypes s
+  | .mdata _ e => getSorryTypes e
   | _ => pure #[]
+
+partial def purgeLets (e: Expr) : MetaM Expr := do
+  match e.letFun? with
+  | some (name, type, value, body) =>
+      withLetDecl name type value fun x => do
+        -- logInfo s!"Let body: {bdy}"
+        let bdy := body.instantiate1 x
+        -- logInfo s!"Let body after instantiation: {bdy}"
+        if ← exprDependsOn bdy x.fvarId! then
+          let inner ← purgeLets bdy
+          mkLetFun x value inner
+        else
+          purgeLets bdy
+  | none =>
+  match e with
+  | Expr.app f a  =>
+    -- logInfo s!"App: {← ppExpr f} ; {← ppExpr a}"
+    -- logInfo s!"From f: {← getSorryTypes f}"
+    -- logInfo s!"From a: {← getSorryTypes a}"
+    return .app (← purgeLets f)  (← purgeLets a)
+  | Expr.lam name type body bi =>
+    withLocalDecl name bi type fun x => do
+      let body := body.instantiate1 x
+      let inner ← purgeLets body
+      mkForallFVars #[x] inner
+  | Expr.letE name type value bdy nondep =>
+      -- logInfo s!"Let {name} : {type} := {value}"
+      withLetDecl name type value fun x => do
+        -- logInfo s!"Let body: {bdy}"
+        let bdy := bdy.instantiate1 x
+        -- logInfo s!"Let body after instantiation: {bdy}"
+        if ← exprDependsOn bdy x.fvarId! then
+          let inner ← purgeLets bdy
+          mkLetFVars #[x] inner nondep
+        else
+          purgeLets bdy
+  | .proj _ _ s => purgeLets s
+  | .mdata _ e => purgeLets e
+  | e => return e
+
+elab "purge_lets" t:term : term => do
+  let value ← Term.elabTerm t none
+  let value ← instantiateExprMVars value
+  -- let value' ← reduce value
+  -- logInfo s!"{← ppExpr value}"
+  let value' ← purgeLets value
+  logInfo s!"Purged lets in \n{← ppExpr value}\n to \n{← ppExpr value'}"
+  return value'
 
 elab "show_sorries" t:term : term => do
   let value ← Term.elabTerm t none
-  let value' ← reduce value
-  logInfo s!"{← ppExpr value'}"
-  let sorries ← getSorryTypes value'
+  let value ← instantiateExprMVars value
+  -- let value' ← reduce value
+  -- logInfo s!"{← ppExpr value}"
+  let sorries ← getSorryTypes value
   logInfo s!"{sorries.size} sorries in {← ppExpr value} with types:"
   for s in sorries do
     logInfo s!"{← ppExpr s}"
@@ -577,3 +659,26 @@ def termKindExamplesCore (choices: Nat := 3) : CoreM <| List Json := do
 
 
 end LeanAide.Meta
+
+-- set_option pp.funBinderTypes true in
+#check show_sorries (let h₀ : Nat := (sorry : Nat)
+  sorry : Nat)
+
+#check Expr.letFun?
+-- #check sorryAx
+
+#check show_sorries (sorry : True)
+
+#check mkLetFun
+
+#check purge_lets (let a : Nat := (sorry : Nat)
+  sorry : Nat)
+
+#check purge_lets (let a : Nat := (sorry : Nat)
+  sorry + a : Nat)
+
+#check purge_lets (let a : Nat := (sorry : Nat)
+  3 : Nat)
+
+#check purge_lets (let a : Nat := (sorry : Nat)
+  3 + a : Nat)

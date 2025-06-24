@@ -733,6 +733,34 @@
       ],
       "additionalProperties": false
     },
+    "general_induction_statement": {
+      "type": "object",
+      "description": "A proof by cases given by three or more conditions.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "general_induction_statement",
+          "description": "The type of this logical step."
+        },
+        "induction_principle": {
+          "type": "string",
+          "description": "The induction principle being used, such as 'strong induction for natural numbers' or 'structural induction for binary trees'."
+        },
+        "proof_cases": {
+          "type": "array",
+          "description": "The conditions and proofs in the different cases.",
+          "items": {
+            "$ref": "#/$defs/induction_case"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "induction_principle",
+        "proof_cases"
+      ],
+      "additionalProperties": false
+    },
     "pattern_case": {
       "type": "object",
       "description": "A case in a proof by cases with cases determined by matching patterns.",
@@ -783,6 +811,39 @@
       ],
       "additionalProperties": false
     },
+    "induction_case": {
+      "type": "object",
+      "description": "A case in a proof by a general form of induction, such as strong induction or structural induction.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "condition_case",
+          "description": "The type of this logical step."
+        },
+        "condition": {
+          "type": "string",
+          "description": "The condition determining this case."
+        },
+        "induction_hypotheses": {
+          "type": "array",
+          "description": "(OPTIONAL) The induction hypotheses. Give the full assumption for the case. Omit for base cases.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "proof": {
+          "$ref": "#/$defs/Proof",
+          "description": "Proof for this case."
+        }
+      },
+      "required": [
+        "type",
+        "condition",
+        "proof"
+      ],
+      "additionalProperties": false
+    },
+
     "case": {
       "type": "object",
       "description": "A case in a proof by cases or proof by induction.",
@@ -810,7 +871,7 @@
     },
     "induction_statement": {
       "type": "object",
-      "description": "A proof by induction, with a base case and an induction step.",
+      "description": "A proof by induction, with a base case and an induction step. For strong induction or structural induction, USE INSTEAD 'general_induction_statement'.",
       "properties": {
         "type": {
           "type": "string",
@@ -820,6 +881,11 @@
         "on": {
           "type": "string",
           "description": "The variable or expression on which induction is being done."
+        },
+        "prev_var": {
+          "type": "string",
+          "description": "(OPTIONAL) The variable `m` so that the induction case if `m + 1`. If omitted it is assumed that it is the same as the 'on' variable, i.e., the induction step is `n + 1` where `n` is the variable on which induction is done."
+
         },
         "base_case_proof": {
           "$ref": "#/$defs/Proof",
