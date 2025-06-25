@@ -9,7 +9,10 @@ from api_server import HOST, PORT
 NONE_INIT_KEYS = [
     "self_selection", "val_input", "result", "temp_structured_json", "prompt_proof_guide", "prompt_proof_task",
     "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", "format_index", "thm_details", 
-    "uploaded_pdf", "genai_proof_button"
+    "uploaded_pdf", "genai_proof_button",
+    # For benchmark
+    "bm_input_opt", "bm_json_dataset", "bm_single_thm", "bm_single_proof", "bm_time_taken", "bm_results",
+    "bm_current_progress", "bm_total_problems", "bm_display_table"
 ]
 
 FALSE_INIT_KEYS = [
@@ -17,6 +20,9 @@ FALSE_INIT_KEYS = [
     "server_output_success", "valid_input", "log_cleaned", "input_paper",
     "generation_complete", "input_image_paper", "input_pdf_paper", "input_image_proof", 
     "input_image_theorem", "input_pdf_proof", "input_pdf_theorem", "gen_ai_proof", "server_thm_details",
+    # For benchmark
+    "bm_run_button",
+    
 ]
 
 LLM_INIT_KEYS = [
@@ -64,12 +70,18 @@ logs_page = st.Page(
     title = "Logs",
     icon = ":material/bug_report:",
 )
+benchmark_page = st.Page(
+    page = "tabs/benchmark.py",
+    title = "Benchmark",
+    icon = ":material/speed:",
+)
 ## Navigation
 pg = st.navigation(pages = [
     intro_page,
     structured_json_page,
     server_response_page,
-    logs_page
+    logs_page,
+    benchmark_page
 ])
 
 for state in (NONE_INIT_KEYS + FALSE_INIT_KEYS + LLM_INIT_KEYS + ["selected_tasks"]):

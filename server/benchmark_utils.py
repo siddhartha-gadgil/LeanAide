@@ -1,10 +1,11 @@
 import json
 import os
 import time
+from multiprocessing import Process, Queue
 import requests
 
 from serv_utils import HOMEDIR
-from llm_prompts import proof_guidelines_prompt, proof_thm_task_eng
+from llm_prompts import proof_guidelines_prompt, proof_thm_task_eng, raw_llm_prompt
 from llm_response import model_response_gen, gen_thmpf_json
 from api_server import HOST, PORT
 
@@ -25,18 +26,65 @@ def request_server_benchmark(request_payload: dict):
         response_data = {}
     return response_data
 
-def result_time_capture(func, *args, **kwargs):
-    """Helper function to time any function call and return result with time."""
+def result_time_capture(func, *args, timeout: float = 300.0, **kwargs):
+    """Helper function to time any function call and return result with time.
+       If timeout is reached, returns None and logs the timeout.
+       
+    Args:
+        func: Function to execute
+        *args: Positional arguments for func
+        timeout: Maximum seconds to wait (default: 300)
+        **kwargs: Keyword arguments for func
+        
+    Returns:
+        tuple: (result, elapsed_time) or (None, elapsed_time) if timeout/error
+    """
+    # Validate timeout
+    if not isinstance(timeout, (int, float)):
+        raise TypeError(f"timeout must be numeric, got {type(timeout)}")
+    
     start_time = time.time()
+    queue = Queue()
+    p = Process(target=_worker, args=(func, args, kwargs, queue))
+    p.start()
+    
     try:
-        result = func(*args, **kwargs)
+        # Wait with timeout
+        p.join(timeout=timeout)
+        
+        if p.is_alive():
+            p.terminate()
+            p.join()
+            raise TimeoutError(f"Function timed out after {timeout} seconds")
+            
+        # Get result from queue
+        result, error = queue.get(timeout=1)  # Small timeout for queue safety
+        if error:
+            raise error
+            
     except Exception as e:
-        result = {}
-        print(f"Error in function call: {e}")
+        end_time = time.time()
+        print(f"Error: {str(e)}")
+        return None, end_time - start_time
+        
+    finally:
+        # Ensure process is terminated
+        if p.is_alive():
+            p.terminate()
+            p.join()
+    
     end_time = time.time()
     return result, end_time - start_time
 
-def input_to_output(input_data: dict, llm_provider: str, model: str) -> dict:
+def _worker(func, args, kwargs, queue):
+    """Worker function for Process"""
+    try:
+        result = func(*args, **kwargs)
+        queue.put((result, None))
+    except Exception as e:
+        queue.put((None, e))
+
+def leanaide_io(input_data: dict, llm_provider: str, model: str) -> dict:
     """
     Convert input theorem and proof to output Lean Code.
     """
@@ -72,14 +120,17 @@ def input_to_output(input_data: dict, llm_provider: str, model: str) -> dict:
     ## Step 3: Get Structured JSON
     structured_proof, elapsed_time = result_time_capture(
         gen_thmpf_json,
-        theorem=theorem,
-        proof=proof,
+        thm = theorem,
+        pf=proof,
         provider=llm_provider,
         model=model
     )
     time_capture["structured_json"] = elapsed_time
 
-    assert type(structured_proof) is dict, "Structured proof should be a dictionary. Obtained type: {}".format(type(structured_proof))
+    structured_proof = json.loads(structured_proof)
+    assert type(structured_proof) is dict, "Structured proof should be a dictionary. Obtained type: {}, str_proof obtained : {}".format(
+        type(structured_proof), structured_proof  
+    )
 
     ## Step 4: Get Lean Code
     request_payload = {
@@ -105,10 +156,43 @@ def benchmark_dataset_to_output(dataset: dict, llm_provider: str, model: str) ->
     """
     results = []
     for key, input_data in dataset.items():
-        result = input_to_output(input_data=input_data, llm_provider=llm_provider, model=model)
+        result = leanaide_io(input_data=input_data, llm_provider=llm_provider, model=model)
         result["id"] = key  # Add the key as an identifier
         results.append(result)
     return results
+
+def llm_raw_io(input_data: dict, llm_provider: str, model: str) -> dict:
+    """
+    Convert input theorem and proof to raw LLM output.
+    """
+    theorem = input_data.get("theorem", "")
+    proof = input_data.get("proof", "")
+    if not theorem or not proof:
+        return {"error": "Theorem or proof is missing in the input data."}
+    
+    try:
+        # output, elapsed_time = result_time_capture(
+        #     model_response_gen,
+        #     prompt=raw_llm_prompt(thm=theorem, pf=proof)["prompt"],
+        #     task=raw_llm_prompt(thm=theorem, pf=proof)["task"],
+        #     provider=llm_provider,
+        #     model=model
+        # )
+        output, elapsed_time = "```lean\n#eval 1+1\n```", 0.1  # Placeholder for actual LLM output
+    except Exception as e:
+        return {"error": f"Error in LLM response generation: {str(e)}"}
+    
+    lean_code = "sorry"
+    if output:
+        lean_code = output.strip("```lean\n").strip("```")
+    else:
+        lean_code += "\n -- No output generated by the LLM"
+    
+    return {
+        "lean_code": lean_code,
+        "time_taken": elapsed_time,
+        "structured_proof": {}
+    }
 
 if __name__ == "__main__":
     # Example usage

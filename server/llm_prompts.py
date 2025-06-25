@@ -61,3 +61,20 @@ Follow these rules:
 2.  Integrate Lean syntax to clarify reasoning (e.g., "we `apply` lemma `X`", "from `h` we have...").
 3.  Do not include conversational text, introductions, or summaries. Output only the proof.
 """
+
+def raw_llm_prompt(thm: str, pf: str = ""):
+    task = "You are a mathematics assistant for research mathematicians and advanced students who also helps with computer-assisted mathematics. You are tasked to write the given theorem and proof in Lean4."
+    prompt = f"""Write the following theorem and proof in Lean4. You have to write the lean code output within Lean Code block.
+For example: Your output will JUST be the following:
+```lean
+theorem my_theorem : ∀ x, x + 0 = x := by
+    intros x
+    rw [add_zero]
+```
+    
+The given theorem is :\n\n{thm}\n\nThe proof:\n\n{pf}.
+"""
+    return {
+        "prompt": prompt,
+        "task": task
+    }

@@ -237,6 +237,7 @@ if submit_response_button or sts.request_button:
         if submit_response_button:
             try:
                 request_server(request_payload=request_payload, task_header="Streamlit", success_key="server_output_success", result_key="result")
+                sts.server_output_success = True
             except Exception as e:
                 st.error(f"Error while sending request to server: {e}")
                 log_write("Streamlit", f"Request Payload: Error - {e}")
@@ -248,7 +249,7 @@ if submit_response_button or sts.request_button:
         else:
             st.error("No output available. Please check the input and try again.")
             try:
-                st.error(sts.result.get("error", "No error message provided."))
+                st.error(f"Error: {sts.result["error"]}")
             except Exception as e:
                 st.error(f"Error retrieving error from server: {e}")
                 pass

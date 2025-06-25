@@ -13,9 +13,8 @@ from logging_utils import log_write
 import requests
 
 from logging_utils import log_server, log_buffer_clean
-from api_server import HOST, PORT
+from api_server import HOST
 
-HOST = os.environ.get("HOST", "localhost")
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
 sys.path.append(HOMEDIR)
 schema_path = os.path.join(str(HOMEDIR), "resources", "PaperStructure.json")
@@ -192,11 +191,13 @@ def action_copy_download(key: str, filename: str, copy_text: str = "", usage: st
     with col2:
         download_file(text, filename, key= key, usage=usage)
 
-def preview_text(key: str, default_text: str = "", usage: str = ""):
+def preview_text(key: str, default_text: str = "", caption = "", usage: str = ""):
     """
     Display a preview of the text in a text area with a copy and download button.
     """
-    with st.expander(f"Preview Text {key.capitalize()}", expanded=False):
+    if not caption:
+        caption = key
+    with st.expander(f"Preview Text {caption.capitalize()}", expanded=False):
         lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}_{usage}").lower()
         if lang == "markdown":
             st.markdown(sts[key] if sts[key] else default_text)
