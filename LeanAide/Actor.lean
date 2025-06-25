@@ -296,8 +296,8 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
     match data.getObjValAs? String "lean_code", data.getObjValAs? (List Name) "declarations" with
     | Except.ok code, Except.ok names => do
       try
-        let describeSorries := data.getObjValAs? Bool "describe_sorries" |>.toOption |>.getD false
         let (exprs, logs) ← elabFrontDefsExprM (code) names
+        let describeSorries := data.getObjValAs? Bool "describe_sorries" |>.toOption |>.getD false
         let hasErrors := logs.toList.any
           (fun lg => lg.severity == MessageSeverity.error)
         let result := if hasErrors then "fallback" else "success"
@@ -305,6 +305,8 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
         let logs := logs.map (fun lg => lg.pretty)
         let sorries ← exprs.mapM fun (n, e) => do
           let ss ← Meta.getSorryTypes e
+          let e' ← Meta.purgeLets e
+          let ss' ← Meta.getSorryTypes e'
           ss.mapM fun expr => do
             let s ← PrettyPrinter.ppExpr expr
             let s := s.pretty
@@ -339,8 +341,15 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
               | none => pure res
             else
               pure res
+        let sorries' ← exprs.mapM fun (n, e) => do
+          let e' ← Meta.purgeLets e
+          let ss' ← Meta.getSorryTypes e'
+          ss'.mapM fun expr => do
+            let s ← PrettyPrinter.ppExpr expr
+            let s := s.pretty
+            let res := Json.mkObj [("declaration_name", toJson n), ("sorry_type", s)]
         let response := Json.mkObj
-          [("result", result), ("logs", toJson logs), ("sorries", toJson sorries)]
+          [("result", result), ("logs", toJson logs), ("sorries", toJson sorries), ("sorries_purged", toJson sorries')]
         return response
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code elaboration: {← e.toMessageData.format}")]
