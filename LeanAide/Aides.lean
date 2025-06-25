@@ -702,7 +702,7 @@ def bestDefsInConsts (n: Nat) (names: List Name) (depth: Nat)
 def runTacticToCore (mvarId: MVarId) (stx: Syntax)
     (ctx: Term.Context) (s : Term.State) (mctx : Meta.Context) (s' : Meta.State) : CoreM <| (List MVarId × Term.State) × Meta.State  :=
   MetaM.run (
-    Elab.runTactic mvarId stx ctx s) mctx s'
+    Elab.runTactic mvarId stx  {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode} s) mctx s'
 
 def evalTacticSafe (tacticCode: Syntax): TacticM (Bool × Nat) := do
   let mvarId ← getMainGoal
