@@ -4,10 +4,13 @@ import time
 from multiprocessing import Process, Queue
 import requests
 
+from logging_utils import load_env
+load_env()  # Load environment variables if needed
 from serv_utils import HOMEDIR
 from llm_prompts import proof_guidelines_prompt, proof_thm_task_eng, raw_llm_prompt
 from llm_response import model_response_gen, gen_thmpf_json
 from api_server import HOST, PORT
+
 
 BENCHMARK_PATH = os.path.join(HOMEDIR, "benchmark", "BenchMark_LeanAide.json")
 
@@ -124,30 +127,28 @@ def leanaide_io(input_data: dict, llm_provider: str, model: str) -> dict:
         pf=proof,
         provider=llm_provider,
         model=model
-    )
+    ) # structured proof is a JSON string because of json.dumps
     time_capture["structured_json"] = elapsed_time
-
-    structured_proof = json.loads(structured_proof)
-    assert type(structured_proof) is dict, "Structured proof should be a dictionary. Obtained type: {}, str_proof obtained : {}".format(
-        type(structured_proof), structured_proof  
-    )
 
     ## Step 4: Get Lean Code
     request_payload = {
         "tasks": ["lean_from_json_structured"],
-        "json_structured": structured_proof
+        "json_structured": json.loads(structured_proof)
     }
 
     result, elapsed_time = result_time_capture(request_server_benchmark, request_payload)
-    lean_code = result.get("lean_code", "")
+    if not result:
+        result = {"lean_code": "sorry", "elapsed_time": elapsed_time}
+    print("\n**RESULT**\n{}\n".format(result))
+    lean_code = result.get("lean_code", "sorry")
     time_capture["lean_code"] = elapsed_time
      
     return {
         "theorem": theorem,
-        "proof": proof,
+        # "proof": proof,
         "lean_code": lean_code,
-        "structured_proof": structured_proof,
-        "time_capture": time_capture
+        # "structured_proof": structured_proof,
+        "time_taken": round(float(sum(time_capture.values())), 4),
     }
 
 def benchmark_dataset_to_output(dataset: dict, llm_provider: str, model: str) -> list:
@@ -196,16 +197,11 @@ def llm_raw_io(input_data: dict, llm_provider: str, model: str) -> dict:
 
 if __name__ == "__main__":
     # Example usage
-    dataset = load_benchmark_dataset()
-    llm_provider = "openai"
-    model = "gpt-4o"
-    
-    results = benchmark_dataset_to_output(dataset, llm_provider, model)
-    
-    # Save results to a file
-    output_file = os.path.join(HOMEDIR, "benchmark", "output_results.json")
-    with open(output_file, 'w') as f:
-        json.dump(results, f, indent=4)
-    
-    print(f"Benchmark results saved to {output_file}")
+    input_data = {
+        "theorem": "The determinant of a 2x2 Identity Matrix is 1",
+        "proof": "To prove that the determinant of a 2x2 identity matrix is 1, let's first define the 2 × 2 identity matrix:\n\nI_2 = [[1, 0], [0, 1]]\n\nThe determinant of a 2 × 2 matrix A = [[a, b], [c, d]] is given by the formula:\n\ndet(A) = ad - bc\n\nApplying this formula to the identity matrix I_2, we have:\n\ndet(I_2) = (1)(1) - (0)(0) = 1 - 0 = 1\n\nTherefore, the determinant of the 2 × 2 identity matrix is indeed 1."
+    }
+    result = leanaide_io(input_data, llm_provider="openai", model="gpt-4o")
+    print("Result:", result)
 
+    print("LEAN CODE:\n", result.get("lean_code", "No Lean code generated"))

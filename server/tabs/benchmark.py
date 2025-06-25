@@ -4,8 +4,8 @@ import json
 import traceback
 
 from benchmark_utils import leanaide_io, llm_raw_io
-from serv_utils import preview_text
-from logging_utils import log_write
+from serv_utils import preview_text, lean_code_button
+from logging_utils import log_write, load_env
 
 st.warning("Under Constuction: This page is not fully functional yet. Please check back later.")
 
@@ -14,6 +14,8 @@ st.write("Here you can benchmark the performace of Lean Code generated Using Lea
 st.info("You can enter a single theorem and proof, or a dataset of theorems and proofs in JSON format.")
 
 st.subheader("Input Dataset", divider =True)
+
+load_env()  
 
 sts.bm_input_opt = st.radio("Dataset Type", options = ["JSON Dataset", "Single Input"], index = 0, horizontal = True)
 if sts.bm_input_opt == "JSON Dataset":
@@ -76,6 +78,7 @@ def run_benchmark():
     progress_bar = st.progress(0)
     status_text = st.empty()
     results_container = st.empty()  # Dynamic results display
+    _update_ui(progress_bar, status_text, results_container)
 
     try:
         print("Initializing benchmark with JSON dataset...")
@@ -90,6 +93,7 @@ def run_benchmark():
                 }
                 if not input_data["theorem"]:
                     print(f"Skipping problem {idx} due to missing theorem.")
+                    idx = int(idx) + 1 
                     continue
 
                 # result_ai should be a lean code
@@ -109,7 +113,7 @@ def run_benchmark():
                     "time_taken_ai": result["time_taken_ai"],
                     "result_ai": result["result_ai"],
                 }
-                sts.bm_current_progress = int(idx) + 1
+                sts.bm_current_progress = int(idx)
                 _update_ui(progress_bar, status_text, results_container)
         else:
             # Single input case
@@ -132,11 +136,35 @@ def run_benchmark():
             _update_ui(progress_bar, status_text, results_container)
 
         st.success("Benchmark completed successfully!")
+        sts.bm_result_success = True
     except Exception as e:
         st.error(f"Error during benchmark: {str(e)}")
         print(traceback.format_exc())
+        sts.bm_result_success = False
     finally:
         return sts.bm_results
+
+def bm_display_results(): 
+    for idx in sts.bm_results:
+        result_data = sts.bm_results[idx]
+        print(result_data)
+        # Show result_data in a formatted way
+        st.markdown(f"### Problem: {sts.bm_current_progress}")
+
+        # Timing table
+        head_timetable = ["LeanAide Time (s)", "LLM Time (s)"] 
+        time_table = [str(result_data["time_taken_ln"]), str(result_data["time_taken_ai"])]
+        markdown_time_table = "| " + " | ".join(head_timetable) + " |\n"
+        markdown_time_table += "| " + " | ".join(["---"] * len(head_timetable)) + " |\n"
+        markdown_time_table += "| " + " | ".join(time_table) + " |\n  "
+
+        # Print output
+        st.markdown(f"LeanAide Lean Code:\n```lean\n{result_data['result_ln']}\n```")
+        lean_code_button("bm_results", "results_ln", f"bm_lean_code_{idx}")
+        st.markdown(f"**LLM Lean Code:**\n```lean\n{result_data['result_ai']}\n```")
+        lean_code_button("bm_results", "results_ai", f"bm_llm_code_{idx}")
+        st.markdown(markdown_time_table)
+        st.markdown("---")  # Separator for each
 
 def _update_ui(progress_bar, status_text, results_container):
     """Helper to update Streamlit UI components."""
@@ -146,15 +174,7 @@ def _update_ui(progress_bar, status_text, results_container):
 
     # Display results incrementally
     with results_container.container():
-        for result in sts.bm_results:
-            result_data = sts.bm_results[result]
-            # Show result_data in a formatted way
-            st.markdown(f"### Problem: {result_data['problem']}")
-            st.markdown(f"**LeanAide Time (s):** {result_data['time_taken_ln']}")
-            st.markdown(f"**LeanAide Lean Code:**\n```lean\n{result_data['result_ln']}\n```")
-            st.markdown(f"**LLM Time (s):** {result_data['time_taken_ai']}")
-            st.markdown(f"**LLM Lean Code:**\n```lean\n{result_data['result_ai']}\n```")
-            st.markdown("---")  # Separator for each
+        bm_display_results()
 
 # Button trigger
 sts.bm_run_button = st.button("Run Benchmark")
@@ -165,4 +185,19 @@ if sts.bm_run_button:
     else:
         st.warning("Please upload a dataset or enter a single theorem and proof before running the benchmark.")
 
-    
+if sts.bm_results and sts.bm_result_success:
+    st.success("Benchmark completed successfully!")
+    bm_display_results()
+
+# Convert results to JSON and download
+output_file = "benchmark_results.json"
+with open(output_file, 'w') as f:
+    json.dump(sts.bm_results, f, indent=4)
+
+if sts.bm_results:
+    st.download_button(
+        label="Download Results",
+        data=json.dumps(sts.bm_results, indent=4),
+        file_name=output_file,
+        mime="application/json"
+    )

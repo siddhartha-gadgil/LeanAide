@@ -21,7 +21,7 @@ FALSE_INIT_KEYS = [
     "generation_complete", "input_image_paper", "input_pdf_paper", "input_image_proof", 
     "input_image_theorem", "input_pdf_proof", "input_pdf_theorem", "gen_ai_proof", "server_thm_details",
     # For benchmark
-    "bm_run_button",
+    "bm_run_button", "bm_result_success"
     
 ]
 

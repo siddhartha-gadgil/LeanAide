@@ -4,6 +4,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any, Tuple, Type
+import urllib.parse
 
 import socket
 import streamlit as st
@@ -214,6 +215,24 @@ def lean_code_cleanup(lean_code: str) -> str:
         if not any(keyword in line for keyword in keywords_to_remove):
             final_code.append(line)
     return "import Mathlib" + "\n".join(final_code) if "import Mathlib" not in lean_code else "\n".join(final_code)
+
+def lean_code_button(result_global_key: str, key: str, task: str): 
+    code = sts[result_global_key].get(key, "-- No Lean code available")
+    if code not in ["-- No Lean code available", "No data available."]:
+        col_1, col_2 = st.columns([1, 3])
+        with col_1:
+            code = f"import Mathlib\n{code.strip()}" if "import Mathlib" not in code else code
+            st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
+
+        with col_2:
+            if st.button("Cleanup Lean Code", help="Cleanup the Lean code to remove errors. This will not affect the performance of code", key=f"cleanup_{task}"):
+                try:
+                    sts[result_global_key][key] = lean_code_cleanup(code)
+                    st.rerun()
+                    log_write("Streamlit", "Lean Code Cleanup: Success")
+                except Exception as e:
+                    st.error(f"Error while cleaning up Lean code: {e}")
+                    log_write("Streamlit", f"Lean Code Cleanup Error: {e}")
 
 def log_section():
     st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked.")

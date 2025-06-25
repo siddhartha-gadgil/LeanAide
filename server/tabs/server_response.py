@@ -6,7 +6,7 @@ import streamlit as st
 from streamlit import session_state as sts
 from dotenv import load_dotenv
 
-from serv_utils import TASKS, lean_code_cleanup, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked, request_server, host_information
+from serv_utils import TASKS, lean_code_button, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked, request_server, host_information
 from logging_utils import log_write, get_env
 
 load_dotenv()
@@ -180,22 +180,8 @@ def show_response():
                     sts.result.get(key) or "No data available.", language="plaintext", wrap_lines = True
                 )
                 if "lean_code" in key.lower():
-                    code = sts.result.get(key, "-- No Lean code available")
-                    if code not in ["-- No Lean code available", "No data available."]:
-                        col_1, col_2 = st.columns([1, 3])
-                        with col_1:
-                            code = f"import Mathlib\n{code.strip()}" if "import Mathlib" not in code else code
-                            st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
-
-                        with col_2:
-                            if st.button("Cleanup Lean Code", help="Cleanup the Lean code to remove errors. This will not affect the performance of code", key=f"cleanup_{task}"):
-                                try:
-                                    sts.result[key] = lean_code_cleanup(code)
-                                    st.rerun()
-                                    log_write("Streamlit", "Lean Code Cleanup: Success")
-                                except Exception as e:
-                                    st.error(f"Error while cleaning up Lean code: {e}")
-                                    log_write("Streamlit", f"Lean Code Cleanup Error: {e}")
+                    lean_code_button("result", key, task)
+ 
 def dummy_request():
     command = get_env("LEANAIDE_COMMAND", "lake exe leanaide_process")
     for flag in ["--auth_key", "--model"]:
