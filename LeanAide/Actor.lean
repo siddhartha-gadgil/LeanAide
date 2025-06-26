@@ -293,8 +293,10 @@ def leanFromStructuredJsonTask (data: Json) (translator : Translator) : Translat
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
 
 def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
-    match data.getObjValAs? String "lean_code", data.getObjValAs? (List Name) "declarations" with
-    | Except.ok code, Except.ok names => do
+    let topCode := data.getObjValAs? String "top_code" |>.toOption |>.getD CodeGenerator.topCode
+    match data.getObjValAs? String "lean_code" with
+    | Except.ok code => do
+      let names := data.getObjValAs? (List Name) "declarations" |>.toOption |>.getD (← getNamesFromCode code).toList
       try
         let (exprs, logs) ← elabFrontDefsExprM (code) names
         let describeSorries := data.getObjValAs? Bool "describe_sorries" |>.toOption |>.getD false
@@ -349,11 +351,11 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
             let s := s.pretty
             let res := Json.mkObj [("declaration_name", toJson n), ("sorry_type", s)]
         let response := Json.mkObj
-          [("result", result), ("logs", toJson logs), ("sorries", toJson sorries), ("sorries_purged", toJson sorries')]
+          [("result", result), ("logs", toJson logs), ("declarations", toJson names), ("sorries", toJson sorries), ("sorries_purged", toJson sorries')]
         return response
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code elaboration: {← e.toMessageData.format}")]
-    | _, _ => return Json.mkObj [("result", "error"), ("error", s!"no lean code found")]
+    | _ => return Json.mkObj [("result", "error"), ("error", s!"no lean code found")]
 
 def runTask (data: Json) (translator : Translator) : TranslateM Json :=
   let translator := translator.configure data
