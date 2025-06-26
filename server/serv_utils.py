@@ -205,16 +205,20 @@ def preview_text(key: str, default_text: str = "", caption = "", usage: str = ""
         else:
             st.code(sts[key] if sts[key] else default_text, wrap_lines = True)
             
-def lean_code_cleanup(lean_code: str) -> str:
+def lean_code_cleanup(lean_code: str, elaborate: bool = False) -> str:
     """
     Cleans up the error texts in the lean code.
     """          
     final_code = []
-    keywords_to_remove = ["#check", "#trace", "\"Error: codegen:"]
+    keywords_to_remove = ["#check", "trace", "Error: codegen:"]
+    keywords_to_remove += ["import"] if elaborate else []
     for line in lean_code.splitlines():
         if not any(keyword in line for keyword in keywords_to_remove):
             final_code.append(line)
-    return "import Mathlib" + "\n".join(final_code) if "import Mathlib" not in lean_code else "\n".join(final_code)
+
+    if elaborate:
+        return "\n".join(final_code).strip()
+    return "import Mathlib\n" + "\n".join(final_code) if "import Mathlib" not in lean_code else "\n".join(final_code)
 
 def lean_code_button(result_global_key: str, key: str, task: str): 
     code = sts[result_global_key].get(key, "-- No Lean code available")

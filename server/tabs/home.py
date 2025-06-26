@@ -32,4 +32,15 @@ st.write(
 `5.` If you encounter any issues, check the logs for more information. Or make an issue on the [GitHub repository](https://github.com/siddhartha-gadgil/LeanAide/issues) with the details.
 
 """)
+
+st.subheader("Models and Providers", divider = True)
+st.write("""
+LeanAide Streamlit Server currently supports the following models and providers:
+- **OpenAI** (Recommended) - LeanAide uses OpenAI by Default. It is recommended to use `o-models` for better performance.
+- **Gemini**
+- **OpenRouter**
+- **DeepInfra**
+"""
+)
+
 st.divider()

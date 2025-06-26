@@ -6,7 +6,7 @@ import streamlit as st
 from streamlit import session_state as sts
 from dotenv import load_dotenv
 
-from serv_utils import TASKS, lean_code_button, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked, request_server, host_information
+from serv_utils import TASKS, lean_code_button, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked, request_server, host_information, lean_code_cleanup
 from logging_utils import log_write, get_env
 
 load_dotenv()
@@ -118,9 +118,12 @@ if st.button("Build Query", help = "Provide inputs to the your selected tasks. N
             # Other cases for input
             elif "json" in key.lower() and key.lower() != "json_structured":
                 help += " Just paste your `json` object here."
-                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", value = sts.val_input.get(key, ""))
+                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", value = sts.val_input.get(key, "")) 
             else:
                 val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, value = sts.val_input.get(key, ""))
+
+            if key.lower() == "lean_code":
+                val_in = lean_code_cleanup(val_in, elaborate=True) # Elaborate does not take "import" statements
 
             if str(val_in).strip() == "":
                 sts.val_input[key] = None
