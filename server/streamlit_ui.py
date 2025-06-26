@@ -16,10 +16,10 @@ NONE_INIT_KEYS = [
 ]
 
 FALSE_INIT_KEYS = [
-    "request_button", "self_input_button", "log_server_cleaned",
-    "server_output_success", "valid_input", "log_cleaned", "input_paper",
-    "generation_complete", "input_image_paper", "input_pdf_paper", "input_image_proof", 
-    "input_image_theorem", "input_pdf_proof", "input_pdf_theorem", "gen_ai_proof", "server_thm_details",
+    "request_button", "self_input_button", "log_server_cleaned", "server_output_success",
+    "valid_input", "log_cleaned", "input_paper", "generation_complete",
+    "input_pdf_paper", "input_pdf_proof", "input_pdf_theorem",
+    "gen_ai_proof", "server_thm_details",
     # For benchmark
     "bm_run_button", "bm_result_success"
     
