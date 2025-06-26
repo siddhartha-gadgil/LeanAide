@@ -6,3 +6,4 @@ streamlit-sortables>=0.3.1
 st-copy>=1.1.2
 openai>=1.86.0
 pymupdf>=1.26.1
+streamlit-tags>=1.2.8

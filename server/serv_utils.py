@@ -225,7 +225,7 @@ def lean_code_button(result_global_key: str, key: str, task: str):
             st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
 
         with col_2:
-            if st.button("Cleanup Lean Code", help="Cleanup the Lean code to remove errors. This will not affect the performance of code", key=f"cleanup_{task}"):
+            if st.button("Cleanup Lean Code", help="Cleanup the Lean code to remove extra error messages and add Mathlib import in the beginning. This will not affect the performance of code", key=f"cleanup_{task}"):
                 try:
                     sts[result_global_key][key] = lean_code_cleanup(code)
                     st.rerun()

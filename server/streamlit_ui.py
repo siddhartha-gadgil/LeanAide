@@ -12,7 +12,7 @@ NONE_INIT_KEYS = [
     "uploaded_pdf", "genai_proof_button",
     # For benchmark
     "bm_input_opt", "bm_json_dataset", "bm_single_thm", "bm_single_proof", "bm_time_taken", "bm_results",
-    "bm_current_progress", "bm_total_problems", "bm_display_table"
+    "bm_current_progress", "bm_total_problems", "bm_display_table", "bm_evaluator"
 ]
 
 FALSE_INIT_KEYS = [

@@ -5,11 +5,12 @@ description = "Leanaide Streamlit Server"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "python-dotenv>=1.1.0",
     "streamlit-sortables>=0.3.1",
-    "streamlit>=1.45.1",
     "watchdog>=6.0.0",
-    "openai>=1.86.0",
     "pymupdf>=1.26.1",
     "st-copy>=1.1.2",
+    "streamlit-tags>=1.2.8",
+    "openai>=1.91.0",
+    "streamlit>=1.46.0",
+    "python-dotenv>=1.1.1",
 ]
