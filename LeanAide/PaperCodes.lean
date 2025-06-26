@@ -130,6 +130,15 @@ def getResultsUsed (translator: Translator) (js: Json) : TranslateM (Array Synta
     resultsUsed.filterMapM fun js =>
       getResultUsed? translator js
 
+@[codegen "object"]
+def objectBypassCode (translator : CodeGenerator := {})
+    (goal? :Option MVarId) (kind: SyntaxNodeKinds) : Json → TranslateM (Option (TSyntax kind))
+| js => do
+  IO.eprintln s!"bypassing 'object"
+  let .ok properties :=
+    js.getObjVal? "properties" | throwError "'object' must have 'properties'"
+  getCode translator goal? kind properties
+
 @[codegen "document"]
 def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
