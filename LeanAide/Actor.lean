@@ -293,7 +293,7 @@ def leanFromStructuredJsonTask (data: Json) (translator : Translator) : Translat
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
 
 def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
-    let topCode := data.getObjValAs? String "top_code" |>.toOption |>.getD CodeGenerator.topCode
+    let topCode := "open Nat\n"
     match data.getObjValAs? String "lean_code" with
     | Except.ok code => do
       let names := data.getObjValAs? (List Name) "declarations" |>.toOption |>.getD (← getNamesFromCode code).toList
