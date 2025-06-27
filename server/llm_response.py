@@ -239,9 +239,9 @@ def gen_thmpf_json(thm: str, pf: str, provider = "openai", model: str = "gpt-4o"
 
 def check_reprompt(thm: str, pf: str, output: str, provider = "openai", model: str = "gpt-4o"):
     # total_tries is how many times it should re-prompt if JSON does NOT validate
-    tries, total_tries = 0, 4
+    tries, total_tries = 0, 6
 
-    st.toast("Starting validation...")
+    st.toast(f"Starting validation with {total_tries} max attempts...")
 
     # the while loop breaks once tries exceeds total_tries.
     while(True):
