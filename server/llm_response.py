@@ -232,13 +232,13 @@ def gen_thmpf_json(thm: str, pf: str, provider = "openai", model: str = "gpt-4o"
 
     output = json.dumps(json.loads(response_cleaned), indent=2)
     
-    #re-prompt in case of error
-    output = reprompt_gen_thmpf_json(thm, pf, output, provider, model)
+    # validates and re-prompts if needed
+    output = check_reprompt(thm, pf, output, provider, model)
 
     return output
 
-def reprompt_gen_thmpf_json(thm: str, pf: str, output: str, provider = "openai", model: str = "gpt-4o"):
-    # total_tries is how many times should it re-prompt if JSON does NOT validate
+def check_reprompt(thm: str, pf: str, output: str, provider = "openai", model: str = "gpt-4o"):
+    # total_tries is how many times it should re-prompt if JSON does NOT validate
     tries, total_tries = 0, 4
 
     st.toast("Starting validation...")
@@ -249,38 +249,46 @@ def reprompt_gen_thmpf_json(thm: str, pf: str, output: str, provider = "openai",
             # important to convert back using json.loads before validating
             validate(instance=json.loads(output), schema=SCHEMA_JSON)
         
+        # re-prompt with error msg if ValidationError
         except ValidationError as e:
             tries += 1
 
             if tries > total_tries:
                 st.toast("Failed to produce correctly validated JSON document!")
+                # the invalid JSON output will be returned
                 break
 
             st.toast(f"Tries: {tries}")
             st.toast(f"Validation Error: {e}")
 
             # re-prompt the model with the error message
-            response = model_response_gen(
-                thmpf_reprompt(thm, pf, output, e),
-                json_output = True, 
-                provider = provider,
-                model = model
-            )
-
-            if "no response" in response.lower():
-                return {"response" : "No response from model while generating structured proof"}
-            response_cleaned = response.strip("```json").strip("```")
-
-            output = json.dumps(json.loads(response_cleaned), indent=2)
+            output = reprompt_gen_thmpf_json(thm, pf, output, e, provider, model)
         
         except Exception as e:
             st.toast(f"Some other error: {e}")
             return {"response" : "No response from model while generating structured proof"}
 
         else:
+            # if it validates without any errors, break and return validated output
             st.toast("Succeeded in producing correctly validated JSON document!")
             break
 
+    return output
+
+def reprompt_gen_thmpf_json(thm: str, pf: str, output: str, error_msg: str, provider = "openai", model: str = "gpt-4o"):
+    # re-prompt
+    response = model_response_gen(
+        thmpf_reprompt(thm, pf, output, error_msg),
+        json_output = True, 
+        provider = provider,
+        model = model
+    )
+
+    if "no response" in response.lower():
+        return {"response" : "No response from model while generating structured proof"}
+    response_cleaned = response.strip("```json").strip("```")
+
+    output = json.dumps(json.loads(response_cleaned), indent=2)
     return output
 
 def gen_paper_json(paper_text, pdf_input:bool = False, provider = "openai", model: str = "gpt-4o"):
