@@ -15,9 +15,9 @@ st.info("You can enter a single theorem and proof, or a dataset of theorems and 
 
 st.subheader("Input Dataset", divider =True)
 
-load_env()  
+load_env()
 
-sts.bm_input_opt = st.radio("Dataset Type", options = ["JSON Dataset", "Single Input"], index = 0, horizontal = True)
+sts.bm_input_opt = st.radio("Dataset Type", options = ["JSON Dataset", "Single Input"], index=0 if sts.bm_input_opt == "JSON Dataset" else 1, horizontal = True)
 if sts.bm_input_opt == "JSON Dataset":
     uploaded_file = st.file_uploader(
         "Upload a JSON file containing a dataset of theorems and proofs.",
@@ -41,7 +41,7 @@ else:
         _code_suffix = "..." if len(sts.bm_single_thm) > 50 else ""
         st.success(f"Theorem received successfully: {sts.bm_single_thm[:50]}..." + _code_suffix)
     preview_text("bm_single_thm", usage = "benchmark_thm", caption = "Theorem")
-    
+
     sts.bm_single_proof = st.text_area(
         "Enter proof",
         placeholder="Enter a proof here...",
@@ -51,7 +51,7 @@ else:
         _code_suffix = "..." if len(sts.bm_single_proof) > 50 else ""
         st.success(f"Proof received successfully: {sts.bm_single_proof[:50]}..." + _code_suffix)
     preview_text("bm_single_proof", usage = "benchmark_pf", caption = "Proof")
-    
+
 st.subheader("Evaluation", divider = True)
 st.info("The LLM provided in the sidebar API Credentials will be used for the benchmark. Please ensure it is set up correctly.")
 
@@ -69,14 +69,17 @@ def run_benchmark():
         model=sts.get("model_text", "o4-mini")
     )
     # Create progress bar and status placeholder
+    sts.bm_total_problems = len(sts["bm_json_dataset"]) if sts.bm_input_opt == "JSON Dataset" else 1
     if not sts.bm_started:
-        sts.bm_total_problems = len(sts["bm_json_dataset"]) if sts.bm_input_opt == "JSON Dataset" else 1
-        progress_bar = st.progress(0)
-        status_text = st.empty()
-        results_container = st.empty()  # Dynamic results display
+        sts.bm_progress_bar = st.progress(0)
+        sts.bm_status_text = st.empty()
+        sts.bm_result_container = st.empty()  # Dynamic results display
+    else:
+        sts.bm_progress_bar = sts.get("bm_progress_bar", st.progress(0))
+        sts.bm_status_text = sts.get("bm_status_text", st.empty())
+        sts.bm_result_container = sts.get("bm_result_container", st.empty())
 
-
-    _update_ui(progress_bar, status_text, results_container)
+    _update_ui("Starting")
 
     try:
         print("Initializing benchmark with JSON dataset...")
@@ -93,6 +96,7 @@ def run_benchmark():
                 # result_ai should be a lean code
                 # Update session state and UI
                 print("Running for Problem - LeanAide: ", idx)
+                _update_ui("Running LeanAide and LLM:")
                 result = sts.bm_evaluator.run_ln_llm(
                     theorem=problem["theorem"],
                     proof=problem["proof"] 
@@ -107,9 +111,10 @@ def run_benchmark():
                     "result_ai": result["result_ai"],
                 }
                 sts.bm_current_progress = int(idx)
-                _update_ui(progress_bar, status_text, results_container)
+                _update_ui("Done with Problem")
         else:
             # Single input case
+            _update_ui("Running LeanAide and LLM:")
             result = sts.bm_evaluator.run_ln_llm(
                 theorem=sts.bm_single_thm,
                 proof=sts.bm_single_proof
@@ -122,7 +127,7 @@ def run_benchmark():
                 "time_taken_ai": result["time_taken_ai"],
                 "result_ai": result["result_ai"],
             }
-            _update_ui(progress_bar, status_text, results_container)
+            _update_ui("Done with Problem")
 
         st.success("Benchmark completed successfully!")
         sts.bm_result_success = True
@@ -148,21 +153,22 @@ def bm_display_results():
         markdown_time_table += "| " + " | ".join(time_table) + " |\n  "
 
         # Print output
-        st.markdown(f"LeanAide Lean Code:\n```lean\n{result_data['result_ln']}\n```")
+        st.markdown(f"**LeanAide Lean Code:**\n```lean\n{result_data['result_ln']}\n```")
         lean_code_button("bm_results", "results_ln", f"bm_lean_code_{idx}")
         st.markdown(f"**LLM Lean Code:**\n```lean\n{result_data['result_ai']}\n```")
         lean_code_button("bm_results", "results_ai", f"bm_llm_code_{idx}")
         st.markdown(markdown_time_table)
         st.markdown("---")  # Separator for each
 
-def _update_ui(progress_bar, status_text, results_container):
+def _update_ui(ongoing_task: str = ""):
     """Helper to update Streamlit UI components."""
     progress = sts.bm_current_progress / sts.bm_total_problems
-    progress_bar.progress(progress)
-    status_text.markdown(f"**Progress:** {sts.bm_current_progress}/{sts.bm_total_problems}")
+    st.toast(sts.bm_started)
+    sts.bm_progress_bar.progress(progress)
+    sts.bm_status_text.markdown(f"**Progress:** {sts.bm_current_progress}/{sts.bm_total_problems} {ongoing_task}")
 
     # Display results incrementally
-    with results_container.container():
+    with sts.bm_result_container.container():
         bm_display_results()
 
 # Button trigger
@@ -170,8 +176,9 @@ sts.bm_run_button = st.button("Run Benchmark")
 if sts.bm_run_button or sts.bm_started:
     if sts.bm_json_dataset or (sts.bm_single_thm and sts.bm_single_proof):
         with st.spinner("Running benchmark..."):
-            sts.bm_started = True
+            st.warning("Please Donot Refresh or leave the page while the benchmark is running.")
             sts.bm_results = run_benchmark()
+            sts.bm_started = True
     else:
         sts.bm_started = False
         st.warning("Please upload a dataset or enter a single theorem and proof before running the benchmark.")

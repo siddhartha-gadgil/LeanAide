@@ -11,7 +11,7 @@ NONE_INIT_KEYS = [
     "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", "format_index", "thm_details", 
     "uploaded_pdf", "genai_proof_button",
     # For benchmark
-    "bm_input_opt", "bm_json_dataset", "bm_single_thm", "bm_single_proof", "bm_time_taken", "bm_total_problems", "bm_display_table", "bm_evaluator"
+    "bm_input_opt", "bm_json_dataset", "bm_single_thm", "bm_single_proof", "bm_time_taken", "bm_total_problems", "bm_display_table", "bm_evaluator", "bm_status_text", "bm_progress_bar", "bm_results_container"
 ]
 
 FALSE_INIT_KEYS = [

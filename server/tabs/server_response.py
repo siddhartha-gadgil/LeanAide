@@ -171,6 +171,12 @@ st.write("")
 def show_response():
     for task in sts.selected_tasks:
         st.subheader(task + " Output", divider =True)
+        if "elaborate" in task.lower().strip():
+            if sts.result["result"] == "success":
+                st.success("Successful Elaboration => Lean Code is **Correct**.")
+            else:
+                st.error("Elaboration failed. The Lean code produced may be **incorrect**.")
+
         for key, val_type in TASKS[task]["output"].items():
             if "json" in val_type.lower().split():
                 st.write(f"{key.capitalize()} ({val_type}):")
@@ -236,6 +242,7 @@ if submit_response_button or sts.request_button:
         if sts.server_output_success:
             show_response()
         else:
+            # If server itself gives "error" output, it goes here
             st.error("No output available. Please check the input and try again.")
             try:
                 st.error(f"Error: {sts.result["error"]}")
