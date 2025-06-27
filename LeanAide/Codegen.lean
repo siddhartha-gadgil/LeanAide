@@ -231,7 +231,7 @@ Main helper for generating tactics from a list of JSON objects.
 -/
 def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
-    TranslateM (TSyntax ``tacticSeq) := do
+    TranslateM (TSyntax ``tacticSeq) := goal.withContext do
   IO.eprintln "Trying automation tactics"
   match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer)] (strict := true) with
   | some autoTacs => do
