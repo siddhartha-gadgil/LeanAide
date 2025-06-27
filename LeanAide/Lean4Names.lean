@@ -56,7 +56,12 @@ def elabThm4Aux (s : String)
     -- match ← elabThmFromStx stx levelNames with
     -- | Except.error err₁ =>
       let s := s.replace "\n" " "
-      let frontEndErrs ← checkTypeElabFrontM s
+      let frontEndErrs ← do
+        try
+          checkTypeElabFrontM s
+        catch e =>
+          let error ← e.toMessageData.toString
+          pure [error]
       if frontEndErrs.isEmpty then
         match ← elabFrontTheoremExprM s with
         | Except.error err₂ =>
