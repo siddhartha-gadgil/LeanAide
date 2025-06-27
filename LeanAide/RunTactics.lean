@@ -217,7 +217,12 @@ def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): Term
   --   IO.eprintln s!"Tactics:\n {view}"
   -- else
   --   IO.eprintln "No tactics found"
-  return tacs?.getD #[(←  `(tactic| sorry))]
+  let autoTacs ← ppCategory ``tacticSeq <|
+    ← `(tacticSeq| $tactics*)
+  let headerText := s!"Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
+  let header := Syntax.mkStrLit headerText
+  let res :=  tacs?.getD #[(←  `(tactic| sorry))]
+  return #[← `(tactic| trace $header)] ++ res
 
 def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
     MetaM <| MVarId × List Name := do
