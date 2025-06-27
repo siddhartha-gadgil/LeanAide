@@ -34,20 +34,17 @@ def Translator.translateToPropStrictAux
       Term.synthesizeSyntheticMVarsNoPostponing
       if type.hasSorry || (← type.hasUnassignedExprMVar) then
         throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
-      let univ ← try
-        Term.withoutErrToSorry do
-        if type.hasSorry then
-          throwError "Type {type} has sorry when translating assertion '{claim}', full statement {thm}"
-        inferType type
-      catch e =>
-        throwError s!"Failed to infer type {type}, error {← e.toMessageData.format} when translating assertion '{claim}', full statement {thm}"
-      if univ.isSort then
-        IO.eprintln s!"Obtained type: {← ppExpr type}"
-        let type ← dropLocalContext type
-        IO.eprintln s!"Obtained type in local context: {← ppExpr type}"
-        return type
-      else
-        throwError s!"codegen: not a type {type} when translating assertion '{claim}', full statement {thm}"
+      try
+        let univ ←
+          Term.withoutErrToSorry do
+            inferType type
+        if univ.isSort then
+          IO.eprintln s!"Obtained type: {← ppExpr type}"
+          let type ← dropLocalContext type
+          IO.eprintln s!"Obtained type in local context: {← ppExpr type}"
+          return type
+      catch _ =>
+        continue
   throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}; all translations: {output}"
 
 def Translator.translateToPropStrict

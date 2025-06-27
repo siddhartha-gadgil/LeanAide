@@ -49,14 +49,23 @@ def elabThm4Aux (s : String)
   : TranslateM <| Except ElabError Expr := do
   let s := s.replace "\n" " "
   let env ← getEnv
-  let s ← typeFromThm s
-  elaborate (← ppTerm {env:= env} s).pretty
+  let stx ←
+    try
+      typeFromThm s
+    catch e =>
+      let error ← e.toMessageData.toString
+      return Except.error <| .unparsed s error (← getContext)
+  elaborate (← ppTerm {env:= env} stx).pretty
   where elaborate (s: String) := do
     let ctx? ← getContext
     -- match ← elabThmFromStx stx levelNames with
     -- | Except.error err₁ =>
-      let s := s.replace "\n" " "
-      let frontEndErrs ← checkTypeElabFrontM s
+      let frontEndErrs ← do
+        try
+          checkTypeElabFrontM s
+        catch e =>
+          let error ← e.toMessageData.toString
+          pure [error]
       if frontEndErrs.isEmpty then
         match ← elabFrontTheoremExprM s with
         | Except.error err₂ =>
