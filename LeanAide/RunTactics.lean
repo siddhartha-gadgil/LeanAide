@@ -229,12 +229,14 @@ def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
   match maxDepth, ← goal.getType with
   | 0, _ =>
     return (goal, accum)
-  | k + 1, Expr.forallE n _ _ _ => do
-    let n := if n.isInternal then n.components[0]! else n
+  | k + 1, Expr.forallE n type _ _ => do
+    let hash := (← PrettyPrinter.ppExpr type).pretty.hash
+    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
-  | k + 1, Expr.letE n _ _ _ _ => do
-    let n := if n.isInternal then n.components[0]! else n
+  | k + 1, Expr.letE n type _ _ _ => do
+    let hash := (← PrettyPrinter.ppExpr type).pretty.hash
+    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
   | _, _ => do

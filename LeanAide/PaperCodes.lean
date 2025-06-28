@@ -68,11 +68,14 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
   | 0, _ =>
     return (goal, accum)
   | k + 1, Expr.forallE n type _ _ => do
-    let n := if n.isInternal then n.components[0]! else n
+    let hash := (← PrettyPrinter.ppExpr type).pretty.hash
+    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
     addPrelude s!"Fix {n} : {← ppExpr type}"
     let (_, goal') ← goal.intro n
     consumeIntros goal' k (accum ++ [n])
   | k + 1, Expr.letE n type value _ _ => do
+    let hash := (← PrettyPrinter.ppExpr type).pretty.hash
+    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
     let n := if n.isInternal then n.components[0]! else n
     addPrelude s!"Fix {n} : {← ppExpr type} := {← ppExpr value}"
     let (_, goal') ← goal.intro n
