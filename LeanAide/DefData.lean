@@ -155,6 +155,26 @@ def ofSyntax? (stx: Syntax) : MetaM <| Option DefData := do
         let value := val
         let isProp := true
         return some ⟨name, type, value, isProp, false, none⟩
+    | `(command| example $n:ident $xs* : $type := $val) =>
+        let xs := xs.toList
+        let xs := xs.map fun stx => stx.raw
+        let type ← foldContext type xs
+        let name := n.getId
+        let type := type
+        let value := val
+        let isProp := true
+        return some ⟨name, type, value, isProp, false, none⟩
+    | `(command| example ($n:ident : $_) $xs* : $type := $val) =>
+        let xs := xs.toList
+        let xs := xs.map fun stx => stx.raw
+        let type ← foldContext type xs
+        let name := n.getId
+        let type := type
+        let value := val
+        let isProp := true
+        return some ⟨name, type, value, isProp, false, none⟩
+
+
     | _ => return none
 
 def repr (data: DefData) : MetaM DefDataRepr := do
