@@ -164,6 +164,9 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
       s!"codegen: no key or type found in JSON object {source} and no codegen functions returned a result"
 
 open Lean.Parser.Tactic
+/--
+Empty tactic sequence, used as an initial value for accumulating tactics.
+-/
 def emptyTacs : CoreM (TSyntax ``tacticSeq) := do
   let xs: Array (TSyntax `tactic) := #[]
   `(tacticSeq| $xs*)
@@ -253,9 +256,9 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     IO.eprintln "Local context:"
     let lctx ← getLCtx
     for decl in lctx do
-      IO.eprintln s!"{decl.userName}: {← ppExpr <| decl.type}"
+      IO.eprintln s!"{decl.userName} {← ppExpr <| decl.type}"
     let autoTacs ←
-      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| auto?)]
+      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer)]
     IO.eprintln s!"codegen: auto tactics:"
     for tac in autoTacs do
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
@@ -346,7 +349,5 @@ def showTacticStx (source: Json)  (translator: CodeGenerator := {})(goalType? : 
 
 
 end Codegen
-
--- #check Fact
 
 end LeanAide
