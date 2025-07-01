@@ -172,6 +172,7 @@ def emptyTacs : CoreM (TSyntax ``tacticSeq) := do
   `(tacticSeq| $xs*)
 
 /--
+Helper function to append tactics obtained from JSON sources to an existing sequence of tactics.
 -/
 def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
@@ -230,7 +231,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           getCodeTacticsAux translator newGoal sources newAccum
 
 /--
-Main helper for generating tactics from a list of JSON objects.
+Obtain a sequence of tactics to apply to a goal, given a list of JSON sources. The function first tries to find exact tactics for the goal type, then checks for automation tactics, and finally processes the sources to generate a sequence of tactics.
 -/
 def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
@@ -264,6 +265,10 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
     appendTactics tacs (← `(tacticSeq| $autoTacs*))
 
+
+/--
+Given a `CodeGenerator`, an optional goal, and a list of JSON sources, this function generates a sequence of commands. It processes each source, attempting to generate code for each one. If no code is generated, it continues to the next source. The final result is a sequence of commands that can be executed in Lean.
+-/
 def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``commandSeq) := withoutModifyingState do
@@ -290,11 +295,16 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
     return res
 
 
-
+/--
+No code generation function, used when no code is expected to be generated from the JSON object. It returns `none` for the given syntax category.
+-/
 def noCode : CodeGenerator → Option MVarId  →
   (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
   return none
 
+/--
+Placeholder function for code generation that is not implemented yet. It logs a warning and returns `none` for the given syntax category. This is used to indicate that the code generation for a specific key or category is not yet implemented.
+-/
 def notImplementedCode (name: String) : CodeGenerator → Option MVarId  →
   (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
   IO.eprintln s!"codegen: {name} not implemented"
@@ -306,7 +316,9 @@ macro "#notImplementedCode" name:str : command => do
   `(command | @[codegen $name]
   def $thmName := notImplementedCode $name)
 
--- For instance, for the hypothesis in a theorem.
+/--
+Generate code for a context run, which is expected to be a pure side effect without returning any code. It processes an array of JSON objects and logs a warning if any code is generated.
+-/
 def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   (kind: SyntaxNodeKinds) (source: Json) :
     TranslateM Unit := do
@@ -321,31 +333,6 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   | .error _ => do
     throwError
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
-
-def showStx (source: Json) (cat: Name := ``commandSeq) (translator: CodeGenerator := {})(goal? : Option (MVarId) := none)
-   :
-    TranslateM (Format) := do
-    match ← getCode translator  goal? cat source with
-    | none => do
-      return "No code generated"
-    | some stx => do
-      PrettyPrinter.ppCategory cat stx
-
-elab "prop" t:term "do" : term => do
-  Term.elabType t
-
-def showTacticStx (source: Json)  (translator: CodeGenerator := {})(goalType? : Option Expr := none)
-   :
-    TranslateM (Format) := do
-    let cat := ``tacticSeq
-    let goal? ←  goalType?.mapM (fun t => do
-      let goalExpr ← mkFreshExprMVar t
-      return goalExpr.mvarId!)
-    match ← getCode translator  goal? cat source with
-    | none => do
-      return "No code generated"
-    | some stx => do
-      PrettyPrinter.ppCategory cat stx
 
 
 end Codegen

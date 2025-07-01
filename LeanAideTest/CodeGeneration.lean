@@ -49,6 +49,16 @@ def egLet : Json :=
   }
 
 open Codegen
+
+def showStx (source: Json) (cat: Name := ``commandSeq) (translator: CodeGenerator := {})(goal? : Option (MVarId) := none)
+   :
+    TranslateM (Format) := do
+    match ← getCode translator  goal? cat source with
+    | none => do
+      return "No code generated"
+    | some stx => do
+      PrettyPrinter.ppCategory cat stx
+
 #eval showStx egTheorem
 
 #eval showStx egTheorem''
