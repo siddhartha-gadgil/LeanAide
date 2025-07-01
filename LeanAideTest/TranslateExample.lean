@@ -28,9 +28,10 @@ set_option lean_aide.translate.model "gpt-4o" -- remove to use "gpt-3.5-turbo"
 #eval translateDefViewM? (translator := {params := {n := 20}})  "A group is said to be sane if every proper normal subgroup is cyclic."
 
 
--- def Matrix.isDiagonalizable {n : Type u} {α : Type v} [Fintype n] [DecidableEq n] [CommRing α] [StarRing α]
---     (A : Matrix n n α) : Prop :=
---       ∃ (P : Matrix n n α), P.det ≠ 0 ∧ ∃ (D : Matrix n n α), D.diagonal ∧ P⁻¹ * A * P = D
+/--
+info: Matrix.IsDiag.{u_1, u_4} {α : Type u_1} {n : Type u_4} [Zero α] (A : Matrix n n α) : Prop
+-/
+#guard_msgs in
 #check Matrix.IsDiag
 
 def Matrix.isDiagonalizable {n : Type u} {α : Type v} [Fintype n] [DecidableEq n] [CommRing α] [StarRing α]

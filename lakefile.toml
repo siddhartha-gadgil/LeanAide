@@ -1,5 +1,6 @@
 name = "leanaide"
 defaultTargets = ["LeanAide", "LeanCodePrompts", "bulkelab", "translate", "leanaide_process", "nearest_embeddings"]
+testDriver = "LeanAideTest"
 
 [[require]]
 name = "Hammer"
@@ -33,7 +34,7 @@ name = "CodeGen"
 name = "notes"
 
 [[lean_lib]]
-name = "examples"
+name = "LeanAideTest"
 
 [[lean_lib]]
 name = "Scratch"
