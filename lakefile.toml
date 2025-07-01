@@ -1,0 +1,203 @@
+name = "leanaide"
+defaultTargets = ["LeanAide", "LeanCodePrompts", "bulkelab", "translate", "leanaide_process", "nearest_embeddings"]
+
+[[require]]
+name = "Hammer"
+git = "https://github.com/JOSHCLUNE/LeanHammer"
+rev = "main"
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "v4.20.1"
+
+[[lean_lib]]
+name = "LeanAide"
+
+[[lean_lib]]
+name = "LeanCodePrompts"
+
+[[lean_lib]]
+name = "DataGenAide"
+
+[[lean_lib]]
+name = "StatementAutoformalisation"
+
+[[lean_lib]]
+name = "TacticExtraction"
+
+[[lean_lib]]
+name = "CodeGen"
+
+[[lean_lib]]
+name = "notes"
+
+[[lean_lib]]
+name = "examples"
+
+[[lean_lib]]
+name = "Scratch"
+
+[[lean_lib]]
+name = "Extras"
+
+[[lean_exe]]
+name = "datagen"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "elabdatagen"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "bulkelab"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "translate"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "preload_translate"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "leanaide_process"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "chkelab"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "promptsgen"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "thmextract"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "premiseless"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "bulkchk"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "extras.lib4chk"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "pickle_embeddings"
+
+[[lean_exe]]
+name = "batchcheck"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "nearest_embeddings"
+
+[[lean_exe]]
+name = "nearest_embeddings_full"
+
+[[lean_exe]]
+name = "fetch_embeddings"
+
+[[lean_exe]]
+name = "nearest_embeddings_test"
+
+[[lean_exe]]
+name = "benchmark_embeddings"
+
+[[lean_exe]]
+name = "lemma_suggest"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "getpremises"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "getidents"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "props"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "testpremises"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "dedup"
+
+[[lean_exe]]
+name = "getdefns"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "moduledeps"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "chkthms"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "writedocs"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "writedescs"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "writedescs_docs"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "rewritedescs"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "descweb"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "descdetails"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "roundtrip"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "codegen"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "termexamples"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "cubecode"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "putnamelab"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "check_command"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "extras.constnames"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "extras.depnames"
+supportInterpreter = true
