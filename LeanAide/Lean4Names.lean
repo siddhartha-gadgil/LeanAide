@@ -6,33 +6,6 @@ open Lean Meta Elab Term
 
 namespace LeanAide
 open Translate
--- As Mathlib support for port is dropped, this is also dropped
-
-
--- def lean4Name? (name: Name) : MetaM (Option Name) := do
---   let m := renameExtension.getState (← getEnv) |>.get
---   let name? :=
---     (m.get? name).map (·.2)
---   match name? with
---   | none => pure none
---   | some name =>
---     pure name
-
--- #eval lean4Name? `nat.prime -- some (`Nat.Prime, true)
--- #eval lean4Name? `nat -- some (`Nat, true)
-
-partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => pure stx
--- do
--- match stx with
--- | Syntax.ident _ _ name .. =>
---     match ← lean4Name? name with
---     | some name' => do
---         return mkIdent name'
---     | none => return stx
--- | Syntax.node _ k args  => do
---   let args ← args.mapM lean4NamesSyntax
---   return mkNode k args
--- | stx => pure stx
 
 open Lean.Parser.Category
 
@@ -42,7 +15,7 @@ def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with
   | Except.error err => return Except.error err
-  | Except.ok stx => return Except.ok <| ← lean4NamesSyntax stx
+  | Except.ok stx => return Except.ok stx
 
 def elabThm4Aux (s : String)
   (_levelNames : List Lean.Name := levelNames)
@@ -93,13 +66,6 @@ def elabThm4 (s : String)
       | none => return Except.error err
       | some e => return Except.ok e
   | Except.ok e => return Except.ok e
-
-elab "lean3named" t:term : term => do
-  let t' ← lean4NamesSyntax t
-  elabTerm t' none
-
--- #check lean3named nat.prime
--- #check lean3named (fun (n: Nat) ↦ nat.prime n) -- handles a mix fine
 
 def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensional. In the language of Lean theorem prover, you don't need to write an explicit proof for this, because the fact that the space has dimension `2` already implies that it is finite dimensional. However, if you want to insist on having an explicit statement, it could be something like:
 
