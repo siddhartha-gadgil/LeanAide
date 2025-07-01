@@ -4,4 +4,4 @@ import LeanAideTest.TranslateDemo
 
 import LeanAideTest.TranslateExample
 
-import LeanAideTest.LetSorry
+import LeanAideTest.ExprStruct
