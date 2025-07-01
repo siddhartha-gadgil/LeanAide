@@ -85,6 +85,19 @@ def egTacs : TermElabM <|  Format := do
 
 #eval egTacs
 
+/--
+info: Try this:
+  intro a
+  simp_all only [EuclideanDomain.mod_eq_zero]
+  cases a with
+  | inl h => sorry
+  | inr h_1 => sorry
+---
+warning: aesop: failed to prove the goal after exhaustive search.
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
 example: ∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N := by
   intro
   aesop?
