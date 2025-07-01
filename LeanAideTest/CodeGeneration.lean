@@ -44,8 +44,18 @@ def egLet : Json :=
     "type" : "let_statement",
     "variable_name": "n",
     "variable_type": "natural number",
-    "value": "n is odd",
-    "properties": "n > 0"
+    "properties": "n is odd and n > 0"
+  }
+
+def egTheorem₀ : Json :=
+  json% {
+    "type": "theorem",
+    "name": "egTheorem",
+    "claim_label": "egTheorem",
+    "claim": "Every natural number is less than its successor.",
+    "proof": {
+      "proof_steps": []
+    }
   }
 
 open Codegen
@@ -59,15 +69,20 @@ def showStx (source: Json) (cat: Name := ``commandSeq) (translator: CodeGenerato
     | some stx => do
       PrettyPrinter.ppCategory cat stx
 
-#eval showStx egTheorem
-
-#eval showStx egTheorem''
 
 
-#eval egTheorem
+#eval showStx egTheorem₀
+
+-- #eval showStx egTheorem
+
+-- #eval showStx egTheorem''
 
 
-#eval showStx egLet
+
+-- #eval egTheorem
+
+
+-- #eval showStx egLet
 
 def egView : MetaM Format := do
   let .ok js := runParserCategory (← getEnv) `json egTheorem.pretty | throwError
@@ -107,3 +122,11 @@ example: ∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N := by
 #eval (ChatServer.default).fullStatement "p ∤ m!"
 
 #eval Translator.translateToPropStrict "p ∤ m!" {}
+
+example : 5 ∣ 10 := by
+  hammer
+
+theorem nat_lt_succ : ∀ (n : ℕ), n < succ n := by
+    intro n
+    trace "Automation tactics found for n < n.succ, closing goal"
+    simp_all only [succ_eq_add_one, lt_add_iff_pos_right, lt_one_iff, pos_of_gt]

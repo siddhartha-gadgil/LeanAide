@@ -257,7 +257,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     IO.eprintln "Local context:"
     let lctx ← getLCtx
     for decl in lctx do
-      IO.eprintln s!"{decl.userName} {← ppExpr <| decl.type}"
+      IO.eprintln s!"{decl.userName} : {← ppExpr <| decl.type}"
     let autoTacs ←
       runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer)]
     IO.eprintln s!"codegen: auto tactics:"

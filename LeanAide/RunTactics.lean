@@ -4,7 +4,7 @@ import LeanAide.SimpleFrontend
 import LeanAide.DefData
 import Hammer
 
-open Lean Meta Elab Term PrettyPrinter
+open Lean Meta Elab Term PrettyPrinter Nat
 
 namespace LeanAide
 
@@ -99,20 +99,42 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
     -- IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
   -- vars := vars[1:]
   let targetType ← relLCtx' mvarId
-  let typeView ← PrettyPrinter.ppExpr targetType
+  let typeStx ← delabDetailed targetType
+  let typeView ← PrettyPrinter.ppTerm typeStx
   logInfo m!"Target type: {typeView}"
   let introTac ← `(tactic| intro $vars*)
   let tactics := if vars.isEmpty then tactics else  #[introTac] ++ tactics
   let tacticCode ← `(tacticSeq| $tactics*)
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
   logInfo m!"Tactic proof: {termView}"
-  let egCode := s!"example : {typeView} := {termView}"
+  let egCode := s!"open Nat\nexample : {typeView} := {termView}"
   -- let code := topCode ++ egCode
   let (_, msgs') ← runFrontendM egCode
-  -- IO.eprintln s!"Ran frontend, Messages:"
-  -- for msg in msgs'.toList do
-  --   IO.eprintln s!"{← msg.data.toString}"
+  IO.eprintln s!"Ran frontend, Messages:"
+  for msg in msgs'.toList do
+    IO.eprintln s!"{← msg.data.toString}"
   return msgs'
+
+def runTacticsAndGetMessages' (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
+    mvarId.withContext do
+  -- IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
+    -- IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
+  -- vars := vars[1:]
+  let targetType ← mvarId.getType
+  let typeStx ← delabDetailed targetType
+  let typeView ← PrettyPrinter.ppTerm typeStx
+  logInfo m!"Target type: {typeView}"
+  let tacticCode ← `(tacticSeq| $tactics*)
+  let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
+  logInfo m!"Tactic proof: {termView}"
+  let egCode := s!"open Nat\nexample : {typeView} := {termView}"
+  -- let code := topCode ++ egCode
+  let (_, msgs') ← runFrontendM egCode
+  IO.eprintln s!"Ran frontend, Messages:"
+  for msg in msgs'.toList do
+    IO.eprintln s!"{← msg.data.toString}"
+  return msgs'
+
 
 def getTacticsFromMessage? (msg: Message) :
     MetaM <| Option (Array Syntax.Tactic) := do
@@ -155,6 +177,27 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
           return none
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
+
+def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
+    withoutModifyingState do
+  let mvar ← mkFreshExprMVar goal
+  let msgs ←
+    runTacticsAndGetMessages' mvar.mvarId! tactics
+  IO.eprintln "Messages:"
+  for msg in msgs.toList do
+    IO.eprintln s!"Message: {← msg.data.toString}"
+  if strict then
+    for msg in msgs.toList do
+      if msg.severity == MessageSeverity.error then
+        -- IO.eprintln s!"Error message: {← msg.data.toString}"
+        return none
+      if msg.severity == MessageSeverity.warning then
+        if (← msg.data.toString).trim == "declaration uses 'sorry'" then
+          -- IO.eprintln s!"Warning message with Try this: {← msg.data.toString}"
+          return none
+  msgs.toList.findSomeM?
+    fun msg => getTacticsFromMessage? msg
+
 
 def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
   let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| exact?))]
