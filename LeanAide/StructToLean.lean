@@ -514,21 +514,6 @@ partial def existsVarTypes (type: Syntax.Term) : MetaM <| Option (Array <| Synta
     -- logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
 
-elab "#exists_vars" type:term : command => do
-  Command.liftTermElabM do
-  match ← existsVarTypes type with
-  | some vars =>
-      logInfo s!"Vars: {vars.map (·.1)}"
-      return
-  | none =>
-      logInfo s!"No vars"
-      return
-
-#exists_vars ∃ n m : Nat, ∃ k: Nat, n + m  = 3
-
-#exists_vars ∃ (n : Nat) (m: Nat), ∃ k: Nat, n + m  = 3
-
-
 example (h : ∃ n m : Nat, ∃ _k: Nat, n + m  = 3) : True := by
   rcases h with ⟨n, m, k, h⟩
   trivial

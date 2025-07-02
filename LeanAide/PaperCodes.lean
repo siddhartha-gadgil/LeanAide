@@ -47,6 +47,9 @@ def Translator.translateToPropStrictAux
         continue
   throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}; all translations: {output}"
 
+/--
+Translating to a proposition in Lean, using the `translateToProp?` method of the `Translator`. Various checks are performed to ensure the type is valid and does not contain `sorry` or metavariables. An error is thrown if the translation fails or if the type is not valid.
+-/
 def Translator.translateToPropStrict
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
@@ -61,18 +64,23 @@ def Translator.translateToPropStrict
         -- This is useful for debugging and understanding what went wrong.
         throwError s!"codegen: failed to translate '{claim}' to a proposition even with 'full statement', error: {← e.toMessageData.format}; full claim: {fullClaim}, error: {← e'.toMessageData.format}"
 
-
+/--
+If the goal is a ∀, function etc., this function intros the variables and returns the goal with the names of the variables introduced. Further, corresponding prelude commands are added to the context.
+-/
 def consumeIntros (goal: MVarId) (maxDepth : Nat)
     (accum: List Name) : TranslateM <| MVarId × List Name := do
   match maxDepth, ← goal.getType with
   | 0, _ =>
     return (goal, accum)
   | k + 1, Expr.forallE n type _ _ => do
-    let n := if n.isInternal then n.components[0]! else n
+    let hash := (← PrettyPrinter.ppExpr type).pretty.hash
+    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
     addPrelude s!"Fix {n} : {← ppExpr type}"
     let (_, goal') ← goal.intro n
     consumeIntros goal' k (accum ++ [n])
   | k + 1, Expr.letE n type value _ _ => do
+    let hash := (← PrettyPrinter.ppExpr type).pretty.hash
+    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
     let n := if n.isInternal then n.components[0]! else n
     addPrelude s!"Fix {n} : {← ppExpr type} := {← ppExpr value}"
     let (_, goal') ← goal.intro n
@@ -105,6 +113,9 @@ open Lean.Parser.Tactic
   "additionalProperties": false
 },
 -/
+/--
+Extract the `ResultUsed` from the JSON object. It tries to find either a `target_identifier` or a `mathlib_identifier`. If both are missing, it translates the `statement` to a proposition and returns it as a term. If `mathlib_identifier` is present, it returns an identifier for it. If `target_identifier` is present, it looks for the theorem with that identifier and returns its name.
+-/
 def getResultUsed? (translator: Translator) (js: Json) : TranslateM (Option Syntax.Term) := do
   let targetIdentifier? := js.getObjValAs? String "target_identifier"
   let mathlibIdentifier? := js.getObjValAs? String "mathlib_identifier"
@@ -120,6 +131,9 @@ def getResultUsed? (translator: Translator) (js: Json) : TranslateM (Option Synt
     return l?.map fun l =>
       mkIdent l.name
 
+/--
+Extracts the `results_used` from the JSON object and returns an array of `Syntax.Term` representing the results used. It uses `getResultUsed?` to extract each result.
+-/
 def getResultsUsed (translator: Translator) (js: Json) : TranslateM (Array Syntax.Term) := do
   match js.getObjValAs? (Array Json) "results_used" with
   | .error _ => return #[]
@@ -127,6 +141,9 @@ def getResultsUsed (translator: Translator) (js: Json) : TranslateM (Array Synta
     resultsUsed.filterMapM fun js =>
       getResultUsed? translator js
 
+/--
+Deals with an error where the full JSON is an `object` instead of a `document` or theorem-proof etc, with `properties` containing the actual content.
+-/
 @[codegen "object"]
 def objectBypassCode (translator : CodeGenerator := {})
     (goal? :Option MVarId) (kind: SyntaxNodeKinds) : Json → TranslateM (Option (TSyntax kind))
@@ -136,6 +153,9 @@ def objectBypassCode (translator : CodeGenerator := {})
     js.getObjVal? "properties" | throwError "'object' must have 'properties'"
   getCode translator goal? kind properties
 
+/--
+Gets a sequence of commands or tactics from a JSON "document".
+-/
 @[codegen "document"]
 def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
@@ -147,6 +167,9 @@ def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | _, kind, _ => throwError
     s!"codegen: 'document' does not work for kind {kind}"
 
+/--
+A bunch of cases that do not generate any code. This is used to mark elements that are not expected to generate code, such as titles, abstracts, remarks, metadata, authors, bibliography, citations, internal references, paragraphs, figures, tables, and images.
+-/
 @[codegen "title","abstract", "remark", "metadata", "author", "bibliography", "citation", "internalreference", "paragraph", "figure", "table", "image"]
 def noGenCode := noCode
 
@@ -216,6 +239,9 @@ def noGenCode := noCode
   ],
   "additionalProperties": false
 }
+-/
+/--
+Generate commands or tactics for a section of the document. It processes the `content` array and generates the appropriate code based on the kind of content.
 -/
 @[codegen "section"]
 def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
@@ -304,6 +330,11 @@ def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
 }
 -/
 
+/--
+Generate code for a theorem, lemma, proposition, corollary, or claim. It processes the `hypothesis`, `claim`, and `proof` fields to generate the appropriate Lean code. If the proof is absent a definition is generated instead, which is the statement of the theorem and with name `{name}.prop`.
+
+Should perhaps try to use automation if there is no proof.
+-/
 @[codegen "theorem"]
 def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
@@ -471,6 +502,10 @@ where
   "additionalProperties": false
 }
 -/
+
+/--
+Generate code for a definition. It processes the `definition` field to generate the appropriate Lean code.
+-/
 @[codegen "definition"]
 def defCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
@@ -544,6 +579,9 @@ where
   }
 }
 -/
+/--
+Generate code for a sequence of logical steps. It processes the items in the sequence and generates the appropriate Lean code, either as commands or tactics.
+-/
 @[codegen "logicalstepsequence"]
 def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
@@ -600,6 +638,10 @@ def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
   ],
   "additionalProperties": false
 }
+-/
+
+/--
+Generate code for a proof environment, either a sequence of tactics or a command sequence. To generate a command sequence, it requires a `claim_label` to find the theorem being proved. It intros the variables of the theorem and generates the proof steps as tactics.
 -/
 @[codegen "proof"]
 def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
@@ -686,6 +728,10 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   ],
   "additionalProperties": false
 }
+-/
+
+/--
+Generate code for a `let_statement`. If the let statement has a value, it generates a command or tactic that defines the variable with the given value. If there is no value, it simply adds a prelude statement.
 -/
 @[codegen "let_statement"]
 def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
@@ -816,6 +862,10 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
   "additionalProperties": false
 }
 -/
+
+/--
+Add code for a "some" statement. This is used to introduce a variable with some properties, such as "there exists an integer `n` such that ...". The code is generated as an assertion statement, which is a claim that the variable exists with the given properties.
+-/
 @[codegen "some_statement"]
 def someCode (translator : CodeGenerator := {})(goal : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | kind, js => do
@@ -882,6 +932,9 @@ def someCode (translator : CodeGenerator := {})(goal : Option (MVarId)) : (kind:
   "additionalProperties": false
 }
 -/
+/--
+Generate code for an `assume_statement`. This is used to add an assumption to the proof or logical context. It simply adds a prelude statement with the assumption text.
+-/
 @[codegen "assume_statement"]
 def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
@@ -947,6 +1000,11 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
 }
 -/
 
+/--
+Code generation for an `assert_statement`. This is used to assert a mathematical claim that follows from known results. It can generate a command, command sequence, or tactic sequence depending on the kind specified.
+
+If the assertion involves existential quantification, additional handling is done to introduce the variable and its properties.
+-/
 @[codegen "assert_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
@@ -1008,6 +1066,10 @@ where typeStx (js: Json) :
     }
   }
 }
+-/
+
+/--
+Generate code for a `calculation` step. This can either be a single inline calculation or a sequence of calculations. If the `inline_calculation` is provided, it generates a tactic that asserts the calculation. If `calculation_sequence` is provided, it generates a sequence of tactics for each step in the calculation.
 -/
 @[codegen "calculation"]
 def calculationCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
@@ -1075,6 +1137,9 @@ where typeStx (eqn: String) :
     },
 -/
 open Lean.Parser.Term CodeGenerator Parser
+/--
+Generate code for a `pattern_cases_statement`. This is used to perform a proof by cases based on matching patterns against a given expression. It generates a `match` tactic with the specified patterns and their corresponding proofs.
+-/
 @[codegen "pattern_cases_statement"]
 def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -1151,6 +1216,9 @@ def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (ki
     }
   },
 -/
+/--
+Generate code for a `bi-implication_cases_statement`. This is used to prove a bi-implication `P ↔ Q` by proving both directions: `P → Q` and `Q → P`. It recursively generates a sequence of tactics that handle both implications.
+-/
 @[codegen "bi-implication_cases_statement"]
 def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -1202,6 +1270,9 @@ def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (k
     }
   },
 -/
+/--
+Generate code for a `condition_cases_statement`. This is used to prove a statement by splitting into two cases based on a condition. It generates an `if ... then ... else ...` tactic with the provided proofs for each case.
+-/
 @[codegen "condition_cases_statement"]
 def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -1246,6 +1317,9 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
+/--
+Generate code for a multi-condition cases statement. This is used to handle proofs that involve multiple conditions, where each condition leads to a different case in the proof. It recursively generates tactics for each condition and its corresponding proof.
+-/
 def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json)) (exhaustiveness: Option <| Syntax.Tactic) : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
     let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer)]
@@ -1316,6 +1390,10 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
       "additionalProperties": false
     },
 -/
+
+/--
+Generate code for a multi-condition cases statement. This is used to handle proofs that involve multiple conditions, where each condition leads to a different case in the proof. It recursively generates tactics for each condition and its corresponding proof.
+-/
 @[codegen "multi-condition_cases_statement"]
 def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -1382,6 +1460,10 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
       "additionalProperties": false
     },
 -/
+
+/--
+Generate code for an `induction_statement`. This is used to perform a proof by induction on a variable or expression. It generates an `induction` tactic with the specified base case and induction step proofs.
+-/
 @[codegen "induction_statement"]
 def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -1447,6 +1529,10 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   "additionalProperties": false
 }
 -/
+
+/--
+Generate code for a `contradiction_statement`. This is used to prove a statement by contradiction, where an assumption leads to a contradiction. It generates a tactic that introduces the assumption and then provides the proof of the contradiction.
+-/
 @[codegen "contradiction_statement"]
 def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, ``tacticSeq, js => do
@@ -1492,6 +1578,9 @@ def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind
   "additionalProperties": false
 }
 -/
+/--
+Generate code for a `conclude_statement`. This is used to conclude a proof with a final claim. It generates a tactic that asserts the claim as a theorem or lemma.
+-/
 @[codegen "conclude_statement"]
 def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => do
@@ -1512,7 +1601,9 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | _, kind, _ => throwError
     s!"codegen: conclude_statement does not work for kind {kind}"
 
-
+/--
+Generate code for a `general_induction_statement`. This is used to perform a proof by induction with multiple conditions, where each condition leads to a different case in the proof. It recursively generates tactics for each condition and its corresponding proof.
+-/
 def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json × (Array String))) (inductionNames: Array Name)  : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
     let inductionIds := inductionNames.map Lean.mkIdent
@@ -1586,7 +1677,9 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
     },
 -/
 
-
+/--
+Generate code for a `general_induction_statement`. This is used to perform a proof by induction with multiple conditions, where each condition leads to a different case in the proof. It recursively generates tactics for each condition and its corresponding proof.
+-/
 @[codegen "general_induction_statement"]
 def generalInductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -1690,91 +1783,3 @@ def generalInductionCode (translator : CodeGenerator := {}) : Option MVarId → 
 }
 -/
 #notImplementedCode "Table"
-
--- Test
-
-def egTheorem : Json :=
-  json% {
-    "type": "theorem",
-    "name": "egTheorem",
-    "claim_label": "egTheorem",
-    "claim": "There are infinitely many odd numbers.",
-    "proof": {
-      "proof_steps": []
-    }
-  }
-
-def egTheorem' : Json :=
-  json% {
-    "type": "theorem",
-    "name": "egTheorem",
-    "label": "egTheorem",
-    "claim": "There are infinitely many odd numbers."
-  }
-
-
-def egTheorem'' : Json :=
-  json% {
-    "type": "theorem",
-    "name": "egTheorem",
-    "claim_label": "egTheorem",
-    "claim": "There are infinitely many odd numbers.",
-    "proof": {
-      "proof_steps": []
-    }
-  }
-
-def egLet : Json :=
-  json% {
-    "type" : "let_statement",
-    "variable_name": "n",
-    "variable_type": "natural number",
-    "value": "n is odd",
-    "properties": "n > 0"
-  }
-
-open Codegen
--- #eval showStx egTheorem
-
--- #eval showStx egTheorem''
-
-
--- #eval egTheorem
-
-
--- #eval showStx egLet
-
-def egView : MetaM Format := do
-  let .ok js := runParserCategory (← getEnv) `json egTheorem.pretty | throwError
-    "Failed to parse egLet as JSON"
-  PrettyPrinter.ppCategory `json js
-
--- #eval egView
-
--- def egTacs : TermElabM <|  Format := do
---   let goal := q(∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N)
---   let autoTac ← `(tactic| aesop?)
---   let tacs ← runTacticsAndGetTryThisI goal #[autoTac]
---   PrettyPrinter.ppCategory ``tacticSeq <| ← `(tacticSeq|$tacs*)
-
-
--- #eval egTacs
-
--- example: ∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N := by
---   intro
---   aesop?
---   · sorry
---   · sorry
-
--- #eval (ChatServer.default).fullStatement "p ∤ m!"
-
--- #eval Translator.translateToPropStrict "p ∤ m!" {}
-
-def thr : MetaM Unit := do
-  throwError "This is a test error"
-
-def ctch : MetaM Unit := do
-  try
-    thr
-  catch e =>
-    throwError s!"Caught error: {← e.toMessageData.toString}"

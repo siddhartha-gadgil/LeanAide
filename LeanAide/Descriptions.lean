@@ -245,7 +245,9 @@ def getDefDescriptionM (type val: Expr) (name: Name)(translator: Translator) : M
     let res := contents[0]? |>.map fun h => (h, statement, defBlob?)
     return res
 
-
+/--
+Prove a theorem using an LLM given an `Expr` for the type of the theorem.
+-/
 def getTypeProofM (type: Expr)(translator: Translator) : MetaM <| Option (String × String × Option String) := do
   let prompt? ← proveAnonymousTheoremPrompt type
   prompt?.bindM fun (prompt, statement, defBlob?) => do

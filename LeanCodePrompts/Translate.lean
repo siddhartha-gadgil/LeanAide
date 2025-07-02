@@ -2,7 +2,7 @@ import Lean
 import Lean.Meta
 import Lean.Parser
 import LeanAide.TheoremElab
-import LeanAide.Lean4Names
+import LeanAide.TheoremElabCheck
 import LeanAide.TheoremEquality
 import LeanAide.IP
 import LeanAide.PromptBuilder

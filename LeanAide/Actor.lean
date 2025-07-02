@@ -9,8 +9,9 @@ import Lean
 namespace LeanAide.Actor
 open LeanAide Lean
 
-/--
-Executing various tasks with Json input and output. These are for the server.
+/-!
+Executing various tasks with Json input and output. These are for the server. We may switch to an attribute based system instead of case-based.
+
 
 ## Tasks
 
@@ -62,6 +63,10 @@ Executing various tasks with Json input and output. These are for the server.
   * input: `name: String`
   * output: `statement: String`, `is_prop: Bool`, `name: String`, `type: String`, `value: Option String`
 -/
+
+/--
+In case there is no translation that elaborates, this function will try to find a fallback theorem which is syntactically valid.
+-/
 def fallBackThm (es: Array ElabError) : TranslateM Json := do
   if es.isEmpty then
     return Json.mkObj [("result", "error"), ("error", "no translation found")]
@@ -69,10 +74,18 @@ def fallBackThm (es: Array ElabError) : TranslateM Json := do
     let res ←  ElabError.fallback es
     return Json.mkObj [("result", "fallback"), ("theorem", res)]
 
+/--
+Echoes the input data as a JSON object.
+-/
 def echoTask (data: Json) (_ : Translator) : TranslateM Json := do
   let result := Json.mkObj [("result", "success"), ("data", data)]
   return result
 
+/--
+Translates a theorem to Lean Code. If `greedy` is true, it uses a greedy approach to find the best expression.
+
+The input is a JSON object with a `text` field containing the theorem text, and optional `greedy` and `fallback` fields.
+-/
 def translateThmTask (data: Json) (translator : Translator) : TranslateM Json := do
     let fallback :=
       data.getObjValAs? Bool "fallback" |>.toOption |>.getD true
@@ -100,6 +113,11 @@ def translateThmTask (data: Json) (translator : Translator) : TranslateM Json :=
       | Except.ok translation => do
         return Json.mkObj [("result", "success"), ("theorem", translation)]
 
+/--
+Translates a theorem to Lean Code with detailed information, including an attempted proof using `exact?`. The `statement` is the theorem statement with proof (which may be `sorry`). Definitions used in the theorem and in the proof are also returned.
+
+The input is a JSON object with a `text` field containing the theorem text, and optional `greedy` and `fallback` fields.
+-/
 def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM Json := do
     let fallback :=
       data.getObjValAs? Bool "fallback" |>.toOption |>.getD true
@@ -147,6 +165,9 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
           ("statement", statementFormat.pretty), ("definitions_used", toJson defs),
           ("definitions_in_proof", toJson defsInProof?)]
 
+/--
+Looks up a constant by its name and returns its statement, type, value, and whether it is a proposition.
+-/
 def statementFromNameTask (data: Json) (_ : Translator) : TranslateM Json := do
     match data.getObjValAs? String "name" with
     | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no name found: {e}")]
@@ -170,6 +191,9 @@ def statementFromNameTask (data: Json) (_ : Translator) : TranslateM Json := do
         catch e =>
           return Json.mkObj [("result", "error"), ("error", s!"error in getting const info: {← e.toMessageData.format}")]
 
+/--
+Looks up a constant by its name and returns its description.
+-/
 def theoremDocTask (data: Json) (translator : Translator) : TranslateM Json := do
     match data.getObjValAs? String "name", data.getObjValAs? String "command" with
     | Except.ok name, Except.ok cmd => do
@@ -181,6 +205,9 @@ def theoremDocTask (data: Json) (translator : Translator) : TranslateM Json := d
     | _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no name or command found")]
 
+/--
+Translates a definition to Lean code and returns the definition.
+-/
 def translateDefTask (data: Json) (translator : Translator) : TranslateM Json := do
     let fallback :=
       data.getObjValAs? Bool "fallback" |>.toOption |>.getD true
@@ -202,6 +229,9 @@ def translateDefTask (data: Json) (translator : Translator) : TranslateM Json :=
         let result := Json.mkObj [("result", "success"), ("definition", fmt.pretty)]
         return result
 
+/--
+Generates documentation for a definition. The input is a JSON object with a `name` field containing the definition name and a `command` field containing the command to elaborate.
+-/
 def defDocTask (data: Json) (translator : Translator) : TranslateM Json := do
     match data.getObjValAs? String "name", data.getObjValAs? String "command" with
     | Except.ok name, Except.ok cmd => do
@@ -213,6 +243,9 @@ def defDocTask (data: Json) (translator : Translator) : TranslateM Json := do
     | _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no name or command found")]
 
+/--
+Assigns a name to a theorem. The input is a JSON object with a `theorem` or `text` field containing the theorem text.
+-/
 def theoremNameTask (data: Json) (translator : Translator) : TranslateM Json := do
   match data.getObjValAs? String "theorem", data.getObjValAs? String "text" with
   | Except.ok thm, _ => do
@@ -229,6 +262,9 @@ def theoremNameTask (data: Json) (translator : Translator) : TranslateM Json := 
       return Json.mkObj [("result", "error"), ("error", s!"error in theorem name: {← e.toMessageData.format}")]
   | _, _ => return Json.mkObj [("result", "error"), ("error", "no theorem or text found")]
 
+/--
+Use an LLM to prove a theorem. The input is a JSON object with a `theorem` field containing the theorem text.
+-/
 def proveTask (data: Json) (translator : Translator) : TranslateM Json := do
   match data.getObjValAs? String "theorem" with
   | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no theorem found: {e}")]
@@ -239,6 +275,9 @@ def proveTask (data: Json) (translator : Translator) : TranslateM Json := do
     | some pf => do
       return Json.mkObj [("result", "success"), ("proof", toJson pf)]
 
+/--
+Proves a proposition using an LLM. The input is a JSON object with a `prop` field containing the proposition in Lean Syntax.
+-/
 def provePropTask (data: Json) (translator : Translator) : TranslateM Json := do
   match data.getObjValAs? String "prop" with
   | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no `prop` found: {e}")]
@@ -255,6 +294,9 @@ def provePropTask (data: Json) (translator : Translator) : TranslateM Json := do
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in proving `prop`: {← e.toMessageData.format}")]
 
+/--
+Converts a theorem and proof to structured JSON. The input is a JSON object with a `theorem`, `proof`, or `theorem_proof` field containing the theorem statement and proof
+-/
 def structuredJsonTask (data: Json) (translator : Translator) : TranslateM Json := do
     match data.getObjValAs? String "theorem", data.getObjValAs? String "proof", data.getObjValAs? String "theorem_proof" with
     | _, _, Except.ok block => do
@@ -275,6 +317,9 @@ def structuredJsonTask (data: Json) (translator : Translator) : TranslateM Json 
     | _, _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no theorem or proof found")]
 
+/--
+Generates Lean code from structured JSON. The input is a JSON object with a `json_structured` field containing the structured proof in JSON format.
+-/
 def leanFromStructuredJsonTask (data: Json) (translator : Translator) : TranslateM Json := do
     match data.getObjVal? "json_structured" with
     | Except.ok js => do
@@ -292,6 +337,11 @@ def leanFromStructuredJsonTask (data: Json) (translator : Translator) : Translat
         return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
 
+/--
+Elaborates Lean code. The input is a JSON object with a `lean_code` field containing the Lean code to elaborate, and an optional `declarations` field containing the names of declarations to elaborate. If the `declarations` field is not provided, the names are extracted from the code. The `top_code` field can be used to provide additional code that should be included at the top of the elaboration.
+If `describe_sorries` is true, the elaboration will include descriptions of the sorry types.
+The output is a JSON object with the result of the elaboration, including logs and sorries (if any).
+-/
 def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
     let topCode := "open Nat\n"
     match data.getObjValAs? String "lean_code" with
@@ -357,6 +407,9 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
         return Json.mkObj [("result", "error"), ("error", s!"error in code elaboration: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no lean code found")]
 
+/--
+Executing a task with Json input and output. These are for the server. When a task fails, the rest of the tasks are not executed. Results are accumulated in the output.
+-/
 def runTask (data: Json) (translator : Translator) : TranslateM Json :=
   let translator := translator.configure data
   match data.getObjVal? "task" with
