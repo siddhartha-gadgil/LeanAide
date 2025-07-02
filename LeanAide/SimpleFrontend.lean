@@ -63,6 +63,44 @@ def elabFrontDefsExprM(s: String)(ns: List Name)(modifyEnv: Bool := false) : Met
     | some c => c.value?.map (n, ·)
   return (nameDefs, msgs)
 
+def dropPrefixes : Name → Name
+| .anonymous => .anonymous
+| .str _ s => .str .anonymous s
+| .num _ n => .num .anonymous n
+
+-- #eval dropPrefixes `LeanAide.SimpleFrontend.elabFrontDefsExprAtM
+
+
+def elabFrontDefsExprAtM(s: String)(pfx: Name)(modifyEnv: Bool := false) : MetaM <| Array (Name × Expr) × MessageLog := do
+  let (env, msgs) ← runFrontendM s modifyEnv
+  let decls := env.constants.map₁.toArray
+  let ns := decls.filterMap (fun (n, _) => if pfx.isPrefixOf n then some n else none)
+  logInfo "Looking for declarations with suffix `eg"
+  for d in decls do
+    if (`eg).isSuffixOf d.1 then
+      logInfo s!"Found declaration: {d.1} with type {d.2.type}"
+  let nameDefs := ns.filterMap fun n =>
+    match env.find? n with
+    | none => none
+    | some c => c.value?.map (n, ·)
+  logInfo "Messages"
+  for msg in msgs.toList do
+    logInfo msg.data
+  logInfo s!"Found {ns.size} definitions with prefix {pfx}"
+  return (nameDefs, msgs)
+
+-- def egCodeAt := "namespace leanaide_scratch
+-- def eg : True := by simp
+-- end leanaide_scratch"
+
+-- def egVal : MetaM (Array Name) := do
+--   let res ← elabFrontDefsExprAtM egCodeAt `leanaide_scratch
+--   return res.1.map (fun (n, _) => n)
+
+-- #eval egVal
+
+-- #eval (`leanaide_scratch).isPrefixOf `leanaide_scratch.eg
+
 def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM String := do
   let val ← elabFrontDefExprM s n modifyEnv
   let fmt ←  ppExpr val

@@ -703,7 +703,7 @@ def bestDefsInConsts (n: Nat) (names: List Name) (depth: Nat)
 def runTacticToCore (mvarId: MVarId) (stx: Syntax)
     (ctx: Term.Context) (s : Term.State) (mctx : Meta.Context) (s' : Meta.State) : CoreM <| (List MVarId × Term.State) × Meta.State  :=
   MetaM.run (
-    Elab.runTactic mvarId stx ctx s) mctx s'
+    Elab.runTactic mvarId stx  {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode} s) mctx s'
 
 def evalTacticSafe (tacticCode: Syntax): TacticM (Bool × Nat) := do
   let mvarId ← getMainGoal
@@ -819,3 +819,34 @@ partial def Lean.Expr.hasUnassignedExprMVar (e: Expr) : MetaM Bool := do
 --   mvar.hasUnassignedExprMVar
 
 -- #eval checkNoLoop
+
+def getCommandName (stx: TSyntax `command) : Option Name :=
+  match stx with
+      | `(command| theorem $id:ident $_:declSig $_:declVal) => some id.getId
+      | `(command| def $id:ident $_* : $_ := $_) => some id.getId
+      | `(command| noncomputable def $id:ident $_* : $_ := $_) => some id.getId
+      | _ => none
+
+declare_syntax_cat commandSeqWrap
+
+syntax commandSeq : commandSeqWrap
+
+def getNamesFromCode (s: String) : MetaM (Array Name) := do
+  let env ← getEnv
+  let res := Parser.runParserCategory env `commandSeqWrap s
+  match res with
+  | .ok stx =>
+    let stx'' := match stx with
+      | `(commandSeqWrap| $cs:commandSeq) => cs
+      | _ => panic! "Expected commandSeqWrap syntax"
+    let stx' : TSyntax `commandSeq := ⟨ stx'' ⟩
+    let cmds := commands stx'
+    logInfo m!"Parsed commandSeq: {stx}"
+    logInfo m!"Commands: {cmds}"
+    return cmds.filterMap getCommandName
+  | .error err =>
+    logError m!"Error parsing commandSeq: {err}"
+    return #[]
+
+-- #eval getNamesFromCode "def eg: Nat := 42
+-- theorem test : eg = 42 := rfl"
