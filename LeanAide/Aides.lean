@@ -231,8 +231,6 @@ def isNotAux  (declName : Name) : MetaM  Bool := do
   let nAux ← isAux declName
   return (not nAux)
 
-#check isBlackListed
-
 def isWhiteListed (declName : Name) : MetaM Bool := do
   try
   let bl ← isBlackListed  declName
@@ -505,7 +503,8 @@ def ppExprDetailed (e : Expr): MetaM String := do
                     let o₆ := pp.funBinderTypes.set o₅ true
                     let o₇ := pp.piBinderTypes.set o₆ true
                     let o₈ := pp.letVarTypes.set o₇ true
-                    pp.unicode.fun.set o₈ true) do
+                    let o₉ := pp.fullNames.set o₈ true
+                    pp.unicode.fun.set o₉ true) do
     ppExpr e
   return fmtDetailed.pretty
 
@@ -546,7 +545,8 @@ def delabDetailed (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
                     let o₈ := pp.letVarTypes.set o₇ true
                     let o₉ := pp.coercions.types.set o₈ true
                     let o' := pp.motives.nonConst.set o₉ true
-                    pp.unicode.fun.set o' true) do
+                    let o'' := pp.fullNames.set o' true
+                    pp.unicode.fun.set o'' true) do
               PrettyPrinter.delab e
 
 
