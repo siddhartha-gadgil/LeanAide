@@ -107,7 +107,7 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
   let tacticCode ← `(tacticSeq| $tactics*)
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
   logInfo m!"Tactic proof: {termView}"
-  let egCode := s!"open Nat\nexample : {typeView} := {termView}"
+  let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
   let (_, msgs') ← runFrontendM egCode
   IO.eprintln s!"Ran frontend, Messages:"
@@ -127,7 +127,7 @@ def runTacticsAndGetMessages' (mvarId : MVarId) (tactics : Array Syntax.Tactic):
   let tacticCode ← `(tacticSeq| $tactics*)
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
   logInfo m!"Tactic proof: {termView}"
-  let egCode := s!"open Nat\nexample : {typeView} := {termView}"
+  let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
   let (_, msgs') ← runFrontendM egCode
   IO.eprintln s!"Ran frontend, Messages:"
