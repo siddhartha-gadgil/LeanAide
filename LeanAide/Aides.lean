@@ -5,6 +5,7 @@ import Lean.Parser
 import Lean.Parser.Extension
 import Batteries.Data.List.Basic
 import LeanAide.Config
+import Std
 
 open Lean Meta Elab Parser Tactic
 
@@ -230,7 +231,7 @@ def isNotAux  (declName : Name) : MetaM  Bool := do
   let nAux ← isAux declName
   return (not nAux)
 
--- #check isBlackListed
+#check isBlackListed
 
 def isWhiteListed (declName : Name) : MetaM Bool := do
   try
@@ -347,7 +348,11 @@ def appendFile (fname : FilePath) (content : String) : IO Unit := do
   h.putStrLn content
   h.flush
 
-def appendLog (logFile: String) (content : Json) (force: Bool := false) : IO Unit := do
+open Std.Time.Timestamp in
+def showDate : IO String := now.map (·.toPlainDateAssumingUTC.format "uuuu-MM-dd")
+
+
+def appendLog (logFile: String) (content : Json) (force: Bool := false) : CoreM Unit := do
   if force then go logFile content
   else
     match (← leanAideLogging?) with
@@ -358,7 +363,7 @@ def appendLog (logFile: String) (content : Json) (force: Bool := false) : IO Uni
     let dir : FilePath := "leanaide_logs"
     if !(← dir.pathExists) then
       IO.FS.createDirAll dir
-    let fname : FilePath := "leanaide_logs" / (logFile ++ ".jsonl")
+    let fname : FilePath := "leanaide_logs" / (logFile ++ "-" ++ (← showDate) ++ ".jsonl")
     appendFile fname content.compress
 
 def gitHash : IO String := do
