@@ -770,7 +770,10 @@ def Lean.Json.getKVorType? (js : Json) : Option (String × Json) :=
   match js with
   | Json.obj m =>
     match m.toArray with
-    | #[⟨k, v⟩] => some (k, v)
+    | #[⟨"type", .str key⟩] =>
+        (key, json% {})
+    | #[⟨k, v⟩] =>
+      some (k, v)
     | jsArr =>
       let keys := jsArr.map (fun ⟨k, _⟩ => k)
       let keyVals := jsArr.map (fun ⟨k, v⟩ => (k, v))

@@ -179,6 +179,11 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
   goal.withContext do
+  IO.eprintln "Tring assumptions"
+  try
+    goal.assumption
+    return (← appendTactics accum (← `(tacticSeq| assumption)), none)
+  catch _ =>
   IO.eprintln "Trying exact tactics or automation"
   match ← getExactTactics? (← goal.getType) with
   | some code => do
@@ -259,6 +264,9 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
+    if ← goal.isAssigned then
+      return tacs
+    else
     IO.eprintln s!"codegen: goal still open after tactics: {← ppExpr <| ← goal.getType}"
     IO.eprintln "Local context:"
     let lctx ← getLCtx

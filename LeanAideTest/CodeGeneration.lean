@@ -30,6 +30,78 @@ def egTheorem : Json :=
 --     }
 --   }
 
+  theorem group.inv_eq_one_of_eq_one : ∀ {G : Type u} [inst : Group G] {a : G}, a = 1 → a⁻¹ = 1 :=
+    by
+    intro G inst_10173403757143075236 a h₁
+    have assert_1795224800169208544 : ∀ [inst : Group G] (a : G), a = 1 → a⁻¹ = 1⁻¹ :=
+      by
+      trace
+        "Automation Tactics hammer [Eq.subst] for goal: ∀ [inst : Group G] (a : G), a = 1 → a⁻¹ = 1⁻¹"
+      intro inst a_2 a_3
+      subst h₁ a_3
+      simp_all only [inv_one]
+      trace
+        "Finished Automation Tactics hammer [Eq.subst] for goal: ∀ [inst : Group G] (a : G), a = 1 → a⁻¹ = 1⁻¹"
+    have assert_2553174354512223270 : ∀ [inst : Group G] {a : G}, a = 1 → (1 : G)⁻¹ = 1 := -- correction
+      by
+      trace "Automation Tactics hammer [] for goal: ∀ [inst : Group G] {a : G}, a = 1 → 1⁻¹ = 1"
+      intro inst a_2 a_3
+      subst h₁ a_3
+      simp_all only [inv_one, implies_true]
+      -- sorry
+      trace
+        "Finished Automation Tactics hammer [] for goal: ∀ [inst : Group G] {a : G}, a = 1 → 1⁻¹ = 1"
+    have assert_14152979867489898528 : ∀ [inst : Group G] {a : G}, a = 1 → a⁻¹ = 1 :=
+      by
+      trace "Automation Tactics hammer [] for goal: ∀ [inst : Group G] {a : G}, a = 1 → a⁻¹ = 1"
+      intro inst a_2 a_3
+      subst a_3 h₁
+      simp -- sorry -- correction
+      trace
+        "Finished Automation Tactics hammer [] for goal: ∀ [inst : Group G] {a : G}, a = 1 → a⁻¹ = 1"
+    have : a⁻¹ = 1 := by
+      trace "Automation Tactics hammer [] for goal: a⁻¹ = 1"
+      subst h₁
+      simp_all only [implies_true, inv_one, forall_eq]
+      -- sorry
+      trace "Finished Automation Tactics hammer [] for goal: a⁻¹ = 1"
+    assumption
+  theorem inv_eq_of_eq_one : ∀ {G : Type u} [inst : Group G] {e : G}, e = 1 → e⁻¹ = e :=
+    by
+    intro G inst_2343502792650069773 e h₂
+    have assert_13412815512804423344 : ∀ [inst : Group G] {e : G}, e = 1 → e⁻¹ = 1 :=
+      by
+      trace "Automation Tactics hammer [] for goal: ∀ [inst : Group G] {e : G}, e = 1 → e⁻¹ = 1"
+      intro inst e_2 a
+      subst a h₂
+      simp_all only [inv_one]
+      trace
+        "Finished Automation Tactics hammer [] for goal: ∀ [inst : Group G] {e : G}, e = 1 → e⁻¹ = 1"
+    have assert_15068206506407136462 : ∀ [inst : Group G] {e : G}, e = 1 → 1 = e :=
+      by
+      trace "Automation Tactics hammer [] for goal: ∀ [inst : Group G] {e : G}, e = 1 → 1 = e"
+      intro inst e_2 a
+      subst h₂ a
+      simp_all only [inv_one, implies_true]
+      trace
+        "Finished Automation Tactics hammer [] for goal: ∀ [inst : Group G] {e : G}, e = 1 → 1 = e"
+    have assert_7201253128521190897 : ∀ [inst : Group G] {e : G}, e = 1 → e⁻¹ = e :=
+      by
+      trace "Automation Tactics hammer [] for goal: ∀ [inst : Group G] {e : G}, e = 1 → e⁻¹ = e"
+      intro inst e_2 a
+      subst a h₂
+      simp_all only [inv_one, implies_true]
+      trace
+        "Finished Automation Tactics hammer [] for goal: ∀ [inst : Group G] {e : G}, e = 1 → e⁻¹ = e"
+    have : e⁻¹ = e := by
+      trace "Automation Tactics hammer [] for goal: e⁻¹ = e"
+      subst h₂
+      simp_all only [implies_true, inv_one]
+      -- sorry
+      trace "Finished Automation Tactics hammer [] for goal: e⁻¹ = e"
+    assumption
+
+
 def egTheorem' : Json :=
   json% {
     "type": "theorem",

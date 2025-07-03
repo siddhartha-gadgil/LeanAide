@@ -198,7 +198,6 @@ def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (str
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 
-
 def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
   let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| exact?))]
   match tactics? with
@@ -264,8 +263,10 @@ def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): Term
     ← `(tacticSeq| $tactics*)
   let headerText := s!"Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
   let header := Syntax.mkStrLit headerText
-  let res :=  tacs?.getD #[(←  `(tactic| sorry))]
-  return #[← `(tactic| trace $header)] ++ res
+  let res :=  tacs?.getD #[(←  `(tactic| repeat (sorry)))]
+  let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
+  let tail := Syntax.mkStrLit tailText
+  return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
 def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
     MetaM <| MVarId × List Name := do
@@ -274,12 +275,12 @@ def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
     return (goal, accum)
   | k + 1, Expr.forallE n type _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then s!"n.components_{hash}".toName else n
+    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
   | k + 1, Expr.letE n type _ _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then s!"n.components_{hash}".toName else n
+    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
   | _, _ => do
