@@ -345,6 +345,21 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
     throwError
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
 
+syntax (name := codegenCmd) "#codegen" term : command
+open Command Elab Term Tactic
+@[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab := fun stx => do
+  match stx with
+  | `(command| #codegen $s) =>
+    Command.liftTermElabM do
+      let source : Q(Json) ← elabTerm s q(Json)
+      let e := q(getCode CodeGenerator.default none ``commandSeq $source)
+      let code ←
+        unsafe evalExpr (TSyntax ``commandSeq) q(TSyntax ``commandSeq) e
+      TryThis.addSuggestion stx code
+  | _ => throwUnsupportedSyntax
+
+macro "#codegen" source:json : command =>
+  `(command| #codegen json% $source)
 
 end Codegen
 

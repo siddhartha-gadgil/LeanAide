@@ -11,7 +11,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 unsafe def main (args: List String) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+  initSearchPath (← findSysroot)
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},

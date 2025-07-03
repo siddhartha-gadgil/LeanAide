@@ -274,12 +274,12 @@ def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
     return (goal, accum)
   | k + 1, Expr.forallE n type _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
+    let n := if n.isInternal then s!"n.components_{hash}".toName else n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
   | k + 1, Expr.letE n type _ _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
+    let n := if n.isInternal then s!"n.components_{hash}".toName else n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
   | _, _ => do
