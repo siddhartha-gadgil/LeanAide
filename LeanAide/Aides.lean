@@ -572,7 +572,8 @@ def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do
   | (.cdecl _ _ name type bi kind) :: tail =>
     logInfo m!"decl: {name}"
     withLocalDecl name bi type (kind := kind) fun x => do
-      let inner ← relLCtxAux (goal.instantiate1 x) tail
+      let inner ← relLCtxAux goal tail
+      let inner := inner.instantiate1 x
       mkForallFVars #[x] inner
 
 

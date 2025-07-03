@@ -84,9 +84,10 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
 
 def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
     mvarId.withContext do
-  -- IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
+  IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
   let lctx ← getLCtx
   let mut vars : Array Syntax.Term := #[]
+  let mut fvars : Array Expr := lctx.getFVarIds.map (mkFVar)
   for decl in lctx do
     unless decl.isImplementationDetail || decl.isLet do
       let name := decl.userName
@@ -96,9 +97,9 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
       else
         `(_)
       vars := vars.push term
-    -- IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
+    IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
   -- vars := vars[1:]
-  let targetType ← relLCtx' mvarId
+  let targetType := lctx.mkForall  fvars <| ← mvarId.getType
   let typeStx ← delabDetailed targetType
   let typeView ← PrettyPrinter.ppTerm typeStx
   logInfo m!"Target type: {typeView}"
@@ -109,6 +110,7 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
   logInfo m!"Tactic proof: {termView}"
   let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
+  IO.eprintln s!"Running frontend with code:\n{egCode}"
   let (_, msgs') ← runFrontendM egCode
   IO.eprintln s!"Ran frontend, Messages:"
   for msg in msgs'.toList do
