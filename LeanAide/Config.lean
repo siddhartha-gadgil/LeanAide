@@ -22,13 +22,16 @@ def leanAideLogging? : CoreM (Option String) := do
   if loggingEnabled then return some "1"
   else IO.getEnv "LEANAIDE_LOGGING"
 
+def leanAideLoggingIO? : IO (Option String) := do
+  IO.getEnv "LEANAIDE_LOGGING"
+
 def logHandle : IO IO.FS.Handle := do
   let logPath : System.FilePath :=
     ".lake/build/lib/leanaide.log"
   IO.FS.Handle.mk logPath IO.FS.Mode.append
 
-def logTimed (message: String) : CoreM Unit := do
-  match (← leanAideLogging?) with
+def logTimed (message: String) : IO Unit := do
+  match (← leanAideLoggingIO?) with
   | some "0" =>
     return ()
   | some _   => let handle ← logHandle
