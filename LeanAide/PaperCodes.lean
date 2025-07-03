@@ -733,7 +733,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
 Generate code for a `let_statement`. If the let statement has a value, it generates a command or tactic that defines the variable with the given value. If there is no value, it simply adds a prelude statement.
 -/
 @[codegen "let_statement"]
-def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
+def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
   match s, js with
   | ``tacticSeq, js => do
     let statement := statement js
@@ -744,6 +744,12 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
       addPrelude statement
       return none
     | some value =>
+      match goal? with
+      | some goal =>
+        match (← goal.getType).app2? ``Exists with
+        | some (_, .lam name domain body bi) => pure () -- match name and return use tactic
+        | _ => pure () -- placeholder for now
+      | none => pure () -- placeholder for now
       let letStx ←
         commandToTactic
           (← defStx translator js statement value)
