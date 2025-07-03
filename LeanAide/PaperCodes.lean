@@ -370,7 +370,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     let n := mkIdent (name ++ `prop)
     let propExpr := mkSort Level.zero
     let propIdent ← delabDetailed propExpr
-    `(tacticSeq| let $n : $propIdent := $stx)
+    `(tacticSeq| have $n : $propIdent := $stx)
 | some _, `tactic, js => do
   let (stx, name, pf?) ← thmStxParts js
   match pf? with

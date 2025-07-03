@@ -58,6 +58,20 @@ def egTheorem₀ : Json :=
     }
   }
 
+def egErrorProof : Json :=
+  json% {"document" :
+    [{
+    "type": "theorem",
+    "name": "egTheorem",
+    "label": "egTheorem",
+    "claim": "There are infinitely many odd numbers."
+  },
+      {"type": "proof",
+    "claim_label": "egErrorProof",
+    "proof_steps": []}]
+
+  }
+
 open Codegen
 
 def showStx (source: Json) (cat: Name := ``commandSeq) (translator: CodeGenerator := {})(goal? : Option (MVarId) := none)
@@ -69,9 +83,9 @@ def showStx (source: Json) (cat: Name := ``commandSeq) (translator: CodeGenerato
     | some stx => do
       PrettyPrinter.ppCategory cat stx
 
+#eval showStx egErrorProof
 
-
-#eval showStx egTheorem₀
+-- #eval showStx egTheorem₀
 
 -- #eval showStx egTheorem
 

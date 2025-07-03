@@ -142,8 +142,9 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
         accumErrors := accumErrors.push s!"{f}: {← e.toMessageData.toString}"
         continue -- try next function
+    let allErrors := accumErrors.toList.foldl (init := "") (fun acc e => acc ++ "\n" ++ e)
     throwError
-      s!"codegen: no valid function found for key {key} in JSON object {source}; tried: {accumErrors.toList}"
+      s!"codegen: no valid function found for key {key}\nTried functions: {fs}\nErrors in functions:\n{allErrors}\nsource:\n{source.pretty}"
   | none =>
     match source with
     | Json.arr sources =>
@@ -201,8 +202,13 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         getCode translator (some goal) ``tacticSeq source
       catch e =>
         let err ←   e.toMessageData.toString
-        let errSrx := Syntax.mkStrLit <| "Error: " ++ err
-        pure <| some <| ← `(tacticSeq| trace $errSrx)
+        let errs := "Error: " ++  err |>.splitOn "\n"
+        let errStxs : List Syntax.Tactic ←
+          errs.mapM fun err =>
+          let errStx := Syntax.mkStrLit <| err
+          `(tactic| trace $errStx)
+        let errStxs := errStxs.toArray
+        pure <| some <| ← `(tacticSeq| $errStxs*)
     match code? with
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
@@ -278,8 +284,13 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
         getCode translator goal? ``commandSeq source
       catch e =>
         let err ←   e.toMessageData.toString
-        let errSrx := Syntax.mkStrLit <| "Error: " ++ err
-        pure <| some <| ← `(commandSeq| #check $errSrx)
+        let errs := "Error: " ++  err |>.splitOn "\n"
+        let errStxs : List Syntax.Command ←
+          errs.mapM fun err =>
+          let errStx := Syntax.mkStrLit <| err
+          `(command| #check $errStx)
+        let errStxs := errStxs.toArray
+        pure <| some <| ← `(commandSeq| $errStxs*)
 
     match code? with
     | none => do -- error with obtaining commands
