@@ -5,6 +5,7 @@ import Lean.Parser
 import Lean.Parser.Extension
 import Batteries.Data.List.Basic
 import LeanAide.Config
+import Std
 
 open Lean Meta Elab Parser Tactic
 
@@ -231,8 +232,6 @@ def isNotAux  (declName : Name) : MetaM  Bool := do
   let nAux ← isAux declName
   return (not nAux)
 
--- #check isBlackListed
-
 def isWhiteListed (declName : Name) : MetaM Bool := do
   try
   let bl ← isBlackListed  declName
@@ -348,7 +347,11 @@ def appendFile (fname : FilePath) (content : String) : IO Unit := do
   h.putStrLn content
   h.flush
 
-def appendLog (logFile: String) (content : Json) (force: Bool := false) : IO Unit := do
+open Std.Time.Timestamp in
+def showDate : IO String := now.map (·.toPlainDateAssumingUTC.format "uuuu-MM-dd")
+
+
+def appendLog (logFile: String) (content : Json) (force: Bool := false) : CoreM Unit := do
   if force then go logFile content
   else
     match (← leanAideLogging?) with
@@ -359,7 +362,7 @@ def appendLog (logFile: String) (content : Json) (force: Bool := false) : IO Uni
     let dir : FilePath := "leanaide_logs"
     if !(← dir.pathExists) then
       IO.FS.createDirAll dir
-    let fname : FilePath := "leanaide_logs" / (logFile ++ ".jsonl")
+    let fname : FilePath := "leanaide_logs" / (logFile ++ "-" ++ (← showDate) ++ ".jsonl")
     appendFile fname content.compress
 
 def gitHash : IO String := do
@@ -501,7 +504,8 @@ def ppExprDetailed (e : Expr): MetaM String := do
                     let o₆ := pp.funBinderTypes.set o₅ true
                     let o₇ := pp.piBinderTypes.set o₆ true
                     let o₈ := pp.letVarTypes.set o₇ true
-                    pp.unicode.fun.set o₈ true) do
+                    let o₉ := pp.fullNames.set o₈ true
+                    pp.unicode.fun.set o₉ true) do
     ppExpr e
   return fmtDetailed.pretty
 
@@ -542,7 +546,8 @@ def delabDetailed (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
                     let o₈ := pp.letVarTypes.set o₇ true
                     let o₉ := pp.coercions.types.set o₈ true
                     let o' := pp.motives.nonConst.set o₉ true
-                    pp.unicode.fun.set o' true) do
+                    let o'' := pp.fullNames.set o' true
+                    pp.unicode.fun.set o'' true) do
               PrettyPrinter.delab e
 
 
@@ -568,7 +573,8 @@ def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do
   | (.cdecl _ _ name type bi kind) :: tail =>
     logInfo m!"decl: {name}"
     withLocalDecl name bi type (kind := kind) fun x => do
-      let inner ← relLCtxAux (goal.instantiate1 x) tail
+      let inner ← relLCtxAux goal tail
+      let inner := inner.instantiate1 x
       mkForallFVars #[x] inner
 
 
@@ -766,7 +772,10 @@ def Lean.Json.getKVorType? (js : Json) : Option (String × Json) :=
   match js with
   | Json.obj m =>
     match m.toArray with
-    | #[⟨k, v⟩] => some (k, v)
+    | #[⟨"type", .str key⟩] =>
+        (key, json% {})
+    | #[⟨k, v⟩] =>
+      some (k, v)
     | jsArr =>
       let keys := jsArr.map (fun ⟨k, _⟩ => k)
       let keyVals := jsArr.map (fun ⟨k, v⟩ => (k, v))

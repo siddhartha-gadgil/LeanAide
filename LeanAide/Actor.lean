@@ -343,12 +343,11 @@ If `describe_sorries` is true, the elaboration will include descriptions of the 
 The output is a JSON object with the result of the elaboration, including logs and sorries (if any).
 -/
 def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
-    let topCode := "open Nat\n"
     match data.getObjValAs? String "lean_code" with
     | Except.ok code => do
       let names := data.getObjValAs? (List Name) "declarations" |>.toOption |>.getD (← getNamesFromCode code).toList
       try
-        let (exprs, logs) ← elabFrontDefsExprM (topCode ++ code) names
+        let (exprs, logs) ← elabFrontDefsExprM code names
         let describeSorries := data.getObjValAs? Bool "describe_sorries" |>.toOption |>.getD false
         let hasErrors := logs.toList.any
           (fun lg => lg.severity == MessageSeverity.error)

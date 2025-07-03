@@ -74,14 +74,13 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
     return (goal, accum)
   | k + 1, Expr.forallE n type _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
+    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
     addPrelude s!"Fix {n} : {← ppExpr type}"
     let (_, goal') ← goal.intro n
     consumeIntros goal' k (accum ++ [n])
   | k + 1, Expr.letE n type value _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
-    let n := if n.isInternal then n.components[0]! else n
+    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
     addPrelude s!"Fix {n} : {← ppExpr type} := {← ppExpr value}"
     let (_, goal') ← goal.intro n
     consumeIntros goal' k (accum ++ [n])
@@ -370,7 +369,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     let n := mkIdent (name ++ `prop)
     let propExpr := mkSort Level.zero
     let propIdent ← delabDetailed propExpr
-    `(tacticSeq| let $n : $propIdent := $stx)
+    `(tacticSeq| have $n : $propIdent := $stx)
 | some _, `tactic, js => do
   let (stx, name, pf?) ← thmStxParts js
   match pf? with
@@ -734,7 +733,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
 Generate code for a `let_statement`. If the let statement has a value, it generates a command or tactic that defines the variable with the given value. If there is no value, it simply adds a prelude statement.
 -/
 @[codegen "let_statement"]
-def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
+def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
   match s, js with
   | ``tacticSeq, js => do
     let statement := statement js
@@ -745,6 +744,12 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
       addPrelude statement
       return none
     | some value =>
+      match goal? with
+      | some goal =>
+        match (← goal.getType).app2? ``Exists with
+        | some (_, .lam name domain body bi) => pure () -- match name and return use tactic
+        | _ => pure () -- placeholder for now
+      | none => pure () -- placeholder for now
       let letStx ←
         commandToTactic
           (← defStx translator js statement value)

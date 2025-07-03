@@ -84,9 +84,10 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
 
 def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
     mvarId.withContext do
-  -- IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
+  IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
   let lctx ← getLCtx
   let mut vars : Array Syntax.Term := #[]
+  let mut fvars : Array Expr := lctx.getFVarIds.map (mkFVar)
   for decl in lctx do
     unless decl.isImplementationDetail || decl.isLet do
       let name := decl.userName
@@ -96,9 +97,9 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
       else
         `(_)
       vars := vars.push term
-    -- IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
+    IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
   -- vars := vars[1:]
-  let targetType ← relLCtx' mvarId
+  let targetType := lctx.mkForall  fvars <| ← mvarId.getType
   let typeStx ← delabDetailed targetType
   let typeView ← PrettyPrinter.ppTerm typeStx
   logInfo m!"Target type: {typeView}"
@@ -107,8 +108,9 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
   let tacticCode ← `(tacticSeq| $tactics*)
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
   logInfo m!"Tactic proof: {termView}"
-  let egCode := s!"open Nat\nexample : {typeView} := {termView}"
+  let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
+  IO.eprintln s!"Running frontend with code:\n{egCode}"
   let (_, msgs') ← runFrontendM egCode
   IO.eprintln s!"Ran frontend, Messages:"
   for msg in msgs'.toList do
@@ -127,7 +129,7 @@ def runTacticsAndGetMessages' (mvarId : MVarId) (tactics : Array Syntax.Tactic):
   let tacticCode ← `(tacticSeq| $tactics*)
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
   logInfo m!"Tactic proof: {termView}"
-  let egCode := s!"open Nat\nexample : {typeView} := {termView}"
+  let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
   let (_, msgs') ← runFrontendM egCode
   IO.eprintln s!"Ran frontend, Messages:"
@@ -198,7 +200,6 @@ def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (str
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 
-
 def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
   let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| exact?))]
   match tactics? with
@@ -264,8 +265,10 @@ def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): Term
     ← `(tacticSeq| $tactics*)
   let headerText := s!"Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
   let header := Syntax.mkStrLit headerText
-  let res :=  tacs?.getD #[(←  `(tactic| sorry))]
-  return #[← `(tactic| trace $header)] ++ res
+  let res :=  tacs?.getD #[(←  `(tactic| repeat (sorry)))]
+  let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
+  let tail := Syntax.mkStrLit tailText
+  return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
 def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
     MetaM <| MVarId × List Name := do
@@ -274,12 +277,12 @@ def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
     return (goal, accum)
   | k + 1, Expr.forallE n type _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
+    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
   | k + 1, Expr.letE n type _ _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
+    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
   | _, _ => do

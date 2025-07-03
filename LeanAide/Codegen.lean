@@ -142,8 +142,9 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
         accumErrors := accumErrors.push s!"{f}: {← e.toMessageData.toString}"
         continue -- try next function
+    let allErrors := accumErrors.toList.foldl (init := "") (fun acc e => acc ++ "\n" ++ e)
     throwError
-      s!"codegen: no valid function found for key {key} in JSON object {source}; tried: {accumErrors.toList}"
+      s!"codegen: no valid function found for key {key}\nTried functions: {fs}\nErrors in functions:\n{allErrors}\nsource:\n{source.pretty}"
   | none =>
     match source with
     | Json.arr sources =>
@@ -178,6 +179,11 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
   goal.withContext do
+  IO.eprintln "Tring assumptions"
+  try
+    goal.assumption
+    return (← appendTactics accum (← `(tacticSeq| assumption)), none)
+  catch _ =>
   IO.eprintln "Trying exact tactics or automation"
   match ← getExactTactics? (← goal.getType) with
   | some code => do
@@ -201,8 +207,13 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         getCode translator (some goal) ``tacticSeq source
       catch e =>
         let err ←   e.toMessageData.toString
-        let errSrx := Syntax.mkStrLit <| "Error: " ++ err
-        pure <| some <| ← `(tacticSeq| trace $errSrx)
+        let errs := "Error: " ++  err |>.splitOn "\n"
+        let errStxs : List Syntax.Tactic ←
+          errs.mapM fun err =>
+          let errStx := Syntax.mkStrLit <| err
+          `(tactic| trace $errStx)
+        let errStxs := errStxs.toArray
+        pure <| some <| ← `(tacticSeq| $errStxs*)
     match code? with
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
@@ -253,6 +264,9 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
+    if ← goal.isAssigned then
+      return tacs
+    else
     IO.eprintln s!"codegen: goal still open after tactics: {← ppExpr <| ← goal.getType}"
     IO.eprintln "Local context:"
     let lctx ← getLCtx
@@ -278,8 +292,13 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
         getCode translator goal? ``commandSeq source
       catch e =>
         let err ←   e.toMessageData.toString
-        let errSrx := Syntax.mkStrLit <| "Error: " ++ err
-        pure <| some <| ← `(commandSeq| #check $errSrx)
+        let errs := "Error: " ++  err |>.splitOn "\n"
+        let errStxs : List Syntax.Command ←
+          errs.mapM fun err =>
+          let errStx := Syntax.mkStrLit <| err
+          `(command| #check $errStx)
+        let errStxs := errStxs.toArray
+        pure <| some <| ← `(commandSeq| $errStxs*)
 
     match code? with
     | none => do -- error with obtaining commands
@@ -334,6 +353,23 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
     throwError
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
 
+syntax (name := codegenCmd) "#codegen" term : command
+open Command Elab Term Tactic
+@[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab := fun stx => do
+  match stx with
+  | `(command| #codegen $s) =>
+    Command.liftTermElabM do
+      let source : Q(Json) ← elabTerm s q(Json)
+      let e := q(getCode CodeGenerator.default none ``commandSeq $source)
+      let codeM? ←
+        unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) q((TranslateM (Option (TSyntax ``commandSeq)))) e
+      let code? ←  codeM?.run' {}
+      let code := code?.getD (← `(commandSeq|#check "No code generated"))
+      TryThis.addSuggestion stx code
+  | _ => throwUnsupportedSyntax
+
+macro "#codegen" source:json : command =>
+  `(command| #codegen json% $source)
 
 end Codegen
 

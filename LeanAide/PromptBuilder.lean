@@ -494,6 +494,8 @@ deriving Repr, FromJson, ToJson
 
 def Translator.codeGenerator (t: Translator) : CodeGenerator := {t with}
 
+def CodeGenerator.default : CodeGenerator :=
+  {}
 -- #eval toJson <| ({} : CodeGenerator)
 -- #eval (fromJson? (toJson <| ({} : CodeGenerator)) : Except _ Translator)
 

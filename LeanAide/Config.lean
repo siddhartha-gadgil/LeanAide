@@ -10,9 +10,20 @@ initialize
   registerTraceClass `leanaide.proof.info
   registerTraceClass `leanaide.codegen.info
 
+register_option leanaide.logging : Bool :=
+  { defValue := false
+    descr := "Enable LeanAide logging"
+    group := "LeanAide" }
+
 initialize delab_bound : IO.Ref UInt32 ← IO.mkRef 50
 
-def leanAideLogging? : IO (Option String) := IO.getEnv "LEANAIDE_LOGGING"
+def leanAideLogging? : CoreM (Option String) := do
+  let loggingEnabled : Bool := leanaide.logging.get (← getOptions)
+  if loggingEnabled then return some "1"
+  else IO.getEnv "LEANAIDE_LOGGING"
+
+def leanAideLoggingIO? : IO (Option String) := do
+  IO.getEnv "LEANAIDE_LOGGING"
 
 def logHandle : IO IO.FS.Handle := do
   let logPath : System.FilePath :=
@@ -20,7 +31,7 @@ def logHandle : IO IO.FS.Handle := do
   IO.FS.Handle.mk logPath IO.FS.Mode.append
 
 def logTimed (message: String) : IO Unit := do
-  match (← leanAideLogging?) with
+  match (← leanAideLoggingIO?) with
   | some "0" =>
     return ()
   | some _   => let handle ← logHandle

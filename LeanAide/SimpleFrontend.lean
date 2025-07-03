@@ -12,10 +12,10 @@ In the `runFrontendM` function the environment is modified if the `modifyEnv` fl
 def simpleRunFrontend
     (input : String)
     (env: Environment)
-    (opts : Options := {})
+    (opts : Options := {}) (top : String := "open Nat\n")
     (fileName : String := "<input>")
     : IO (Environment × MessageLog) := unsafe do
-  let inputCtx := Parser.mkInputContext input fileName
+  let inputCtx := Parser.mkInputContext (top ++ input) fileName
   let commandState := Command.mkState env (opts := opts)
   let parserState: ModuleParserState := {}
   let s ← IO.processCommands inputCtx parserState commandState
