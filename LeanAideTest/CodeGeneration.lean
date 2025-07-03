@@ -3,6 +3,7 @@ import Lean
 import Qq
 
 open LeanAide Lean Meta Elab Parser Tactic
+set_option linter.unusedTactic false
 
 open Nat
 
@@ -18,6 +19,16 @@ def egTheorem : Json :=
       "proof_steps": []
     }
   }
+
+-- #codegen {
+--     "type": "theorem",
+--     "name": "egTheorem",
+--     "claim_label": "egTheorem",
+--     "claim": "There are infinitely many odd numbers.",
+--     "proof": {
+--       "proof_steps": []
+--     }
+--   }
 
 def egTheorem' : Json :=
   json% {

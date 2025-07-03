@@ -353,8 +353,10 @@ open Command Elab Term Tactic
     Command.liftTermElabM do
       let source : Q(Json) ← elabTerm s q(Json)
       let e := q(getCode CodeGenerator.default none ``commandSeq $source)
-      let code ←
-        unsafe evalExpr (TSyntax ``commandSeq) q(TSyntax ``commandSeq) e
+      let codeM? ←
+        unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) q((TranslateM (Option (TSyntax ``commandSeq)))) e
+      let code? ←  codeM?.run' {}
+      let code := code?.getD (← `(commandSeq|#check "No code generated"))
       TryThis.addSuggestion stx code
   | _ => throwUnsupportedSyntax
 
