@@ -723,7 +723,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   },
   "required": [
     "type",
-    "variable"
+    "variable_name"
   ],
   "additionalProperties": false
 }
