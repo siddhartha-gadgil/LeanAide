@@ -201,6 +201,15 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
   | _ => `(tactic| sorry)
 
+def commandToUseTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
+  match cmd with
+  | `(command| def $name:ident $args:bracketedBinder* : $type := $value) =>
+      `(tactic| use $value:term)
+  | `(command| def $name:ident $args:bracketedBinder* := $value) =>
+      `(tactic| use $value:term)
+  | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
+  | _ => `(tactic| sorry)
+
 
 def inductionCase (name: String)(condition: String)
     (pf: Array Syntax.Tactic) : TermElabM Syntax.Tactic := do
