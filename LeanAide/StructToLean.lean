@@ -203,9 +203,9 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
 
 def commandToUseTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   match cmd with
-  | `(command| def $name:ident $args:bracketedBinder* : $type := $value) =>
+  | `(command| def $_:ident $_:bracketedBinder* : $_ := $value) =>
       `(tactic| use $value:term)
-  | `(command| def $name:ident $args:bracketedBinder* := $value) =>
+  | `(command| def $_:ident $_:bracketedBinder* := $value) =>
       `(tactic| use $value:term)
   | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
   | _ => throwError "commandToUseTactic failed"
