@@ -6,7 +6,7 @@ import streamlit as st
 from streamlit import session_state as sts
 from dotenv import load_dotenv
 
-from serv_utils import TASKS, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked, request_server, host_information
+from serv_utils import TASKS, lean_code_button, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked, request_server, host_information, lean_code_cleanup
 from logging_utils import log_write, get_env
 
 load_dotenv()
@@ -118,9 +118,12 @@ if st.button("Build Query", help = "Provide inputs to the your selected tasks. N
             # Other cases for input
             elif "json" in key.lower() and key.lower() != "json_structured":
                 help += " Just paste your `json` object here."
-                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", value = sts.val_input.get(key, ""))
+                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", value = sts.val_input.get(key, "")) 
             else:
                 val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, value = sts.val_input.get(key, ""))
+
+            if key.lower() == "lean_code":
+                val_in = lean_code_cleanup(val_in, elaborate=True) # Elaborate does not take "import" statements
 
             if str(val_in).strip() == "":
                 sts.val_input[key] = None
@@ -168,6 +171,12 @@ st.write("")
 def show_response():
     for task in sts.selected_tasks:
         st.subheader(task + " Output", divider =True)
+        if "elaborate" in task.lower().strip():
+            if sts.result["result"] == "success":
+                st.success("Successful Elaboration => Lean Code is **Correct**.")
+            else:
+                st.error("Elaboration failed. The Lean code produced may be **incorrect**.")
+
         for key, val_type in TASKS[task]["output"].items():
             if "json" in val_type.lower().split():
                 st.write(f"{key.capitalize()} ({val_type}):")
@@ -180,11 +189,8 @@ def show_response():
                     sts.result.get(key) or "No data available.", language="plaintext", wrap_lines = True
                 )
                 if "lean_code" in key.lower():
-                    code = sts.result.get(key, "-- No Lean code available")
-                    code = f"import Mathlib\n{code.strip()}" if "import Mathlib" not in code else code
-                    if code not in ["-- No Lean code available", "No data available."]:
-                        st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
-
+                    lean_code_button("result", key, task)
+ 
 def dummy_request():
     command = get_env("LEANAIDE_COMMAND", "lake exe leanaide_process")
     for flag in ["--auth_key", "--model"]:
@@ -226,6 +232,7 @@ if submit_response_button or sts.request_button:
         if submit_response_button:
             try:
                 request_server(request_payload=request_payload, task_header="Streamlit", success_key="server_output_success", result_key="result")
+                sts.server_output_success = True
             except Exception as e:
                 st.error(f"Error while sending request to server: {e}")
                 log_write("Streamlit", f"Request Payload: Error - {e}")
@@ -235,9 +242,10 @@ if submit_response_button or sts.request_button:
         if sts.server_output_success:
             show_response()
         else:
+            # If server itself gives "error" output, it goes here
             st.error("No output available. Please check the input and try again.")
             try:
-                st.error(sts.result.get("error", "No error message provided."))
+                st.error(f"Error: {sts.result["error"]}")
             except Exception as e:
                 st.error(f"Error retrieving error from server: {e}")
                 pass

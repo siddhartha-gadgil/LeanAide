@@ -217,6 +217,18 @@ def post_env_args(provider: str, auth_key: str, **kwargs):
     for key, value in kwargs.items():
         post_env(f"LEANAIDE_{key.upper()}", value)
 
+def load_env():
+    """
+    Load environment variables from the env_vars.json file.
+    This is useful for setting up the environment for the server.
+    """
+    create_env_file()
+    with open(ENV_FILE, 'r') as f:
+        env_vars = json.load(f)
+    
+    for key, value in env_vars.items():
+        os.environ[key] = value
+
 def delete_env_file():
     """
     Delete the env_vars.json file.

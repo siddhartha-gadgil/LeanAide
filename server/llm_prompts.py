@@ -17,10 +17,10 @@ def mathpaper_prompt(paper_text: str, pdf_input: bool = False):
     }
 
 def thmpf_prompt(thm, pf):
-    return f"The following is a JSON schema for representing mathematical documents ranging from theorems with proofs to papers:\n\njson\n${SCHEMA_JSON}\n\n.Write the following document in the above schema.\n\n---\n${pf}\n---\n\nOutput ONLY the JSON document in the above schema.\n"
+    return f"The following is a JSON schema for representing mathematical documents ranging from theorems with proofs to papers:\n\njson\n${SCHEMA_JSON}\n\n.Write the following document in the above schema.\n\n---\nTheorem: ${thm}\n\n---\nProof: ${pf}\n---\n\nOutput ONLY the JSON document in the above schema.\n"
 
 def thmpf_reprompt(thm, pf, output, error_msg):
-    return f"An incorrect JSON document was received for the following JSON schema for representing mathematical documents ranging from theorems with proofs to papers:\n\njson\n${SCHEMA_JSON}\n\n.The mathematical document is given below.\n\n---\n${pf}\n---\n\nThe incorrect JSON document received is given below.\n\njson\n${output}\n\n The JSON document above does NOT validate with the JSON Schema and results in the following error:\n\nError\n${error_msg}\n\nPlease correct the JSON document so that it validates correctly with the JSON Schema. Output ONLY the complete corrected JSON document.\n"
+    return f"An incorrect JSON document was received for the following JSON schema for representing mathematical documents ranging from theorems with proofs to papers:\n\njson\n${SCHEMA_JSON}\n\n.The mathematical document is given below.\n\n---\nTheorem: ${thm}\n\n---\nProof: ${pf}\n---\n\nThe incorrect JSON document received is given below.\n\njson\n${output}\n\n The JSON document above does NOT validate with the JSON Schema and results in the following error:\n\nError\n${error_msg}\n\nPlease correct the JSON document so that it validates correctly with the JSON Schema. Output ONLY the complete corrected JSON document.\n"
 
 def soln_from_image_prompt(image_text: str = ""):
     return f"You are proficient in extracting Mathematical text from images. Your task is to rewrite the extracted text as a clean mathematical proof with full sentences, conjuctions etc. \n {ocr_rules}. The extracted text is:\n\n{image_text}. Do not write any extra explanations. Avoid unnecessary causal sentences."
@@ -64,3 +64,20 @@ Follow these rules:
 2.  Integrate Lean syntax to clarify reasoning (e.g., "we `apply` lemma `X`", "from `h` we have...").
 3.  Do not include conversational text, introductions, or summaries. Output only the proof.
 """
+
+def raw_llm_prompt(thm: str, pf: str = ""):
+    task = "You are a mathematics assistant for research mathematicians and advanced students who also helps with computer-assisted mathematics. You are tasked to write the given theorem and proof in Lean4."
+    prompt = f"""Write the following theorem and proof in Lean4. You have to write the lean code output within Lean Code block.
+For example: Your output will JUST be the following:
+```lean
+theorem my_theorem : ∀ x, x + 0 = x := by
+    intros x
+    rw [add_zero]
+```
+    
+The given theorem is :\n\n{thm}\n\nThe proof:\n\n{pf}.
+"""
+    return {
+        "prompt": prompt,
+        "task": task
+    }
