@@ -159,7 +159,7 @@ with st.sidebar:
     st.divider()
     st.warning("The Website is Under Development.")
 
-    with st.expander("Other Settings", expanded=False):
+    with st.expander("Other LeanAide Settings", expanded=False):
         st.info("These are side default settings, you may safely ignore them. More settings on top-right 3-dot menu.")
         sts.temperature = st.slider("Temperature:",
             min_value=0.0, max_value=1.0, value=0.8, step=0.1,
