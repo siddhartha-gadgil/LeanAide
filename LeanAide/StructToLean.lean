@@ -208,7 +208,7 @@ def commandToUseTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   | `(command| def $name:ident $args:bracketedBinder* := $value) =>
       `(tactic| use $value:term)
   | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
-  | _ => `(tactic| sorry)
+  | _ => throwError "commandToUseTactic failed"
 
 
 def inductionCase (name: String)(condition: String)
