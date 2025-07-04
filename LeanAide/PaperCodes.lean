@@ -753,8 +753,8 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
               let useStx ← commandToUseTactic (← defStx translator js statement value)
               let usestxs := #[useStx]
               return some <| ← `(tacticSeq| $usestxs*)
-        | _ => pure () -- placeholder for now
-      | none => pure () -- placeholder for now
+        | _ => pure ()
+      | none => pure ()
       let letStx ←
         commandToTactic
           (← defStx translator js statement value)
