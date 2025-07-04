@@ -102,26 +102,13 @@ Elaborate the statement of a theorem, returning the elaborated expression. The s
 def elabThmFromStx (stx : Syntax)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
-    match stx with
-    | `(theorem_statement| $_:docComment $[$_:theorem_head]? $args:bracketedBinder* : $type:term) =>
-      elabAux type args
-    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
-      elabAux type args
-    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term := $_:term) =>
-      elabAux type args
-    | `(theorem_statement|$vars:bracketedBinder* $_:docComment  $[$_:theorem_head]? $args:bracketedBinder* : $type:term ) =>
-      elabAux type (vars ++ args)
-    | `(theorem_statement|$type:term ) =>
-      elabAux type #[]
-    | _ => return Except.error s!"parsed to unmatched syntax {stx}"
-  where elabAux (type: TSyntax `term)
-    (args:  TSyntaxArray `Lean.Parser.Term.bracketedBinder) :
+    try
+      let typeStx ← typeFromThmSyntax stx
+      elabAux typeStx
+    catch _ =>
+      return Except.error s!"parsed to unmatched syntax {stx}"
+  where elabAux (typeStx: TSyntax `term) :
         TermElabM <| Except String Expr := do
-        let mut typeStx : TSyntax `term := type
-        for arg in args.reverse do
-          let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
-          typeStx := ⟨stx.raw⟩
-        typeStx ← fixSyntax typeStx
         Term.withLevelNames levelNames <|
         try
           let expr ← Term.withoutErrToSorry <|
