@@ -5,9 +5,15 @@ namespace LeanAide
 
 open Translate Lean Meta Elab Term Qq
 
+inductive RetranslateLevel
+  | simple -- simple retranslate prompt, e.g. `String → Option String`
+  | basic -- full retranslate prompt, e.g. `ElabError → Option String`
+  | general -- general retranslate prompt, e.g. `ElabError → Translator → Except (Array ElabError) Expr` with a translator
+deriving Inhabited, Repr, DecidableEq
+
 /-- Environment extension storing retranslation patterns -/
 initialize retranslateExt :
-    SimpleScopedEnvExtension (Name × Bool) (Array (Name × Bool)) ←
+    SimpleScopedEnvExtension (Name × RetranslateLevel) (Array (Name × RetranslateLevel)) ←
   registerSimpleScopedEnvExtension {
     addEntry := fun m n =>
         m.push n
@@ -15,6 +21,51 @@ initialize retranslateExt :
   }
 
 syntax (name := retranslate) "retranslate" : attr
+
+def retranslateFromBasicErrorsAux (err: ElabError) (prompt: ElabError → Option String) (translator: Translator := {}) (n: Nat := 3) :
+    TranslateM <| Except (Array ElabError) Expr := do
+  if let some fixPrompt := prompt err then
+    let results ← translator.server.mathCompletions fixPrompt n
+    match ← greedyBestExprWithErr? results with
+    | Except.ok e =>
+      return Except.ok e
+    | Except.error err =>
+      return .error err
+  else
+    return .error #[err]
+
+def retranslateFromStringAux (text: String) (prompt: String → Option String) (translator: Translator := {}) (n: Nat := 3) :
+    TranslateM <| Except (Array ElabError) Expr := do
+  if let some fixPrompt := prompt text then
+    let results ← translator.server.mathCompletions fixPrompt n
+    match ← greedyBestExprWithErr? results with
+    | Except.ok e =>
+      return Except.ok e
+    | Except.error err =>
+      return .error err
+  else
+    return .error #[.unparsed text "<dummy>" none]
+
+
+namespace RetranslateLevel
+
+def defTypeExpr : RetranslateLevel → Q(Type)
+  | .simple => q(String → Option String)
+  | .basic => q(ElabError → Option String)
+  | .general => q(ElabError → Translator → TranslateM (Except (Array ElabError) Expr))
+
+def defType : RetranslateLevel → Type
+  | .simple => String → Option String
+  | .basic => ElabError → Option String
+  | .general => ElabError → Translator → TranslateM (Except (Array ElabError) Expr)
+
+def liftToGeneral : (level: RetranslateLevel) →
+    level.defType → ElabError → Translator → TranslateM  (Except (Array ElabError) Expr)
+  | .simple, f => fun e t => retranslateFromStringAux e.text f t
+  | .basic, f  => fun e t => retranslateFromBasicErrorsAux e f t
+  | .general, f => f
+
+end RetranslateLevel
 
 initialize registerBuiltinAttribute {
   name := `retranslate
@@ -30,24 +81,61 @@ initialize registerBuiltinAttribute {
       unless ← isDefEq declTy expectedType do
         throwError
           s!"codegen: {decl} has type {declTy}, but expected {expectedSimpleType} or {expectedType}"
-    retranslateExt.add (decl, isSimple)
+    let level :=
+      if isSimple then
+        RetranslateLevel.simple
+      else
+        RetranslateLevel.basic
+    retranslateExt.add (decl, level)
 }
 
-#check Term.mkConst
+def retranslateAttempts : MetaM (Array (ElabError → Translator → TranslateM (Except (Array ElabError) Expr))) := do
+  let names := retranslateExt.getState (← getEnv)
+  names.mapM fun (n, level) => do
+    let f := Lean.mkConst n
+    let f ← unsafe evalExpr (RetranslateLevel.defType level) (RetranslateLevel.defTypeExpr level) f
+    pure <| RetranslateLevel.liftToGeneral level f
 
+def retranslateFromErrorsAux (errors: Array ElabError) (attempts: Array (ElabError → Translator → TranslateM (Except (Array ElabError) Expr))) (translator: Translator := {}):
+    TranslateM <| Except (Array ElabError) Expr := do
+  let mut errs := #[]
+  for attempt in attempts do
+    for err in errors do
+      match ←  attempt err translator with
+      | Except.ok expr =>
+        return .ok expr
+      | Except.error err' =>
+        errs := errs ++ err'
+  return .error errs
+
+def retranslateFromErrors (errs: Array ElabError)  (translator: Translator := {}) (n: Nat := 3) :
+    TranslateM <| Except (Array ElabError) Expr := do
+  retranslateFromErrorsAux errs (← retranslateAttempts) {translator with params := {translator.params with n := n}}
+
+/-
+Test code only below. Purge after testing.
+-/
 def retranslateSimplePrompts : MetaM (Array (String → Option String)) := do
   let names := retranslateExt.getState (← getEnv)
-  names.filterMapM fun (n, isSimple) => do
-    if isSimple then
+  names.filterMapM fun (n, level) => do
+    if level = .simple then
       let f := Lean.mkConst n
       unsafe evalExpr (String → Option String) q(String → Option String) f
     else
       pure none
 
-def retranslatePrompts : MetaM (Array (ElabError → Option String)) := do
+def allRetranslatePrompts (s: String) : MetaM (Array String) := do
+  let prompts ← retranslateSimplePrompts
+  return prompts.filterMap fun prompt? => prompt? s
+
+
+
+
+
+def retranslateSpecialPrompts : MetaM (Array (ElabError → Option String)) := do
   let names := retranslateExt.getState (← getEnv)
-  names.mapM fun (n, isSimple) => do
-    if isSimple then
+  names.mapM fun (n, level) => do
+    if level = .simple then
       let f := Lean.mkConst n
       let f ← unsafe evalExpr (String → Option String) q(String → Option String) f
       pure <| fun e => f e.text
@@ -55,27 +143,8 @@ def retranslatePrompts : MetaM (Array (ElabError → Option String)) := do
       let f := Lean.mkConst n
       unsafe evalExpr (ElabError → Option String) q(ElabError → Option String) f
 
-def allRetranslatePrompts (s: String) : MetaM (Array String) := do
-  let prompts ← retranslateSimplePrompts
-  return prompts.filterMap fun prompt? => prompt? s
 
-def retranslateFromStringsAux (ss: Array String) (prompts: Array (String → Option String)) (translator: Translator := {}) (n: Nat := 3) :
-    TranslateM <| Except (Array ElabError) Expr := do
-  let mut errs := #[]
-  for prompt in prompts do
-    for s in ss do
-      if let some fixPrompt := prompt s then
-        let results ← translator.server.mathCompletions fixPrompt n
-        match ← greedyBestExprWithErr? results with
-        | Except.ok e =>
-          return Except.ok e
-        | Except.error err =>
-          errs := errs.push err
-      else
-        continue
-  return .error errs.flatten
-
-def retranslateFromErrorsAux (ss: Array ElabError) (prompts: Array (ElabError → Option String)) (translator: Translator := {}) (n: Nat := 3) :
+def retranslateFromSpecilaErrorsAux (ss: Array ElabError) (prompts: Array (ElabError → Option String)) (translator: Translator := {}) (n: Nat := 3) :
     TranslateM <| Except (Array ElabError) Expr := do
   let mut errs := #[]
   for prompt in prompts do
@@ -92,17 +161,13 @@ def retranslateFromErrorsAux (ss: Array ElabError) (prompts: Array (ElabError �
   return .error errs.flatten
 
 
-def retranslateFromStrings (ss: Array String) (translator: Translator := {}) (n: Nat := 3) :
-    TranslateM <| Except (Array ElabError) Expr := do
-  let prompts ← retranslateSimplePrompts
-  retranslateFromStringsAux ss prompts translator n
 
 /--
 Attempt to fix the given errors by using the prompt function to generate a prompt for each error. The prompt is first to allow `evalUnsafe` to be used with target type.
 -/
-def retranslateFromErrors (errs: Array ElabError)  (translator: Translator := {}) (n: Nat := 3) :
+def retranslateFromSpecialErrors (errs: Array ElabError)  (translator: Translator := {}) (n: Nat := 3) :
     TranslateM <| Except (Array ElabError) Expr := do
-  retranslateFromErrorsAux errs (← retranslatePrompts) translator n
+  retranslateFromSpecilaErrorsAux errs (← retranslateSpecialPrompts) translator n
 
 
 end LeanAide
