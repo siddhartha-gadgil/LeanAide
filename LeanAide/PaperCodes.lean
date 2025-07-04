@@ -747,7 +747,12 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
       match goal? with
       | some goal =>
         match (← goal.getType).app2? ``Exists with
-        | some (_, .lam name domain body bi) => pure () -- match name and return use tactic
+        | some (_, .lam name domain body bi) =>
+            if name.toString == (js.getObjString? "variable_name" |>.getD "") then
+              IO.eprintln s!"binderName same as variable_name"
+              let useStx ← commandToUseTactic (← defStx translator js statement value)
+              let usestxs := #[useStx]
+              return some <| ← `(tacticSeq| $usestxs*)
         | _ => pure () -- placeholder for now
       | none => pure () -- placeholder for now
       let letStx ←
