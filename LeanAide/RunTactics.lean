@@ -270,16 +270,29 @@ def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): Term
   let tail := Syntax.mkStrLit tailText
   return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
-def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
+partial def extractInstanceIntros (goal: MVarId) (accum: List Name := []) :
     MetaM <| MVarId × List Name := do
-  match maxDepth, ← goal.getType with
-  | 0, _ =>
-    return (goal, accum)
-  | k + 1, Expr.forallE n type _ _ => do
+  match ← goal.getType with
+  | Expr.forallE n type _ BinderInfo.instImplicit => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
     let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
     let (_, goal') ← goal.intro n
-    extractIntros goal' k (accum ++ [n])
+    extractInstanceIntros goal'  (accum ++ [n])
+  | _ => do
+    return (goal, accum)
+
+
+partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
+    MetaM <| MVarId × List Name := do
+  match maxDepth, ← goal.getType with
+  | 0, _ =>
+    extractInstanceIntros goal accum
+  | k + 1, Expr.forallE n type _ bi => do
+    let hash := (← PrettyPrinter.ppExpr type).pretty.hash
+    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
+    let (_, goal') ← goal.intro n
+    let k' := if bi.isInstImplicit then k + 1 else k
+    extractIntros goal' k' (accum ++ [n])
   | k + 1, Expr.letE n type _ _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
     let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
