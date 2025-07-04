@@ -211,7 +211,7 @@ def commandToUseTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   | `(command| def $_:ident $_:bracketedBinder* := $value) =>
       `(tactic| use $value:term)
   | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
-  | _ => throwError "commandToUseTactic failed"
+  | _ => throwError s!"could not parse the definition {← PrettyPrinter.ppCommand cmd} in commandToUseTactic"
 
 
 def inductionCase (name: String)(condition: String)
