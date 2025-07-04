@@ -747,7 +747,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
       match goal? with
       | some goal =>
         match (← goal.getType).app2? ``Exists with
-        | some (_, .lam name domain body bi) =>
+        | some (_, .lam name _ _ _) =>
             if name.toString == (js.getObjString? "variable_name" |>.getD "") then
               IO.eprintln s!"binderName same as variable_name"
               let useStx ← commandToUseTactic (← defStx translator js statement value)
