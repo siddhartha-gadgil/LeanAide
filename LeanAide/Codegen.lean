@@ -179,6 +179,11 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
   goal.withContext do
+  IO.eprintln "Tring assumptions"
+  try
+    goal.assumption
+    return (← appendTactics accum (← `(tacticSeq| assumption)), none)
+  catch _ =>
   IO.eprintln "Trying exact tactics or automation"
   match ← getExactTactics? (← goal.getType) with
   | some code => do
@@ -259,6 +264,9 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
+    if ← goal.isAssigned then
+      return tacs
+    else
     IO.eprintln s!"codegen: goal still open after tactics: {← ppExpr <| ← goal.getType}"
     IO.eprintln "Local context:"
     let lctx ← getLCtx
@@ -345,6 +353,23 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
     throwError
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
 
+syntax (name := codegenCmd) "#codegen" term : command
+open Command Elab Term Tactic
+@[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab := fun stx => do
+  match stx with
+  | `(command| #codegen $s) =>
+    Command.liftTermElabM do
+      let source : Q(Json) ← elabTerm s q(Json)
+      let e := q(getCode CodeGenerator.default none ``commandSeq $source)
+      let codeM? ←
+        unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) q((TranslateM (Option (TSyntax ``commandSeq)))) e
+      let code? ←  codeM?.run' {}
+      let code := code?.getD (← `(commandSeq|#check "No code generated"))
+      TryThis.addSuggestion stx code
+  | _ => throwUnsupportedSyntax
+
+macro "#codegen" source:json : command =>
+  `(command| #codegen json% $source)
 
 end Codegen
 

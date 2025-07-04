@@ -572,7 +572,8 @@ def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do
   | (.cdecl _ _ name type bi kind) :: tail =>
     logInfo m!"decl: {name}"
     withLocalDecl name bi type (kind := kind) fun x => do
-      let inner ← relLCtxAux (goal.instantiate1 x) tail
+      let inner ← relLCtxAux goal tail
+      let inner := inner.instantiate1 x
       mkForallFVars #[x] inner
 
 
@@ -770,7 +771,10 @@ def Lean.Json.getKVorType? (js : Json) : Option (String × Json) :=
   match js with
   | Json.obj m =>
     match m.toArray with
-    | #[⟨k, v⟩] => some (k, v)
+    | #[⟨"type", .str key⟩] =>
+        (key, json% {})
+    | #[⟨k, v⟩] =>
+      some (k, v)
     | jsArr =>
       let keys := jsArr.map (fun ⟨k, _⟩ => k)
       let keyVals := jsArr.map (fun ⟨k, v⟩ => (k, v))

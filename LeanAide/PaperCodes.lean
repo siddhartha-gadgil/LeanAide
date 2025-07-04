@@ -74,14 +74,13 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
     return (goal, accum)
   | k + 1, Expr.forallE n type _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
+    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
     addPrelude s!"Fix {n} : {← ppExpr type}"
     let (_, goal') ← goal.intro n
     consumeIntros goal' k (accum ++ [n])
   | k + 1, Expr.letE n type value _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then Name.mkNum n.components[0]!  hash.toNat else n
-    let n := if n.isInternal then n.components[0]! else n
+    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
     addPrelude s!"Fix {n} : {← ppExpr type} := {← ppExpr value}"
     let (_, goal') ← goal.intro n
     consumeIntros goal' k (accum ++ [n])
@@ -724,7 +723,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   },
   "required": [
     "type",
-    "variable"
+    "variable_name"
   ],
   "additionalProperties": false
 }
@@ -732,9 +731,10 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
 
 /--
 Generate code for a `let_statement`. If the let statement has a value, it generates a command or tactic that defines the variable with the given value. If there is no value, it simply adds a prelude statement.
+If goal is a `there exists` statement and binderName matches variable_name, it returns `use` tactic.
 -/
 @[codegen "let_statement"]
-def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
+def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
   match s, js with
   | ``tacticSeq, js => do
     let statement := statement js
@@ -745,6 +745,18 @@ def letCode (translator : CodeGenerator := {})(_ : Option (MVarId)) : (kind: Syn
       addPrelude statement
       return none
     | some value =>
+      match goal? with
+      | some goal =>
+        match (← goal.getType).app2? ``Exists with
+        | some (_, .lam name _ _ _) =>
+            IO.eprintln s!"goal is a there exists statement"
+            if name.toString == (js.getObjString? "variable_name" |>.getD "") then
+              IO.eprintln s!"binderName {name.toString} same as variable_name"
+              let useStx ← commandToUseTactic (← defStx translator js statement value)
+              let usestxs := #[useStx]
+              return some <| ← `(tacticSeq| $usestxs*)
+        | _ => pure ()
+      | none => pure ()
       let letStx ←
         commandToTactic
           (← defStx translator js statement value)
