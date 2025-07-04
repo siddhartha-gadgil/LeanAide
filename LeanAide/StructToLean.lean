@@ -201,6 +201,18 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
   | _ => `(tactic| sorry)
 
+/--
+Converts definition to `use`
+-/
+def commandToUseTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
+  match cmd with
+  | `(command| def $_:ident $_:bracketedBinder* : $_ := $value) =>
+      `(tactic| use $value:term)
+  | `(command| def $_:ident $_:bracketedBinder* := $value) =>
+      `(tactic| use $value:term)
+  | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
+  | _ => throwError s!"could not parse the definition {← PrettyPrinter.ppCommand cmd} in commandToUseTactic"
+
 
 def inductionCase (name: String)(condition: String)
     (pf: Array Syntax.Tactic) : TermElabM Syntax.Tactic := do
