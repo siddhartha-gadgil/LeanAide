@@ -2,20 +2,26 @@ import streamlit as st
 from streamlit import session_state as sts
 from llm_response import get_supported_models, provider_info
 from logging_utils import post_env_args
+from api_server import HOST, PORT
 # Initialize session state variables
 # Global variables for session state initialization
 
 NONE_INIT_KEYS = [
     "self_selection", "val_input", "result", "temp_structured_json", "prompt_proof_guide", "prompt_proof_task",
     "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", "format_index", "thm_details", 
-    "uploaded_pdf", "genai_proof_button"
+    "uploaded_pdf", "genai_proof_button",
+    # For benchmark
+    "bm_input_opt", "bm_json_dataset", "bm_single_thm", "bm_single_proof", "bm_time_taken", "bm_total_problems", "bm_display_table", "bm_evaluator", "bm_status_text", "bm_progress_bar", "bm_results_container"
 ]
 
 FALSE_INIT_KEYS = [
-    "request_button", "self_input_button", "log_server_cleaned",
-    "server_output_success", "valid_input", "log_cleaned", "input_paper",
-    "generation_complete", "input_image_paper", "input_pdf_paper", "input_image_proof", 
-    "input_image_theorem", "input_pdf_proof", "input_pdf_theorem", "gen_ai_proof", "server_thm_details",
+    "request_button", "self_input_button", "log_server_cleaned", "server_output_success",
+    "valid_input", "log_cleaned", "input_paper", "generation_complete",
+    "input_pdf_paper", "input_pdf_proof", "input_pdf_theorem",
+    "gen_ai_proof", "server_thm_details",
+    # For benchmark
+    "bm_run_button", "bm_started", "bm_result_success"
+    
 ]
 
 LLM_INIT_KEYS = [
@@ -34,6 +40,11 @@ for key in FALSE_INIT_KEYS:
 
 if "selected_tasks" not in sts:
     sts.selected_tasks = []
+
+if "api_host" not in sts:
+    sts.api_host = HOST
+if "api_port" not in sts:
+    sts.api_port = PORT
 
 # Page Setup
 intro_page = st.Page(
@@ -58,12 +69,18 @@ logs_page = st.Page(
     title = "Logs",
     icon = ":material/bug_report:",
 )
+benchmark_page = st.Page(
+    page = "tabs/benchmark.py",
+    title = "Benchmark",
+    icon = ":material/speed:",
+)
 ## Navigation
 pg = st.navigation(pages = [
     intro_page,
-    server_response_page,
     structured_json_page,
-    logs_page
+    server_response_page,
+    logs_page,
+    benchmark_page
 ])
 
 for state in (NONE_INIT_KEYS + FALSE_INIT_KEYS + LLM_INIT_KEYS + ["selected_tasks"]):
@@ -142,6 +159,17 @@ with st.sidebar:
     st.divider()
     st.warning("The Website is Under Development.")
 
+    with st.expander("Other LeanAide Settings", expanded=False):
+        st.info("These are side default settings, you may safely ignore them. More settings on top-right 3-dot menu.")
+        sts.temperature = st.slider("Temperature:",
+            min_value=0.0, max_value=1.0, value=0.8, step=0.1,
+            help="Set the temperature for the model's responses. Default: 0.8",
+        )
+        sts.llm_url = st.text_input(
+            "URL to query (for a local server)",
+            help="Specify the URL for the LLM API. Example: `https://api.mistral.ai/v1/chat/completions`"
+        )
+
     ## Session State visibility
     if st.checkbox("Show Session State", value=False, help = "Session State values, used for debugging."):
         st.sidebar.write("Session State:")
@@ -152,17 +180,6 @@ with st.sidebar:
             if isinstance(v, str) and len(v) > 400:
                 masked_state[k] = f"{v[:150]} ... =**Truncated**= ... {v[-150:]}"
         st.sidebar.json(masked_state)
-
-    with st.expander("Other Settings", expanded=False):
-        st.info("These are side default settings, you may safely ignore them. More settings on top-right 3-dot menu.")
-        sts.temperature = st.slider("Temperature:",
-            min_value=0.0, max_value=1.0, value=0.8, step=0.1,
-            help="Set the temperature for the model's responses. Default: 0.8",
-        )
-        sts.llm_url = st.text_input(
-            "URL to query (for a local server)",
-            help="Specify the URL for the LLM API. Example: `https://api.mistral.ai/v1/chat/completions`"
-        )
 
 if sts.llm_api_key and sts.llm_provider:
     # Post environment arguments to the server
