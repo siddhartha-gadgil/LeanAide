@@ -723,7 +723,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   },
   "required": [
     "type",
-    "variable"
+    "variable_name"
   ],
   "additionalProperties": false
 }
@@ -731,6 +731,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
 
 /--
 Generate code for a `let_statement`. If the let statement has a value, it generates a command or tactic that defines the variable with the given value. If there is no value, it simply adds a prelude statement.
+If goal is a `there exists` statement and binderName matches variable_name, it returns `use` tactic.
 -/
 @[codegen "let_statement"]
 def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
@@ -747,9 +748,15 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
       match goal? with
       | some goal =>
         match (← goal.getType).app2? ``Exists with
-        | some (_, .lam name domain body bi) => pure () -- match name and return use tactic
-        | _ => pure () -- placeholder for now
-      | none => pure () -- placeholder for now
+        | some (_, .lam name _ _ _) =>
+            IO.eprintln s!"goal is a there exists statement"
+            if name.toString == (js.getObjString? "variable_name" |>.getD "") then
+              IO.eprintln s!"binderName {name.toString} same as variable_name"
+              let useStx ← commandToUseTactic (← defStx translator js statement value)
+              let usestxs := #[useStx]
+              return some <| ← `(tacticSeq| $usestxs*)
+        | _ => pure ()
+      | none => pure ()
       let letStx ←
         commandToTactic
           (← defStx translator js statement value)

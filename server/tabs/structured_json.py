@@ -379,7 +379,6 @@ def handle_general_input(key: str):
         index = sts.format_index  # Default to PDF for paper, else default to first option
     )
     if "image" in format_opt.lower():
-        sts[f"input_image_{key}"] = True
         sts.format_index = input_formats.index(format_opt)
         handle_image_input(key) 
     elif "pdf" in format_opt.lower():
@@ -389,7 +388,6 @@ def handle_general_input(key: str):
     else:
         for _elem in ["theorem", "proof", "paper"]:
             sts[f"input_pdf_{_elem}"] = False
-            sts[f"input_image_{_elem}"] = False
         if "markdown" in format_opt.lower():
             sts.format_index = input_formats.index(format_opt)
             handle_textual_file_input(key, extension="md")

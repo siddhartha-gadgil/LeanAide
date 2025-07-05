@@ -4,6 +4,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any, Tuple, Type
+import urllib.parse
 
 import socket
 import streamlit as st
@@ -13,9 +14,8 @@ from logging_utils import log_write
 import requests
 
 from logging_utils import log_server, log_buffer_clean
-from api_server import HOST, PORT
+from api_server import HOST
 
-HOST = os.environ.get("HOST", "localhost")
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
 sys.path.append(HOMEDIR)
 schema_path = os.path.join(str(HOMEDIR), "resources", "PaperStructure.json")
@@ -192,16 +192,51 @@ def action_copy_download(key: str, filename: str, copy_text: str = "", usage: st
     with col2:
         download_file(text, filename, key= key, usage=usage)
 
-def preview_text(key: str, default_text: str = "", usage: str = ""):
+def preview_text(key: str, default_text: str = "", caption = "", usage: str = ""):
     """
     Display a preview of the text in a text area with a copy and download button.
     """
-    with st.expander(f"Preview Text {key.capitalize()}", expanded=False):
+    if not caption:
+        caption = key
+    with st.expander(f"Preview Text {caption.capitalize()}", expanded=False):
         lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}_{usage}").lower()
         if lang == "markdown":
             st.markdown(sts[key] if sts[key] else default_text)
         else:
             st.code(sts[key] if sts[key] else default_text, wrap_lines = True)
+            
+def lean_code_cleanup(lean_code: str, elaborate: bool = False) -> str:
+    """
+    Cleans up the error texts in the lean code.
+    """          
+    final_code = []
+    keywords_to_remove = ["#check", "trace", "Error: codegen:"]
+    keywords_to_remove += ["import"] if elaborate else []
+    for line in lean_code.splitlines():
+        if not any(keyword in line for keyword in keywords_to_remove):
+            final_code.append(line)
+
+    if elaborate:
+        return "\n".join(final_code).strip()
+    return "import Mathlib\n" + "\n".join(final_code) if "import Mathlib" not in lean_code else "\n".join(final_code)
+
+def lean_code_button(result_global_key: str, key: str, task: str): 
+    code = sts[result_global_key].get(key, "-- No Lean code available")
+    if code not in ["-- No Lean code available", "No data available."]:
+        col_1, col_2 = st.columns([1, 3])
+        with col_1:
+            code = f"import Mathlib\n{code.strip()}" if "import Mathlib" not in code else code
+            st.link_button("Open Lean Web IDE", help="Open the Lean code in the Lean Web IDE.", url = f"https://live.lean-lang.org/#code={urllib.parse.quote(code)}")
+
+        with col_2:
+            if st.button("Cleanup Lean Code", help="Cleanup the Lean code to remove extra error messages and add Mathlib import in the beginning. This will not affect the performance of code", key=f"cleanup_{task}"):
+                try:
+                    sts[result_global_key][key] = lean_code_cleanup(code)
+                    st.rerun()
+                    log_write("Streamlit", "Lean Code Cleanup: Success")
+                except Exception as e:
+                    st.error(f"Error while cleaning up Lean code: {e}")
+                    log_write("Streamlit", f"Lean Code Cleanup Error: {e}")
 
 def log_section():
     st.subheader("Server Website Stdout/Stderr", help = "Logs are written to LeanAide-Streamlit-Server Local buffer and new logs are updated after SUBMIT REQUEST button is clicked.")
@@ -272,11 +307,6 @@ def request_server(request_payload: dict, task_header: str, success_key: str, re
         # Handle the output for each tasks
 
 
-if "api_host" not in sts:
-    sts.api_host = HOST
-if "api_port" not in sts:
-    sts.api_port = PORT
-
 def host_information():
     localhost_serv = st.checkbox(
         "Your backend server is running on localhost", value=False, help="Check this if you want to call the backend API running on localhost.",
@@ -284,10 +314,10 @@ def host_information():
 
     if not localhost_serv:
         local_ip = socket.gethostbyname(socket.gethostname())
-        local_ip = "localhost" if str(local_ip).strip() == "127.0.0.1" else local_ip
+        local_ip = "localhost" if str(local_ip).strip().startswith("127.") else local_ip
         api_host = st.text_input(
             "Backend API Host: (default: HOST or localhost IP)",
-            value= HOST if HOST not in ["localhost", "127.0.0.1"] else local_ip,
+            value= HOST if not HOST.strip().startswith("127.") else local_ip,
             help="Specify the hostname or IP address where the proof server is running. Default is localhost.",
         )
         sts.api_host = api_host

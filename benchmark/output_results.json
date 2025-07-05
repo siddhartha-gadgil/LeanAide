@@ -1,0 +1,28 @@
+[
+    {
+        "theorem": "The determinant of a 2x2 Identity Matrix is 1",
+        "proof": "Assume $I_2$ is a $2 \\times 2$ identity matrix given by:\n\n\\[ I_2 = \\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix} \\]\n\nDefine the determinant of a $2 \\times 2$ matrix $A = \\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$ by the formula:\n\n\\[ \\det(A) = ad - bc \\]\n\nOur goal is to show that the determinant of the identity matrix $I_2$ is 1.\n\nSubstitute the entries of $I_2$ into the determinant formula. Let $a = 1$, $b = 0$, $c = 0$, and $d = 1$. Then by the formula for the determinant of a $2 \\times 2$ matrix, we have:\n\n\\[ \\det(I_2) = (1)(1) - (0)(0) \\]\n\nSimplifying, we obtain:\n\n\\[ \\det(I_2) = 1 - 0 \\]\n\n\\[ \\det(I_2) = 1 \\]\n\nTherefore, the determinant of the $2 \\times 2$ identity matrix $I_2$ is 1.",
+        "lean_code": "",
+        "structured_proof": {},
+        "time_capture": {
+            "thm_details": 0.0010945796966552734,
+            "genai_proof": 4.100413084030151,
+            "structured_json": 2.4080276489257812e-05,
+            "lean_code": 0.0007035732269287109
+        },
+        "id": "1"
+    },
+    {
+        "theorem": "The sum of 2 even numbers is even",
+        "proof": "**Proof:**\n\nAssume $a$ and $b$ are even integers. By definition of even integers, there exist integers $m$ and $n$ such that $a = 2m$ and $b = 2n$. \n\nLet $S$ be the sum of $a$ and $b$, i.e., $S = a + b$. Substitute the expressions for $a$ and $b$ to obtain:\n\n\\[ S = 2m + 2n \\]\n\nIt follows that:\n\n\\[ S = 2(m + n) \\]\n\nBy the properties of integers, the sum $m + n$ is an integer. Let $k = m + n$. Thus, $k$ is an integer.\n\nTherefore, we have:\n\n\\[ S = 2k \\]\n\nThis shows by the definition of even numbers that $S$ is even. \n\nHence, the sum of two even numbers is even.",
+        "lean_code": "",
+        "structured_proof": {},
+        "time_capture": {
+            "thm_details": 0.00039958953857421875,
+            "genai_proof": 8.342061996459961,
+            "structured_json": 2.1219253540039062e-05,
+            "lean_code": 0.0005955696105957031
+        },
+        "id": "2"
+    }
+]

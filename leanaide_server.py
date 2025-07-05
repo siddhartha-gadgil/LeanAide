@@ -1,6 +1,7 @@
 import importlib.util
 import multiprocessing
 import os
+import shutil
 import signal
 import socket
 import subprocess
@@ -20,7 +21,7 @@ SERVER_FILE = os.path.join(serv_dir, "api_server.py")
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 
 for arg in sys.argv[1:]:
-    if arg not in ["--ui", "--no-server", "--ns", "--help", "-h"]:
+    if arg not in ["--ui", "--no-server", "--ns", "--clear-cache", "--help", "-h"]:
         COMMAND += " " + arg
 
 # Ensure the environment file exists
@@ -123,17 +124,65 @@ if __name__ == "__main__":
     # Parse command line arguments
     if len(sys.argv) > 1:
         if sys.argv[1] in ["--help", "-h"]:
-            print("Usage: leanaide_server.py [--ui] [--no-server | --ns] [--help | -h] [additional arguments]")
-            print("Options:")
-            print("  --ui                   Run the Streamlit UI (default: API server only)")
-            print("  --no-server | --ns     Don't run the backend server (use with --ui)")
-            print("  --help | -h            Show this help message")
-            print("Any other argument will be passed on to the process `lake exe leanaide_process` as it is. Check out `lake exe leanaide_process --help` for more details.")
+            help_text = """
+Usage: leanaide_server.py [FLAGS] [LEANAIDE_PROCESS_FLAGS]
+
+Server FLAGS:
+    --help | -h            Show this help message
+    --ui                   Run the Streamlit UI (default: API server only)
+    --no-server | --ns     Don't run the backend server (use with --ui)
+    --clear-cache          Clear the cache before starting the server
+
+LEANAIDE_PROCESS_FLAGS (passed to `lake exe leanaide_process`):
+    -h, --help                    Prints this message.
+    --include_fixed               Include the 'Lean Chat' fixed prompts.
+    -p, --prompts : Nat           Number of example prompts (default 20).
+    --descriptions : Nat          Number of example descriptions (default 2).
+    --concise_descriptions : Nat  Number of example concise descriptions
+                    (default 2).
+    --leansearch_prompts : Nat    Number of examples from LeanSearch
+    --moogle_prompts : Nat        Number of examples from Moogle
+    -n, --num_responses : Nat     Number of responses to ask for (default 10).
+    -t, --temperature : Nat       Scaled temperature `t*10` for temperature `t`
+                    (default 8).
+    -m, --model : String          Model to be used (default `gpt-4o`)
+    --azure                       Use Azure instead of OpenAI.
+    --gemini                      Use Gemini with OpenAI API.
+    --url : String                URL to query (for a local server).
+    --examples_url : String       URL to query for nearby embeddings (for a
+                    generic server).
+    --auth_key : String           Authentication key (for a local or generic
+                    server).
+    --show_prompt                 Output the prompt to the LLM.
+    --show_elaborated             Output the elaborated terms
+    --max_tokens : Nat            Maximum tokens to use in the translation.
+    --no_sysprompt                The model has no system prompt (not relevant
+                    for GPT models).
+"""
+            print(help_text)
+            sys.exit(0)
             sys.exit(0)
 
     run_ui = "--ui" in sys.argv
     run_server = "--no-server" not in sys.argv and "--ns" not in sys.argv
     missing_st = True
+
+    if "--clear-cache" in sys.argv:
+        cache_dir = os.path.join(home_dir, ".leanaide_cache")
+        try:
+            for subdir in os.listdir(cache_dir):
+                for item in subdir:
+                    item_path = os.path.join(cache_dir, subdir, item)
+                    if os.path.isfile(item_path) or os.path.islink(item_path):
+                        os.unlink(item_path)
+                    elif os.path.isdir(item_path):
+                        shutil.rmtree(item_path)
+
+            print("Cache cleared successfully. Starting fresh.")
+            for dirname in ["prompt", "chat"]:
+                os.makedirs(os.path.join(cache_dir, dirname), exist_ok=True)
+        except Exception as e:
+            print(f"Error clearing cache: {e}")
 
     if run_ui:
         print("\nRunning Streamlit UI.")
