@@ -603,8 +603,8 @@
     "calculation": {
       "type": "object",
       "description": "An equation, inequality, short calculation etc.",
-      "minProperties": 1,
-      "maxProperties": 1,
+      "minProperties": 2,
+      "maxProperties": 2,
       "properties": {
         "inline_calculation": {
           "type": "string",
@@ -617,7 +617,10 @@
             "$ref": "#/$defs/calculation_step"
           }
         }
-      }
+      },
+      "required": [
+        "type"
+      ]
     },
     "calculation_step": {
       "type": "string",
