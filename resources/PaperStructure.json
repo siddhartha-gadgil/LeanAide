@@ -606,6 +606,11 @@
       "minProperties": 2,
       "maxProperties": 2,
       "properties": {
+        "type": {
+          "type": "string",
+          "const": "calculation",
+          "description": "The type of this logical step."
+        },
         "inline_calculation": {
           "type": "string",
           "description": "A simple calculation or computation written as a single line."
