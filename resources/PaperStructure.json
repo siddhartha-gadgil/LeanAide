@@ -254,7 +254,7 @@
     },
     "Definition": {
       "type": "object",
-      "description": "A mathematical definition.",
+      "description": "A mathematical definition. DO NOT include additional properties in the definition. Use a separate `assert_statement` for additional properties.",
       "properties": {
         "type": {
           "type": "string",
@@ -264,6 +264,10 @@
         "definition": {
           "type": "string",
           "description": "Definition content."
+        },
+        "name" : {
+          "type": "string",
+          "description": "The name of the defined object, concept or property. This should be a single word and appear in the definition text."
         },
         "label": {
           "type": "string",
@@ -298,7 +302,8 @@
         "type",
         "label",
         "header",
-        "definition"
+        "definition",
+        "name"
       ],
       "additionalProperties": false
     },
