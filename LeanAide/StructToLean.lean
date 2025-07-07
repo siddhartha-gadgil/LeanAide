@@ -51,7 +51,6 @@ def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
 
 namespace LeanAide
 
-
 def addFullStop (s: String) : String :=
   if s.endsWith "." then s else s ++ "."
 
@@ -537,7 +536,7 @@ partial def existsVarTypes (type: Expr) : MetaM <| Option (Array <| Name × Expr
       sorry
   | _ => return none
 
-end CodeGenerator
+
 
 open LeanAide.CodeGenerator
 example (h : ∃ n m : Nat, ∃ _k: Nat, n + m  = 3) : True := by
