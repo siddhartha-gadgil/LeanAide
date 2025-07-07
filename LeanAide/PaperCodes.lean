@@ -541,9 +541,18 @@ where
             runTacticsAndGetTryThisI type #[(← `(tactic| hammer))]
           let proofStx ←
             `(tacticSeq| $proof*)
-          let name := mkIdent name.toName
+          let thm ← withPreludes claim
+          let name ← translator.server.theoremName thm
+          let name :=
+            if name.toString = "[anonymous]" then
+              let hash := type.hash
+              let name := s!"thm_{hash}"
+              name.toName
+            else
+              name
+          let name := mkIdent name
           let head ←
-            `(command| def $name : $typeStx := by $proofStx)
+            `(command| theorem $name : $typeStx := by $proofStx)
           let resolvedCmds ←
             CodeGenerator.cmdResolveExistsHave typeStx
           toCommandSeq <| #[head] ++ resolvedCmds
