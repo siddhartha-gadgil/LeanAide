@@ -507,38 +507,50 @@ Generate code for a definition. It processes the `definition` field to generate 
 -/
 @[codegen "definition"]
 def defCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `command, js => do
-  let stx ← defCmdStx js
-  `(command| $stx)
 | _, `commandSeq, js => do
   let stx ← defCmdStx js
-  let stxs := #[stx]
-  `(commandSeq | $stxs*)
+  `(commandSeq | $stx)
 | _, ``tacticSeq, js => do
   let stx ← defCmdStx js
-  let tac ← commandToTactic stx
-  let tacs := #[tac]
-  `(tacticSeq| $tacs*)
-| _, `tactic, js => do
-  let stx ← defCmdStx js
-  let tac ← commandToTactic stx
-  `(tactic| $tac)
+  let tac ← commandSeqToTacticSeq stx
+  `(tacticSeq| $tac)
 | _, kind, _ => throwError
     s!"codegen: 'definition' does not work for kind {kind}"
 where
   defCmdStx (js: Json) :
-    TranslateM <| Syntax.Command :=
+    TranslateM <| TSyntax ``commandSeq :=
     withoutModifyingState do
     let .ok statement :=
       js.getObjValAs? String "definition" | throwError
         s!"codegen: no 'definition' found in 'definition'"
-    let cmd ← match
+    let .ok name :=
+      js.getObjValAs? String "name" | throwError
+        s!"codegen: no 'name' found in 'definition'"
+    match
       ← translator.translateDefCmdM? statement with
-      | .ok cmd => pure cmd
-      | .error errs => throwError
-        let outputs := errs.map (·.text)
-        s!"codegen: no definition translation found for {statement}; outputs: {outputs}"
-    return cmd
+      | .ok cmd =>
+        let cmds := #[cmd]
+        `(commandSeq| $cmds*)
+      | .error errs =>
+        try
+          let claim := s!"There exists {name} such that:¬{statement}"
+          let type ←
+            translator.translateToPropStrict claim
+          let typeStx ← delabDetailed type
+          let proof ←
+            runTacticsAndGetTryThisI type #[(← `(tactic| hammer))]
+          let proofStx ←
+            `(tacticSeq| $proof*)
+          let name := mkIdent name.toName
+          let head ←
+            `(command| def $name : $typeStx := by $proofStx)
+          let resolvedCmds ←
+            CodeGenerator.cmdResolveExistsHave typeStx
+          toCommandSeq <| #[head] ++ resolvedCmds
+        catch e =>
+          let innerMsg ←  e.toMessageData.format
+          let outputs := errs.map (·.text)
+          throwError s!"codegen: no definition translation found for {statement}; outputs: {outputs}\nError when trying existential definition:\n{innerMsg}"
 
 
 /- LogicalStepSequence

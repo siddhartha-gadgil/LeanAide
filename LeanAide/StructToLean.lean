@@ -201,6 +201,11 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
   | _ => `(tactic| sorry)
 
+def commandSeqToTacticSeq (cmdSeq: TSyntax ``commandSeq) : TermElabM <| TSyntax ``tacticSeq := do
+  let cmds := commands cmdSeq
+  let tactics ← cmds.mapM commandToTactic
+  `(tacticSeq| $tactics:tactic*)
+
 /--
 Converts definition to `use`
 -/
