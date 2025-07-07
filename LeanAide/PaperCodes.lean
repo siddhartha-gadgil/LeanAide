@@ -1077,6 +1077,7 @@ where typeStx (js: Json) :
     getResultsUsed translator.toTranslator js
   let tac ← `(tactic| hammer [ $resultsUsed,* ])
   let tacs ← runTacticsAndGetTryThisI (type) #[tac]
+  addPrelude <| "Assume: " ++ claim
   return (← delabDetailed type, ← `(tacticSeq| $tacs*))
 
 /- calculation
