@@ -1056,7 +1056,7 @@
     },
     "Paragraph": {
       "type": "object",
-      "description": "A block of plain text, potentially containing inline references.",
+      "description": "A block of **plain** text, potentially containing inline references but NOT CONTAINING ANY MATHEMATICS other than motivational remarks.",
       "properties": {
         "type": {
           "type": "string",

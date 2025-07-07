@@ -45,7 +45,7 @@ def Translator.translateToPropStrictAux
           return type
       catch _ =>
         continue
-  throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}; all translations: {output}"
+  throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}; all translations:\n{output.foldl (init := "") (· ++ "\n" ++ ·)}"
 
 /--
 Translating to a proposition in Lean, using the `translateToProp?` method of the `Translator`. Various checks are performed to ensure the type is valid and does not contain `sorry` or metavariables. An error is thrown if the translation fails or if the type is not valid.
@@ -529,11 +529,11 @@ where
     match
       ← translator.translateDefCmdM? statement with
       | .ok cmd =>
-        let cmds := #[cmd]
+        let cmds := #[← `(#check "Obtained definition"), cmd]
         `(commandSeq| $cmds*)
       | .error errs =>
         try
-          let claim := s!"There exists {name} such that:¬{statement}"
+          let claim := s!"There exists {name} such that:\n{statement}"
           let type ←
             translator.translateToPropStrict claim
           let typeStx ← delabDetailed type
@@ -541,9 +541,18 @@ where
             runTacticsAndGetTryThisI type #[(← `(tactic| hammer))]
           let proofStx ←
             `(tacticSeq| $proof*)
-          let name := mkIdent name.toName
+          let thm ← withPreludes claim
+          let name ← translator.server.theoremName thm
+          let name :=
+            if name.toString = "[anonymous]" then
+              let hash := type.hash
+              let name := s!"thm_{hash}"
+              name.toName
+            else
+              name
+          let name := mkIdent name
           let head ←
-            `(command| def $name : $typeStx := by $proofStx)
+            `(command| theorem $name : $typeStx := by $proofStx)
           let resolvedCmds ←
             CodeGenerator.cmdResolveExistsHave typeStx
           toCommandSeq <| #[head] ++ resolvedCmds
@@ -1068,6 +1077,7 @@ where typeStx (js: Json) :
     getResultsUsed translator.toTranslator js
   let tac ← `(tactic| hammer [ $resultsUsed,* ])
   let tacs ← runTacticsAndGetTryThisI (type) #[tac]
+  addPrelude <| "Assume: " ++ claim
   return (← delabDetailed type, ← `(tacticSeq| $tacs*))
 
 /- calculation

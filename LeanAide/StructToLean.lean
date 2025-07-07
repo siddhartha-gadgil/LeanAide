@@ -51,7 +51,6 @@ def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
 
 namespace LeanAide
 
-
 def addFullStop (s: String) : String :=
   if s.endsWith "." then s else s ++ "."
 
@@ -504,40 +503,49 @@ partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term)
     logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
 
-partial def existsVarTypes (type: Syntax.Term) : MetaM <| Option (Array <| Syntax.Ident × Syntax.Term) := do
+partial def existsVarTypesStx (type: Syntax.Term) : MetaM <| Option (Array <| Syntax.Ident × Syntax.Term) := do
   match type with
   | `(∃ $n:ident, $t) => do
-    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
   | `(∃ ($n:ident: $_), $t) => do
-    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
   | `(∃ $n:ident: $_, $t) => do
-    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
   | `(∃ $n:ident $ms*, $t) => do
     let ms' := ms.toList.toArray
     let t' ← `(∃ $ms':binderIdent*, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
   | `(∃ ($n:ident :  $_) $ms*, $t) => do
     let t' ← `(∃ $ms*, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
   | `(∃ ($n:ident $ms* : $type), $t) => do
     let ms' := ms.toList.toArray
     let t' ← `(∃ $ms':binderIdent* : $type, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
   | `(∃ $n:ident $ms* : $type, $t) => do
     let ms' := ms.toList.toArray
     let t' ← `(∃ $ms':binderIdent* : $type, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
   | _ =>
     -- logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
 
+partial def existsVarTypes (type: Expr) : MetaM <| Option (Array <| Name × Expr) := do
+  match type.app2? ``Exists with
+  | some (_, .lam name type body binderInfo) =>
+      sorry
+  | _ => return none
+
+
+
+open LeanAide.CodeGenerator
 example (h : ∃ n m : Nat, ∃ _k: Nat, n + m  = 3) : True := by
   rcases h with ⟨n, m, k, h⟩
   trivial
 
 elab "#exists_varTypes" type:term : command => do
   Command.liftTermElabM do
-  match ← existsVarTypes type with
+  match ← existsVarTypesStx type with
   | some varTypes =>
     logInfo s!"Var types: {varTypes.size}"
     for (var, type) in varTypes do
@@ -611,7 +619,7 @@ elab "#tactic_trythis" goal:term "by" tacticCode:tactic "log" : command =>
       return ()
 
 def resolveExistsHave (type : Syntax.Term) (typeTerm? : Option Syntax.Term :=none) : TermElabM <| Array Syntax.Tactic := do
-  let existsVarTypes? ← existsVarTypes type
+  let existsVarTypes? ← existsVarTypesStx type
   let existsVarTypes := existsVarTypes?.getD #[]
   let existsVarTypeIdents := existsVarTypes.map fun (n, t) =>
     let hsh := hash t.raw.reprint
@@ -626,7 +634,7 @@ def resolveExistsHave (type : Syntax.Term) (typeTerm? : Option Syntax.Term :=non
       `(tactic| let ⟨$name, $tId⟩  := $rhs:term)
 
 def cmdResolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Command := do
-  let existsVarTypes? ← existsVarTypes type
+  let existsVarTypes? ← existsVarTypesStx type
   let existsVarTypes := existsVarTypes?.getD #[]
   let mut cmds : Array Syntax.Command := #[]
   let existsFst := mkIdent ``Exists.fst
@@ -1306,7 +1314,3 @@ elab "intro_experiment%%" t:term "vs" s:term : term => do
 
 -- #check intro_experiment%% (∀(n  : Nat), n = 1) vs
 --     (∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n))
-
-
-end CodeGenerator
-end LeanAide
