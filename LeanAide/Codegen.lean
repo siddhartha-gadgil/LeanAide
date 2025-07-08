@@ -371,6 +371,23 @@ open Command Elab Term Tactic
 macro "#codegen" source:json : command =>
   `(command| #codegen json% $source)
 
+/-!
+Resolving existential theorems:
+* We have a series of let statements, each of which introduces a variable and a proof that it exists.
+* The proof is passed recursively to the next let statement.
+* We start with a type and a witness for it.
+* If the type is existential, we resolve the witness.
+* The resolved proof and term used will depend on variables, so we will have to export these.
+* **Alternative:** We only resolve other existential theorems if they are used, and we fill in the arguments with the local context.
+* Seems like a good approach to include used theorems in the local context, filling in the arguments with the local context.
+-/
+example : True := by
+  have egExists : ∃ n: Nat, n = 3 := by
+    use 3
+  let ⟨n, h⟩ := egExists
+  simp
+
+
 end Codegen
 
 end LeanAide

@@ -151,7 +151,68 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
         IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return type
     | _ => return type
+  | .letE name ltype value body _ =>
+    let lctx ← getLCtx
+    match lctx.findFromUserName? name with
+    | some (.ldecl _ _ _ dtype dvalue ..) =>
+      let check ← isDefEq dtype ltype <&&> isDefEq dvalue value
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 value
+        dropLocalContext body'
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
+        return type
+    | _ =>
+      withLetDecl name ltype value fun x => do
+          let body' := body.instantiate1 x
+          let inner ← dropLocalContext body'
+          mkLetFVars #[x] inner
   | _ => return type
+
+partial def fillLocalContext (expr: Expr) : MetaM Expr := do
+  match expr with
+  | .lam name binderType body _ => do
+    let lctx ← getLCtx
+    match lctx.findFromUserName? name with
+    | some (.cdecl _ fVarId _ dtype ..) =>
+      let check ← isDefEq dtype binderType
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 (mkFVar fVarId)
+        fillLocalContext body'
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        return expr
+    | some (.ldecl _ _ _ dtype value ..) =>
+      let check ← isDefEq dtype binderType
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 value
+        fillLocalContext body'
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        return expr
+    | _ => return expr
+  | .letE name type value body _ =>
+    let lctx ← getLCtx
+    match lctx.findFromUserName? name with
+    | some (.ldecl _ _ _ dtype dvalue ..) =>
+      let check ← isDefEq dtype type <&&> isDefEq dvalue value
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+          let body' := body.instantiate1 dvalue
+          fillLocalContext body'
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
+        return expr
+    | _ =>
+      withLetDecl name type value fun x => do
+          let body' := body.instantiate1 x
+          let inner ← fillLocalContext body'
+          mkLetFVars #[x] inner
+  | _ => return expr
+
 
 
 open Lean Meta Tactic
@@ -529,14 +590,6 @@ partial def existsVarTypesStx (type: Syntax.Term) : MetaM <| Option (Array <| Sy
   | _ =>
     -- logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
-
-partial def existsVarTypes (type: Expr) : MetaM <| Option (Array <| Name × Expr) := do
-  match type.app2? ``Exists with
-  | some (_, .lam name type body binderInfo) =>
-      sorry
-  | _ => return none
-
-
 
 open LeanAide.CodeGenerator
 example (h : ∃ n m : Nat, ∃ _k: Nat, n + m  = 3) : True := by

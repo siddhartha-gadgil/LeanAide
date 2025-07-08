@@ -352,6 +352,14 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
   match pf? with
   | some pf =>
     let n := mkIdent name
+    addDefn {
+      name := n.getId,
+      type := stx,
+      value := ← `(by $pf),
+      isProp := false,
+      isNoncomputable := false,
+      doc? := none
+    }
     `(commandSeq| theorem $n : $stx := by $pf)
   | none =>
     let n := mkIdent (name ++ `prop)
