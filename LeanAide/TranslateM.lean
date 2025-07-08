@@ -252,6 +252,9 @@ def addDefn (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statementStx
   modify fun s => {s with defs := s.defs.push dfn}
 
+def getDefs : TranslateM <| Array DefData := do
+  return (← get).defs
+
 def clearDefs : TranslateM Unit := do
   modify fun s => {s with defs := #[]}
 

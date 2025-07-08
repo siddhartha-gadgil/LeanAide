@@ -20,6 +20,11 @@ Translating to a proposition in Lean, using the `translateToProp?` method of the
 def Translator.translateToPropStrictAux
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
+  try
+    let .ok stx := Parser.runParserCategory (← getEnv) `term claim |
+      throwError s!"codegen: failed to parse '{claim}' as a term"
+    elabType stx
+  catch _ =>
   let thm ← withPreludes claim
   IO.eprintln s!"Translating to proposition: {claim}, full statement: {thm}"
   let (js, _, _) ← translator.getLeanCodeJson  thm
@@ -64,6 +69,16 @@ def Translator.translateToPropStrict
         -- This is useful for debugging and understanding what went wrong.
         throwError s!"codegen: failed to translate '{claim}' to a proposition even with 'full statement', error: {← e.toMessageData.format}; full claim: {fullClaim}, error: {← e'.toMessageData.format}"
 
+def translateToDef (statement: String) (translator : Translator) : TranslateM <| Except (Array CmdElabError) Syntax.Command := do
+  try
+    let .ok stx := Parser.runParserCategory (← getEnv) `command statement | throwError
+      s!"codegen: failed to parse '{statement}' as a command"
+    let checks ← checkElabFrontM statement
+    unless checks.isEmpty do
+      throwError s!"codegen: failed to elaborate '{statement}' as a command, errors: {checks}"
+    return .ok ⟨stx⟩
+  catch _ =>
+    translator.translateDefCmdM? statement
 /--
 If the goal is a ∀, function etc., this function intros the variables and returns the goal with the names of the variables introduced. Further, corresponding prelude commands are added to the context.
 -/
@@ -88,6 +103,29 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
     return (goal, accum)
 open Lean.Parser.Tactic
 
+def recallTheoremsAux : List DefData → TranslateM (Array Syntax.Tactic)
+| [] => return #[]
+| head :: tail => do
+  let name := head.name
+  let type ← elabType head.type
+  let value ← elabTerm head.value type
+  withLetDecl name type value fun x => do
+    let tailTacs ← recallTheoremsAux tail
+    let topTacs ←  if head.isProp then
+      let thm ← fillLocalContext x
+      let quotName := "quot" ++ name.toString |>.toName
+      let quotId := mkIdent quotName
+      let thmType ← inferType thm
+      let typeStx ← delabDetailed thmType
+      let thmStx ← delabDetailed thm
+      let head ← `(tactic| have $quotId : $typeStx := $thmStx)
+      let exs ← CodeGenerator.resolveExistsHave typeStx
+      pure <| #[head] ++ exs
+      else pure #[]
+    return topTacs ++ tailTacs
+
+def recallTheorems : TranslateM <| Array Syntax.Tactic := do
+  recallTheoremsAux (← getDefs).toList
 
 /-
 "ResultUsed": {
@@ -693,7 +731,8 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
         pure h.size
       | Except.error _ => pure 0
   IO.eprintln s!"hypothesis size: {hypSize} in proof"
-  let (goal, names) ← extractIntros goal hypSize
+  let (goal', names') ← extractIntros goal hypSize
+  let (goal, names) ← consumeIntros goal' 10 names'
   let pfStx ←
     withoutModifyingState do
     getCodeTactics translator goal content
