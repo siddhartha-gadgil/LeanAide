@@ -203,11 +203,46 @@ def leanCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKin
   return some ⟨stx⟩
 
 /--
+Checks the value of a declaration and returns a trace.
+-/
+@[codegen "check"]
+def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, ``commandSeq, js => do
+  let .ok (name : Name) := fromJson? js | throwError "'check' must be a key-value pair with value a name"
+  match (← getEnv).find? name with
+  | none => throwError s!"codegen: 'check' cannot find declaration '{name}'"
+  | some decl =>
+    let typeStr ← ppExprDetailed decl.type
+    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}"
+    let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
+    return some stx
+| some goal, ``tacticSeq, js => goal.withContext do
+  let .ok (name : Name) := fromJson? js | throwError "'check' must be a key-value pair with value a name"
+  match (← getEnv).find? name with
+  | none =>
+    let lctx ← getLCtx
+    match lctx.findFromUserName? name with
+    | none => throwError s!"codegen: 'check' cannot find declaration '{name}'"
+    | some decl =>
+      let typeStr ← ppExprDetailed decl.type
+      let typeLit := Syntax.mkStrLit s!"{name} has (local declaration with) type {typeStr}"
+      let stx : TSyntax ``tacticSeq ←  `(tacticSeq| trace $typeLit)
+      return some stx
+  | some decl =>
+    let typeStr ← ppExprDetailed decl.type
+    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}"
+    let stx : TSyntax ``tacticSeq ←  `(tacticSeq| trace $typeLit)
+    return some stx
+| _, kind, _ => throwError
+    s!"codegen: 'check' does not work for kind {kind}"
+
+
+/--
 Gets a sequence of commands or tactics from a JSON "document".
 -/
 @[codegen "document"]
 def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `commandSeq, js => do
+| _, ``commandSeq, js => do
   let .ok content := js.getArr? | throwError "'document' must be a JSON array"
   getCodeCommands translator none  content.toList
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -492,7 +527,7 @@ where
       | none => throwError
         s!"codegen: no proof translation found for {pf}"
       pure pfStx
-    let name ← translator.server.theoremName thm
+    let name := (js.getObjValAs? Name "name").toOption.getD <| ← translator.server.theoremName thm
     let name :=
       if name.toString = "[anonymous]" then
         let hash := thm.hash
