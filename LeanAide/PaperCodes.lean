@@ -196,11 +196,14 @@ Generic parser for Lean code. We write an object with a single key value of the 
 -/
 @[codegen "lean"]
 def leanCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, kind, js => do
+| _, ``tacticSeq, js => do
   let .ok code := js.getStr? | throwError "'lean' must have 'lean' field"
-  let .ok stx := Parser.runParserCategory (← getEnv) kind.toString.toName code |
-    throwError s!"codegen: failed to parse '{code}' as {kind}"
-  return some ⟨stx⟩
+  parseTactics code
+| _, ``commandSeq, js => do
+  let .ok code := js.getStr? | throwError "'lean' must have 'lean' field"
+  parseCommands code
+| _, kind, _ => throwError
+    s!"codegen: 'lean' does not work for kind {kind}"
 
 /--
 Checks the value of a declaration and returns a trace.
@@ -446,7 +449,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
       doc? := none
     }
     addDefn defn
-    defn.addDeclaration
+    -- defn.addDeclaration
     `(commandSeq| theorem $n : $stx := by $pf)
   | none =>
     let n := mkIdent (name ++ `prop)
@@ -897,7 +900,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
         -- If we have a definition, we add it to the definitions
         -- and return the command
         addDefn data
-        data.addDeclaration
+        -- data.addDeclaration
       | none =>
         IO.eprintln s!"codegen: No definition found for 'let_statement' {statement} with value {value}"
       addPrelude statement
@@ -1148,7 +1151,7 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let dfn: DefData :=
     { name := "assert_{hash₀}".toName, type := stx, value := stx, isProp := true, isNoncomputable := false, doc? := none}
   addDefn dfn
-  dfn.addDeclaration
+  -- dfn.addDeclaration
   let resolvedCmds ←
     CodeGenerator.cmdResolveExistsHave stx
   toCommandSeq <| #[head] ++ resolvedCmds

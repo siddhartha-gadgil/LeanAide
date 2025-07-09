@@ -856,5 +856,28 @@ def getNamesFromCode (s: String) : MetaM (Array Name) := do
     logError m!"Error parsing commandSeq: {err}"
     return #[]
 
+def parseCommands (s: String) : CoreM (TSyntax ``commandSeq) := do
+  let env ← getEnv
+  let res := Parser.runParserCategory env `commandSeqWrap s
+  match res with
+  | .ok stx =>
+    match stx with
+      | `(commandSeqWrap| $cs:commandSeq) => return cs
+      | _ => throwError "Expected commandSeqWrap syntax"
+  | .error err =>
+    throwError m!"Error parsing commandSeq: {err}"
+
+def parseTactics (s: String) : CoreM <| TSyntax ``tacticSeq := do
+  let env ← getEnv
+  let res := Parser.runParserCategory env `tacticSeq s
+  match res with
+  | .ok stx =>
+    let stx' : TSyntax ``tacticSeq := ⟨ stx ⟩
+    logInfo m!"Parsed tacticSeq: {stx}"
+    return stx'
+  | .error err =>
+    logError m!"Error parsing tacticSeq: {err}"
+    throwError "Failed to parse tacticSeq"
+
 -- #eval getNamesFromCode "def eg: Nat := 42
 -- theorem test : eg = 42 := rfl"
