@@ -190,6 +190,18 @@ def objectBypassCode (translator : CodeGenerator := {})
     js.getObjVal? "properties" | throwError "'object' must have 'properties'"
   getCode translator goal? kind properties
 
+/-
+Generic parser for Lean code. We write an object with a single key value of the form:
+`{"lean": "<lean code>"}`
+-/
+@[codegen "lean"]
+def leanCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, kind, js => do
+  let .ok code := js.getStr? | throwError "'lean' must have 'lean' field"
+  let .ok stx := Parser.runParserCategory (← getEnv) kind.toString.toName code |
+    throwError s!"codegen: failed to parse '{code}' as {kind}"
+  return some ⟨stx⟩
+
 /--
 Gets a sequence of commands or tactics from a JSON "document".
 -/
@@ -390,7 +402,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
   match pf? with
   | some pf =>
     let n := mkIdent name
-    addDefn {
+    let defn : DefData := {
       name := n.getId,
       type := stx,
       value := ← `(by $pf),
@@ -398,6 +410,8 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
       isNoncomputable := false,
       doc? := none
     }
+    addDefn defn
+    defn.addDeclaration
     `(commandSeq| theorem $n : $stx := by $pf)
   | none =>
     let n := mkIdent (name ++ `prop)
@@ -848,6 +862,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
         -- If we have a definition, we add it to the definitions
         -- and return the command
         addDefn data
+        data.addDeclaration
       | none =>
         IO.eprintln s!"codegen: No definition found for 'let_statement' {statement} with value {value}"
       addPrelude statement
@@ -1098,6 +1113,7 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let dfn: DefData :=
     { name := "assert_{hash₀}".toName, type := stx, value := stx, isProp := true, isNoncomputable := false, doc? := none}
   addDefn dfn
+  dfn.addDeclaration
   let resolvedCmds ←
     CodeGenerator.cmdResolveExistsHave stx
   toCommandSeq <| #[head] ++ resolvedCmds
