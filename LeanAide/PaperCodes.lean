@@ -23,7 +23,12 @@ def Translator.translateToPropStrictAux
   try
     let .ok stx := Parser.runParserCategory (← getEnv) `term claim |
       throwError s!"codegen: failed to parse '{claim}' as a term"
-    elabType stx
+    withoutErrToSorry do
+      let prop ← elabType stx
+      let prop ← instantiateMVars prop
+      if prop.hasSorry || (← prop.hasUnassignedExprMVar) then
+        throwError s!"codegen: failed to infer type {prop} has sorry or mvar when translating assertion '{claim}'"
+      return prop
   catch _ =>
   let thm ← withPreludes claim
   IO.eprintln s!"Translating to proposition: {claim}, full statement: {thm}"
@@ -640,7 +645,7 @@ where
             translator.translateToPropStrict claim
           let typeStx ← delabDetailed type
           let proof ←
-            runTacticsAndGetTryThisI type #[(← `(tactic| hammer {aesopPremises := 0, autoPremises := 0}))]
+            runTacticsAndGetTryThisI type #[(← `(tactic| hammer {aesopPremises := 5, autoPremises := 0}))]
           let proofStx ←
             `(tacticSeq| $proof*)
           let thm ← withPreludes claim
@@ -1461,7 +1466,7 @@ Generate code for a multi-condition cases statement. This is used to handle proo
 -/
 def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json)) (exhaustiveness: Option <| Syntax.Tactic) : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
-    let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer {aesopPremises := 0, autoPremises := 0})]
+    let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer {aesopPremises := 5, autoPremises := 0})]
     let pf := match exhaustiveness with
       | some e => #[e] ++ pf
       | none => pf

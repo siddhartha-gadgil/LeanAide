@@ -212,7 +212,7 @@ def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) :=
       return some tacticCode
 
 def getHammerTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| hammer {aesopPremises := 0, autoPremises := 0}))]
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| hammer {aesopPremises := 5, autoPremises := 0}))]
   match tactics? with
   | none => return none
   | some tacs =>
