@@ -1,6 +1,7 @@
 import LeanAide
 import Lean
 import Qq
+import PremiseSelection
 
 open LeanAide Lean Meta Elab Parser Tactic
 set_option linter.unusedTactic false
@@ -161,3 +162,50 @@ def egIsomorphicToAbelian' := json% {
 
 -- set_option maxHeartbeats 1000000 in
 -- #codegen egIsomorphicToAbelian'
+
+/-!
+Code from server:
+* First proof completed using `hammer` tactic.
+* In the second proof, the `use` tactic was used to introduce the group homomorphism; the simple hammer then finished the proof.
+-/
+theorem assert_18253273653895272721 :
+    ∀ {G : Type u_1} {H : Type u_2} [inst₁ : Group G] [inst₂ : Group H] (ϕ : G ≃* H),
+      Function.Bijective (⇑ϕ : G → H) :=
+  by
+  trace
+    "Automation Tactics hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst₁ : Group G] [inst₂ : Group H] (ϕ : G ≃* H), Function.Bijective ⇑ϕ"
+  intro G H inst₁ inst₂ ϕ
+  apply MulEquiv.bijective
+theorem assert_3895578492476275043 :
+    ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (ϕ_hom : G →* H) (g1 g2 : G),
+      (ϕ_hom : G → H) (g1 * g2) = (ϕ_hom : G → H) g1 * (ϕ_hom : G → H) g2 :=
+  by
+  trace
+    "Automation Tactics hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (ϕ_hom : G →* H) (g1 g2 : G),\n  ϕ_hom (g1 * g2) = ϕ_hom g1 * ϕ_hom g2"
+  intro G H inst inst_1 ϕ_hom g1 g2
+  simp_all only [map_mul]
+  trace
+    "Finished Automation Tactics hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (ϕ_hom : G →* H) (g1 g2 : G),\n  ϕ_hom (g1 * g2) = ϕ_hom g1 * ϕ_hom g2"
+theorem group_hom.bijective_inv_exists :
+    ∀ {G H : Type u_1} [instG : Group G] [instH : Group H] (ϕ : G ≃* H),
+      ∃ (ϕ_inv : H → G),
+        (∀ (h : H), (MulEquiv.toMonoidHom ϕ : G → H) (ϕ_inv h) = h) ∧
+          ∀ (g : G), ϕ_inv ((MulEquiv.toMonoidHom ϕ : G → H) g) = g :=
+  by
+  trace
+    "Automation Tactics hammer {aesopPremises := 5, autoPremises := 0} for goal: ∀ {G H : Type u_1} [instG : Group G] [instH : Group H] (ϕ : G ≃* H),\n  ∃ ϕ_inv, (∀ (h : H), ϕ.toMonoidHom (ϕ_inv h) = h) ∧ ∀ (g : G), ϕ_inv (ϕ.toMonoidHom g) = g"
+  intro G H instG instH ϕ
+  simp_all only [MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe]
+  apply Exists.intro
+  · apply And.intro
+    · intro h
+      apply MulEquiv.apply_symm_apply
+    · intro g
+      simp_all only [MulEquiv.symm_apply_apply]
+  trace
+    "Finished Automation Tactics hammer {aesopPremises := 5, autoPremises := 0} for goal: ∀ {G H : Type u_1} [instG : Group G] [instH : Group H] (ϕ : G ≃* H),\n  ∃ ϕ_inv, (∀ (h : H), ϕ.toMonoidHom (ϕ_inv h) = h) ∧ ∀ (g : G), ϕ_inv (ϕ.toMonoidHom g) = g"
+theorem group_commutativity_of_elements :
+    ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : CommGroup H] (ϕ : G →* H) (x y : H), x * y = y * x :=
+  by
+  intro G H inst_1101738868391162679 inst_9323744708134336754 ϕ x y
+  exact CommGroup.mul_comm x y
