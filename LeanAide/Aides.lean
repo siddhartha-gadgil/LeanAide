@@ -867,17 +867,22 @@ def parseCommands (s: String) : CoreM (TSyntax ``commandSeq) := do
   | .error err =>
     throwError m!"Error parsing commandSeq: {err}"
 
+declare_syntax_cat tacticSeqWrap
+syntax tacticSeq : tacticSeqWrap
+
 def parseTactics (s: String) : CoreM <| TSyntax ``tacticSeq := do
   let env ← getEnv
-  let res := Parser.runParserCategory env `tacticSeq s
+  let res := Parser.runParserCategory env `tacticSeqWrap s
   match res with
   | .ok stx =>
-    let stx' : TSyntax ``tacticSeq := ⟨ stx ⟩
-    logInfo m!"Parsed tacticSeq: {stx}"
-    return stx'
+    match stx with
+      | `(tacticSeqWrap| $ts:tacticSeq) => return ts
+      | _ => throwError "Expected tacticSeqWrap syntax"
   | .error err =>
     logError m!"Error parsing tacticSeq: {err}"
-    throwError "Failed to parse tacticSeq"
+    throwError s!"Failed to parse tacticSeq : {err}"
 
 -- #eval getNamesFromCode "def eg: Nat := 42
 -- theorem test : eg = 42 := rfl"
+
+#eval parseTactics "sorry"
