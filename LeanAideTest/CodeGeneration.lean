@@ -313,7 +313,7 @@ example: ∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N := by
 #eval Translator.translateToPropStrict "p ∤ m!" {}
 
 example : 5 ∣ 10 := by
-  hammer
+  hammer {aesopPremises := 0, autoPremises := 0}
 
 theorem nat_lt_succ : ∀ (n : ℕ), n < succ n := by
     intro n
@@ -542,21 +542,21 @@ Generated code for the above JSON structure.
 #check "{\"claim\": \"φ_hom is bijective.\"}"
 theorem assert_2611128936540923388 : ∀ {g1 g2 : ℕ}, φ (g1 * g2) = φ g1 * φ g2 :=
   by
-  trace "Automation Tactics hammer [] for goal: ∀ {g1 g2 : ℕ}, φ (g1 * g2) = φ g1 * φ g2"
+  trace "Automation Tactics hammer {aesopPremises := 0, autoPremises := 0} [] for goal: ∀ {g1 g2 : ℕ}, φ (g1 * g2) = φ g1 * φ g2"
   intro g1 g2
   sorry
-  trace "Finished Automation Tactics hammer [] for goal: ∀ {g1 g2 : ℕ}, φ (g1 * g2) = φ g1 * φ g2"
+  trace "Finished Automation Tactics hammer {aesopPremises := 0, autoPremises := 0} [] for goal: ∀ {g1 g2 : ℕ}, φ (g1 * g2) = φ g1 * φ g2"
 theorem isomorphism_inv_exists :
     ∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H] (φ_hom : G →* H),
       ∃ (φ_inv : H → G),
         (∀ (h : H), (φ_hom : G → H) (φ_inv h) = h) ∧ ∀ (g : G), φ_inv ((φ_hom : G → H) g) = g :=
   by
   trace
-    "Automation Tactics hammer for goal: ∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H] (φ_hom : G →* H),\n  ∃ φ_inv, (∀ (h : H), φ_hom (φ_inv h) = h) ∧ ∀ (g : G), φ_inv (φ_hom g) = g"
+    "Automation Tactics hammer {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H] (φ_hom : G →* H),\n  ∃ φ_inv, (∀ (h : H), φ_hom (φ_inv h) = h) ∧ ∀ (g : G), φ_inv (φ_hom g) = g"
   intro G H inst inst_1 φ_hom
   sorry
   trace
-    "Finished Automation Tactics hammer for goal: ∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H] (φ_hom : G →* H),\n  ∃ φ_inv, (∀ (h : H), φ_hom (φ_inv h) = h) ∧ ∀ (g : G), φ_inv (φ_hom g) = g"
+    "Finished Automation Tactics hammer {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G H : Type u_1} [inst : Group G] [inst_1 : Group H] (φ_hom : G →* H),\n  ∃ φ_inv, (∀ (h : H), φ_hom (φ_inv h) = h) ∧ ∀ (g : G), φ_inv (φ_hom g) = g"
 theorem comm_group_of_abelian_codomain :
     ∀ {G : Type u} {H : Type v} [inst : Group G] [inst_1 : CommGroup H] (φ_hom : G →* H)
       (x y : H), x * y = y * x :=
