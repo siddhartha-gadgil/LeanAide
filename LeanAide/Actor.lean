@@ -146,7 +146,7 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
         let typeStx ← delabDetailed translation
         let thmFmt ← PrettyPrinter.ppExpr translation
         let pf? ←
-          getExactTactics? translation <||> getHammerTactics? translation
+          getSimpOrExactTactics? translation <||> getHammerTactics? translation
         let name ← try
           translator.server.theoremName text
           catch e =>
@@ -371,7 +371,7 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
                 let typeStx ← delabDetailed expr
                 let thmFmt ← PrettyPrinter.ppExpr expr
                 let pf? ←
-                  getExactTactics? expr <||> getHammerTactics? expr
+                  getSimpOrExactTactics? expr <||> getHammerTactics? expr
                 let name ← try
                   translator.server.theoremName desc
                   catch e =>

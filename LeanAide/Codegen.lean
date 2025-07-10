@@ -185,7 +185,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     return (← appendTactics accum (← `(tacticSeq| assumption)), none)
   catch _ =>
   IO.eprintln "Trying exact tactics or automation"
-  match ← getExactTactics? (← goal.getType) with
+  match ← getSimpOrExactTactics? (← goal.getType) with
   | some code => do
     IO.eprintln s!"codegen: exact tactics found for goal: {← ppExpr <| ← goal.getType}"
     -- IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
