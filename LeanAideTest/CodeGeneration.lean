@@ -202,6 +202,12 @@ def egTheorem' : Json :=
     "claim": "There are infinitely many odd numbers."
   }
 
+def egTheorem.prop : Prop :=
+  Set.Infinite {n : ℤ | Odd n}
+def deferred.egTheorem [assume_egTheorem : Fact egTheorem.prop] : egTheorem.prop :=
+  assume_egTheorem.elim
+
+#codegen egTheorem'
 
 def egTheorem'' : Json :=
   json% {

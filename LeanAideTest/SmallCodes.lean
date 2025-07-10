@@ -32,6 +32,7 @@ def eg₁ : Json := json% {
       ]
     }
 
+
   theorem fortyTwoPos : 42 > 0 :=
     by
     trace "Automation tactics found for 42 > 0, closing goal"
@@ -67,3 +68,24 @@ def eg₂ : Json := json% {
 }
 
 #codegen eg₂
+
+def egDeferred : Json := json% {
+  "document" : [
+    {
+      "theorem" : {
+        "name" : "hard",
+        "claim" : "False",
+        "label" : "thm:hard"
+      }
+    },
+    {"check" : "hard.prop"},
+    {"proof": {
+      "claim_label": "thm:hard",
+      "proof_steps": ["sorry"]
+    }},
+    {"lean": "theorem hardCopy : hard.prop := hard"},
+    {"check" : "hardCopy"}
+  ]
+}
+
+#codegen egDeferred

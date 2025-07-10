@@ -44,9 +44,9 @@ structure DefData where
     doc? : Option String := none
     deriving Inhabited,  Repr
 
-#print DefinitionVal
+-- #print DefinitionVal
 
-#check addAndCompile
+-- #check addAndCompile
 
 structure DefDataRepr where
     name: Name

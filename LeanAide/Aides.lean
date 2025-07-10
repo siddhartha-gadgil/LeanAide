@@ -884,5 +884,3 @@ def parseTactics (s: String) : CoreM <| TSyntax ``tacticSeq := do
 
 -- #eval getNamesFromCode "def eg: Nat := 42
 -- theorem test : eg = 42 := rfl"
-
-#eval parseTactics "sorry"
