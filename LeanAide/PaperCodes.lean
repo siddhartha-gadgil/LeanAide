@@ -229,7 +229,11 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
   | none => throwError s!"codegen: 'check' cannot find declaration '{name}'"
   | some decl =>
     let typeStr ← ppExprDetailed decl.type
-    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}"
+    let valueStr? ←
+      decl.value?.mapM fun value => do
+        let valueStr ← ppExprDetailed value
+        return s!" with value {valueStr}"
+    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr} {valueStr?}"
     let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
     return some stx
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -246,7 +250,11 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
       return some stx
   | some decl =>
     let typeStr ← ppExprDetailed decl.type
-    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}"
+    let valueStr? ←
+      decl.value?.mapM fun value => do
+        let valueStr ← ppExprDetailed value
+        return s!" with value {valueStr}"
+    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr} {valueStr?}"
     let stx : TSyntax ``tacticSeq ←  `(tacticSeq| trace $typeLit)
     return some stx
 | _, kind, _ => throwError
@@ -465,11 +473,20 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     -- defn.addDeclaration
     `(commandSeq| theorem $n : $stx := by $pf)
   | none =>
-    let n := mkIdent (name ++ `prop)
+    let propName := mkIdent (name ++ `prop)
     let propExpr := mkSort Level.zero
     let propIdent ← delabDetailed propExpr
-    `(commandSeq| abbrev $n : $propIdent:term := $stx)
-
+    let head ← `(command| def $propName : $propIdent:term := $stx)
+    let fctIdent := mkIdent ``Fact
+    let instName := "assume_" ++ name.toString |>.toName
+    let instIdent := mkIdent instName
+    let witIdent := mkIdent <| "deferred".toName ++ name
+    let elimIdent := mkIdent <| instName ++ "elim".toName
+    let assumeDef ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
+    let cmds := #[head, assumeDef]
+    for cmd in cmds do
+      runCommand cmd
+    `(commandSeq| $cmds*)
 | some _, ``tacticSeq, js => do
   let (stx, name, pf?) ← thmStxParts js
   match pf? with
@@ -554,7 +571,7 @@ where
     IO.eprintln s!"codegen: Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
-    Translate.addTheorem <| {name := name, type := type, label := label, isProved := true, source:= js}
+    Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?)
 
@@ -819,6 +836,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   IO.eprintln s!"Proof steps: {← PrettyPrinter.ppCategory ``tacticSeq pfStx}"
   let n := mkIdent labelledTheorem.name
   let typeStx ← delabDetailed goalType
+  updateToProved labelledTheorem.label
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"

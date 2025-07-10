@@ -288,8 +288,10 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
     TranslateM (TSyntax ``commandSeq) := withoutModifyingState do
   let mut accum : Array <| TSyntax ``commandSeq := #[]
   for source in sources do
-    let code? ← try
-        getCode translator goal? ``commandSeq source
+    let code? ←
+      try
+        Translate.withDeferredTheorems do
+          getCode translator goal? ``commandSeq source
       catch e =>
         let err ←   e.toMessageData.toString
         let errs := "Error: " ++  err |>.splitOn "\n"

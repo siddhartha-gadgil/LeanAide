@@ -310,6 +310,52 @@ def updateToProved (labelledTheorem : String) : TranslateM Unit := do
       thm)
   modify fun s => {s with labelledTheorems := newLabelledTheorems}
 
+def deferredTheoremNames : TranslateM <| Array Name := do
+  let thms := (← get).labelledTheorems
+  return thms.filter (fun thm => !thm.isProved) |>.map (·.name)
+
+def openDeferredTheoremsStx? : TranslateM <| Option Syntax.Command := do
+  let thms := (← deferredTheoremNames)
+  if thms.isEmpty then
+    return none
+  else
+    let idents := thms.map (mkIdent ·)
+    let deferredId := mkIdent `deferred
+    `(command| open $deferredId ($idents*))
+
+def varDeferredTheoremsStx? : TranslateM <| Option Syntax.Command := do
+  let thms := (← deferredTheoremNames)
+  if thms.isEmpty then
+    return none
+  else
+    let factId := mkIdent `Fact
+    let bids ←  thms.mapM fun name =>
+      let id := mkIdent <| name ++ `prop
+      `(bracketedBinder| [$factId $id:ident])
+    `(command| variable $bids* )
+
+def deferredTheoremsHeaderStx : TranslateM <| Array Syntax.Command := do
+  let openStx? ← openDeferredTheoremsStx?
+  let varStx? ← varDeferredTheoremsStx?
+  match openStx?, varStx? with
+  | some openStx, some varStx =>
+    return #[← `(section), openStx, varStx]
+  | _, _ => return #[]
+
+def withDeferredTheorems (x?: TranslateM (Option (TSyntax ``commandSeq))) : TranslateM (Option (TSyntax ``commandSeq)) := do
+  let headerStx? ← deferredTheoremsHeaderStx
+  match headerStx? with
+  | #[] => x?
+  | cmds =>
+    for cmd in cmds do
+      runCommand cmd
+    let res? ← x? -- side-effect: the commands are run
+    res?.mapM fun res => do
+      let resCmds := commands res
+      runCommand (← `(command| end))
+      let fullCmds := cmds ++ resCmds.push (← `(command| end))
+      `(commandSeq| $fullCmds*)
+
 end Translate
 
 namespace TranslateM
