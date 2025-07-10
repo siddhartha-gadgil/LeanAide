@@ -32,7 +32,14 @@ def eg₁ : Json := json% {
       ]
     }
 
-#codegen eg₁
+  theorem fortyTwoPos : 42 > 0 :=
+    by
+    trace "Automation tactics found for 42 > 0, closing goal"
+    simp only [gt_iff_lt, ofNat_pos]
+  #check "fortyTwoPos has type 42 > 0"
+  theorem fortyTwoNeg : False := by sorry
+  example : 0 < 42 :=
+    fortyTwoPos
 namespace output
   theorem fortyTwoPos : 42 > 0 :=
     by

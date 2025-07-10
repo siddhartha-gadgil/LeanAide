@@ -649,7 +649,7 @@ where
             translator.translateToPropStrict claim
           let typeStx ← delabDetailed type
           let proof ←
-            runTacticsAndGetTryThisI type #[(← `(tactic| hammer {aesopPremises := 5, autoPremises := 0}))]
+            runTacticsAndGetTryThisI type #[(← `(tactic| first | simp? | hammer {aesopPremises := 5, autoPremises := 0}))]
           let proofStx ←
             `(tacticSeq| $proof*)
           let thm ← withPreludes claim
