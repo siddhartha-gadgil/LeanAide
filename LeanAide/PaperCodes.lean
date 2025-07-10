@@ -210,7 +210,11 @@ def leanCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKin
   let .ok code := js.getStr? | throwError "'lean' must have 'lean' field"
   let code := if code.startsWith "\"" then code.drop 1 else code
   let code := if code.endsWith "\"" then code.dropRight 1 else code
-  parseCommands code
+  let cmdSeq ← parseCommands code
+  let cmds := commands  cmdSeq
+  for cmd in cmds do
+    runCommand cmd
+  return some cmdSeq
 | _, kind, _ => throwError
     s!"codegen: 'lean' does not work for kind {kind}"
 
@@ -645,7 +649,7 @@ where
             translator.translateToPropStrict claim
           let typeStx ← delabDetailed type
           let proof ←
-            runTacticsAndGetTryThisI type #[(← `(tactic| hammer {aesopPremises := 5, autoPremises := 0}))]
+            runTacticsAndGetTryThisI type #[(← `(tactic| first | simp? | hammer {aesopPremises := 5, autoPremises := 0}))]
           let proofStx ←
             `(tacticSeq| $proof*)
           let thm ← withPreludes claim
@@ -1185,7 +1189,7 @@ where typeStx (js: Json) :
   let type ← translator.translateToPropStrict claim
   let resultsUsed ←
     getResultsUsed translator.toTranslator js
-  let tac ← `(tactic| hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )
+  let tac ← `(tactic| first | simp? | hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )
   let tacs ← runTacticsAndGetTryThisI (type) #[tac]
   addPrelude <| "Assume: " ++ claim
   return (← delabDetailed type, ← `(tacticSeq| $tacs*))
@@ -1466,7 +1470,7 @@ Generate code for a multi-condition cases statement. This is used to handle proo
 -/
 def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json)) (exhaustiveness: Option <| Syntax.Tactic) : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
-    let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer {aesopPremises := 5, autoPremises := 0})]
+    let pf ← runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| first | simp? | hammer {aesopPremises := 5, autoPremises := 0})]
     let pf := match exhaustiveness with
       | some e => #[e] ++ pf
       | none => pf
@@ -1738,7 +1742,7 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
   let stx ← delabDetailed type
   let resultsUsed ←
     getResultsUsed translator.toTranslator js
-  let tac ← `(tactic| hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )
+  let tac ← `(tactic| first | simp? | hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )
   let pf ← runTacticsAndGetTryThisI type #[tac]
   `(tacticSeq| have : $stx := by $pf*)
 | none, ``tacticSeq, _ => do return none
@@ -1752,7 +1756,7 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
   | [] => goal.withContext do
     let inductionIds := inductionNames.map Lean.mkIdent
     let pf ← runTacticsAndGetTryThisI
-      (← goal.getType) #[← `(tactic| hammer [$inductionIds,*] {aesopPremises := 0, autoPremises := 0} )]
+      (← goal.getType) #[← `(tactic| first | simp? | hammer [$inductionIds,*] {aesopPremises := 0, autoPremises := 0} )]
     `(tacticSeq| $pf*)
   | (conditionType, trueCaseProof, inductionHyps) :: tail => goal.withContext do
     IO.eprintln s!"number of cases (remaining): {tail.length + 1}"

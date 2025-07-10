@@ -35,12 +35,35 @@ def eg₁ : Json := json% {
   theorem fortyTwoPos : 42 > 0 :=
     by
     trace "Automation tactics found for 42 > 0, closing goal"
+    simp only [gt_iff_lt, ofNat_pos]
+  #check "fortyTwoPos has type 42 > 0"
+  theorem fortyTwoNeg : False := by sorry
+  example : 0 < 42 :=
+    fortyTwoPos
+namespace output
+  theorem fortyTwoPos : 42 > 0 :=
+    by
+    trace "Automation tactics found for 42 > 0, closing goal"
     simp_all only [gt_iff_lt, ofNat_pos]
   #check "fortyTwoPos has type 42 > 0"
   theorem fortyTwoNeg : 42 < 0 := by sorry
   example : 0 < 42 :=
     fortyTwoPos
+end output
+
+end LeanAideTest.SmallCodes
 
 #eval ``commandSeq
 
 #codegen {"lean": "example : 0 < 42 := by decide"}
+
+def eg₂ : Json := json% {
+  "document" : [
+    {
+      "lean" : "theorem fortyTwoPos : 42 > 0 := by decide"
+    },
+    {"check" : "fortyTwoPos"}
+  ]
+}
+
+#codegen eg₂

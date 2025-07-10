@@ -200,6 +200,17 @@ def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (str
   msgs.toList.findSomeM?
     fun msg => getTacticsFromMessage? msg
 
+def getSimpOrExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | simp? | exact?))]
+  match tactics? with
+  | none => return none
+  | some tacs =>
+    if tacs.isEmpty then
+      return none
+    else
+      let tacticCode ←  `(tacticSeq| $tacs*)
+      return some tacticCode
+
 def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
   let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| exact?))]
   match tactics? with
@@ -212,7 +223,7 @@ def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) :=
       return some tacticCode
 
 def getHammerTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| hammer {aesopPremises := 5, autoPremises := 0}))]
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | simp? | hammer {aesopPremises := 5, autoPremises := 0}))]
   match tactics? with
   | none => return none
   | some tacs =>
@@ -244,7 +255,7 @@ def getExactTermParts? (goal: Expr) : TermElabM <| Option <| Array Name := do
 
 elab "#exact? " goal:term : command => Command.liftTermElabM do
   let goal ← elabTerm goal none
-  let tacticCode? ← getExactTactics? goal
+  let tacticCode? ← getSimpOrExactTactics? goal
   match tacticCode? with
   | none => logWarning "exact? tactic failed to find any tactics"
   | some tacticCode =>

@@ -185,7 +185,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     return (← appendTactics accum (← `(tacticSeq| assumption)), none)
   catch _ =>
   IO.eprintln "Trying exact tactics or automation"
-  match ← getExactTactics? (← goal.getType) with
+  match ← getSimpOrExactTactics? (← goal.getType) with
   | some code => do
     IO.eprintln s!"codegen: exact tactics found for goal: {← ppExpr <| ← goal.getType}"
     -- IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
@@ -248,7 +248,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) := goal.withContext do
   IO.eprintln "Trying automation tactics"
-  match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
+  match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| first | simp? | hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
   | some autoTacs => do
     let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
     let autoTacs :=
@@ -273,7 +273,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     for decl in lctx do
       IO.eprintln s!"{decl.userName} : {← ppExpr <| decl.type}"
     let autoTacs ←
-      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| hammer {aesopPremises := 5, autoPremises := 0})]
+      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| first | simp? | hammer {aesopPremises := 5, autoPremises := 0})]
     IO.eprintln s!"codegen: auto tactics:"
     for tac in autoTacs do
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
