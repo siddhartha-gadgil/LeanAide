@@ -32,6 +32,7 @@ def eg₁ : Json := json% {
       ]
     }
 
+#codegen eg₁
 namespace output
   theorem fortyTwoPos : 42 > 0 :=
     by

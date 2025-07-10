@@ -201,7 +201,7 @@ def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (str
     fun msg => getTacticsFromMessage? msg
 
 def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| exact?))]
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | simp? | exact?))]
   match tactics? with
   | none => return none
   | some tacs =>
@@ -212,7 +212,7 @@ def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) :=
       return some tacticCode
 
 def getHammerTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| hammer {aesopPremises := 5, autoPremises := 0}))]
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | simp? | hammer {aesopPremises := 5, autoPremises := 0}))]
   match tactics? with
   | none => return none
   | some tacs =>
