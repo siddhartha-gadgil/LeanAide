@@ -330,7 +330,7 @@ def varDeferredTheoremsStx? : TranslateM <| Option Syntax.Command := do
   else
     let factId := mkIdent `Fact
     let bids ←  thms.mapM fun name =>
-      let id := mkIdent name
+      let id := mkIdent <| name ++ `prop
       `(bracketedBinder| [$factId $id:ident])
     `(command| variable $bids* )
 
