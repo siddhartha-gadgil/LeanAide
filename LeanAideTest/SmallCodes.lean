@@ -32,6 +32,7 @@ def eg₁ : Json := json% {
       ]
     }
 
+namespace output
   theorem fortyTwoPos : 42 > 0 :=
     by
     trace "Automation tactics found for 42 > 0, closing goal"
@@ -40,7 +41,21 @@ def eg₁ : Json := json% {
   theorem fortyTwoNeg : 42 < 0 := by sorry
   example : 0 < 42 :=
     fortyTwoPos
+end output
+
+end LeanAideTest.SmallCodes
 
 #eval ``commandSeq
 
 #codegen {"lean": "example : 0 < 42 := by decide"}
+
+def eg₂ : Json := json% {
+  "document" : [
+    {
+      "lean" : "theorem fortyTwoPos : 42 > 0 := by decide"
+    },
+    {"check" : "fortyTwoPos"}
+  ]
+}
+
+#codegen eg₂

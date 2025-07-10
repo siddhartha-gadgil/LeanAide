@@ -210,7 +210,11 @@ def leanCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKin
   let .ok code := js.getStr? | throwError "'lean' must have 'lean' field"
   let code := if code.startsWith "\"" then code.drop 1 else code
   let code := if code.endsWith "\"" then code.dropRight 1 else code
-  parseCommands code
+  let cmdSeq ← parseCommands code
+  let cmds := commands  cmdSeq
+  for cmd in cmds do
+    runCommand cmd
+  return some cmdSeq
 | _, kind, _ => throwError
     s!"codegen: 'lean' does not work for kind {kind}"
 
