@@ -90,92 +90,103 @@ def remainder5or0 := json% {
   ]
 }
 
-/-
+def divisible_by_5_of_last_digit_0_or_5.prop : Prop :=
+  ∀ {n : ℕ}, n % 10 = 0 ∨ n % 10 = 5 → 5 ∣ n
+def deferred.divisible_by_5_of_last_digit_0_or_5
+    [assume_divisible_by_5_of_last_digit_0_or_5 : Fact divisible_by_5_of_last_digit_0_or_5.prop] :
+    divisible_by_5_of_last_digit_0_or_5.prop :=
+  assume_divisible_by_5_of_last_digit_0_or_5.elim
+section
+open deferred (divisible_by_5_of_last_digit_0_or_5)
+variable [Fact divisible_by_5_of_last_digit_0_or_5.prop]
 theorem divisible_by_5_of_last_digit_0_or_5 : ∀ {n : ℕ}, n % 10 = 0 ∨ n % 10 = 5 → 5 ∣ n :=
-    by
-    intro n a_8866836628444462751
-    match c_9599375798178975459 : n % 10 with
-    |
-    0 =>
-      have assert_13312640106461283123 : n % 10 = 0 ∨ n % 10 = 5 → 10 ∣ n :=
-        by
-        trace
-          "Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → 10 ∣ n"
-        intro a
-        simp_all only [OfNat.zero_ne_ofNat, or_false]
-        sorry
-        trace
-          "Finished Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → 10 ∣ n"
-      have assert_17087887335112121506 : n % 10 = 0 ∨ n % 10 = 5 → ∃ (k : ℤ), (↑n : ℤ) = 10 * k :=
-        by
-        trace
-          "Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → ∃ k, ↑n = 10 * k"
-        intro a
-        simp_all only [OfNat.zero_ne_ofNat, or_false, forall_const]
-        sorry
-        trace
-          "Finished Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → ∃ k, ↑n = 10 * k"
-      have assert_7879662434694670893 : ∀ {n : ℤ}, ∃ (k : ℤ), n = 10 * k → n = 5 * (2 * k) :=
-        by
-        trace
-          "Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {n : ℤ}, ∃ k, n = 10 * k → n = 5 * (2 * k)"
-        intro n_1
-        simp_all only [OfNat.zero_ne_ofNat, or_false, forall_const]
-        obtain ⟨w, h⟩ := assert_17087887335112121506
-        sorry
-        trace
-          "Finished Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {n : ℤ}, ∃ k, n = 10 * k → n = 5 * (2 * k)"
-      have assert_745815468694847985 : n % 10 = 0 ∨ n % 10 = 5 → ∃ (k : ℤ), (↑n : ℤ) = 10 * k → 5 ∣ n :=
-        by
-        trace
-          "Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → ∃ k, ↑n = 10 * k → 5 ∣ n"
-        intro a
-        simp_all only [OfNat.zero_ne_ofNat, or_false, forall_const]
-        obtain ⟨w, h⟩ := assert_17087887335112121506
-        simp_all only [mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false]
-        sorry
-        trace
-          "Finished Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → ∃ k, ↑n = 10 * k → 5 ∣ n"
-      trace "Automation Tactics first\n  | simp?\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: 5 ∣ n"
-      repeat (sorry)
+  by
+  intro n a_13397840144843358689
+  match c_9599375798178975459 : n % 10 with
+  |
+  0 =>
+    have assert_14624567202372330351 : 10 ∣ n :=
+      by
       trace
-        "Finished Automation Tactics first\n  | simp?\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: 5 ∣ n"
-    |
-    5 =>
-      have assert_8739426273956689732 :
-        ∀ (_fvar : ℤ), _fvar % 10 = 0 ∨ _fvar % 10 = 5 → ∃ (k : ℤ), (↑n : ℤ) = 10 * k + 5 :=
-        by
-        trace
-          "Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ (_fvar : ℤ), _fvar % 10 = 0 ∨ _fvar % 10 = 5 → ∃ k, ↑n = 10 * k + 5"
-        simp only [EuclideanDomain.mod_eq_zero]
-        trace
-          "Finished Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ (_fvar : ℤ), _fvar % 10 = 0 ∨ _fvar % 10 = 5 → ∃ k, ↑n = 10 * k + 5"
-      have assert_6296401299406481436 :
-        n % 10 = 0 ∨ n % 10 = 5 → ∃ (k : ℤ), (↑n : ℤ) = 10 * k + 5 → (↑n : ℤ) = 5 * (2 * k + 1) :=
-        by
-        trace
-          "Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → ∃ k, ↑n = 10 * k + 5 → ↑n = 5 * (2 * k + 1)"
-        intro a
-        simp_all only [OfNat.ofNat_ne_zero, or_true, EuclideanDomain.mod_eq_zero]
-        sorry
-        trace
-          "Finished Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → ∃ k, ↑n = 10 * k + 5 → ↑n = 5 * (2 * k + 1)"
-      have assert_5247782286647436251 : n % 10 = 0 ∨ n % 10 = 5 → ∃ (k : ℤ), (↑n : ℤ) = 10 * k + 5 :=
-        by
-        trace
-          "Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → ∃ k, ↑n = 10 * k + 5"
-        intro a
-        simp_all only [OfNat.ofNat_ne_zero, or_true, EuclideanDomain.mod_eq_zero, forall_const]
-        obtain ⟨w, h⟩ := assert_6296401299406481436
-        duper [*] {preprocessing := full}
-        trace
-          "Finished Automation Tactics first\n  | simp?\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: n % 10 = 0 ∨ n % 10 = 5 → ∃ k, ↑n = 10 * k + 5"
-      trace "Automation Tactics first\n  | simp?\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: 5 ∣ n"
-      simp_all only [OfNat.ofNat_ne_zero, or_true, EuclideanDomain.mod_eq_zero, implies_true, forall_const]
-      obtain ⟨w, h⟩ := assert_6296401299406481436
-      obtain ⟨w_1, h_1⟩ := assert_5247782286647436251
-      simp_all only [add_left_inj, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false]
-      grind
+        "Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: 10 ∣ n"
+      simp_all only [OfNat.zero_ne_ofNat, or_false]
+      sorry
       trace
-        "Finished Automation Tactics first\n  | simp?\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: 5 ∣ n"
--/
+        "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: 10 ∣ n"
+    have assert_4484306519403667921 : ∃ (k : ℤ), (↑n : ℤ) = 10 * k :=
+      by
+      trace
+        "Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∃ k, ↑n = 10 * k"
+      simp_all only [OfNat.zero_ne_ofNat, or_false]
+      sorry
+      trace
+        "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∃ k, ↑n = 10 * k"
+    let ⟨k, assert_10656492786148028091⟩ := assert_4484306519403667921
+    have assert_17272940368319763438 : (↑n : ℤ) = 5 * (2 * k) :=
+      by
+      trace
+        "Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ↑n = 5 * (2 * k)"
+      simp_all only [OfNat.zero_ne_ofNat, or_false, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, exists_eq']
+      sorry
+      trace
+        "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ↑n = 5 * (2 * k)"
+    have assert_15857046365694643549 : ∃ (k : ℤ), (↑n : ℤ) = 10 * k ∧ 5 ∣ n :=
+      by
+      trace
+        "Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∃ k, ↑n = 10 * k ∧ 5 ∣ n"
+      simp_all only [OfNat.zero_ne_ofNat, or_false, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, exists_eq',
+        exists_and_right, true_and]
+      sorry
+      trace
+        "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∃ k, ↑n = 10 * k ∧ 5 ∣ n"
+    let ⟨k, assert_4657561420704399764⟩ := assert_15857046365694643549
+    trace
+      "Automation Tactics first\n  | (simp?; done)\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: 5 ∣ n"
+    simp_all only [OfNat.zero_ne_ofNat, or_false, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, exists_eq', and_true]
+    trace
+      "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: 5 ∣ n"
+  |
+  5 =>
+    have assert_15272917603597243842 : ∃ (k : ℤ), (↑n : ℤ) = 10 * k + 5 :=
+      by
+      trace
+        "Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∃ k, ↑n = 10 * k + 5"
+      simp_all only [OfNat.ofNat_ne_zero, or_true]
+      sorry
+      trace
+        "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∃ k, ↑n = 10 * k + 5"
+    let ⟨k, assert_18189104202108136409⟩ := assert_15272917603597243842
+    have assert_7707544174847600206 : (↑n : ℤ) = 5 * (2 * k + 1) :=
+      by
+      trace
+        "Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ↑n = 5 * (2 * k + 1)"
+      simp_all only [OfNat.ofNat_ne_zero, or_true, add_left_inj, mul_eq_mul_left_iff, or_false, exists_eq']
+      sorry
+      trace
+        "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ↑n = 5 * (2 * k + 1)"
+    have assert_15272917603597243842 : ∃ (k : ℤ), (↑n : ℤ) = 10 * k + 5 :=
+      by
+      trace
+        "Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∃ k, ↑n = 10 * k + 5"
+      simp_all only [OfNat.ofNat_ne_zero, or_true, add_left_inj, mul_eq_mul_left_iff, or_false, exists_eq']
+      trace
+        "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∃ k, ↑n = 10 * k + 5"
+    let ⟨k, assert_18189104202108136409⟩ := assert_15272917603597243842
+    trace
+      "Automation Tactics first\n  | (simp?; done)\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: 5 ∣ n"
+    simp_all only [OfNat.ofNat_ne_zero, or_true, add_left_inj, mul_eq_mul_left_iff, or_false, exists_eq']
+    subst assert_7707544174847600206
+    sorry
+    trace
+      "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: 5 ∣ n"
+  | _ => sorry -- known bug
+  -- have : 5 ∣ n :=
+  --   by
+  --   trace
+  --     "Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: 5 ∣ n"
+  --   cases a_13397840144843358689 with
+  --   | inl h => sorry
+  --   | inr h_1 => sorry
+  --   trace
+  --     "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: 5 ∣ n"
+end

@@ -177,8 +177,9 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
         if (← msg.data.toString).trim == "declaration uses 'sorry'" then
           -- IO.eprintln s!"Warning message with Try this: {← msg.data.toString}"
           return none
-  msgs.toList.findSomeM?
+  let trys ← msgs.toList.filterMapM
     fun msg => getTacticsFromMessage? msg
+  return trys.getLast?
 
 def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
@@ -201,7 +202,7 @@ def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (str
     fun msg => getTacticsFromMessage? msg
 
 def getSimpOrExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | simp? | exact?))]
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | (simp? ; done) | exact?))]
   match tactics? with
   | none => return none
   | some tacs =>
@@ -223,7 +224,7 @@ def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) :=
       return some tacticCode
 
 def getHammerTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | simp? | hammer {aesopPremises := 5, autoPremises := 0}))]
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | (simp? ; done) | hammer {aesopPremises := 5, autoPremises := 0}))]
   match tactics? with
   | none => return none
   | some tacs =>

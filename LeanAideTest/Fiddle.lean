@@ -18,4 +18,4 @@ end
 
 #check hard_copy -- hard_copy [inst_hard : Fact hard.prop] : hard.prop
 
-example : 1 ≤ 2 := by first | simp? | hammer
+example : 1 ≤ 2 := by first | (simp? ; done) | hammer
