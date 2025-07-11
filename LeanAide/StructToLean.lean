@@ -124,7 +124,18 @@ def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
     if check
       then return fVarId
       else return none
-  | _ => return none
+  | _ =>
+    if ← isProp type then
+      lctx.decls.findSomeM? fun decl =>
+        match decl with
+        | some <| .cdecl _ fVarId _ dtype .. => do
+          let check ← isDefEq dtype type
+          -- logInfo m!"Checking {dtype} and {type} gives {check}"
+          if check then pure <| some fVarId
+          else pure none
+        | _ => pure none
+    else
+      return none
 
 
 partial def dropLocalContext (type: Expr) : MetaM Expr := do
@@ -150,7 +161,13 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
       else
         IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return type
-    | _ => return type
+    | none =>
+      match ← findLocalDecl? name binderType with
+      | some fVarId =>
+        let body' := body.instantiate1 (mkFVar fVarId)
+        dropLocalContext body'
+      | none =>
+        return type
   | .letE name ltype value body _ =>
     let lctx ← getLCtx
     match lctx.findFromUserName? name with

@@ -1338,7 +1338,9 @@ def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (ki
   let newGoals ←
     runAndGetMVars goal #[tac] proofData.size
   let proofStxs ← proofData.zip newGoals.toArray |>.mapM fun (proof, newGoal) => do
-    let some proofStx ← withoutModifyingState do getCode translator (some newGoal) ``tacticSeq proof |
+    let some proofStx ← withoutModifyingState do
+      newGoal.withContext do
+      getCode translator (some newGoal) ``tacticSeq proof |
       throwError s!"codegen: no translation found for {proof}"
     return proofStx
   let mut provedAlts : Array <| TSyntax ``matchAltTac := #[]
