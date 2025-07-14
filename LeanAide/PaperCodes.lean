@@ -495,7 +495,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     let instIdent := mkIdent instName
     let witIdent := mkIdent <| "deferred".toName ++ name
     let elimIdent := mkIdent <| instName ++ "elim".toName
-    let assumeDef ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
+    let _ ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
     let cmds := #[head] -- assumeDef removed for now
     for cmd in cmds do
       runCommand cmd
