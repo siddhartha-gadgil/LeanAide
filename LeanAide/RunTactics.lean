@@ -283,7 +283,7 @@ def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): Term
   return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
 partial def extractInstanceIntros (goal: MVarId) (accum: List Name := []) :
-    MetaM <| MVarId × List Name := do
+    MetaM <| MVarId × List Name := goal.withContext do
   match ← goal.getType with
   | Expr.forallE n type _ BinderInfo.instImplicit => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
@@ -295,7 +295,7 @@ partial def extractInstanceIntros (goal: MVarId) (accum: List Name := []) :
 
 
 partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := []) :
-    MetaM <| MVarId × List Name := do
+    MetaM <| MVarId × List Name := goal.withContext do
   match maxDepth, ← goal.getType with
   | 0, _ =>
     extractInstanceIntros goal accum

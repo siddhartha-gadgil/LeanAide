@@ -88,7 +88,7 @@ def translateToDef (statement: String) (translator : Translator) : TranslateM <|
 If the goal is a ∀, function etc., this function intros the variables and returns the goal with the names of the variables introduced. Further, corresponding prelude commands are added to the context.
 -/
 def consumeIntros (goal: MVarId) (maxDepth : Nat)
-    (accum: List Name) : TranslateM <| MVarId × List Name := do
+    (accum: List Name) : TranslateM <| MVarId × List Name := goal.withContext do
   match maxDepth, ← goal.getType with
   | 0, _ =>
     return (goal, accum)
@@ -521,11 +521,11 @@ where
       | Except.error _ => pure ()
     let .ok  claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no 'claim' found in 'theorem'"
-    let thm ← withPreludes claim
+    IO.eprintln s!"Translating claim: {claim}"
     let type ← translator.translateToPropStrict claim
+    IO.eprintln s!"Obtained type from translation: {← ppExpr type}"
     let proof? :=
       js.getObjVal? "proof" |>.toOption
-    let pfGoal ← mkFreshExprMVar type
     let hypSize ←
       match js.getObjValAs? (Array Json)  "hypothesis" with
       | Except.ok h =>
@@ -536,10 +536,11 @@ where
         pure h.size
       | Except.error _ => pure 0
     IO.eprintln s!"hypothesis size: {hypSize} in proof"
-    let (pfGoal', names') ← extractIntros pfGoal.mvarId! hypSize
-    let (pfGoal, names) ← consumeIntros pfGoal' 10 names'
     let proofStx? ← proof?.mapM fun
       pf => withoutModifyingState do
+      let pfGoal ← mkFreshExprMVar type
+      let (pfGoal', names') ← extractIntros pfGoal.mvarId! hypSize
+      let (pfGoal, names) ← consumeIntros pfGoal' 10 names'
       let pfStx ←  match ←
         getCode translator pfGoal ``tacticSeq (Json.mkObj [("proof", pf)]) with
       | some pfStx =>
@@ -562,9 +563,12 @@ where
       | none => throwError
         s!"codegen: no proof translation found for {pf}"
       pure pfStx
+    IO.eprintln s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
+    let thm ← withPreludes claim
     let name := (js.getObjValAs? Name "name").toOption.getD <| ← translator.server.theoremName thm
     let name :=
       if name.toString = "[anonymous]" then
+
         let hash := thm.hash
         let name := s!"thm_{hash}"
         name.toName
@@ -795,7 +799,7 @@ Generate code for a proof environment, either a sequence of tactics or a command
 -/
 @[codegen "proof"]
 def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `commandSeq, js => do
+| _, `commandSeq, js => withoutModifyingState do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
   let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
     s!"codegen: no 'claim_label' found in standalone 'proof'"
@@ -810,15 +814,19 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
       | Except.ok h =>
         IO.eprintln s!"hypothesis: {h} in proof"
         contextRun translator none ``tacticSeq (.arr h)
+        IO.eprintln s!"Ran hypothesis context"
         -- IO.eprintln "Preludes added:"
         -- IO.eprintln <| ← withPreludes ""
         pure h.size
       | Except.error _ => pure 0
   IO.eprintln s!"hypothesis size: {hypSize} in proof"
   let (goal', names') ← extractIntros goal hypSize
+  IO.eprintln s!"Extracted intros: {names'}"
   let (goal, names) ← consumeIntros goal' 10 names'
+  IO.eprintln s!"Consumed intros: {names}"
   let pfStx ←
     withoutModifyingState do
+    goal.withContext do
     getCodeTactics translator goal content
   let pfStx ←  if names.isEmpty then
       pure pfStx
@@ -1193,7 +1201,9 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let hash₀ := hash stx.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let headTac ← `(tactic| have $name : $stx := by $tac)
+  IO.eprintln s!"codegen: assertionCode: headTac: {← PrettyPrinter.ppTactic headTac}"
   let resTacs ← CodeGenerator.resolveExistsHave stx
+  IO.eprintln s!"codegen: assertionCode: resolved exists have tactics (size {resTacs.size})"
   let tacSeq := #[headTac] ++ resTacs
   `(tacticSeq| $tacSeq*)
 | _, `tactic, js => do

@@ -290,7 +290,7 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   for source in sources do
     let code? ←
       try
-        Translate.withDeferredTheorems do
+        -- Translate.withDeferredTheorems do
           getCode translator goal? ``commandSeq source
       catch e =>
         let err ←   e.toMessageData.toString
@@ -347,9 +347,9 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   | .ok sources => do
     for source in sources do
       let code ← getCode translator goal? kind source
-      unless code.isNone do
-        IO.eprintln s!"codegen: contextCode expected pure side effect, but got {code}"
-        logWarning m!"codegen: contextCode expected pure side effect, but got {code}"
+      -- unless code.isNone do
+      --   IO.eprintln s!"codegen: contextCode expected pure side effect, but got {code}"
+      --   logWarning m!"codegen: contextCode expected pure side effect, but got {code}"
     return
   | .error _ => do
     throwError

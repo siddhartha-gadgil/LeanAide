@@ -190,3 +190,33 @@ theorem divisible_by_5_of_last_digit_0_or_5 : ∀ {n : ℕ}, n % 10 = 0 ∨ n % 
   --   trace
   --     "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer [] {aesopPremises := 0, autoPremises := 0} for goal: 5 ∣ n"
 end
+
+/--
+error: missing cases:
+(Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ _))))))
+(Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero))))
+(Nat.succ (Nat.succ (Nat.succ Nat.zero)))
+(Nat.succ (Nat.succ Nat.zero))
+(Nat.succ Nat.zero)
+---
+error: unsolved goals
+case match_1
+n : ℕ
+a_13397840144843358689 : n % 10 = 0 ∨ n % 10 = 5
+c_9599375798178975459 : n % 10 = 0
+⊢ 5 ∣ n
+
+case match_2
+n : ℕ
+a_13397840144843358689 : n % 10 = 0 ∨ n % 10 = 5
+c_9599375798178975459 : n % 10 = 5
+⊢ 5 ∣ n
+-/
+#guard_msgs in
+-- Theorem: If the last digit of a number is 0 or 5
+theorem divisible_by_5_of_last_ : ∀ {n : ℕ}, n % 10 = 0 ∨ n % 10 = 5 → 5 ∣ n :=
+  by
+  intro n a_13397840144843358689
+  match c_9599375798178975459 : n % 10 with
+  | 0 => _
+  | 5 => _
