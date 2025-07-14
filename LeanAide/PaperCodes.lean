@@ -1025,7 +1025,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
 /- some_statement
 {
   "type": "object",
-  "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'",
+  "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'. **NOTE:** It is better to use `assert_statement` instead if the variable is not being defined but rather asserted to exist.",
   "properties": {
     "type": {
       "type": "string",
@@ -1043,11 +1043,15 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
     "properties": {
       "type": "string",
       "description": "(OPTIONAL) Specific properties of the variable beyond the type"
+    },
+    "statement": {
+      "type": "string",
+      "description": "The full statement made."
     }
   },
   "required": [
     "type",
-    "variable"
+    "variable_name"
   ],
   "additionalProperties": false
 }
