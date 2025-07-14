@@ -106,9 +106,10 @@ def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Stri
   let fmt ←  ppExpr val
   return fmt.pretty
 
+
 def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem
-  let s := s!"theorem {n} : {type} := by sorry"
+  let s := s!"set_option autoImplicit false in\ntheorem {n} : {type} := by sorry"
   let (env, logs) ←  runFrontendM s
   let errors := logs.toList.filter (·.severity == MessageSeverity.error)
   let errorStrings ←  errors.mapM (·.data.toString)
