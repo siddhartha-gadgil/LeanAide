@@ -53,10 +53,17 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
   -- let tacticCode ← `(tacticSeq| skip)
   try
     let ctx ← read
+    let msgs' ← Core.getMessageLog
     let (mvars, s) ←
       withoutErrToSorry do
       Elab.runTactic mvarId tacticCode {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode}
         (s:= ← get)
+    let msgs ← Core.getMessageLog
+    IO.eprintln s!"Messages from `runAndGetMVars` (skipping {msgs'.toList.length}):"
+    for msg in msgs.toList.drop (msgs'.toList.length) do
+      IO.eprintln s!"Message from `runAndGetMVars` (Error: {msg.severity == .error}) : {← msg.data.toString}"
+      if msg.severity == MessageSeverity.error then
+        throwError s!"Error in `runAndGetMVars`: {← msg.data.toString}"
     if allowClosure && mvars.isEmpty then
       set s
       IO.eprintln s!"Tactics returned no goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
