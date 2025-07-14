@@ -110,6 +110,17 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
     return (goal, accum)
 open Lean.Parser.Tactic
 
+def resolveIntros (goal: MVarId) (names: List Name) : TranslateM <| MVarId × (Array Syntax.Tactic)  := goal.withContext do
+  let mut goal := goal
+  let mut tacs := #[]
+  for n in names do
+    let introTerm ← elabTerm (mkIdent n) none
+    let introType ← inferType introTerm
+    let introTypeStx ← delabDetailed introType
+    let resolved ← CodeGenerator.resolveExistsHave introTypeStx (mkIdent n)
+    tacs := tacs ++ resolved
+  return (goal, tacs)
+
 def recallTheoremsAux : List DefData → TranslateM (Array Syntax.Tactic)
 | [] => return #[]
 | head :: tail => do
@@ -485,7 +496,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     let witIdent := mkIdent <| "deferred".toName ++ name
     let elimIdent := mkIdent <| instName ++ "elim".toName
     let assumeDef ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
-    let cmds := #[head, assumeDef]
+    let cmds := #[head] -- assumeDef removed for now
     for cmd in cmds do
       runCommand cmd
     `(commandSeq| $cmds*)
@@ -540,8 +551,12 @@ where
       pf => withoutModifyingState do
       let pfGoal ← mkFreshExprMVar type
       let (pfGoal', names') ← extractIntros pfGoal.mvarId! hypSize
-      let (pfGoal, names) ← consumeIntros pfGoal' 10 names'
-      let pfStx ←  match ←
+      let (pfGoal'', names) ← consumeIntros pfGoal' 10 names'
+      let (pfGoal, resTacs) ← resolveIntros pfGoal'' names
+      let pfStx ←
+        withoutModifyingState do
+        pfGoal.withContext do
+        match ←
         getCode translator pfGoal ``tacticSeq (Json.mkObj [("proof", pf)]) with
       | some pfStx =>
         let pfStx ←  if names.isEmpty then
@@ -557,7 +572,7 @@ where
                   `($n':ident)
             let namesStx := namesStx.toArray
             let introTac ←
-              `(tacticSeq| intro $namesStx*)
+              `(tacticSeq| intro $namesStx*; $resTacs*)
             appendTactics introTac pfStx
         pure pfStx
       | none => throwError
@@ -822,7 +837,8 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   IO.eprintln s!"hypothesis size: {hypSize} in proof"
   let (goal', names') ← extractIntros goal hypSize
   IO.eprintln s!"Extracted intros: {names'}"
-  let (goal, names) ← consumeIntros goal' 10 names'
+  let (goal'', names) ← consumeIntros goal' 10 names'
+  let (goal, resTacs) ← resolveIntros goal'' names
   IO.eprintln s!"Consumed intros: {names}"
   let pfStx ←
     withoutModifyingState do
@@ -841,7 +857,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
             `($n':ident)
       let namesStx := namesStx.toArray
       let introTac ←
-        `(tacticSeq| intro $namesStx*)
+        `(tacticSeq| intro $namesStx*; $resTacs*)
       appendTactics introTac pfStx
   IO.eprintln s!"Proof steps: {← PrettyPrinter.ppCategory ``tacticSeq pfStx}"
   let n := mkIdent labelledTheorem.name
