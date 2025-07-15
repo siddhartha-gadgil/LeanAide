@@ -12,7 +12,11 @@ In the `runFrontendM` function the environment is modified if the `modifyEnv` fl
 def simpleRunFrontend
     (input : String)
     (env: Environment)
-    (opts : Options := {}) (top : String := "open Nat\n")
+    (opts : Options := {}) (top : String := "universe u v w u_1 u_2 u_3 u₁ u₂ u₃
+set_option maxHeartbeats 10000000
+set_option linter.unreachableTactic false
+open Nat
+")
     (fileName : String := "<input>")
     : IO (Environment × MessageLog) := unsafe do
   let inputCtx := Parser.mkInputContext (top ++ input) fileName
@@ -159,11 +163,30 @@ def checkTermElabFrontM(s: String) : MetaM <| List String := do
 
 -- #eval checkTermElabFrontM "(fun n => 3 : Nat → Nat)"
 
--- Not efficient, should generate per command if this is needed
-def newDeclarations (s: String) : MetaM <| List Name := do
-  let constants := (← getEnv).constants.map₁.toList.map (·.1)
+def newDeclarations (s: String) : MetaM <| Array Name := do
+  let constants := (← getEnv).constants
   let (env, _) ← runFrontendM s
-  let newConstants := env.constants.map₁.toList.map (·.1)
-  return newConstants.filter (· ∉ constants)
+  let mut newConstants := #[]
+  for (n, _) in env.constants do
+    unless n.isInternal do
+    if  !constants.contains n then
+      newConstants := newConstants.push n
+  return newConstants
 
--- #eval newDeclarations "def x : Nat := 0"
+
+def elabFrontDefsNewExprM(s: String)(modifyEnv: Bool := false) : MetaM <| List (Name × Expr) × MessageLog := do
+  let constants := (← getEnv).constants
+  let (env, msgs) ← runFrontendM s modifyEnv
+  let mut nameDefs := #[]
+  for (n, d) in env.constants do
+    unless n.isInternal do
+    if  !constants.contains n then
+      match d.value? with
+      | none => continue
+      | some v => -- IO.eprintln s!"Found new definition: {n} with
+        nameDefs := nameDefs.push (n, v)
+  return (nameDefs.toList, msgs)
+
+
+
+end LeanAide
