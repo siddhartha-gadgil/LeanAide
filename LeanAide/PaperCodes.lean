@@ -1338,8 +1338,8 @@ open Lean.Parser.Term CodeGenerator Parser
 /--
 Generate code for a `pattern_cases_statement`. This is used to perform a proof by cases based on matching patterns against a given expression. It generates a `match` tactic with the specified patterns and their corresponding proofs.
 -/
---@[codegen "pattern_cases_statement"]
-def patternCasesCode' (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+@[codegen "pattern_cases_statement"]
+def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok discr := js.getObjValAs? String "on" | throwError
     s!"codegen: no 'on' found in 'pattern_cases_statement'"
@@ -1387,8 +1387,10 @@ def patternCasesCode' (translator : CodeGenerator := {}) : Option MVarId →  (k
     s!"codegen: biequivalenceCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
 @[codegen "pattern_cases_statement"]
-def patternCasesCode (translator : CodeGenerator := {}) (goal : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def patternCasesViaMulti (translator : CodeGenerator := {}) (goal : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | kind, js => do
+  let .ok on := js.getObjValAs? String "on" | throwError
+    s!"codegen: no 'on' found in 'pattern_cases_statement'"
   let .ok patternCases := js.getObjValAs? (Array Json) "proof_cases" | throwError
     s!"codegen: no 'proof_cases' found in 'pattern_cases_statement'"
   -- convert each `pattern_case` into `condition_case`
@@ -1400,10 +1402,10 @@ def patternCasesCode (translator : CodeGenerator := {}) (goal : Option MVarId) :
         s!"codegen : no 'proof' found in 'pattern_case'"
       pure (pattern, proof)
   let conditionCases := conditionCasesArray.map fun
-    (condition, proof) =>
+    (pattern, proof) =>
       Json.mkObj [
         ("type", "condition_case"),
-        ("condition", .str condition),
+        ("condition", .str s!"{on} = {pattern}"),
         ("proof", proof)
       ]
   let multicondJs := Json.mkObj [
