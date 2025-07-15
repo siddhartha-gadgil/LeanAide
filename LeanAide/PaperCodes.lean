@@ -1409,7 +1409,7 @@ def patternCasesViaMulti (translator : CodeGenerator := {}) (goal : Option MVarI
         ("proof", proof)
       ]
   let multicondJs := Json.mkObj [
-    ("type", "multi-condtion_cases_statement"),
+    ("type", "multi-condition_cases_statement"),
     ("proof_cases", .arr conditionCases)
   ]
   getCode translator goal kind multicondJs
