@@ -173,6 +173,20 @@ def newDeclarations (s: String) : MetaM <| Array Name := do
       newConstants := newConstants.push n
   return newConstants
 
-/-- info: #[`x] -/
-#guard_msgs in
-#eval newDeclarations "def x : Nat := 0"
+
+def elabFrontDefsNewExprM(s: String)(modifyEnv: Bool := false) : MetaM <| List (Name × Expr) × MessageLog := do
+  let constants := (← getEnv).constants
+  let (env, msgs) ← runFrontendM s modifyEnv
+  let mut nameDefs := #[]
+  for (n, d) in env.constants do
+    unless n.isInternal do
+    if  !constants.contains n then
+      match d.value? with
+      | none => continue
+      | some v => -- IO.eprintln s!"Found new definition: {n} with
+        nameDefs := nameDefs.push (n, v)
+  return (nameDefs.toList, msgs)
+
+
+
+end LeanAide

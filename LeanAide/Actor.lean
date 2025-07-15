@@ -345,9 +345,15 @@ The output is a JSON object with the result of the elaboration, including logs a
 def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
     match data.getObjValAs? String "lean_code" with
     | Except.ok code => do
-      let names := data.getObjValAs? (List Name) "declarations" |>.toOption |>.getD (← getNamesFromCode code).toList
+      let names? := data.getObjValAs? (List Name) "declarations" |>.toOption
       try
-        let (exprs, logs) ← elabFrontDefsExprM code names
+        let (exprs, logs) ←
+          match names? with
+          | some names =>
+          elabFrontDefsExprM code names
+          | none =>
+            elabFrontDefsNewExprM code
+        let names := names?.getD <| exprs.map (fun (n, _) => n)
         let describeSorries := data.getObjValAs? Bool "describe_sorries" |>.toOption |>.getD false
         let hasErrors := logs.toList.any
           (fun lg => lg.severity == MessageSeverity.error)
