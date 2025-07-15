@@ -1627,6 +1627,7 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId â
   let .ok proofCases := js.getObjValAs? (List Json) "proof_cases" | throwError
     s!"codegen: no 'proof_cases' found in 'multi-condition_cases_statement'"
   let exhaustiveness? := js.getObjValAs? Json "exhaustiveness" |>.toOption
+  let exhaustiveness? := exhaustiveness?.filter fun js => js != .null
   let cases â†  proofCases.mapM fun
     c => do
       let .ok condition := c.getObjValAs? String "condition" | throwError
