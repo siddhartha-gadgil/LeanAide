@@ -430,6 +430,15 @@
                 "$ref": "#/$defs/LogicalStepSequence"
               },
               {
+                "$ref": "#/$defs/let_statement"
+              },
+              {
+                "$ref": "#/$defs/assert_statement"
+              },
+              {
+                "$ref": "#/$defs/assume_statement"
+              },
+              {
                 "$ref": "#/$defs/pattern_cases_proof"
               },
               {
