@@ -495,7 +495,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     let instIdent := mkIdent instName
     let witIdent := mkIdent <| "deferred".toName ++ name
     let elimIdent := mkIdent <| instName ++ "elim".toName
-    let assumeDef ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
+    let _ ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
     let cmds := #[head] -- assumeDef removed for now
     for cmd in cmds do
       runCommand cmd
@@ -1025,7 +1025,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
 /- some_statement
 {
   "type": "object",
-  "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'",
+  "description": "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'. **NOTE:** It is better to use `assert_statement` instead if the variable is not being defined but rather asserted to exist.",
   "properties": {
     "type": {
       "type": "string",
@@ -1043,11 +1043,15 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
     "properties": {
       "type": "string",
       "description": "(OPTIONAL) Specific properties of the variable beyond the type"
+    },
+    "statement": {
+      "type": "string",
+      "description": "The full statement made."
     }
   },
   "required": [
     "type",
-    "variable"
+    "variable_name"
   ],
   "additionalProperties": false
 }
@@ -1382,6 +1386,33 @@ def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (ki
 | goal?, kind ,_ => throwError
     s!"codegen: biequivalenceCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
+@[codegen "pattern_cases_statement"]
+def patternCasesViaMulti (translator : CodeGenerator := {}) (goal : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| kind, js => do
+  let .ok on := js.getObjValAs? String "on" | throwError
+    s!"codegen: no 'on' found in 'pattern_cases_statement'"
+  let .ok patternCases := js.getObjValAs? (Array Json) "proof_cases" | throwError
+    s!"codegen: no 'proof_cases' found in 'pattern_cases_statement'"
+  -- convert each `pattern_case` into `condition_case`
+  let conditionCasesArray ← patternCases.mapM fun
+    pattern_case_js => do
+      let .ok pattern := pattern_case_js.getObjValAs? String "pattern" | throwError
+        s!"codegen : no 'pattern' found in 'pattern_case'"
+      let .ok proof := pattern_case_js.getObjValAs? Json "proof" | throwError
+        s!"codegen : no 'proof' found in 'pattern_case'"
+      pure (pattern, proof)
+  let conditionCases := conditionCasesArray.map fun
+    (pattern, proof) =>
+      Json.mkObj [
+        ("type", "condition_case"),
+        ("condition", .str s!"{on} = {pattern}"),
+        ("proof", proof)
+      ]
+  let multicondJs := Json.mkObj [
+    ("type", "multi-condition_cases_statement"),
+    ("proof_cases", .arr conditionCases)
+  ]
+  getCode translator goal kind multicondJs
 
 /- bi-implication_cases_statement
     "bi-implication_cases_statement": {
