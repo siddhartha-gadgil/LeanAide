@@ -265,7 +265,7 @@
           "type": "string",
           "description": "Definition content."
         },
-        "name" : {
+        "name": {
           "type": "string",
           "description": "The name of the defined object, concept or property. This should be a single word and appear in the definition text."
         },
@@ -376,19 +376,22 @@
             "$ref": "#/$defs/some_statement"
           },
           {
-            "$ref": "#/$defs/pattern_cases_statement"
+            "$ref": "#/$defs/pattern_cases_proof"
           },
           {
-            "$ref": "#/$defs/bi-implication_cases_statement"
+            "$ref": "#/$defs/bi-implication_cases_proof"
           },
           {
-            "$ref": "#/$defs/condition_cases_statement"
+            "$ref": "#/$defs/condition_cases_proof"
           },
           {
-            "$ref": "#/$defs/multi-condition_cases_statement"
+            "$ref": "#/$defs/multi-condition_cases_proof"
           },
           {
-            "$ref": "#/$defs/induction_statement"
+            "$ref": "#/$defs/induction_proof"
+          },
+          {
+            "$ref": "#/$defs/general_induction_proof"
           },
           {
             "$ref": "#/$defs/calculation"
@@ -425,6 +428,33 @@
               },
               {
                 "$ref": "#/$defs/LogicalStepSequence"
+              },
+              {
+                "$ref": "#/$defs/pattern_cases_proof"
+              },
+              {
+                "$ref": "#/$defs/bi-implication_cases_proof"
+              },
+              {
+                "$ref": "#/$defs/condition_cases_proof"
+              },
+              {
+                "$ref": "#/$defs/multi-condition_cases_proof"
+              },
+              {
+                "$ref": "#/$defs/induction_proof"
+              },
+              {
+                "$ref": "#/$defs/general_induction_proof"
+              },
+              {
+                "$ref": "#/$defs/calculation"
+              },
+              {
+                "$ref": "#/$defs/contradiction_statement"
+              },
+              {
+                "$ref": "#/$defs/conclude_statement"
               },
               {
                 "$ref": "#/$defs/Paragraph"
@@ -637,13 +667,13 @@
       "type": "string",
       "description": "A step, typically an equality or inequality, in a calculation or computation. Write the step fully: e.g. in the sequence `a=b\n=c`, write `a=b` and `b=c` as two separate steps and DO NOT OMIT `b` in the second step."
     },
-    "pattern_cases_statement": {
+    "pattern_cases_proof": {
       "type": "object",
       "description": "A proof by cases, with cases determined by matching a pattern.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "pattern_cases_statement",
+          "const": "pattern_cases_proof",
           "description": "The type of this logical step."
         },
         "on": {
@@ -665,13 +695,13 @@
       ],
       "additionalProperties": false
     },
-    "bi-implication_cases_statement": {
+    "bi-implication_cases_proof": {
       "type": "object",
       "description": "Proof of a statement `P ↔ Q`.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "bi-implication_cases_statement",
+          "const": "bi-implication_cases_proof",
           "description": "The type of this logical step."
         },
         "if_proof": {
@@ -690,13 +720,13 @@
       ],
       "additionalProperties": false
     },
-    "condition_cases_statement": {
+    "condition_cases_proof": {
       "type": "object",
       "description": "Proof of a statement based on splitting into cases where a condition is true and false, i.e., an if-then-else proof.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "condition_cases_statement",
+          "const": "condition_cases_proof",
           "description": "The type of this logical step."
         },
         "condition": {
@@ -720,13 +750,13 @@
       ],
       "additionalProperties": false
     },
-    "multi-condition_cases_statement": {
+    "multi-condition_cases_proof": {
       "type": "object",
       "description": "A proof by cases given by three or more conditions.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "multi-condtion_cases_statement",
+          "const": "multi-condtion_cases_proof",
           "description": "The type of this logical step."
         },
         "proof_cases": {
@@ -747,13 +777,13 @@
       ],
       "additionalProperties": false
     },
-    "general_induction_statement": {
+    "general_induction_proof": {
       "type": "object",
       "description": "A proof by cases given by three or more conditions.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "general_induction_statement",
+          "const": "general_induction_proof",
           "description": "The type of this logical step."
         },
         "induction_principle": {
@@ -857,7 +887,6 @@
       ],
       "additionalProperties": false
     },
-
     "case": {
       "type": "object",
       "description": "A case in a proof by cases or proof by induction.",
@@ -883,13 +912,13 @@
       ],
       "additionalProperties": false
     },
-    "induction_statement": {
+    "induction_proof": {
       "type": "object",
-      "description": "A proof by induction, with a base case and an induction step. For strong induction or structural induction, USE INSTEAD 'general_induction_statement'.",
+      "description": "A proof by induction, with a base case and an induction step. For strong induction or structural induction, USE INSTEAD 'general_induction_proof'.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "induction_statement",
+          "const": "induction_proof",
           "description": "The type of this logical step."
         },
         "on": {
@@ -899,7 +928,6 @@
         "prev_var": {
           "type": "string",
           "description": "(OPTIONAL) The variable `m` so that the induction case if `m + 1`. If omitted it is assumed that it is the same as the 'on' variable, i.e., the induction step is `n + 1` where `n` is the variable on which induction is done."
-
         },
         "base_case_proof": {
           "$ref": "#/$defs/Proof",
