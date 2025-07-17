@@ -195,12 +195,12 @@ def egTheorem : Json :=
 
 
 def egTheorem' : Json :=
-  json% {
+  json% {"document" : {"body" : [{
     "type": "theorem",
     "name": "egTheorem",
     "label": "egTheorem",
     "claim": "There are infinitely many odd numbers."
-  }
+  }]}}
 
 def egTheorem.prop : Prop :=
   Set.Infinite {n : ℤ | Odd n}
