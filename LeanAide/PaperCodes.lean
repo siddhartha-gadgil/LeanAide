@@ -276,15 +276,17 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
 
 
 /--
-Gets a sequence of commands or tactics from a JSON "document".
+Gets a sequence of commands or tactics from a JSON "document". There are two options for compatibility with the old schema.
 -/
 @[codegen "document"]
 def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, ``commandSeq, js => do
-  let .ok content := js.getArr? | throwError "'document' must be a JSON array"
+  let some content := js.getArr?.toOption.orElse
+    (fun _ =>js.getObjValAs? (Array Json) "body" |>.toOption) | throwError "'document' must have body or be a JSON array"
   getCodeCommands translator none  content.toList
 | some goal, ``tacticSeq, js => goal.withContext do
-  let .ok content := js.getArr? | throwError "'document' must be a JSON array"
+  let some content := js.getArr?.toOption.orElse
+    (fun _ =>js.getObjValAs? (Array Json) "body" |>.toOption) | throwError "'document' must have body or be a JSON array"
   getCodeTactics translator goal  content.toList
 | _, kind, _ => throwError
     s!"codegen: 'document' does not work for kind {kind}"
@@ -558,7 +560,7 @@ where
         withoutModifyingState do
         pfGoal.withContext do
         match ←
-        getCode translator pfGoal ``tacticSeq (Json.mkObj [("proof", pf)]) with
+        getCode translator pfGoal ``tacticSeq pf with
       | some pfStx =>
         let pfStx ←  if names.isEmpty then
             pure pfStx

@@ -5,57 +5,49 @@
   "type": "object",
   "properties": {
     "document": {
-      "type": "array",
+      "type": "object",
       "description": "The root of the mathematical document, containing a sequence of environments.",
-      "items": {
-        "anyOf": [
-          {
-            "$ref": "#/$defs/Title"
-          },
-          {
-            "$ref": "#/$defs/Abstract"
-          },
-          {
-            "$ref": "#/$defs/Metadata"
-          },
-          {
-            "$ref": "#/$defs/Section"
-          },
-          {
-            "$ref": "#/$defs/Theorem"
-          },
-          {
-            "$ref": "#/$defs/Definition"
-          },
-          {
-            "$ref": "#/$defs/let_statement"
-          },
-          {
-            "$ref": "#/$defs/assert_statement"
-          },
-          {
-            "$ref": "#/$defs/assume_statement"
-          },
-          {
-            "$ref": "#/$defs/LogicalStepSequence"
-          },
-          {
-            "$ref": "#/$defs/Paragraph"
-          },
-          {
-            "$ref": "#/$defs/ProofDetails"
-          },
-          {
-            "$ref": "#/$defs/Figure"
-          },
-          {
-            "$ref": "#/$defs/Table"
-          },
-          {
-            "$ref": "#/$defs/Bibliography"
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "document",
+          "description": "The type of this document element."
+        },
+        "body": {
+          "$ref": "#/$defs/LogicalStepSequence"
+        },
+        "title": {
+          "type": "string",
+          "description": "(OPTIONAL) The title of the document."
+        },
+        "abstract": {
+          "type": "string",
+          "description": "(OPTIONAL) The abstract of the document."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "(OPTIONAL) Metadata about the document, such as authors, date, etc.",
+          "properties": {
+            "authors": {
+              "type": "array",
+              "description": "(OPTIONAL) List of authors of the document.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "date": {
+              "type": "string",
+              "format": "date",
+              "description": "(OPTIONAL) Date of the document."
+            }
           }
-        ]
-      }
+        }
+      },
+      "required": [
+        "type",
+        "body"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -113,45 +105,7 @@
           "description": "The type of this document element."
         },
         "content": {
-          "type": "array",
-          "description": "The content of the section.",
-          "items": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/Section"
-              },
-              {
-                "$ref": "#/$defs/Theorem"
-              },
-              {
-                "$ref": "#/$defs/Definition"
-              },
-              {
-                "$ref": "#/$defs/let_statement"
-              },
-              {
-                "$ref": "#/$defs/assert_statement"
-              },
-              {
-                "$ref": "#/$defs/assume_statement"
-              },
-              {
-                "$ref": "#/$defs/LogicalStepSequence"
-              },
-              {
-                "$ref": "#/$defs/Paragraph"
-              },
-              {
-                "$ref": "#/$defs/ProofDetails"
-              },
-              {
-                "$ref": "#/$defs/Figure"
-              },
-              {
-                "$ref": "#/$defs/Table"
-              }
-            ]
-          }
+          "$ref": "#/$defs/LogicalStepSequence"
         },
         "label": {
           "type": "string",
@@ -307,6 +261,12 @@
       "items": {
         "anyOf": [
           {
+            "$ref": "#/$defs/Theorem"
+          },
+          {
+            "$ref": "#/$defs/Definition"
+          },
+          {
             "$ref": "#/$defs/let_statement"
           },
           {
@@ -346,6 +306,12 @@
             "$ref": "#/$defs/conclude_statement"
           },
           {
+            "$ref": "#/$defs/Section"
+          },
+          {
+            "$ref": "#/$defs/Proof"
+          },
+          {
             "$ref": "#/$defs/Paragraph"
           },
           {
@@ -357,34 +323,34 @@
         ]
       }
     },
-    "ProofDetails" : {
-      "anyOf" : [
+    "ProofDetails": {
+      "anyOf": [
         {
           "$ref": "#/$defs/LogicalStepSequence"
         },
         {
-            "$ref": "#/$defs/pattern_cases_proof"
-          },
-          {
-            "$ref": "#/$defs/bi-implication_cases_proof"
-          },
-          {
-            "$ref": "#/$defs/condition_cases_proof"
-          },
-          {
-            "$ref": "#/$defs/multi-condition_cases_proof"
-          },
-          {
-            "$ref": "#/$defs/induction_proof"
-          },
-          {
-            "$ref": "#/$defs/general_induction_proof"
-          }
+          "$ref": "#/$defs/pattern_cases_proof"
+        },
+        {
+          "$ref": "#/$defs/bi-implication_cases_proof"
+        },
+        {
+          "$ref": "#/$defs/condition_cases_proof"
+        },
+        {
+          "$ref": "#/$defs/multi-condition_cases_proof"
+        },
+        {
+          "$ref": "#/$defs/induction_proof"
+        },
+        {
+          "$ref": "#/$defs/general_induction_proof"
+        }
       ]
     },
     "Proof": {
       "type": "object",
-      "description": "A proof environment.",
+      "description": "A proof environment for a statement made earlier. If adjacent to the theorem, instead include as the `proof` property of the theorem.",
       "properties": {
         "type": {
           "type": "string",
@@ -396,8 +362,8 @@
           "description": "Theorem label being proved."
         },
         "proof_steps": {
-                "$ref": "#/$defs/ProofDetails"
-              }
+          "$ref": "#/$defs/ProofDetails"
+        }
       },
       "required": [
         "type",
