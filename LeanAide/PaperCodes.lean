@@ -245,8 +245,9 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
     let valueStr? ←
       decl.value?.mapM fun value => do
         let valueStr ← ppExprDetailed value
-        return s!" with value {valueStr}"
-    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr} {valueStr?}"
+        return s!" with value `{valueStr}`"
+    let valueStr := valueStr?.getD ""
+    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}{valueStr}"
     let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
     return some stx
 | some goal, ``tacticSeq, js => goal.withContext do
