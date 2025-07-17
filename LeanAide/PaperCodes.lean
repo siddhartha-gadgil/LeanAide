@@ -245,8 +245,9 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
     let valueStr? ←
       decl.value?.mapM fun value => do
         let valueStr ← ppExprDetailed value
-        return s!" with value {valueStr}"
-    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr} {valueStr?}"
+        return s!" with value `{valueStr}`"
+    let valueStr := valueStr?.getD ""
+    let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}{valueStr}"
     let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
     return some stx
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -730,10 +731,10 @@ where
         "$ref": "#/$defs/some_statement"
       },
       {
-        "$ref": "#/$defs/cases_statement"
+        "$ref": "#/$defs/cases_proof"
       },
       {
-        "$ref": "#/$defs/induction_statement"
+        "$ref": "#/$defs/induction_proof"
       },
       {
         "$ref": "#/$defs/calculate_statement"
@@ -1306,13 +1307,13 @@ where typeStx (eqn: String) :
   delabDetailed type
 
 
-/-     "pattern_cases_statement": {
+/-     "pattern_cases_proof": {
       "type": "object",
       "description": "A proof by cases, with cases determined by matching a pattern.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "pattern_cases_statement",
+          "const": "pattern_cases_proof",
           "description": "The type of this logical step."
         },
         "on": {
@@ -1336,15 +1337,15 @@ where typeStx (eqn: String) :
 -/
 open Lean.Parser.Term CodeGenerator Parser
 /--
-Generate code for a `pattern_cases_statement`. This is used to perform a proof by cases based on matching patterns against a given expression. It generates a `match` tactic with the specified patterns and their corresponding proofs.
+Generate code for a `pattern_cases_proof`. This is used to perform a proof by cases based on matching patterns against a given expression. It generates a `match` tactic with the specified patterns and their corresponding proofs.
 -/
-@[codegen "pattern_cases_statement"]
+@[codegen "pattern_cases_proof"]
 def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok discr := js.getObjValAs? String "on" | throwError
-    s!"codegen: no 'on' found in 'pattern_cases_statement'"
+    s!"codegen: no 'on' found in 'pattern_cases_proof'"
   let .ok patternCases := js.getObjValAs? (Array Json) "proof_cases" | throwError
-    s!"codegen: no 'proof_cases' found in 'pattern_cases_statement'"
+    s!"codegen: no 'proof_cases' found in 'pattern_cases_proof'"
   let pats := patternCases.filterMap fun
     case =>
       case.getObjValAs? String "pattern" |>.toOption
@@ -1386,13 +1387,13 @@ def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (ki
 | goal?, kind ,_ => throwError
     s!"codegen: biequivalenceCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
-@[codegen "pattern_cases_statement"]
+@[codegen "pattern_cases_proof"]
 def patternCasesViaMulti (translator : CodeGenerator := {}) (goal : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | kind, js => do
   let .ok on := js.getObjValAs? String "on" | throwError
-    s!"codegen: no 'on' found in 'pattern_cases_statement'"
+    s!"codegen: no 'on' found in 'pattern_cases_proof'"
   let .ok patternCases := js.getObjValAs? (Array Json) "proof_cases" | throwError
-    s!"codegen: no 'proof_cases' found in 'pattern_cases_statement'"
+    s!"codegen: no 'proof_cases' found in 'pattern_cases_proof'"
   -- convert each `pattern_case` into `condition_case`
   let conditionCasesArray ← patternCases.mapM fun
     pattern_case_js => do
@@ -1409,19 +1410,19 @@ def patternCasesViaMulti (translator : CodeGenerator := {}) (goal : Option MVarI
         ("proof", proof)
       ]
   let multicondJs := Json.mkObj [
-    ("type", "multi-condition_cases_statement"),
+    ("type", "multi-condition_cases_proof"),
     ("proof_cases", .arr conditionCases)
   ]
   getCode translator goal kind multicondJs
 
-/- bi-implication_cases_statement
-    "bi-implication_cases_statement": {
+/- bi-implication_cases_proof
+    "bi-implication_cases_proof": {
       "type": "object",
       "description": "Proof of a statement `P ↔ Q`.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "bi-implication_cases_statement",
+          "const": "bi-implication_cases_proof",
           "description": "The type of this logical step."
         },
         "if_proof": {
@@ -1444,15 +1445,15 @@ def patternCasesViaMulti (translator : CodeGenerator := {}) (goal : Option MVarI
   },
 -/
 /--
-Generate code for a `bi-implication_cases_statement`. This is used to prove a bi-implication `P ↔ Q` by proving both directions: `P → Q` and `Q → P`. It recursively generates a sequence of tactics that handle both implications.
+Generate code for a `bi-implication_cases_proof`. This is used to prove a bi-implication `P ↔ Q` by proving both directions: `P → Q` and `Q → P`. It recursively generates a sequence of tactics that handle both implications.
 -/
-@[codegen "bi-implication_cases_statement"]
+@[codegen "bi-implication_cases_proof"]
 def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok ifProof := js.getObjValAs? Json "if_proof" | throwError
-    s!"codegen: no 'if_proof' found in 'bi-implication_cases_statement'"
+    s!"codegen: no 'if_proof' found in 'bi-implication_cases_proof'"
   let .ok onlyIfProof := js.getObjValAs? Json "only_if_proof" | throwError
-    s!"codegen: no 'only_if_proof' found in 'bi-implication_cases_statement'"
+    s!"codegen: no 'only_if_proof' found in 'bi-implication_cases_proof'"
   let tac ← `(tactic|constructor)
   let [ifGoal, onlyIfGoal] ←
     runAndGetMVars goal #[tac] 2 | throwError "codegen: in 'biequivalenceCode' `constructor` failed to get two goals; goal: {← ppExpr <| ← goal.getType}"
@@ -1465,14 +1466,14 @@ def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (k
 | goal?, kind ,_ => throwError
     s!"codegen: biequivalenceCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
-/- condition_cases_statement
-    "condition_cases_statement": {
+/- condition_cases_proof
+    "condition_cases_proof": {
       "type": "object",
       "description": "Proof of a statement based on splitting into cases where a condition is true and false, i.e., an if-then-else proof.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "condition_cases_statement",
+          "const": "condition_cases_proof",
           "description": "The type of this logical step."
         },
         "condition": {
@@ -1498,13 +1499,13 @@ def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (k
   },
 -/
 /--
-Generate code for a `condition_cases_statement`. This is used to prove a statement by splitting into two cases based on a condition. It generates an `if ... then ... else ...` tactic with the provided proofs for each case.
+Generate code for a `condition_cases_proof`. This is used to prove a statement by splitting into two cases based on a condition. It generates an `if ... then ... else ...` tactic with the provided proofs for each case.
 -/
-@[codegen "condition_cases_statement"]
+@[codegen "condition_cases_proof"]
 def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok condition := js.getObjValAs? String "condition" | throwError
-    s!"codegen: no 'condition' found in 'condition_cases_statement'"
+    s!"codegen: no 'condition' found in 'condition_cases_proof'"
   let conditionType ← translator.translateToPropStrict condition
   let conditionStx ← delabDetailed conditionType
   let hash₀ := hash conditionStx.raw.reprint
@@ -1517,9 +1518,9 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
   let resolution ←
     CodeGenerator.resolveExistsHave conditionStx conditionId
   let .ok trueCaseProof := js.getObjValAs? Json "true_case_proof" | throwError
-    s!"codegen: no 'true_case_proof' found in 'condition_cases_statement'"
+    s!"codegen: no 'true_case_proof' found in 'condition_cases_proof'"
   let .ok falseCaseProof := js.getObjValAs? Json "false_case_proof" | throwError
-    s!"codegen: no 'false_case_proof' found in 'condition_cases_statement'"
+    s!"codegen: no 'false_case_proof' found in 'condition_cases_proof'"
   let thenGoal ← if resolution.isEmpty then
     pure thenGoal
   else
@@ -1589,13 +1590,13 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
     `(tacticSeq| $tacs*)
 
 /-
-    "multi-condition_cases_statement": {
+    "multi-condition_cases_proof": {
       "type": "object",
       "description": "A proof by cases given by three or more conditions.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "multi-condtion_cases_statement",
+          "const": "multi-condtion_cases_proof",
           "description": "The type of this logical step."
         },
         "proof_cases": {
@@ -1621,11 +1622,11 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
 /--
 Generate code for a multi-condition cases statement. This is used to handle proofs that involve multiple conditions, where each condition leads to a different case in the proof. It recursively generates tactics for each condition and its corresponding proof.
 -/
-@[codegen "multi-condition_cases_statement"]
+@[codegen "multi-condition_cases_proof"]
 def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok proofCases := js.getObjValAs? (List Json) "proof_cases" | throwError
-    s!"codegen: no 'proof_cases' found in 'multi-condition_cases_statement'"
+    s!"codegen: no 'proof_cases' found in 'multi-condition_cases_proof'"
   let exhaustiveness? := js.getObjValAs? Json "exhaustiveness" |>.toOption
   let exhaustiveness? := exhaustiveness?.filter fun js => js != .null
   let cases ←  proofCases.mapM fun
@@ -1657,14 +1658,14 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
-/- induction_statement
-    "induction_statement": {
+/- induction_proof
+    "induction_proof": {
       "type": "object",
       "description": "A proof by induction, with a base case and an induction step.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "induction_statement",
+          "const": "induction_proof",
           "description": "The type of this logical step."
         },
         "on": {
@@ -1690,13 +1691,13 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
 -/
 
 /--
-Generate code for an `induction_statement`. This is used to perform a proof by induction on a variable or expression. It generates an `induction` tactic with the specified base case and induction step proofs.
+Generate code for an `induction_proof`. This is used to perform a proof by induction on a variable or expression. It generates an `induction` tactic with the specified base case and induction step proofs.
 -/
-@[codegen "induction_statement"]
+@[codegen "induction_proof"]
 def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok discr := js.getObjValAs? String "on" | throwError
-    s!"codegen: no 'on' found in 'induction_statement'"
+    s!"codegen: no 'on' found in 'induction_proof'"
   let discrTerm' :=
     runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(sorry))
         let succId := mkIdent ``Nat.succ
@@ -1830,7 +1831,7 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
     s!"codegen: conclude_statement does not work for kind {kind}"
 
 /--
-Generate code for a `general_induction_statement`. This is used to perform a proof by induction with multiple conditions, where each condition leads to a different case in the proof. It recursively generates tactics for each condition and its corresponding proof.
+Generate code for a `general_induction_proof`. This is used to perform a proof by induction with multiple conditions, where each condition leads to a different case in the proof. It recursively generates tactics for each condition and its corresponding proof.
 -/
 def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json × (Array String))) (inductionNames: Array Name)  : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
@@ -1875,13 +1876,13 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
     `(tacticSeq| $tacs*)
 
 /-
-    "general_induction_statement": {
+    "general_induction_proof": {
       "type": "object",
       "description": "A proof by cases given by three or more conditions.",
       "properties": {
         "type": {
           "type": "string",
-          "const": "multi-condtion_cases_statement",
+          "const": "multi-condtion_cases_proof",
           "description": "The type of this logical step."
         },
         "induction_principle": {
@@ -1906,15 +1907,15 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
 -/
 
 /--
-Generate code for a `general_induction_statement`. This is used to perform a proof by induction with multiple conditions, where each condition leads to a different case in the proof. It recursively generates tactics for each condition and its corresponding proof.
+Generate code for a `general_induction_proof`. This is used to perform a proof by induction with multiple conditions, where each condition leads to a different case in the proof. It recursively generates tactics for each condition and its corresponding proof.
 -/
-@[codegen "general_induction_statement"]
+@[codegen "general_induction_proof"]
 def generalInductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok proofCases := js.getObjValAs? (List Json) "proof_cases" | throwError
-    s!"codegen: no 'proof_cases' found in 'multi-condition_cases_statement'"
+    s!"codegen: no 'proof_cases' found in 'multi-condition_cases_proof'"
   let .ok inductionPrinciple :=  js.getObjValAs? String "induction_principle" | throwError
-    s!"codegen: no 'induction_principle' found in 'general_induction_statement'"
+    s!"codegen: no 'induction_principle' found in 'general_induction_proof'"
   let inductionPrincipleNames ← Translator.matchingTheorems inductionPrinciple (qp := translator)
   let cases ←  proofCases.mapM fun
     c => do
