@@ -612,7 +612,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "const": "multi-condtion_cases_proof",
+          "const": "multi-condition_cases_proof",
           "description": "The type of this logical step."
         },
         "proof_cases": {
@@ -717,7 +717,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "const": "condition_case",
+          "const": "induction_case",
           "description": "The type of this logical step."
         },
         "condition": {
