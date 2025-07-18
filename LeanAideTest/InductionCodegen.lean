@@ -56,19 +56,18 @@ def induction_eg := json% {
 
 #codegen induction_eg
 
--- Ouput:
-theorem iterate_add_one_apply_eq_self : ∀ (n : ℕ), (fun (x : ℕ) ↦ 1 + x)^[n] 0 = n :=
+-- Output:
+theorem forall_nat_cast_succ_eq_add_one_then_eq_id :
+      ∀ (f : ℕ → ℕ), f 0 = 0 → (∀ (n : ℕ), f (n + 1) = f n + 1) → ∀ (n : ℕ), f n = n :=
     by
-    intro n
+    intro f a_1676541840746925941 a_2213797161315613598 n
     induction n with
     | zero =>
-      trace "Automation tactics found for (fun x => 1 + x)^[0] 0 = 0, closing goal"
-      simp only [Function.iterate_zero, id_eq]
-    | succ n
-      ih =>
-      trace "Automation tactics found for (fun x => 1 + x)^[n + 1] 0 = n + 1, closing goal"
-      simp only [Function.iterate_succ, add_left_iterate, smul_eq_mul, mul_one, Function.comp_apply,
-        add_zero, Nat.add_left_cancel_iff]
+      trace "Automation tactics found for f 0 = 0, closing goal"
+      simp_all only
+    | succ n ih =>
+      trace "Automation tactics found for f (n + 1) = n + 1, closing goal"
+      simp_all only [Nat.add_left_cancel_iff]
     done
 
 def pattern_eg := json% {

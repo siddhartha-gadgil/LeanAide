@@ -89,12 +89,35 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     throwError
       s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString} when expecting {n} goals."
 
+def relDecls : List (Option LocalDecl) → Syntax.Term → MetaM Syntax.Term
+  | [], term => pure term
+  | none :: rest, term =>
+    -- IO.eprintln s!"Skipping internal declaration in relDecls: {term}"
+    relDecls rest term
+  | (some decl) :: rest, term => do
+    let prev ← relDecls rest term
+    match decl with
+    | .ldecl _ _ n type val _ _ =>
+      let n := mkIdent n
+      let typeStx ← delabDetailed type
+      let valStx ← delabDetailed val
+      `(let $n:ident : $typeStx := $valStx; $prev)
+    | .cdecl _ _ n type bi .. =>
+      let n := mkIdent n
+      let typeStx ← delabDetailed type
+      match bi with
+      | BinderInfo.default => `(($n:ident : $typeStx) →  $prev)
+      | BinderInfo.instImplicit => `([$n:ident : $typeStx] →  $prev)
+      | BinderInfo.implicit => `({$n:ident : $typeStx} →  $prev)
+      | BinderInfo.strictImplicit => `({{$n:ident : $typeStx}} →  $prev)
+
 def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
     mvarId.withContext do
   IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
   let lctx ← getLCtx
   let mut vars : Array Syntax.Term := #[]
-  let mut fvars : Array Expr := lctx.getFVarIds.map (mkFVar)
+  let fvars : Array Expr := lctx.getFVarIds.map (mkFVar)
+  let decls := lctx.decls.toList
   for decl in lctx do
     unless decl.isImplementationDetail || decl.isLet do
       let name := decl.userName
@@ -106,9 +129,13 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
       vars := vars.push term
     IO.eprintln s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
   -- vars := vars[1:]
-  let targetType := lctx.mkForall  fvars <| ← mvarId.getType
-  let typeStx ← delabDetailed targetType
+  -- let targetType := lctx.mkForall  fvars <| ← mvarId.getType
+  IO.eprintln "FVars:"
+  for fvar in fvars do
+    IO.eprintln s!"{← PrettyPrinter.ppExpr fvar} : {← PrettyPrinter.ppExpr <| ← inferType fvar}"
+  let typeStx ← relDecls decls <| ← delabDetailed <| ← mvarId.getType
   let typeView ← PrettyPrinter.ppTerm typeStx
+  IO.eprintln s!"Target type: {typeView}"
   logInfo m!"Target type: {typeView}"
   let introTac ← `(tactic| intro $vars*)
   let tactics := if vars.isEmpty then tactics else  #[introTac] ++ tactics
