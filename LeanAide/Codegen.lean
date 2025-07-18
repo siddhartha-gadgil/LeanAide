@@ -130,7 +130,7 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
     let key := key.toLower
     let fs ←  codegenMatches key
     let mut accumErrors : Array String := #[]
-    for f in fs.reverse do
+    for f in fs do
       logInfo m!"codegen: trying {f} for key {key}"
       IO.eprintln s!"codegen: trying {f} for key {key}"
       try
