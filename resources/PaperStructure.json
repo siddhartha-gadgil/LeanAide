@@ -55,46 +55,6 @@
   ],
   "additionalProperties": false,
   "$defs": {
-    "Title": {
-      "type": "object",
-      "description": "The title of the document.",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "Title",
-          "description": "The type of this document element."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title text."
-        }
-      },
-      "required": [
-        "type",
-        "title"
-      ],
-      "additionalProperties": false
-    },
-    "Abstract": {
-      "type": "object",
-      "description": "The abstract of the document.",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "Abstract",
-          "description": "The type of this document element."
-        },
-        "abstract": {
-          "type": "string",
-          "description": "The abstract text."
-        }
-      },
-      "required": [
-        "type",
-        "abstract"
-      ],
-      "additionalProperties": false
-    },
     "Section": {
       "type": "object",
       "description": "A section of the document.",
@@ -652,7 +612,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "const": "multi-condtion_cases_proof",
+          "const": "multi-condition_cases_proof",
           "description": "The type of this logical step."
         },
         "proof_cases": {
@@ -757,7 +717,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "const": "condition_case",
+          "const": "induction_case",
           "description": "The type of this logical step."
         },
         "condition": {
@@ -890,52 +850,6 @@
       },
       "required": [
         "type"
-      ],
-      "additionalProperties": false
-    },
-    "Metadata": {
-      "type": "object",
-      "description": "Metadata about the document, such as authors, keywords, and classification.",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "Metadata",
-          "description": "The type of this document element."
-        },
-        "authors": {
-          "type": "array",
-          "description": "List of authors.",
-          "items": {
-            "$ref": "#/$defs/Author"
-          }
-        },
-        "keywords": {
-          "type": "array",
-          "description": "List of keywords describing the document.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "msc_codes": {
-          "type": "array",
-          "description": "Mathematics Subject Classification codes.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "publication_date": {
-          "type": "string",
-          "description": "Date of publication or creation (ISO 8601 format recommended).",
-          "format": "date"
-        },
-        "source": {
-          "type": "string",
-          "description": "Publication source, e.g., Journal label, volume, pages, conference proceedings."
-        }
-      },
-      "required": [
-        "type",
-        "authors"
       ],
       "additionalProperties": false
     },

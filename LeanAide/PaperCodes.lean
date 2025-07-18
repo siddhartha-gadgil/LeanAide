@@ -1702,12 +1702,12 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     s!"codegen: no 'on' found in 'induction_proof'"
   let discrTerm' :=
     runParserCategory (← getEnv) `term discr |>.toOption.getD (← `(sorry))
-        let succId := mkIdent ``Nat.succ
+        let succId := mkIdent `succ
   let ihId := mkIdent `ih
   let discrTerm : Syntax.Term := ⟨discrTerm'⟩
-  let dicrTerm' ← `(elimTarget| $discrTerm:term)
-  let discrTerm'' : TSyntax ``elimTarget := ⟨dicrTerm'⟩
-  let zeroId := mkIdent ``Nat.zero
+  let discrTerm' ← `(elimTarget| $discrTerm:term)
+  let discrTerm'' : TSyntax ``elimTarget := ⟨discrTerm'⟩
+  let zeroId := mkIdent `zero
   let prevVar := js.getObjValAs? String "prev_var" |>.toOption |>.getD discr
   let prevVarId :=  mkIdent <| prevVar.toName
   let tac ← `(tactic|
