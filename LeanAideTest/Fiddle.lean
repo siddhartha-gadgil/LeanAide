@@ -61,7 +61,6 @@ theorem kernel_is_a_submodule {V W : Type*} [AddCommGroup V] [AddCommGroup W] [M
 
 example : ∀ n : ℕ, (fun x => 1 + x)^[n] 0 = n  := by
   intro n
-  induction n
-  case zero => aesop
-  case succ n ih =>
-    aesop
+  induction n with
+  | zero => aesop
+  | succ n ih => aesop
