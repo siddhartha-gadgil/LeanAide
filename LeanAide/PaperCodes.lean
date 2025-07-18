@@ -1721,9 +1721,15 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     s!"codegen: no true_case_proof found in {js}"
   let .ok inductionStepProof := js.getObjValAs? Json "induction_step_proof" | throwError
     s!"codegen: no false_case_proof found in {js}"
-  let some baseCaseProofStx ← withoutModifyingState do getCode translator (some baseGoal) ``tacticSeq baseCaseProof | throwError
+  let some baseCaseProofStx ←
+    withoutModifyingState do
+    baseGoal.withContext do
+    getCode translator (some baseGoal) ``tacticSeq baseCaseProof | throwError
     s!"codegen: no translation found for base_case_proof {baseCaseProof}"
-  let some inductionStepProofStx ← getCode translator (some stepGoal) ``tacticSeq inductionStepProof | throwError
+  let some inductionStepProofStx ←
+    withoutModifyingState do
+    stepGoal.withContext do
+    getCode translator (some stepGoal) ``tacticSeq inductionStepProof | throwError
     s!"codegen: no translation found for induction_step_proof {inductionStepProof}"
   let tacs := #[← `(tactic|
     induction $discrTerm'' with

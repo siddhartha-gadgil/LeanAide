@@ -45,7 +45,7 @@ def induction_proof_schema := json%     {"induction_proof": {
 
 def induction_eg := json% {
   "theorem" : {
-    "claim" : "∀ n : ℕ, (fun x => 1 + x)^[n] 0 = n",
+    "claim" : "∀ f: ℕ → ℕ, f 0 = 0 → (∀ n: ℕ, f (n + 1) = f n + 1) → ∀ n: ℕ, f n = n",
     "proof" : {"induction_proof" : {
       "on" : "n",
       "base_case_proof" : [],
@@ -55,3 +55,42 @@ def induction_eg := json% {
 }
 
 #codegen induction_eg
+
+-- Ouput:
+theorem iterate_add_one_apply_eq_self : ∀ (n : ℕ), (fun (x : ℕ) ↦ 1 + x)^[n] 0 = n :=
+    by
+    intro n
+    induction n with
+    | zero =>
+      trace "Automation tactics found for (fun x => 1 + x)^[0] 0 = 0, closing goal"
+      simp only [Function.iterate_zero, id_eq]
+    | succ n
+      ih =>
+      trace "Automation tactics found for (fun x => 1 + x)^[n + 1] 0 = n + 1, closing goal"
+      simp only [Function.iterate_succ, add_left_iterate, smul_eq_mul, mul_one, Function.comp_apply,
+        add_zero, Nat.add_left_cancel_iff]
+    done
+
+def pattern_eg := json% {
+  "theorem" : {
+    "claim" : "∀ n : ℕ, (fun x => 1 + x)^[n] 0 = n",
+    "proof" : {"pattern_cases_proof" : {
+      "on" : "n",
+      "proof_cases" : [
+        {"pattern" : "0", "proof" : []},
+        {"pattern" : "n + 1", "proof" : []}
+      ]
+    }
+  }}
+}
+
+#codegen pattern_eg
+
+example : ∀ n : ℕ, n = 1  ∨ n=2 → n < 3 := by
+  intro n h
+  if c: n = 1 then
+    aesop
+  else if c': n = 2 then
+    aesop
+  else
+    aesop
