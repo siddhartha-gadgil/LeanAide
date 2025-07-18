@@ -85,7 +85,7 @@ def pattern_eg := json% {
 
 #codegen pattern_eg
 
-example : ∀ n : ℕ, n = 1  ∨ n=2 → n < 3 := by
+example : ∀ n : ℕ, n = 1  ∨ n = 2 → n < 3 := by
   intro n h
   if c: n = 1 then
     aesop
@@ -93,3 +93,58 @@ example : ∀ n : ℕ, n = 1  ∨ n=2 → n < 3 := by
     aesop
   else
     aesop
+
+def multiConditionEg := json% {
+  "theorem" : {
+    "claim" : "∀ n : ℕ, n = 1  ∨ n = 2 → n < 3",
+    "proof" : {"multi-condition_cases_proof" : {
+      "on" : "n",
+      "proof_cases" : [
+        {"condition" : "n = 1", "proof" : []},
+        {"condition" : "n = 2", "proof" : []}
+      ]
+    }
+  }}
+}
+
+
+#codegen multiConditionEg
+
+-- Output:
+theorem nat_eq_one_or_eq_two_imp_lt_three : ∀ (n : ℕ), n = 1 ∨ n = 2 → n < 3 :=
+    by
+    intro n a_12668439849020315063
+    if condition_15952715909003343985 : n = 1 then
+
+      trace "Automation tactics found for n < 3, closing goal"
+      subst condition_15952715909003343985
+      simp_all only [OfNat.one_ne_ofNat, or_false, one_lt_ofNat]
+    else
+      if condition_1530173634913780371 : n = 2 then
+
+        trace "Automation tactics found for n < 3, closing goal"
+        subst condition_1530173634913780371
+        simp_all only [or_true, OfNat.ofNat_ne_one, not_false_eq_true, Nat.lt_add_one]
+      else
+        trace
+          "Automation Tactics first\n  | (simp?; done)\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
+        simp_all only [or_self]
+        trace
+          "Finished Automation Tactics first\n  | (simp?; done)\n  | hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
+    done
+
+
+def patternEg' := json% {
+  "theorem" : {
+    "claim" : "∀ n : ℕ, n = 1  ∨ n = 4 → n < 5",
+    "proof" : {"pattern_cases_proof" : {
+      "on" : "n",
+      "proof_cases" : [
+        {"pattern" : "1", "proof" : []},
+        {"pattern" : "4", "proof" : []}
+      ]
+    }
+  }}
+}
+
+#codegen patternEg'
