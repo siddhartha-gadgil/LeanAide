@@ -148,3 +148,16 @@ def patternEg' := json% {
 }
 
 #codegen patternEg'
+
+-- Output:
+
+theorem nat.eq_one_or_eq_four_imp_lt_five : ∀ (n : ℕ), n = 1 ∨ n = 4 → n < 5 :=
+    by
+    intro n a_16768665977230715297
+    match c_12041890053830139676 : n with
+    | 1 =>
+      trace "Automation tactics found for 1 < 5, closing goal"
+      simp only [one_lt_ofNat]
+    | 4 =>
+      trace "Automation tactics found for 4 < 5, closing goal"
+      simp only [Nat.lt_add_one]

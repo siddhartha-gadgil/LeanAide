@@ -150,6 +150,7 @@ structure Translate.State where
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
   preludes : Array String := #[]
+  varPreludes : Array String := #[]
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
   labelledTheorems : Array LabelledTheorem := #[]
@@ -274,6 +275,19 @@ def addPrelude (p: String) : TranslateM Unit := do
       -- IO.eprintln s!"Adding prelude: {p}"
     {s with preludes := s.preludes.push p}
 
+def addVarPrelude (p: String) : TranslateM Unit := do
+  let decl := if p.startsWith "inst" then s!"[{p}]" else
+    match p.toUTF8[0]? with
+    | some c => if (Char.ofUInt8 c).isLower then s!"({p})" else "{" ++ p ++ "}"
+    | none => s!"({p})"
+  let notCommand :=
+    Parser.runParserCategory (← getEnv) `command ("variable " ++ decl) |>.toOption.isNone
+  modify fun s =>
+    if notCommand || s.varPreludes.contains decl then
+      s
+    else
+      {s with varPreludes := s.varPreludes.push decl}
+
 def clearPreludes : TranslateM Unit := do
   modify fun s => {s with preludes := #[]}
 
@@ -284,6 +298,10 @@ def preludesBlob : TranslateM <| Array String := do
 def withPreludes (s: String) : TranslateM String := do
   let prelude ← preludesBlob
   return prelude.foldr (· ++ "\n" ++ · ) s
+
+def withVarPreludes (s: String) : TranslateM String := do
+  let preludes := (← get).varPreludes
+  return preludes.foldr (· ++ " → " ++ · ) s
 
 def defsNameBlob : TranslateM <| Array <| Name × String := do
   let defs := (← get).defs
