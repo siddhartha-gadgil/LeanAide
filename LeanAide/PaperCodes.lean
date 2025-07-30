@@ -21,7 +21,8 @@ def Translator.translateToPropStrictAux
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
   try
-    let .ok stx := Parser.runParserCategory (← getEnv) `term claim |
+    let leanClaim ← withVarPreludes claim
+    let .ok stx := Parser.runParserCategory (← getEnv) `term leanClaim |
       throwError s!"codegen: failed to parse '{claim}' as a term"
     withoutErrToSorry do
       let prop ← elabType stx
@@ -1138,6 +1139,7 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
   let .ok statement :=
       js.getObjValAs? String "assumption" | throwError "No 'assumption' found in 'assume_statement'"
   addPrelude <| "Assume that: " ++ statement
+  addVarPrelude statement
   return none
 
 
