@@ -26,17 +26,20 @@ TASKS = {
     "Echo": {
         "task_name": "echo",
         "input": {"data": "String"},
-        "output": {"data": "String"}
+        "output": {"data": "String"},
+        "commonly_used": False,
     },
     "Documentation for a Theorem": {
         "task_name": "theorem_doc",
         "input": {"name": "String", "command": "String"},
         "output": {"doc": "String"},
+        "commonly_used": False,
     },
     "Documentation for a Definition": {
         "task_name": "def_doc",
         "input": {"name": "String", "command": "String"},
         "output": {"doc": "String"},
+        "commonly_used": False,
     },
     "Translate Theorem": {
         "task_name": "translate_thm",
@@ -46,22 +49,26 @@ TASKS = {
             "greedy": "Bool (default: true)",
             "fallback": "Bool (default: true)",
         },
+        "commonly_used": False,
     },
     "Translate Definition": {
         "task_name": "translate_def",
         "input": {"text": "String"},
         "output": {"definition": "String"},
         "parameters": {"fallback": "Bool (default: true)"},
+        "commonly_used": False,
     },
     "Theorem Name": {
         "task_name": "theorem_name",
         "input": {"text": "String"},
-        "output": {"name": "String"}
+        "output": {"name": "String"},
+        "commonly_used": False,
     },
     "Prove": {
         "task_name": "prove",
         "input": {"theorem": "String"},
-        "output": {"proof": "String"}
+        "output": {"proof": "String"},
+        "commonly_used": False,
     },
     "Translate Theorem Detailed": {
         "task_name": "translate_thm_detailed",
@@ -77,11 +84,13 @@ TASKS = {
             "greedy": "Bool (default: true)",
             "fallback": "Bool (default: true)",
         },
+        "commonly_used": True,
     },
     "Structured JSON Proof": {
         "task_name": "structured_json_proof",
         "input": {"theorem": "String", "proof": "String"},
         "output": {"json_structured": "Json"},
+        "commonly_used": False,
     },
     "Elaborate Lean Code": {
         "task_name": "elaborate",
@@ -91,6 +100,7 @@ TASKS = {
             "top_code": 'String (default: "")',
             "describe_sorries": "Bool (default: false)",
         },
+        "commonly_used": True,
     },
     "Lean from JSON Structured": {
         "task_name": "lean_from_json_structured",
@@ -100,6 +110,7 @@ TASKS = {
             "declarations": "List String",
             "top_code": "String",
         },
+        "commonly_used": True,
     },
 }
 
@@ -176,7 +187,7 @@ def copy_to_clipboard(text):
             text,
             tooltip="Copy to Clipboard",
             copied_label = "Copied!",
-            icon=":material/content_copy:",
+            icon="material_symbols",
         )
     except Exception as e:
         st.warning(f"Failed to copy: {e}", icon="⚠️")
