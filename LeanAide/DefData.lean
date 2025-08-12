@@ -44,6 +44,10 @@ structure DefData where
     doc? : Option String := none
     deriving Inhabited,  Repr
 
+-- #print DefinitionVal
+
+-- #check addAndCompile
+
 structure DefDataRepr where
     name: Name
     type: String
@@ -56,6 +60,7 @@ structure DefDataRepr where
 
 
 namespace DefData
+
 
 def statement (data: DefData)(omitProofs: Bool := true) :
         CoreM String := do

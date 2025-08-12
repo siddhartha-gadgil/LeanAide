@@ -169,6 +169,7 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
     ("arguments", Json.arr <| baseArgs.map (Json.str)),
     ("data", data)]
   IO.eprintln s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
+  IO.eprintln s!"Response: {output}" -- uncomment for debugging
   match Lean.Json.parse output with
   | Except.ok j =>
     appendLog "chat_queries"
@@ -568,12 +569,18 @@ def structuredProofFromStatement (server: ChatServer)
 
 def theoremName (server: ChatServer)
   (statement: String): CoreM Name := do
-    let query := s!"Give a name following the conventions of the Lean Prover 4 and Mathlib for the theorem: \n{statement}\n\nNote that types and propositions are capitalized in Lean 4. Give ONLY the name of the theorem."
+    let query := s!"Give a name following the conventions of the Lean Prover 4 and Mathlib for the theorem: \n{statement}\n\nUse snakecase and ensure that there are no whitespaces. Give ONLY the name of the theorem."
     let namesArr ←  server.mathCompletions query 1
     let llm_name := namesArr[0]! |>.replace "`" ""
           |>.replace "\""  "" |>.trim
         -- logInfo llm_name
     return llm_name.toName
+
+def fullStatement (server: ChatServer)
+  (statement: String): CoreM String := do
+    let query := s!"Rewrite the following in typical mathematical English using LaTeX if necessary:\n{statement}\nGive ONLY the English statement."
+    let statementsArr ←  server.mathCompletions query 1
+    return statementsArr[0]? |>.getD statement
 
 -- @[deprecated structuredProof]
 -- def structuredProofFull (server: ChatServer)

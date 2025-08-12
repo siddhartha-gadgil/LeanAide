@@ -1,0 +1,107 @@
+{"usage":
+ {"total_tokens": 5358,
+  "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0},
+  "prompt_tokens": 4549,
+  "completion_tokens_details":
+  {"rejected_prediction_tokens": 0,
+   "reasoning_tokens": 0,
+   "audio_tokens": 0,
+   "accepted_prediction_tokens": 0},
+  "completion_tokens": 809},
+ "system_fingerprint": "fp_07871e2ad8",
+ "service_tier": "default",
+ "object": "chat.completion",
+ "model": "gpt-4o-2024-08-06",
+ "id": "chatcmpl-BjfrDQiMlOXv7w7oIBmARzHbkMBO5",
+ "created": 1750225359,
+ "choices":
+ [{"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variables {R : Type*} [CommRing R]\n\ndef matrix_entries (M : Matrix (Fin 2) (Fin 2) R) : R × R × R × R :=\n(M 0 0, M 0 1, M 1 0, M 1 1)\n\ndef identity_matrix : Matrix (Fin 2) (Fin 2) R :=\n![![1, 0], ![0, 1]]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 0,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type} [CommRing R]\n\ndef matrix2x2_identity : Matrix (Fin 2) (Fin 2) R :=\n  ![![1, 0], ![0, 1]]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 1,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type} [CommRing R]\n\ndef matrix2x2 (M₁₁ M₁₂ M₂₁ M₂₂ : R) : Matrix (Fin 2) (Fin 2) R :=\n  ![![M₁₁, M₁₂], ![M₂₁, M₂₂]]\n\ndef identityMatrix2x2 : Matrix (Fin 2) (Fin 2) R :=\n  matrix2x2 1 0 0 1",
+    "annotations": []},
+   "logprobs": null,
+   "index": 2,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable (R : Type) [CommRing R]\n\ndef matrixEntries (M : Matrix (Fin 2) (Fin 2) R) : R × R × R × R :=\n  (M 0 0, M 0 1, M 1 0, M 1 1)\n\ndef identityMatrix : Matrix (Fin 2) (Fin 2) R :=\n  ![![1, 0], ![0, 1]]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 3,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable (R : Type u) [CommRing R]\n\ndef matrix_entries (M : Matrix (Fin 2) (Fin 2) R) : R × R × R × R :=\n  (M 0 0, M 0 1, M 1 0, M 1 1)\n\ndef identity_matrix_2x2 : Matrix (Fin 2) (Fin 2) R :=\n  ![![1, 0], ![0, 1]]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 4,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable (R : Type) [CommRing R]\n\ndef matrix2x2_identity : Matrix (Fin 2) (Fin 2) R :=\n  ![![1, 0], ![0, 1]]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 5,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type} [CommRing R]\n\ndef matrixEntries (M : Matrix (Fin 2) (Fin 2) R) : R × R × R × R :=\n  (M 0 0, M 0 1, M 1 0, M 1 1)\n\ndef identityMatrix : Matrix (Fin 2) (Fin 2) R :=\n  ![![1, 0], ![0, 1]]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 6,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type u} [CommRing R]\n\ndef matrix_2x2_entries (M : Matrix (Fin 2) (Fin 2) R) : R × R × R × R :=\n  (M 0 0, M 0 1, M 1 0, M 1 1)\n\ndef identity_matrix_2x2_entries : R × R × R × R := (1, 0, 0, 1)\n\n#check matrix_2x2_entries\n#check identity_matrix_2x2_entries",
+    "annotations": []},
+   "logprobs": null,
+   "index": 7,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type u} [CommRing R]\n\ndef identityMatrix2x2 : Matrix (Fin 2) (Fin 2) R :=\n  ![![1, 0], ![0, 1]]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 8,
+   "finish_reason": "stop"},
+  {"message":
+   {"role": "assistant",
+    "refusal": null,
+    "content":
+    "variable {R : Type} [CommRing R]\n\ndef matrix2x2_identity : Matrix (Fin 2) (Fin 2) R :=\n  ![![1, 0], ![0, 1]]",
+    "annotations": []},
+   "logprobs": null,
+   "index": 9,
+   "finish_reason": "stop"}]}

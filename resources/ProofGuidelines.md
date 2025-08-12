@@ -16,6 +16,7 @@ A formal proof operates within a specific **context**. Clearly stating everythin
 Every new conclusion must logically follow from previous statements. In an informal proof, we often combine steps. For formalization, it's better to make each logical leap a separate, justified statement.
 * **Instead of:** "Since $p$ is the smallest prime factor of $n$, and $d$ divides $n$ with $d < p$, $d$ must be 1."
 * **Do this:** "Let $p$ be the smallest prime factor of $n$. Assume $d$ is a divisor of $n$ and $d < p$. By the definition of a prime factor, any divisor of $n$ other than 1 must be greater than or equal to the smallest prime factor $p$. Since $d < p$, $d$ cannot be a prime factor. Since $d$ divides $n$, this leaves $d=1$."
+* In case something is true *by definition*, spell out by definition of what. For instance, numbers $p$ and $q$ could be equal because of the definition of $p$ or the definition of $q$.
 
 ###  Decompose the Proof into Lemmas
 
@@ -76,7 +77,7 @@ In Lean, this encourages reuse and better composability.
 Human readers disambiguate easily; Lean does not.
 * Clarify the scope of variables and the domains of quantification.
   
-* Prefer “Let x∈Xx \in X” over “Take xx”.
+* Prefer “Let x∈X \in X” over “Take xx”.
   
 
 In Lean, `x : X` is always the form in contexts and proofs.
@@ -96,6 +97,10 @@ Expressions like “this”, “that one”, or “the former” create ambiguit
 * Instead of “the set of all xx such that ...”, say
   “Let S:={x∈N∣P(x)}S := \{ x \in \mathbb{N} \mid P(x) \}.”
   
+### Define only ONE object per definition
+
+* Avoid a chain of definitions in a single statement, such as "let $p(x)$ be the minimal polynomial of the field $F$ and let $a$ be its root". Instead split into two or more definitions.
+* Do not include assertions about the object being defined as part of the definition. Instead make a separate assertion/lemma/theorem.
 
 ### Avoid Overloaded Language
 

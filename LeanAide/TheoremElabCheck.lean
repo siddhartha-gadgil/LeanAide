@@ -6,64 +6,39 @@ open Lean Meta Elab Term
 
 namespace LeanAide
 open Translate
--- As Mathlib support for port is dropped, this is also dropped
-
-
--- def lean4Name? (name: Name) : MetaM (Option Name) := do
---   let m := renameExtension.getState (← getEnv) |>.get
---   let name? :=
---     (m.get? name).map (·.2)
---   match name? with
---   | none => pure none
---   | some name =>
---     pure name
-
--- #eval lean4Name? `nat.prime -- some (`Nat.Prime, true)
--- #eval lean4Name? `nat -- some (`Nat, true)
-
-partial def lean4NamesSyntax : Syntax → MetaM Syntax := fun stx => pure stx
--- do
--- match stx with
--- | Syntax.ident _ _ name .. =>
---     match ← lean4Name? name with
---     | some name' => do
---         return mkIdent name'
---     | none => return stx
--- | Syntax.node _ k args  => do
---   let args ← args.mapM lean4NamesSyntax
---   return mkNode k args
--- | stx => pure stx
 
 open Lean.Parser.Category
 
 def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   let env ← getEnv
-  let stx? := Lean.Parser.runParserCategory env ``theorem_statement  s
+  let s := s.replace "\n" " "
+  let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with
   | Except.error err => return Except.error err
-  | Except.ok stx => return Except.ok <| ← lean4NamesSyntax stx
+  | Except.ok stx => return Except.ok stx
 
 def elabThm4Aux (s : String)
   (_levelNames : List Lean.Name := levelNames)
   : TranslateM <| Except ElabError Expr := do
-  -- let s := s.replace "\n" " "
-  -- let env ← getEnv
-  -- let ctx? ← getContext
-  -- let stx? :=
-  --   Lean.Parser.runParserCategory env ``theorem_statement  s
-  -- match stx? with
-  -- | Except.error err =>
-  --     let res := .unparsed s err ctx?
-  --     appendLog "elab_errors" <| toJson res
-  --     return .error <| res
-  -- | Except.ok stx =>
-  elaborate
-  where elaborate  := do
+  let s := s.replace "\n" " "
+  let env ← getEnv
+  let stx ←
+    try
+      typeFromThm s
+    catch e =>
+      let error ← e.toMessageData.toString
+      return Except.error <| .unparsed s error (← getContext)
+  elaborate (← ppTerm {env:= env} stx).pretty
+  where elaborate (s: String) := do
     let ctx? ← getContext
     -- match ← elabThmFromStx stx levelNames with
     -- | Except.error err₁ =>
-      let s := s.replace "\n" " "
-      let frontEndErrs ← checkTypeElabFrontM s
+      let frontEndErrs ← do
+        try
+          checkTypeElabFrontM s
+        catch e =>
+          let error ← e.toMessageData.toString
+          pure [error]
       if frontEndErrs.isEmpty then
         match ← elabFrontTheoremExprM s with
         | Except.error err₂ =>
@@ -92,13 +67,6 @@ def elabThm4 (s : String)
       | some e => return Except.ok e
   | Except.ok e => return Except.ok e
 
-elab "lean3named" t:term : term => do
-  let t' ← lean4NamesSyntax t
-  elabTerm t' none
-
--- #check lean3named nat.prime
--- #check lean3named (fun (n: Nat) ↦ nat.prime n) -- handles a mix fine
-
 def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensional. In the language of Lean theorem prover, you don't need to write an explicit proof for this, because the fact that the space has dimension `2` already implies that it is finite dimensional. However, if you want to insist on having an explicit statement, it could be something like:
 
      ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
@@ -106,5 +74,10 @@ def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensio
 
      Please note that `Module.rank K V = 2` is the way to express that the vector space `V` over the field `K` has dimension `2` in Lean. The `→` is logical implication."
 
--- #eval elabThm4 egLines
+-- #eval elabThm4 "theorem : (0: Nat) =1"
+-- #eval elabThm4 "theorem hello : (0: Nat) =1"
+-- #eval elabThm4 "(0: Nat) = 1"
+-- #eval elabThm4 "theorem (x: Nat) : x =1"
+-- #eval elabThm4 "theorem hi (x: Nat) : x =1"
+
 -- #eval lineBlocks egLines

@@ -51,7 +51,6 @@ def Lean.Json.getObjString? (js: Json) (key: String) : Option String :=
 
 namespace LeanAide
 
-
 def addFullStop (s: String) : String :=
   if s.endsWith "." then s else s ++ "."
 
@@ -125,7 +124,18 @@ def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
     if check
       then return fVarId
       else return none
-  | _ => return none
+  | _ =>
+    if ← isProp type then
+      lctx.decls.findSomeM? fun decl =>
+        match decl with
+        | some <| .cdecl _ fVarId _ dtype .. => do
+          let check ← isDefEq dtype type
+          -- logInfo m!"Checking {dtype} and {type} gives {check}"
+          if check then pure <| some fVarId
+          else pure none
+        | _ => pure none
+    else
+      return none
 
 
 partial def dropLocalContext (type: Expr) : MetaM Expr := do
@@ -151,8 +161,75 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
       else
         IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return type
-    | _ => return type
+    | none =>
+      match ← findLocalDecl? name binderType with
+      | some fVarId =>
+        let body' := body.instantiate1 (mkFVar fVarId)
+        dropLocalContext body'
+      | none =>
+        return type
+  | .letE name ltype value body _ =>
+    let lctx ← getLCtx
+    match lctx.findFromUserName? name with
+    | some (.ldecl _ _ _ dtype dvalue ..) =>
+      let check ← isDefEq dtype ltype <&&> isDefEq dvalue value
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 value
+        dropLocalContext body'
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
+        return type
+    | _ =>
+      withLetDecl name ltype value fun x => do
+          let body' := body.instantiate1 x
+          let inner ← dropLocalContext body'
+          mkLetFVars #[x] inner
   | _ => return type
+
+partial def fillLocalContext (expr: Expr) : MetaM Expr := do
+  match expr with
+  | .lam name binderType body _ => do
+    let lctx ← getLCtx
+    match lctx.findFromUserName? name with
+    | some (.cdecl _ fVarId _ dtype ..) =>
+      let check ← isDefEq dtype binderType
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 (mkFVar fVarId)
+        fillLocalContext body'
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        return expr
+    | some (.ldecl _ _ _ dtype value ..) =>
+      let check ← isDefEq dtype binderType
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+        let body' := body.instantiate1 value
+        fillLocalContext body'
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        return expr
+    | _ => return expr
+  | .letE name type value body _ =>
+    let lctx ← getLCtx
+    match lctx.findFromUserName? name with
+    | some (.ldecl _ _ _ dtype dvalue ..) =>
+      let check ← isDefEq dtype type <&&> isDefEq dvalue value
+      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      if check then
+          let body' := body.instantiate1 dvalue
+          fillLocalContext body'
+      else
+        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
+        return expr
+    | _ =>
+      withLetDecl name type value fun x => do
+          let body' := body.instantiate1 x
+          let inner ← fillLocalContext body'
+          mkLetFVars #[x] inner
+  | _ => return expr
+
 
 
 open Lean Meta Tactic
@@ -200,6 +277,23 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
       `(tactic| let $name $letArgs*  := $value)
   | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
   | _ => `(tactic| sorry)
+
+def commandSeqToTacticSeq (cmdSeq: TSyntax ``commandSeq) : TermElabM <| TSyntax ``tacticSeq := do
+  let cmds := commands cmdSeq
+  let tactics ← cmds.mapM commandToTactic
+  `(tacticSeq| $tactics:tactic*)
+
+/--
+Converts definition to `use`
+-/
+def commandToUseTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
+  match cmd with
+  | `(command| def $_:ident $_:bracketedBinder* : $_ := $value) =>
+      `(tactic| use $value:term)
+  | `(command| def $_:ident $_:bracketedBinder* := $value) =>
+      `(tactic| use $value:term)
+  | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
+  | _ => throwError s!"could not parse the definition {← PrettyPrinter.ppCommand cmd} in commandToUseTactic"
 
 
 def inductionCase (name: String)(condition: String)
@@ -258,6 +352,7 @@ def topCode := "import Mathlib
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
+open Nat
 "
 
 def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator): TranslateM (Except (Array ElabError) Expr) := do
@@ -474,60 +569,53 @@ partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term)
     let t' ← `(∃ $ms':binderIdent*, $t)
     return some <| #[n] ++ ((← existsVars t').getD #[])
   | `(∃ ($n:ident $ms* : $type), $t) => do
-    let ms' := ms.toList.toArray
-    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    let t' ← `(∃ ($ms* : $type), $t)
+    return some <| #[n] ++ ((← existsVars t').getD #[])
+  | `(∃ ($n:ident $ms* : $type), $t) => do
+    let t' ← `(∃ ($ms* : $type), $t)
     return some <| #[n] ++ ((← existsVars t').getD #[])
   | `(∃ $n:ident $ms* : $type, $t) => do
-    let ms' := ms.toList.toArray
-    let t' ← `(∃ ($ms':binderIdent* : $type), $t)
+    let t' ← `(∃ ($ms* : $type), $t)
     return some <| #[n] ++ ((← existsVars t').getD #[])
   | _ =>
     logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
 
-partial def existsVarTypes (type: Syntax.Term) : MetaM <| Option (Array <| Syntax.Ident × Syntax.Term) := do
+partial def existsVarTypesStx (type: Syntax.Term) : MetaM <| Option (Array <| Syntax.Ident × Syntax.Term) := do
   match type with
   | `(∃ $n:ident, $t) => do
-    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
   | `(∃ ($n:ident: $_), $t) => do
-    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
   | `(∃ $n:ident: $_, $t) => do
-    return some <| #[(n, t)] ++ ((← existsVarTypes t).getD #[])
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
   | `(∃ $n:ident $ms*, $t) => do
     let ms' := ms.toList.toArray
     let t' ← `(∃ $ms':binderIdent*, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
+  | `(∃ ($n:ident :  $_) $ms*, $t) => do
+    let t' ← `(∃ $ms*, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
   | `(∃ ($n:ident $ms* : $type), $t) => do
     let ms' := ms.toList.toArray
     let t' ← `(∃ $ms':binderIdent* : $type, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
   | `(∃ $n:ident $ms* : $type, $t) => do
     let ms' := ms.toList.toArray
     let t' ← `(∃ $ms':binderIdent* : $type, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypes t').getD #[])
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
   | _ =>
-    logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
+    -- logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
 
-elab "#exists_vars" type:term : command => do
-  Command.liftTermElabM do
-  match ← existsVars type with
-  | some vars =>
-      logInfo s!"Vars: {vars}"
-      return
-  | none =>
-      logInfo s!"No vars"
-      return
-
--- #exists_vars ∃ n m : Nat, ∃ k: Nat, n + m  = 3
-
+open LeanAide.CodeGenerator
 example (h : ∃ n m : Nat, ∃ _k: Nat, n + m  = 3) : True := by
   rcases h with ⟨n, m, k, h⟩
   trivial
 
 elab "#exists_varTypes" type:term : command => do
   Command.liftTermElabM do
-  match ← existsVarTypes type with
+  match ← existsVarTypesStx type with
   | some varTypes =>
     logInfo s!"Var types: {varTypes.size}"
     for (var, type) in varTypes do
@@ -600,20 +688,43 @@ elab "#tactic_trythis" goal:term "by" tacticCode:tactic "log" : command =>
       logInfo "No tactics found"
       return ()
 
-def resolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Tactic := do
-  let existsVarTypes? ← existsVarTypes type
+def resolveExistsHave (type : Syntax.Term) (typeTerm? : Option Syntax.Term :=none) : TermElabM <| Array Syntax.Tactic := do
+  let existsVarTypes? ← existsVarTypesStx type
   let existsVarTypes := existsVarTypes?.getD #[]
   let existsVarTypeIdents := existsVarTypes.map fun (n, t) =>
     let hsh := hash t.raw.reprint
     let tId := mkIdent <| Name.mkSimple s!"assert_{hsh}"
     (n, tId)
   let hash₀ := hash type.raw.reprint
-  let typeIdent : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let typeIdent : Syntax.Term := typeTerm?.getD <| mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let rhsIdents :=
     #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
   (existsVarTypeIdents.zip rhsIdents).mapM
     fun ((name, tId), rhs) =>
-      `(tactic| have ⟨$name, $tId⟩  := $rhs:term)
+      `(tactic| let ⟨$name, $tId⟩  := $rhs:term)
+
+def cmdResolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Command := do
+  let existsVarTypes? ← existsVarTypesStx type
+  let existsVarTypes := existsVarTypes?.getD #[]
+  let mut cmds : Array Syntax.Command := #[]
+  let existsFst := mkIdent ``Exists.fst
+  let existsSnd := mkIdent ``Exists.snd
+  let existsVarTypeIdents : Array (Ident ×  Ident × Term) := existsVarTypes.map fun (n, t) =>
+    let hsh := hash t.raw.reprint
+    let tId := mkIdent <| Name.mkSimple s!"assert_{hsh}"
+    (n, tId, type)
+  let hash₀ := hash type.raw.reprint
+  let typeIdent : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let mut prevTypeIdent := typeIdent
+  for (name, tId, type) in existsVarTypeIdents do
+    let defCmd ←
+      `(command| def $name  := $existsFst $prevTypeIdent:term)
+    cmds := cmds.push defCmd
+    let thmCmd ← `(command| theorem $tId : $type  := $existsSnd $prevTypeIdent:term)
+    cmds := cmds.push thmCmd
+    prevTypeIdent := tId
+  return cmds
+
 
 def haveForAssertion (goal: Expr)
   (premises: List Name) :
@@ -631,6 +742,7 @@ def haveForAssertion (goal: Expr)
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
   let head ← `(tactic| have $name : $type := by $headTacs*)
   return #[head] ++ existsTacs
+
 
 def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
     TranslateM <| Array Syntax.Tactic := do
@@ -1272,7 +1384,3 @@ elab "intro_experiment%%" t:term "vs" s:term : term => do
 
 -- #check intro_experiment%% (∀(n  : Nat), n = 1) vs
 --     (∀(n m : Nat), ∀ (fin: Fin n), n = m → (m = n))
-
-
-end CodeGenerator
-end LeanAide

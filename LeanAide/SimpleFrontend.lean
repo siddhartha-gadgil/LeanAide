@@ -12,10 +12,14 @@ In the `runFrontendM` function the environment is modified if the `modifyEnv` fl
 def simpleRunFrontend
     (input : String)
     (env: Environment)
-    (opts : Options := {})
+    (opts : Options := {}) (top : String := "universe u v w u_1 u_2 u_3 u₁ u₂ u₃
+set_option maxHeartbeats 10000000
+set_option linter.unreachableTactic false
+open Nat
+")
     (fileName : String := "<input>")
     : IO (Environment × MessageLog) := unsafe do
-  let inputCtx := Parser.mkInputContext input fileName
+  let inputCtx := Parser.mkInputContext (top ++ input) fileName
   let commandState := Command.mkState env (opts := opts)
   let parserState: ModuleParserState := {}
   let s ← IO.processCommands inputCtx parserState commandState
@@ -63,14 +67,53 @@ def elabFrontDefsExprM(s: String)(ns: List Name)(modifyEnv: Bool := false) : Met
     | some c => c.value?.map (n, ·)
   return (nameDefs, msgs)
 
+def dropPrefixes : Name → Name
+| .anonymous => .anonymous
+| .str _ s => .str .anonymous s
+| .num _ n => .num .anonymous n
+
+-- #eval dropPrefixes `LeanAide.SimpleFrontend.elabFrontDefsExprAtM
+
+
+def elabFrontDefsExprAtM(s: String)(pfx: Name)(modifyEnv: Bool := false) : MetaM <| Array (Name × Expr) × MessageLog := do
+  let (env, msgs) ← runFrontendM s modifyEnv
+  let decls := env.constants.map₁.toArray
+  let ns := decls.filterMap (fun (n, _) => if pfx.isPrefixOf n then some n else none)
+  logInfo "Looking for declarations with suffix `eg"
+  for d in decls do
+    if (`eg).isSuffixOf d.1 then
+      logInfo s!"Found declaration: {d.1} with type {d.2.type}"
+  let nameDefs := ns.filterMap fun n =>
+    match env.find? n with
+    | none => none
+    | some c => c.value?.map (n, ·)
+  logInfo "Messages"
+  for msg in msgs.toList do
+    logInfo msg.data
+  logInfo s!"Found {ns.size} definitions with prefix {pfx}"
+  return (nameDefs, msgs)
+
+-- def egCodeAt := "namespace leanaide_scratch
+-- def eg : True := by simp
+-- end leanaide_scratch"
+
+-- def egVal : MetaM (Array Name) := do
+--   let res ← elabFrontDefsExprAtM egCodeAt `leanaide_scratch
+--   return res.1.map (fun (n, _) => n)
+
+-- #eval egVal
+
+-- #eval (`leanaide_scratch).isPrefixOf `leanaide_scratch.eg
+
 def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM String := do
   let val ← elabFrontDefExprM s n modifyEnv
   let fmt ←  ppExpr val
   return fmt.pretty
 
+
 def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem
-  let s := s!"theorem {n} : {type} := by sorry"
+  let s := s!"set_option autoImplicit false in\ntheorem {n} : {type} := by sorry"
   let (env, logs) ←  runFrontendM s
   let errors := logs.toList.filter (·.severity == MessageSeverity.error)
   let errorStrings ←  errors.mapM (·.data.toString)
@@ -120,11 +163,30 @@ def checkTermElabFrontM(s: String) : MetaM <| List String := do
 
 -- #eval checkTermElabFrontM "(fun n => 3 : Nat → Nat)"
 
--- Not efficient, should generate per command if this is needed
-def newDeclarations (s: String) : MetaM <| List Name := do
-  let constants := (← getEnv).constants.map₁.toList.map (·.1)
+def newDeclarations (s: String) : MetaM <| Array Name := do
+  let constants := (← getEnv).constants
   let (env, _) ← runFrontendM s
-  let newConstants := env.constants.map₁.toList.map (·.1)
-  return newConstants.filter (· ∉ constants)
+  let mut newConstants := #[]
+  for (n, _) in env.constants do
+    unless n.isInternal do
+    if  !constants.contains n then
+      newConstants := newConstants.push n
+  return newConstants
 
--- #eval newDeclarations "def x : Nat := 0"
+
+def elabFrontDefsNewExprM(s: String)(modifyEnv: Bool := false) : MetaM <| List (Name × Expr) × MessageLog := do
+  let constants := (← getEnv).constants
+  let (env, msgs) ← runFrontendM s modifyEnv
+  let mut nameDefs := #[]
+  for (n, d) in env.constants do
+    unless n.isInternal do
+    if  !constants.contains n then
+      match d.value? with
+      | none => continue
+      | some v => -- IO.eprintln s!"Found new definition: {n} with
+        nameDefs := nameDefs.push (n, v)
+  return (nameDefs.toList, msgs)
+
+
+
+end LeanAide

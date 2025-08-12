@@ -5,6 +5,7 @@ import Lean.Parser
 import Lean.Parser.Extension
 import Batteries.Data.List.Basic
 import LeanAide.Config
+import Std
 
 open Lean Meta Elab Parser Tactic
 
@@ -231,8 +232,6 @@ def isNotAux  (declName : Name) : MetaM  Bool := do
   let nAux ← isAux declName
   return (not nAux)
 
--- #check isBlackListed
-
 def isWhiteListed (declName : Name) : MetaM Bool := do
   try
   let bl ← isBlackListed  declName
@@ -348,7 +347,11 @@ def appendFile (fname : FilePath) (content : String) : IO Unit := do
   h.putStrLn content
   h.flush
 
-def appendLog (logFile: String) (content : Json) (force: Bool := false) : IO Unit := do
+open Std.Time.Timestamp in
+def showDate : IO String := now.map (·.toPlainDateAssumingUTC.format "uuuu-MM-dd")
+
+
+def appendLog (logFile: String) (content : Json) (force: Bool := false) : CoreM Unit := do
   if force then go logFile content
   else
     match (← leanAideLogging?) with
@@ -359,7 +362,7 @@ def appendLog (logFile: String) (content : Json) (force: Bool := false) : IO Uni
     let dir : FilePath := "leanaide_logs"
     if !(← dir.pathExists) then
       IO.FS.createDirAll dir
-    let fname : FilePath := "leanaide_logs" / (logFile ++ ".jsonl")
+    let fname : FilePath := "leanaide_logs" / (logFile ++ "-" ++ (← showDate) ++ ".jsonl")
     appendFile fname content.compress
 
 def gitHash : IO String := do
@@ -501,7 +504,8 @@ def ppExprDetailed (e : Expr): MetaM String := do
                     let o₆ := pp.funBinderTypes.set o₅ true
                     let o₇ := pp.piBinderTypes.set o₆ true
                     let o₈ := pp.letVarTypes.set o₇ true
-                    pp.unicode.fun.set o₈ true) do
+                    let o₉ := pp.fullNames.set o₈ true
+                    pp.unicode.fun.set o₉ true) do
     ppExpr e
   return fmtDetailed.pretty
 
@@ -542,7 +546,8 @@ def delabDetailed (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
                     let o₈ := pp.letVarTypes.set o₇ true
                     let o₉ := pp.coercions.types.set o₈ true
                     let o' := pp.motives.nonConst.set o₉ true
-                    pp.unicode.fun.set o' true) do
+                    let o'' := pp.fullNames.set o' true
+                    pp.unicode.fun.set o'' true) do
               PrettyPrinter.delab e
 
 
@@ -568,7 +573,8 @@ def relLCtxAux (goal: Expr) (decls: List LocalDecl) : MetaM Expr := do
   | (.cdecl _ _ name type bi kind) :: tail =>
     logInfo m!"decl: {name}"
     withLocalDecl name bi type (kind := kind) fun x => do
-      let inner ← relLCtxAux (goal.instantiate1 x) tail
+      let inner ← relLCtxAux goal tail
+      let inner := inner.instantiate1 x
       mkForallFVars #[x] inner
 
 
@@ -703,7 +709,7 @@ def bestDefsInConsts (n: Nat) (names: List Name) (depth: Nat)
 def runTacticToCore (mvarId: MVarId) (stx: Syntax)
     (ctx: Term.Context) (s : Term.State) (mctx : Meta.Context) (s' : Meta.State) : CoreM <| (List MVarId × Term.State) × Meta.State  :=
   MetaM.run (
-    Elab.runTactic mvarId stx ctx s) mctx s'
+    Elab.runTactic mvarId stx  {ctx with mayPostpone := false, errToSorry := false, declName? := some `_tacticCode} s) mctx s'
 
 def evalTacticSafe (tacticCode: Syntax): TacticM (Bool × Nat) := do
   let mvarId ← getMainGoal
@@ -766,7 +772,10 @@ def Lean.Json.getKVorType? (js : Json) : Option (String × Json) :=
   match js with
   | Json.obj m =>
     match m.toArray with
-    | #[⟨k, v⟩] => some (k, v)
+    | #[⟨"type", .str key⟩] =>
+        (key, json% {})
+    | #[⟨k, v⟩] =>
+      some (k, v)
     | jsArr =>
       let keys := jsArr.map (fun ⟨k, _⟩ => k)
       let keyVals := jsArr.map (fun ⟨k, v⟩ => (k, v))
@@ -819,3 +828,60 @@ partial def Lean.Expr.hasUnassignedExprMVar (e: Expr) : MetaM Bool := do
 --   mvar.hasUnassignedExprMVar
 
 -- #eval checkNoLoop
+
+def getCommandName (stx: TSyntax `command) : Option Name :=
+  match stx with
+      | `(command| theorem $id:ident $_:declSig $_:declVal) => some id.getId
+      | `(command| def $id:ident $_* : $_ := $_) => some id.getId
+      | `(command| noncomputable def $id:ident $_* : $_ := $_) => some id.getId
+      | _ => none
+
+declare_syntax_cat commandSeqWrap
+
+syntax commandSeq : commandSeqWrap
+
+def getNamesFromCode (s: String) : MetaM (Array Name) := do
+  let env ← getEnv
+  let res := Parser.runParserCategory env `commandSeqWrap s
+  match res with
+  | .ok stx =>
+    let stx'' := match stx with
+      | `(commandSeqWrap| $cs:commandSeq) => cs
+      | _ => panic! "Expected commandSeqWrap syntax"
+    let stx' : TSyntax `commandSeq := ⟨ stx'' ⟩
+    let cmds := commands stx'
+    logInfo m!"Parsed commandSeq: {stx}"
+    logInfo m!"Commands: {cmds}"
+    return cmds.filterMap getCommandName
+  | .error err =>
+    logError m!"Error parsing commandSeq: {err}"
+    return #[]
+
+def parseCommands (s: String) : CoreM (TSyntax ``commandSeq) := do
+  let env ← getEnv
+  let res := Parser.runParserCategory env `commandSeqWrap s
+  match res with
+  | .ok stx =>
+    match stx with
+      | `(commandSeqWrap| $cs:commandSeq) => return cs
+      | _ => throwError "Expected commandSeqWrap syntax"
+  | .error err =>
+    throwError m!"Error parsing commandSeq: {err}"
+
+declare_syntax_cat tacticSeqWrap
+syntax tacticSeq : tacticSeqWrap
+
+def parseTactics (s: String) : CoreM <| TSyntax ``tacticSeq := do
+  let env ← getEnv
+  let res := Parser.runParserCategory env `tacticSeqWrap s
+  match res with
+  | .ok stx =>
+    match stx with
+      | `(tacticSeqWrap| $ts:tacticSeq) => return ts
+      | _ => throwError "Expected tacticSeqWrap syntax"
+  | .error err =>
+    logError m!"Error parsing tacticSeq: {err}"
+    throwError s!"Failed to parse tacticSeq : {err}"
+
+-- #eval getNamesFromCode "def eg: Nat := 42
+-- theorem test : eg = 42 := rfl"

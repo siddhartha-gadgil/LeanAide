@@ -2,7 +2,7 @@ import Lean
 import Lean.Meta
 import LeanAide.TheoremElab
 import LeanAide.TheoremEquality
-import LeanAide.Lean4Names
+import LeanAide.TheoremElabCheck
 
 -- import Mathlib.Mathport.Rename
 

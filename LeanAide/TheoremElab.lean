@@ -41,21 +41,6 @@ def checkThm (s : String) : MetaM Bool := do
       pure true
   | Except.error _  => pure false
 
-partial def tokens (s : Syntax) : Array String :=
-match s with
-| .missing => Array.empty
-| .node _ _ args => args.foldl (fun acc x => acc ++ tokens x) Array.empty
-| .atom _  val => #[val]
-| .ident _ val .. => #[val.toString]
-
-def getTokens (s: String) : MetaM <| Array String := do
-  let env ← getEnv
-  let chk := Lean.Parser.runParserCategory env ``theorem_statement  s
-  match chk with
-  | Except.ok stx  =>
-      pure <| tokens stx
-  | Except.error _  => pure Array.empty
-
 
 /-- split prompts into those that parse -/
 def promptsThmSplit : MetaM ((Array String) × (Array String)) := do
@@ -77,7 +62,39 @@ def levelNames :=
   [`u, `v, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `v₁, `v₂, `uι, `W₁, `W₂, `w₁, `w₂, `u', `v', `uu, `w, `w', `wE, `uE, `x]
 
 
+def typeFromThmSyntax (stx : Syntax)
+  : TermElabM  Syntax.Term := do
+    match stx with
+    | `(theorem_statement| $_:docComment $[$_:theorem_head]? $args:bracketedBinder* : $type:term) =>
+      typeStx type args
+    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
+      typeStx type args
+    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]?   $args:bracketedBinder* : $type:term := $_:term) =>
+      typeStx type args
+    | `(theorem_statement|$vars:bracketedBinder* $_:docComment  $[$_:theorem_head]? $args:bracketedBinder* : $type:term ) =>
+      typeStx type (vars ++ args)
+    | `(theorem_statement|$type:term ) =>
+      return type
+    | _ => throwError s!"parsed to unmatched syntax {stx}"
+  where typeStx (type: Term)
+  (args : TSyntaxArray `Lean.Parser.Term.bracketedBinder) : MetaM <| TSyntax `term := do
+    let mut typeStx : TSyntax `term := type
+    for arg in args.reverse do
+      let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
+      typeStx := ⟨stx.raw⟩
+    typeStx ← fixSyntax typeStx
+    return typeStx
 
+def typeFromThm (s : String)
+  : TermElabM  Syntax.Term := do
+  let env ← getEnv
+  let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
+  match stx? with
+  | Except.ok stx  =>
+      typeFromThmSyntax stx
+  | Except.error e  => throwError e
+
+-- #eval typeFromThm "Nat"
 
 /--
 Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
@@ -85,26 +102,13 @@ Elaborate the statement of a theorem, returning the elaborated expression. The s
 def elabThmFromStx (stx : Syntax)
   (levelNames : List Lean.Name := levelNames)
   : TermElabM <| Except String Expr := do
-    match stx with
-    | `(theorem_statement| $_:docComment $[$_:theorem_head]? $args:bracketedBinder* : $type:term) =>
-      elabAux type args
-    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
-      elabAux type args
-    | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term := $_:term) =>
-      elabAux type args
-    | `(theorem_statement|$vars:bracketedBinder* $_:docComment  $[$_:theorem_head]? $args:bracketedBinder* : $type:term ) =>
-      elabAux type (vars ++ args)
-    | `(theorem_statement|$type:term ) =>
-      elabAux type #[]
-    | _ => return Except.error s!"parsed to unmatched syntax {stx}"
-  where elabAux (type: TSyntax `term)
-    (args:  TSyntaxArray `Lean.Parser.Term.bracketedBinder) :
+    try
+      let typeStx ← typeFromThmSyntax stx
+      elabAux typeStx
+    catch _ =>
+      return Except.error s!"parsed to unmatched syntax {stx}"
+  where elabAux (typeStx: TSyntax `term) :
         TermElabM <| Except String Expr := do
-        let mut typeStx : TSyntax `term := type
-        for arg in args.reverse do
-          let stx ← `(Lean.Parser.Term.depArrow|$arg → $typeStx)
-          typeStx := ⟨stx.raw⟩
-        typeStx ← expandExistsUnique typeStx
         Term.withLevelNames levelNames <|
         try
           let expr ← Term.withoutErrToSorry <|
