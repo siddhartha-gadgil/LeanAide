@@ -161,3 +161,7 @@ theorem nat.eq_one_or_eq_four_imp_lt_five : ∀ (n : ℕ), n = 1 ∨ n = 4 → n
     | 4 =>
       trace "Automation tactics found for 4 < 5, closing goal"
       simp only [Nat.lt_add_one]
+
+/-- info: Int.ofNat 3 -/
+#guard_msgs in
+#eval 1 + 2

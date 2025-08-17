@@ -13,25 +13,25 @@ def eg₁ : Json := json% {
       "theorem" : {
         "name" : "fortyTwoPos",
         "claim" : "42 > 0",
-        "proof" : {
-          "proof_steps" : [{"lean": "decide"}]
-        }
-        }
-      },
-      {"check" : "fortyTwoPos"},
-      {
-      "theorem" : {
+        "proof" : [
+          {"lean": "decide"}
+        ]
+      }
+    },
+    {"check" : "fortyTwoPos"},
+    {
+    "theorem" : {
         "name" : "fortyTwoNeg",
         "claim" : "42 < 0",
-        "proof" : {
-          "proof_steps" : [{"lean": "sorry"}]
-        }
+        "proof" : [{"lean": "sorry"}]
+
         }
       },
       {"lean": "example : 0 < 42 := fortyTwoPos"}
       ]
     }
 
+#codegen eg₁
 
   theorem fortyTwoPos : 42 > 0 :=
     by

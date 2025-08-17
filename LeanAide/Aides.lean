@@ -99,9 +99,9 @@ def EIO.spawnToIO (eio: EIO Exception α) : IO <| Task <| IO α  := do
         let msg ←  e.toMessageData.toString
         IO.throwServerError msg)
 
-def EIO.asyncIO (eio: EIO Exception α) : IO α  := do
-  let task ← EIO.spawnToIO eio
-  task.get
+-- def EIO.asyncIO (eio: EIO Exception α) : IO α  := do
+--   let task ← EIO.spawnToIO eio
+--   task.get
 
 -- code from Leo de Moura
 def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
