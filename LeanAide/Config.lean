@@ -17,7 +17,14 @@ register_option leanaide.logging : Bool :=
 
 initialize delab_bound : IO.Ref UInt32 ← IO.mkRef 50
 
-def baseDir : IO System.FilePath := do
+class LeanAideBaseDir where
+  baseDir : IO System.FilePath
+
+def baseDir [inst: LeanAideBaseDir] : IO System.FilePath := do
+  inst.baseDir
+
+
+def baseDirImpl : IO System.FilePath := do
   let pathLeanAidePackages := System.mkFilePath [".lake","packages","leanaide"]
   let leanAide := System.mkFilePath ["LeanAide"]
   let resources := System.mkFilePath ["resources"]
@@ -29,6 +36,8 @@ def baseDir : IO System.FilePath := do
   else
     throw (IO.userError "LeanAide not found.")
 
+instance : LeanAideBaseDir where
+  baseDir := baseDirImpl
 
 def leanAideLogging? : CoreM (Option String) := do
   let loggingEnabled : Bool := leanaide.logging.get (← getOptions)
