@@ -1,10 +1,10 @@
 import Lean
 import LeanAide.Aides
-import Batteries.Util.Pickle
 import LeanAide.SimpleFrontend
 import LeanAide.DefData
 import LeanAide.PromptExampleBuilder
 import LeanCodePrompts.ChatClient
+import Batteries
 
 open Lean Meta Elab Term
 namespace LeanAide

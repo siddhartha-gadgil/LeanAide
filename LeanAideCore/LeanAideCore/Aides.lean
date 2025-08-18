@@ -3,9 +3,12 @@ import Lean.Meta
 import Lean.Elab
 import Lean.Parser
 import Lean.Parser.Extension
+import LeanAideCore.Config
 import Std
 
 open Lean Meta Elab Parser Tactic
+
+variable [LeanAideBaseDir]
 
 def Lean.Expr.view (expr: Expr) : MetaM String := do
   let expr ← instantiateMVars expr
@@ -18,6 +21,70 @@ partial def showSyntax : Syntax → String
 | Lean.Syntax.atom _ val => val
 | Lean.Syntax.ident _ _ val _ => val.toString
 | _ => ""
+
+
+def leanAidePath : IO System.FilePath := do
+  return (← baseDir) / ".lake" /"packages" /"leanaide"
+
+def cachePath : IO System.FilePath := do
+  let path : System.FilePath := (← baseDir) /  ".leanaide_cache"
+  if ← path.pathExists then
+    return path
+  else
+    return (← leanAidePath) / path
+
+-- #eval cachePath
+
+def reroutePath (fp : System.FilePath) : IO System.FilePath := do
+  if ← fp.pathExists then
+    return fp
+  else
+    return (← leanAidePath) / fp
+
+def leanToolchain : IO String := do
+  let inp ← IO.FS.readFile "lean-toolchain"
+  return inp.trim.drop ("leanprover/lean4:".length)
+
+-- #eval leanToolchain
+
+
+
+def getDelabBound : MetaM UInt32 := do
+   delab_bound.get
+
+def setDelabBound (n: UInt32) : MetaM Unit := do
+   delab_bound.set n
+
+def picklePath (descField : String) : IO System.FilePath := do
+  let name := if descField == "docString" then "prompts" else descField
+  return (← baseDir)/".lake"/ "build" / "lib" /
+    s!"mathlib4-{name}-embeddings-{← leanToolchain}.olean"
+
+
+open System IO.FS
+def appendFile (fname : FilePath) (content : String) : IO Unit := do
+  let h ← Handle.mk fname Mode.append
+  h.putStrLn content
+  h.flush
+
+open Std.Time.Timestamp in
+def showDate : IO String := now.map (·.toPlainDateAssumingUTC.format "uuuu-MM-dd")
+
+
+def appendLog (logFile: String) (content : Json) (force: Bool := false) : CoreM Unit := do
+  if force then go logFile content
+  else
+    match (← leanAideLogging?) with
+    | some "0" => return ()
+    | some _ => go logFile content
+    | none => return ()
+  where go (logFile: String) (content: Json) : IO Unit := do
+    let dir : System.FilePath := (← baseDir) / "leanaide_logs"
+    if !(← dir.pathExists) then
+      IO.FS.createDirAll dir
+    let fname : System.FilePath := dir / (logFile ++ "-" ++ (← showDate) ++ ".jsonl")
+    appendFile fname content.compress
+
 
 namespace Lean.Json
 
@@ -122,12 +189,6 @@ def threadNum : IO Nat := do
     return (info.splitOn "processor" |>.length) - 1
   catch _ =>
     return 4
-
-def leanToolchain : IO String := do
-  let inp ← IO.FS.readFile "lean-toolchain"
-  return inp.trim.drop ("leanprover/lean4:".length)
-
--- #eval leanToolchain
 
 
 def jsonLines [ToJson α] (jsl : Array α) : String :=
@@ -300,14 +361,6 @@ def projectID : IO String := do
   | none => throw <| IO.userError "PROJECT_ID not set"
   | some id => return id
 
-open System IO.FS
-def appendFile (fname : FilePath) (content : String) : IO Unit := do
-  let h ← Handle.mk fname Mode.append
-  h.putStrLn content
-  h.flush
-
-open Std.Time.Timestamp in
-def showDate : IO String := now.map (·.toPlainDateAssumingUTC.format "uuuu-MM-dd")
 
 
 def gitHash : IO String := do
@@ -793,3 +846,49 @@ def parseTactics (s: String) : CoreM <| TSyntax ``tacticSeq := do
 
 -- #eval getNamesFromCode "def eg: Nat := 42
 -- theorem test : eg = 42 := rfl"
+
+-- from batteries
+def List.scanl' (f : α → β → α) (a : α) : List β → List α
+  | [] => [a]
+  | b :: l => a :: scanl' f (f a b) l
+
+def colEqSegments (s: String) : List String :=
+  let pieces := s.splitOn ":="
+  match pieces with
+  | [] => []
+  | head :: tail =>
+    tail.scanl' (fun acc x => acc ++ ":=" ++ x) head |>.map (String.trim)
+
+def splitColEqSegments (ss: Array String) : Array String :=
+  ss.toList.flatMap colEqSegments |>.toArray
+
+def trivialEquality : Syntax → CoreM Bool
+  | `($a = $b) => return a == b
+  | _ => return false
+
+
+
+def extractJsonM (s: String) : CoreM Json :=
+  let code := codeBlock? "json" s |>.getD s
+  let code := code.trim
+  match Json.parse code with
+  | Except.ok j => do
+    -- logInfo s!"parsed JSON: {j}"
+    appendLog "json_parsed" j
+    return j
+  | Except.error e => do
+    logWarning  m!"Error parsing JSON: {e}"
+    appendLog "json_error" (Json.str code)
+    appendLog "json_error" (Json.str e)
+    return Json.str code
+
+
+partial def identNames : Syntax → MetaM (List Name)
+| Syntax.ident _ _ s .. => do
+  if (← isWhiteListed s) &&
+    !(excludeSuffixes.any fun sfx => sfx.isSuffixOf s) && !(excludePrefixes.any fun pfx => pfx.isPrefixOf s)
+    then return [s] else return []
+| Syntax.node _ _ ss => do
+    let groups ← ss.toList.mapM identNames
+    return groups.flatten.eraseDups
+| _ => return []
