@@ -3,3 +3,4 @@ import LeanAideCore.SimpleFrontend
 import LeanAideCore.Template
 import LeanAideCore.MathDoc
 import LeanAideCore.ChatClient
+import LeanAideCore.StatementSyntax

@@ -4,7 +4,6 @@ import LeanAide.SimpleFrontend
 import LeanAide.DefData
 import LeanAide.PromptExampleBuilder
 import LeanCodePrompts.ChatClient
-import Batteries
 
 open Lean Meta Elab Term
 namespace LeanAide
@@ -404,32 +403,6 @@ def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
   return (t₁ - t₀, t₂ - t₁, t₃ - t₂, d₁.getD Json.null, d₂.getD Json.null, d₃.getD Json.null)
 
 -- #eval timedTest
-
--- Should probably purge everything below
-unsafe def withLoadedEmbeddings (descField: String)
-    (x: TranslateM α) :TranslateM α := do
-  withUnpickle (← picklePath descField)
-    <|fun (descData : EmbedData) =>  do
-      addEmbeddings descField descData
-      x
-
-unsafe def withAllEmbeddings (descFields : List String)
-    (x: TranslateM α) : TranslateM α := do
-  match descFields with
-  | [] => x
-  | descField::descFields => do
-    withLoadedEmbeddings descField do
-      withAllEmbeddings descFields x
-
-
-
-unsafe def TranslateM.runWithLoadingEmbeddings (descFields : List String)
-    (x: TranslateM α) : CoreM α := do
-  let x :=
-    withAllEmbeddings descFields do
-    printKeys
-    x
-  x.run' {} |>.run'.run'
 
 
 structure Translate.SavedState where

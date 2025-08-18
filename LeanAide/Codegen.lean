@@ -13,7 +13,7 @@ This module provides a way to generate Lean code from JSON data in an extensible
 -/
 
 
-open Lean Meta Qq Elab
+open Lean Meta Qq Elab LeanAide
 
 initialize registerTraceClass `LeanAide.Codegen
 
