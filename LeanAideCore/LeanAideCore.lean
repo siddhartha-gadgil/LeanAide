@@ -7,3 +7,4 @@ import LeanAideCore.StatementSyntax
 import LeanAideCore.DefData
 import LeanAideCore.PromptExampleBuilder
 import LeanAideCore.TranslateM
+import LeanAideCore.Translator
