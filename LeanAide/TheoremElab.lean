@@ -9,9 +9,6 @@ open Lean Meta Elab Parser  Tactic
 These can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
 -/
 
-def depsPrompt : IO (Array String) := do
-  let file ← reroutePath <| System.mkFilePath ["extra_resources/types.txt"]
-  IO.FS.lines file
 
 declare_syntax_cat theorem_head
 syntax "theorem" : theorem_head

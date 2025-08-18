@@ -11,14 +11,15 @@ import LeanAideCore.Aides
 open Lean Meta Elab Parser Tactic System
 
 
-def leanAidePath : System.FilePath := ".lake" /"packages" /"leanaide"
+def leanAidePath : IO System.FilePath := do
+  return (← baseDir) / ".lake" /"packages" /"leanaide"
 
 def cachePath : IO System.FilePath := do
-  let path : System.FilePath :=  ".leanaide_cache"
+  let path : System.FilePath := (← baseDir) /  ".leanaide_cache"
   if ← path.pathExists then
     return path
   else
-    return leanAidePath / path
+    return (← leanAidePath) / path
 
 -- #eval cachePath
 
@@ -26,7 +27,7 @@ def reroutePath (fp : System.FilePath) : IO System.FilePath := do
   if ← fp.pathExists then
     return fp
   else
-    return leanAidePath / fp
+    return (← leanAidePath) / fp
 
 
 def getDelabBound : MetaM UInt32 := do
@@ -49,10 +50,10 @@ def appendLog (logFile: String) (content : Json) (force: Bool := false) : CoreM 
     | some _ => go logFile content
     | none => return ()
   where go (logFile: String) (content: Json) : IO Unit := do
-    let dir : FilePath := "leanaide_logs"
+    let dir : FilePath := (← baseDir) / "leanaide_logs"
     if !(← dir.pathExists) then
       IO.FS.createDirAll dir
-    let fname : FilePath := "leanaide_logs" / (logFile ++ "-" ++ (← showDate) ++ ".jsonl")
+    let fname : FilePath := dir / (logFile ++ "-" ++ (← showDate) ++ ".jsonl")
     appendFile fname content.compress
 
 

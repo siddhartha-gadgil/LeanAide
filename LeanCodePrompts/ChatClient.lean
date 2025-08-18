@@ -246,11 +246,11 @@ def cachedQuery (server: ChatServer)(messages : Json)
 def dataPath (server: ChatServer) : IO  FilePath := do
   match server with
   | azure deployment _ _ => do
-    let path := llmDir / "azure" / deployment
+    let path := (← llmDir) / "azure" / deployment
     IO.FS.createDirAll path
     return path
   | _ => do
-    let path := llmDir / server.model
+    let path := (← llmDir) / server.model
     IO.FS.createDirAll path
     return path
 

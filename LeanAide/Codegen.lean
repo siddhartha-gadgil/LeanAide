@@ -346,7 +346,7 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   match source.getArr?  with
   | .ok sources => do
     for source in sources do
-      let code ← getCode translator goal? kind source
+      let _code ← getCode translator goal? kind source
       -- unless code.isNone do
       --   IO.eprintln s!"codegen: contextCode expected pure side effect, but got {code}"
       --   logWarning m!"codegen: contextCode expected pure side effect, but got {code}"

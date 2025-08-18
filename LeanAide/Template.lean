@@ -3,7 +3,8 @@ import LeanAide.Config
 
 open Lean Meta System
 
-def llmDir := FilePath.mk "llm_data"
+def llmDir : IO System.FilePath := do
+  return (← baseDir) / "llm_data"
 
 def promptTemplates : IO Json := do
   let path := (← resourcesDir) / "templates.json"
