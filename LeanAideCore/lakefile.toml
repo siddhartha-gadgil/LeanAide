@@ -1,0 +1,5 @@
+name = "leanaidecore"
+defaultTargets = [ "LeanAideCore" ]
+
+[[lean_lib]]
+name = "LeanAideCore"
