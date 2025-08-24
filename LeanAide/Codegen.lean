@@ -357,19 +357,18 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
 
 syntax (name := codegenCmd) "#codegen" term : command
 open Command Elab Term Tactic
-@[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab := fun stx => do
-  match stx with
-  | `(command| #codegen $s) =>
-    Command.liftTermElabM do
-    withoutModifyingEnv do
-      let source : Q(Json) ← elabTerm s q(Json)
-      let e := q(getCode CodeGenerator.default none ``commandSeq $source)
-      let codeM? ←
-        unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) q((TranslateM (Option (TSyntax ``commandSeq)))) e
-      let code? ←  codeM?.run' {}
-      let code := code?.getD (← `(commandSeq|#check "No code generated"))
-      TryThis.addSuggestion stx code
-  | _ => throwUnsupportedSyntax
+@[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab
+| stx@`(command| #codegen $s) =>
+  Command.liftTermElabM do
+  withoutModifyingEnv do
+    let source : Q(Json) ← elabTerm s q(Json)
+    let e := q(getCode CodeGenerator.default none ``commandSeq $source)
+    let codeM? ←
+      unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) q((TranslateM (Option (TSyntax ``commandSeq)))) e
+    let code? ←  codeM?.run' {}
+    let code := code?.getD (← `(commandSeq|#check "No code generated"))
+    TryThis.addSuggestion stx code
+| _ => throwUnsupportedSyntax
 
 macro "#codegen" source:json : command =>
   `(command| #codegen json% $source)

@@ -111,7 +111,7 @@ def relDecls : List (Option LocalDecl) → Syntax.Term → MetaM Syntax.Term
       | BinderInfo.implicit => `({$n:ident : $typeStx} →  $prev)
       | BinderInfo.strictImplicit => `({{$n:ident : $typeStx}} →  $prev)
 
-def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
+def frontendCodeForTactics (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM String  :=
     mvarId.withContext do
   IO.eprintln s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
   let lctx ← getLCtx
@@ -143,6 +143,13 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
   logInfo m!"Tactic proof: {termView}"
   let egCode := s!"example : {typeView} := {termView}"
+  -- let code := topCode ++ egCode
+  return egCode
+
+
+def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
+    mvarId.withContext do
+  let egCode ← frontendCodeForTactics mvarId tactics
   -- let code := topCode ++ egCode
   IO.eprintln s!"Running frontend with code:\n{egCode}"
   let (_, msgs') ← runFrontendM egCode
@@ -197,8 +204,12 @@ def getTacticsFromMessage? (msg: Message) :
 def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
   let mvar ← mkFreshExprMVar goal
-  let msgs ←
-    runTacticsAndGetMessages mvar.mvarId! tactics
+  let egCode ← frontendCodeForTactics mvar.mvarId! tactics
+  -- let code := topCode ++ egCode
+  IO.eprintln s!"Running frontend with code:\n{egCode}"
+  let (_, msgs) ← runFrontendM egCode -- cache this
+  -- let msgs ←
+  --   runTacticsAndGetMessages mvar.mvarId! tactics
   -- IO.eprintln "Messages:"
   -- for msg in msgs.toList do
   --   IO.eprintln s!"Message: {← msg.data.toString}"
