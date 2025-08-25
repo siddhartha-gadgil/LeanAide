@@ -7,6 +7,8 @@ import LeanAide.AesopTacticRuleSet
 import Mathlib.Tactic
 open Lean Meta Elab Parser Tactic
 
+namespace LeanAide
+
 macro "add_aesop_power_tactic" tac:tactic : command =>
   let decl := mkIdentFrom tac.raw (`Aesop ++ (.mkSimple tac.raw.reprint.get!) ++ `tactic)
   `(command|

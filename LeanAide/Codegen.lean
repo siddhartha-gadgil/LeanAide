@@ -5,6 +5,7 @@ import LeanAide.TranslateM
 import LeanCodePrompts.Translate
 import LeanAide.RunTactics
 import LeanAide.AutoTactic
+import LeanAideCore.Syntax
 import Hammer
 /-!
 ## Code generation from JSON data
@@ -355,7 +356,6 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
     throwError
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
 
-syntax (name := codegenCmd) "#codegen" term : command
 open Command Elab Term Tactic
 @[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab
 | stx@`(command| #codegen $s) =>
@@ -370,8 +370,6 @@ open Command Elab Term Tactic
     TryThis.addSuggestion stx code
 | _ => throwUnsupportedSyntax
 
-macro "#codegen" source:json : command =>
-  `(command| #codegen json% $source)
 
 /-!
 Resolving existential theorems:

@@ -1,6 +1,7 @@
 import Lean
 import LeanAide.Aides
 import LeanAide.TranslateHelpers
+import LeanAideCore.Syntax
 open Lean Meta Elab Parser  Tactic
 
 /-!
@@ -8,20 +9,8 @@ open Lean Meta Elab Parser  Tactic
 
 These can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
 -/
+namespace LeanAide
 
-
-declare_syntax_cat theorem_head
-syntax "theorem" : theorem_head
-syntax "def" : theorem_head
-syntax "lemma" : theorem_head
-syntax "instance" : theorem_head
-syntax "example" : theorem_head
-
-declare_syntax_cat theorem_statement
-syntax bracketedBinder* docComment (theorem_head)?  bracketedBinder*  ":" term : theorem_statement
-syntax (theorem_head)? (ident)? bracketedBinder*  ":" term : theorem_statement
-syntax (theorem_head)? (ident)? bracketedBinder*  ":" term  ":=" term: theorem_statement
-syntax term : theorem_statement
 
 def thmsPrompt : IO (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["extra_resources/thms.txt"]
