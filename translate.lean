@@ -14,7 +14,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 unsafe def runTranslate (p : Parsed) : IO UInt32 := do
-  IO.eprintln (← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot)))
+  -- IO.eprintln (← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot)))
   initSearchPath (← findSysroot)
 
   let type :=
