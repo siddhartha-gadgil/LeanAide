@@ -337,8 +337,7 @@ def modulePairs : CoreM <| Array (Name × Array Name × Array String) := do
   return withDocs.map
       (fun (name, data, docs) => (name, data.constNames, docs))
 
-def descCachePath : IO System.FilePath := pure
-  ("rawdata"/ "premises" / "ident_pairs"/"extra-descriptions.jsonl")
+def descCachePath : IO System.FilePath := do return (← baseDir) / "rawdata"/ "premises" / "ident_pairs"/"extra-descriptions.jsonl"
 
 def getCachedDescriptions : IO (Array Json) := do
   let path ← descCachePath

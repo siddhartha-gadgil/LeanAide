@@ -1,11 +1,12 @@
 import LeanCodePrompts.Translate
 import Lake.Toml.ParserUtil
+import Lean
+import LeanAideCore.Syntax
 
 open Lean Meta Elab Term PrettyPrinter Tactic Command Parser
 
 namespace LeanAide.Meta
 
-syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
 @[command_elab thmCommand] def thmCommandImpl : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
@@ -59,7 +60,6 @@ syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
     else
       logWarning "To translate a theorem, end the string with a `.`."
 
-syntax (name := defCommand) "#def"  str : command
 @[command_elab defCommand] def defCommandImpl : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
@@ -98,63 +98,6 @@ syntax (name := defCommand) "#def"  str : command
       logWarning "To translate a definition, end the string with a `.`."
 
 
-/-!
-# Proof Syntax
--/
-open Lake.Toml
-def proofFn : ParserFn := takeWhile1Fn fun c => c != '∎'
-
-def proofBodyInit : Parser :=
-  { fn := rawFn proofFn}
-
-def proofBody : Parser := andthen proofBodyInit "∎"
-
-@[combinator_parenthesizer proofBodyInit] def proofBodyInit.parenthesizer := PrettyPrinter.Parenthesizer.visitToken
-@[combinator_formatter proofBodyInit] def proofBodyInit.formatter := PrettyPrinter.Formatter.visitAtom Name.anonymous
-
-syntax (name := proofCmd) withPosition("#proof" ppLine (colGt (str <|> proofBody) )) : command
-
-def mkProofStx (s: String) : Syntax :=
-  mkNode ``proofCmd #[mkAtom "#proof", mkAtom s, mkAtom "∎"]
-
-@[command_elab proofCmd] def elabProofCmd : CommandElab :=
-  fun stx => Command.liftTermElabM do
-  match stx with
-  | `(command| #proof $t:proofBodyInit ∎) =>
-    let s := stx.getArgs[1]!.reprint.get!.trim
-    logInfo m!"Syntax: {stx}"
-    let stx' := mkProofStx "Some proof."
-    logInfo m!"Extract: {s}"
-    logInfo m!"Details: {repr stx}"
-    logInfo m!"{stx'}"
-  | _ => throwUnsupportedSyntax
-
-syntax (name := textCmd) withPosition("#text" ppLine (colGt (str <|> proofBody) )) : command
-
-def mkTextStx (s: String) : Syntax :=
-  mkNode ``textCmd #[mkAtom "#text", mkAtom s, mkAtom "∎"]
-
-@[command_elab textCmd] def elabTextCmd : CommandElab :=
-  fun stx => Command.liftTermElabM do
-  match stx with
-  | `(command| #text $t:proofBodyInit ∎) =>
-    -- let s := stx.getArgs[1]!.reprint.get!.trim
-    return
-  | _ => throwUnsupportedSyntax
-
-/-!
-# From Descriptions
--/
-syntax (name:= textProof) withPosition("#proof" ppLine (str <|> proofBody)) : tactic
-
-open Tactic
-@[tactic textProof] def textProofImpl : Tactic :=
-  fun _ => withMainContext do
-  evalTactic (← `(tactic|sorry))
-
--- example : True := by
---   #proof "trivial"
-
 open Tactic Translator
 elab "what" : tactic => withMainContext do
   let goal ← getMainGoal
@@ -165,7 +108,7 @@ elab "what" : tactic => withMainContext do
   let some (transl, _, _) ← getTypeDescriptionM type {} | throwError "No description from LLM"
   logInfo transl
 
-syntax (name:= whyTac) "why" : tactic
+
 @[tactic whyTac] def whyTacImpl : Tactic := fun stx => withMainContext do
   let goal ← getMainGoal
   let type ← relLCtx goal
@@ -178,7 +121,6 @@ syntax (name:= whyTac) "why" : tactic
   let proofTac : Syntax.Tactic := ⟨mkProofStx transl⟩
   TryThis.addSuggestion stx proofTac
 
-syntax (name:= addDocs) "#doc" command : command
 
 open Command in
 @[command_elab addDocs] def elabAddDocsImpl : CommandElab := fun stx =>
@@ -219,7 +161,7 @@ open Command in
   | _ => throwError "unexpected syntax"
 
 
-syntax (name := askCommand) "#ask" (num)? str : command
+
 @[command_elab askCommand] def askCommandImpl : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
@@ -252,23 +194,5 @@ syntax (name := askCommand) "#ask" (num)? str : command
 
 open Lean.Parser.Command
 
-@[command_parser]
-def proofComment := leading_parser
-  ppDedent <| "/proof" >> ppSpace >> commentBody >> ppLine
-
-def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) : m String :=
-  match stx.raw[1] with
-  | Lean.Syntax.atom _ val => return val.extract 0 (val.endPos - ⟨2⟩)
-  | _                 => throwErrorAt stx "unexpected doc string{indentD stx.raw[1]}"
-
-@[command_elab proofComment] def elabProofComment : CommandElab :=
-  fun stx => Command.liftTermElabM do
-  match stx with
-  | `(command|$doc:proofComment) =>
-    let view ← getProofStringText doc
-    logInfo m!"Proof comment: {view}"
-  | _ => throwUnsupportedSyntax
-
--- /proof Hello there -/
 
 end LeanAide.Meta

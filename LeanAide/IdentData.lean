@@ -175,8 +175,7 @@ def writeBatchM (batch: List Name)(group: String)
                     IO.throwServerError "No handle for 'all'"
     let mut count := 0
     let mut dataCount := 0
-    let doneNamesFile : System.FilePath :=
-      "rawdata" / "premises" / "identifiers" / "done_names.json"
+    let doneNamesFile : System.FilePath := (← baseDir) / "rawdata" / "premises" / "identifiers" / "done_names.json"
     let doneNames ← IO.FS.lines doneNamesFile
     for name in batch do
       unless doneNames.contains name.toString do

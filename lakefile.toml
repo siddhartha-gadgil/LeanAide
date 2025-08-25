@@ -3,6 +3,10 @@ defaultTargets = ["LeanAide", "LeanCodePrompts", "bulkelab", "translate", "leana
 testDriver = "LeanAideTest"
 
 [[require]]
+name= "leanaidecore"
+path ="./LeanAideCore"
+
+[[require]]
 name = "Hammer"
 git = "https://github.com/JOSHCLUNE/LeanHammer"
 rev = "main"

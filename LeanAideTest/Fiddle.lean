@@ -71,3 +71,23 @@ example : ∀ f: ℕ → ℕ, f 0 = 0 → (∀ n: ℕ, f (n + 1) = f n + 1) → 
   | zero => aesop
   | succ n ih =>
     aesop
+
+open IO FS
+
+def logHandleTest : IO Handle :=
+  Handle.mk "log.txt" Mode.append
+
+def setErr : IO Unit := do
+  discard <| IO.setStderr <| Stream.ofHandle (← logHandleTest)
+
+def writeToErr (s : String) : IO Unit := do
+  setErr
+  IO.eprintln s
+  IO.sleep 5000
+  IO.eprintln <| s ++ " again"
+
+-- #eval writeToErr "hello"
+
+-- #eval setErr
+
+-- #eval writeToErr "hello"

@@ -13,7 +13,7 @@ This module provides a way to generate Lean code from JSON data in an extensible
 -/
 
 
-open Lean Meta Qq Elab
+open Lean Meta Qq Elab LeanAide
 
 initialize registerTraceClass `LeanAide.Codegen
 
@@ -346,7 +346,7 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
   match source.getArr?  with
   | .ok sources => do
     for source in sources do
-      let code ← getCode translator goal? kind source
+      let _code ← getCode translator goal? kind source
       -- unless code.isNone do
       --   IO.eprintln s!"codegen: contextCode expected pure side effect, but got {code}"
       --   logWarning m!"codegen: contextCode expected pure side effect, but got {code}"
@@ -357,19 +357,18 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
 
 syntax (name := codegenCmd) "#codegen" term : command
 open Command Elab Term Tactic
-@[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab := fun stx => do
-  match stx with
-  | `(command| #codegen $s) =>
-    Command.liftTermElabM do
-    withoutModifyingEnv do
-      let source : Q(Json) ← elabTerm s q(Json)
-      let e := q(getCode CodeGenerator.default none ``commandSeq $source)
-      let codeM? ←
-        unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) q((TranslateM (Option (TSyntax ``commandSeq)))) e
-      let code? ←  codeM?.run' {}
-      let code := code?.getD (← `(commandSeq|#check "No code generated"))
-      TryThis.addSuggestion stx code
-  | _ => throwUnsupportedSyntax
+@[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab
+| stx@`(command| #codegen $s) =>
+  Command.liftTermElabM do
+  withoutModifyingEnv do
+    let source : Q(Json) ← elabTerm s q(Json)
+    let e := q(getCode CodeGenerator.default none ``commandSeq $source)
+    let codeM? ←
+      unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) q((TranslateM (Option (TSyntax ``commandSeq)))) e
+    let code? ←  codeM?.run' {}
+    let code := code?.getD (← `(commandSeq|#check "No code generated"))
+    TryThis.addSuggestion stx code
+| _ => throwUnsupportedSyntax
 
 macro "#codegen" source:json : command =>
   `(command| #codegen json% $source)
