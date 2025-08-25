@@ -8,3 +8,4 @@ import LeanAideCore.DefData
 import LeanAideCore.PromptExampleBuilder
 import LeanAideCore.TranslateM
 import LeanAideCore.Translator
+import LeanAideCore.Syntax

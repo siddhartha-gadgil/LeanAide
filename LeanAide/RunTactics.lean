@@ -179,9 +179,8 @@ def runTacticsAndGetMessages' (mvarId : MVarId) (tactics : Array Syntax.Tactic):
   return msgs'
 
 
-def getTacticsFromMessage? (msg: Message) :
+def getTacticsFromMessageData? (s: String) :
     MetaM <| Option (Array Syntax.Tactic) := do
-  let s ← msg.data.toString
   let s := s.trim
   if s.startsWith "Try this:" then
     let s' := s.drop 10 |>.trim
@@ -208,11 +207,6 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
   -- let code := topCode ++ egCode
   IO.eprintln s!"Running frontend with code:\n{egCode}"
   let (_, msgs) ← runFrontendM egCode -- cache this
-  -- let msgs ←
-  --   runTacticsAndGetMessages mvar.mvarId! tactics
-  -- IO.eprintln "Messages:"
-  -- for msg in msgs.toList do
-  --   IO.eprintln s!"Message: {← msg.data.toString}"
   if strict then
     for msg in msgs.toList do
       if msg.severity == MessageSeverity.error then
@@ -223,7 +217,7 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
           -- IO.eprintln s!"Warning message with Try this: {← msg.data.toString}"
           return none
   let trys ← msgs.toList.filterMapM
-    fun msg => getTacticsFromMessage? msg
+    fun msg => do getTacticsFromMessageData? (← msg.data.toString)
   return trys.getLast?
 
 def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
@@ -244,7 +238,7 @@ def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (str
           -- IO.eprintln s!"Warning message with Try this: {← msg.data.toString}"
           return none
   msgs.toList.findSomeM?
-    fun msg => getTacticsFromMessage? msg
+    fun msg => do getTacticsFromMessageData? (← msg.data.toString)
 
 def getSimpOrExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
   let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | (simp? ; done) | exact?))]
