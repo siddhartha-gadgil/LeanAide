@@ -1,4 +1,4 @@
-import LeanAide.YAML_syntaxCategory
+import LeanAideCore.YAMLSyntax
 
 /-- info: "apple" -/
 #guard_msgs in
