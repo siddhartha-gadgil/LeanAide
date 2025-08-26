@@ -207,17 +207,19 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
   -- let code := topCode ++ egCode
   IO.eprintln s!"Running frontend with code:\n{egCode}"
   let (_, msgs) ← runFrontendM egCode -- cache this
+  let msgs' ← msgs.toList.mapM fun msg => do pure (msg.severity, ← msg.data.toString)
+  let _pickle := toJson msgs'
   if strict then
-    for msg in msgs.toList do
-      if msg.severity == MessageSeverity.error then
+    for (s, msg) in msgs' do
+      if s == MessageSeverity.error then
         -- IO.eprintln s!"Error message: {← msg.data.toString}"
         return none
-      if msg.severity == MessageSeverity.warning then
-        if (← msg.data.toString).trim == "declaration uses 'sorry'" then
+      if s == MessageSeverity.warning then
+        if msg.trim == "declaration uses 'sorry'" then
           -- IO.eprintln s!"Warning message with Try this: {← msg.data.toString}"
           return none
-  let trys ← msgs.toList.filterMapM
-    fun msg => do getTacticsFromMessageData? (← msg.data.toString)
+  let trys ← msgs'.filterMapM
+    fun (_, msg) => do getTacticsFromMessageData? msg
   return trys.getLast?
 
 def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=

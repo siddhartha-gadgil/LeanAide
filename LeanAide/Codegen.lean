@@ -356,9 +356,11 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
     throwError
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
 
-open Command Elab Term Tactic
+end Codegen
+
+open Command Elab Term Tactic Codegen
 @[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab
-| stx@`(command| #codegen $s) =>
+| stx@`(command| #codegen $s:term) =>
   Command.liftTermElabM do
   withoutModifyingEnv do
     let source : Q(Json) ← elabTerm s q(Json)
@@ -388,6 +390,6 @@ example : True := by
   simp
 
 
-end Codegen
+
 
 end LeanAide
