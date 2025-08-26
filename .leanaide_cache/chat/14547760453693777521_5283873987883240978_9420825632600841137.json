@@ -1,8 +1,0 @@
-{"usage": {"total_tokens": 184, "prompt_tokens": 179, "completion_tokens": 5},
- "object": "chat.completion",
- "model": "gemini-2.0-flash",
- "created": 1738927807,
- "choices":
- [{"message": {"role": "assistant", "content": "even_mul_succ"},
-   "index": 0,
-   "finish_reason": "stop"}]}

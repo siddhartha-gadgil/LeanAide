@@ -86,3 +86,4 @@ private/
 .env
 leanaide_st_temp/
 **.leanaide_cache**
+.leanaide_cache/
