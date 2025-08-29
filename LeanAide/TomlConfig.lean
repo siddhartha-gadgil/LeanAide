@@ -24,15 +24,15 @@ def loadTableIO? (file: System.FilePath := "leanaide.toml") :
     return none
 
 def decodeConfigToml (table : Table) (translator : Translator) : DecodeM Translator := do
-  let n ← table.tryDecodeD  `n 20
-  let tempFloat ← table.tryDecodeD  `temperature 1
+  let n ← table.tryDecodeD  `n translator.params.n
+  let tempFloat ← table.tryDecodeD  `temperature (translator.params.temp.toFloat)
   let temp := match JsonNumber.fromFloat? tempFloat with
   | .inr temp => temp
   | .inl _ => 1
   let server? : Option Table ←
       table.tryDecode?  `server
   let server ←  match server? with
-    | none => pure <| ChatServer.openAI "gpt-4o"
+    | none => pure <| translator.server
     | some server =>
       let model ←  server.tryDecodeD `model "gpt-4o"
       let url? : Option String :=  (server.tryDecode? `url).run' #[] |>.join
@@ -57,7 +57,7 @@ def decodeConfigToml (table : Table) (translator : Translator) : DecodeM Transla
   let pb ← match examples? with
   | none => pure translator.pb
   | some table' =>
-              let numSim ←  table'.tryDecodeD `docstrings 20
+              let numSim ←  table'.tryDecodeD `docstrings 8
               let numConcise ←  table'.tryDecodeD `concise_descriptions 2
               let numDesc ←  table'.tryDecodeD `descriptions 2
               let embedUrl? ←  table'.tryDecode? `examples_url
@@ -75,7 +75,8 @@ def Translator.configureToml (translator: Translator)
     | some table =>
       let decoded := decodeConfigToml table translator
       return decoded.run' #[] |>.getD translator
-    | none => return translator
+    | none =>
+      return translator
 
 def eg := "hello = 'this world'\nn = 42\n[leanaide]\nname = 'leanaide'"
 
