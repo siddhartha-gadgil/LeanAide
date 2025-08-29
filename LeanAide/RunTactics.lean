@@ -8,6 +8,18 @@ open Lean Meta Elab Term PrettyPrinter Nat
 
 namespace LeanAide
 
+structure MessageCore where
+  severity: MessageSeverity
+  text : String
+deriving Inhabited, ToJson, FromJson
+
+def MessageCore.ofMessageM (msg: Message) : MetaM MessageCore := do
+  return {severity := msg.severity, text := ← msg.data.toString}
+
+def runFrontEndMsgCoreM (inp : String) : MetaM (List MessageCore) := do
+  let (_, msgs) ← runFrontendM inp -- cache this
+  msgs.toList.mapM fun msg => MessageCore.ofMessageM msg
+
 open Parser.Tactic
 -- TODO: add errors and warnings
 def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : TermElabM <| Option MVarId :=
@@ -206,20 +218,19 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
   let egCode ← frontendCodeForTactics mvar.mvarId! tactics
   -- let code := topCode ++ egCode
   IO.eprintln s!"Running frontend with code:\n{egCode}"
-  let (_, msgs) ← runFrontendM egCode -- cache this
-  let msgs' ← msgs.toList.mapM fun msg => do pure (msg.severity, ← msg.data.toString)
+  let msgs' ← runFrontEndMsgCoreM egCode
   let _pickle := toJson msgs'
   if strict then
-    for (s, msg) in msgs' do
-      if s == MessageSeverity.error then
+    for msg in msgs' do
+      if msg.severity == MessageSeverity.error then
         -- IO.eprintln s!"Error message: {← msg.data.toString}"
         return none
-      if s == MessageSeverity.warning then
-        if msg.trim == "declaration uses 'sorry'" then
+      if msg.severity == MessageSeverity.warning then
+        if msg.text == "declaration uses 'sorry'" then
           -- IO.eprintln s!"Warning message with Try this: {← msg.data.toString}"
           return none
   let trys ← msgs'.filterMapM
-    fun (_, msg) => do getTacticsFromMessageData? msg
+    fun msg => do getTacticsFromMessageData? msg.text
   return trys.getLast?
 
 def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
