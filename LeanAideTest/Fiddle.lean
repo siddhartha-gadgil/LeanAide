@@ -1,6 +1,7 @@
 import Mathlib
 import LeanAide
-open Nat LeanAide
+import Std.Internal.Async.Process
+open Nat LeanAide Std.Internal.IO Process Async System
 set_option autoImplicit false
 set_option linter.unusedTactic false
 set_option linter.unreachableTactic false
@@ -39,10 +40,13 @@ example : ∀ {V W : Type*} [AddCommGroup V] [AddCommGroup W] [Module ℝ V] [Mo
 #check Submodule -- Submodule.{u, v} (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Type v
 
 /--
-error: function expected at
+error: Function expected at
   Submodule ℝ V
-term has type
+but this term has type
   Type
+
+Note: Expected a function because this term is being applied to the argument
+  (LinearMap.ker T)
 -/
 #guard_msgs in
 example : ∀ {V W : Type} [AddCommGroup V] [AddCommGroup W] [Module ℝ V] [Module ℝ W] (T : V →ₗ[ℝ] W), Submodule ℝ V (LinearMap.ker T) := by sorry
@@ -91,3 +95,13 @@ def writeToErr (s : String) : IO Unit := do
 -- #eval setErr
 
 -- #eval writeToErr "hello"
+
+#eval getId
+
+#eval getCwd
+
+#eval getTmpDir
+
+#eval getHomeDir
+
+#eval getEnv "OPENAI_API_KEY"

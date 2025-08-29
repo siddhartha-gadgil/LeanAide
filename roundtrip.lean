@@ -152,7 +152,7 @@ unsafe def roundtrip : Cmd := `[Cli|
     concise_descriptions : Nat; "Number of example concise descriptions (default 2)."
     n, num_responses : Nat;    "Number of responses to ask for (default 10)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
-    m, model : String ; "Model to be used (default `gpt-3.5-turbo`)"
+    m, model : String ; "Model to be used (default `gpt-4o`)"
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
     show_prompt; "Output the prompt to the LLM."
