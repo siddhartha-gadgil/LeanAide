@@ -58,19 +58,6 @@ def inferType?(e: Expr) : MetaM (Option Expr) := do
 
 
 partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
-  match e.letFun? with
-  | some (name, type, value, body) =>
-      let inner ← withLetDecl name type value fun x => do
-        -- logInfo s!"Let body: {bdy}"
-        let bdy := body.instantiate1 x
-        -- logInfo s!"Let body after instantiation: {bdy}"
-        let inner ← getSorryTypes bdy
-        inner.mapM <| fun type => do
-          let y ←  mkLetFVars #[x] type
-          mkLetFun x  value y
-      let outer ← getSorryTypes value
-      return inner ++ outer
-  | none =>
   match e with
   | .app (.const ``sorryAx _) a =>
     -- logInfo s!"Found sorryAx in {← ppExpr e}; type: {← ppExpr a}"
@@ -111,18 +98,6 @@ partial def getSorryTypes (e: Expr) : MetaM (Array Expr) := do
   | _ => pure #[]
 
 partial def purgeLets (e: Expr) : MetaM Expr := do
-  match e.letFun? with
-  | some (name, type, value, body) =>
-      withLetDecl name type value fun x => do
-        -- logInfo s!"Let body: {bdy}"
-        let bdy := body.instantiate1 x
-        -- logInfo s!"Let body after instantiation: {bdy}"
-        if ← exprDependsOn bdy x.fvarId! then
-          let inner ← purgeLets bdy
-          mkLetFun x value inner
-        else
-          purgeLets bdy
-  | none =>
   match e with
   | Expr.app f a  =>
     -- logInfo s!"App: {← ppExpr f} ; {← ppExpr a}"
@@ -159,18 +134,6 @@ partial def fillSorry (e: Expr) (tac: TSyntax ``tacticSeq) : TermElabM Expr := d
     Term.synthesizeSyntheticMVarsNoPostponing
     return pf
   else
-  match e.letFun? with
-  | some (name, type, value, body) =>
-      withLetDecl name type value fun x => do
-        -- logInfo s!"Let body: {bdy}"
-        let bdy := body.instantiate1 x
-        -- logInfo s!"Let body after instantiation: {bdy}"
-        if ← exprDependsOn bdy x.fvarId! then
-          let inner ← fillSorry bdy tac
-          mkLetFun x value inner
-        else
-          fillSorry bdy tac
-  | none =>
   match e with
   | Expr.app f a  =>
     -- logInfo s!"App: {← ppExpr f} ; {← ppExpr a}"
