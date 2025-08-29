@@ -19,35 +19,9 @@ def runTask (data: Json) (translator : Translator) : TranslateM Json :=
   let translator := translator.configure data
   match data.getObjVal? "task" with
   | Except.error e  => return Json.mkObj [("result", "error"), ("error", s!"no task found: {e}")]
-  | Except.ok "echo" => do
-    echoTask data translator
-  | Except.ok "translate_thm" =>
-      translateThmTask data translator
-  | Except.ok "translate_thm_detailed" =>
-      translateThmDetailedTask data translator
-  | Except.ok "statement_from_name" =>
-      statementFromNameTask data translator
-  | Except.ok "translate_def" =>
-      translateDefTask data translator
-  | Except.ok "theorem_doc" =>
-      theoremDocTask data translator
-  | Except.ok "def_doc" =>
-      defDocTask data translator
-  | Except.ok "theorem_name" =>
-      theoremNameTask data translator
-  | Except.ok "prove" =>
-      proveTask data translator
-  | Except.ok "prove_prop" =>
-      provePropTask data translator
-  | Except.ok "structured_json_proof" =>
-      structuredJsonTask data translator
-  | Except.ok "lean_from_json_structured" =>
-    leanFromStructuredJsonTask data translator
-  | Except.ok "elaborate" =>
-    elaborateTask data translator
-  | Except.ok task => do
-    let result := Json.mkObj [("result", "error"), ("error", s!"unknown task"), ("task", task)]
-    return result
+  | Except.ok (.str task) =>
+    responseFromTaskSafe task translator data
+  | Except.ok _ => return Json.mkObj [("result", "error"), ("error", s!"invalid task format")]
 
 /--
 Executing a list of tasks with Json input and output. These are for the server. When a task fails, the rest of the tasks are not executed. Results are accumulated in the output.
