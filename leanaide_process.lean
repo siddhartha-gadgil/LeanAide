@@ -20,12 +20,18 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
      IO.eprintln s!"Error parsing input: {e}"
      process_loop env stdin stdout translator dataMap
   | Except.ok js =>
-    let core := Actor.response js translator |>.runWithEmbeddings dataMap
+    let core := Actor.response translator js |>.runWithEmbeddings dataMap
+    let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
+    IO.eprintln "Running in background"
     let result ←
-      core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
-      {env := env} |>.runToIO'
-    -- IO.eprintln "Ran successfully"
+      core.run' ctx {env := env} |>.runToIO'
+    IO.eprintln "Ran successfully"
     stdout.putStrLn <| result.compress
+    -- TranslateM.runBackgroundIO js
+    --   (Actor.response translator) dataMap ctx env
+    --   (fun _ js => IO.eprintln s!"Output: {js.pretty}")
+    -- IO.eprintln "Background process launched"
+    -- IO.println (json% {"token" : "dummy"})
     stdout.flush
     IO.eprintln "Output sent."
     process_loop env stdin stdout translator dataMap

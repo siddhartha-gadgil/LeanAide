@@ -61,7 +61,7 @@ def runTaskChain (data: Json) (translator : Translator) : List (String × Json) 
 /--
 Responds to a request with a JSON response. The response is a JSON object that includes the input data and the output data. The output data is the result of the task or tasks. The task or tasks are specified in the input data.
 -/
-def response (data: Json) (translator : Translator) :
+def response (translator : Translator)(data: Json)  :
     TranslateM Json := do
   let translator := translator.configure data
   match data.getObjValAs? (List String) "tasks" with
