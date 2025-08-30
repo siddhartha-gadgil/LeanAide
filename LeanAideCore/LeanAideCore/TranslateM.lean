@@ -387,8 +387,35 @@ def runWithEmbeddings (em : EmbedMap)
   x.run' {} |>.run'.run'
 
 
-def runToCore (x: TranslateM α) : CoreM α := do
-  x.run' {} |>.run'.run'
+def runToCore (x: TranslateM α) (em?: Option EmbedMap) : CoreM α := do
+  match em? with
+  | some em => runWithEmbeddings em x
+  | none => x.run' {} |>.run'.run'
+
+section Async
+open Std.Internal.IO.Async Async
+def runToAsync (x: TranslateM α) (em?: Option EmbedMap)
+    (ctx : Core.Context) (env: Environment) : Async α := do
+  let core := x.runToCore em?
+  let res ← core.run' ctx {env := env} |>.runToIO'
+  return res
+
+def runBackground (t₀ : T)(x: T → TranslateM α)   (em?: Option EmbedMap)
+    (ctx : Core.Context) (env: Environment) (callback : T →  α → IO Unit)(prio: Task.Priority := Task.Priority.default) : Async Unit :=
+  background prio do
+    let res ← runToAsync (x t₀) em? ctx env
+    callback t₀ res
+
+
+def runBackgroundIO (t₀ : T)(x: T → TranslateM α)  (em?: Option EmbedMap)
+    (ctx : Core.Context) (env: Environment)
+    (callback : T →  α → IO Unit) (prio: Task.Priority := Task.Priority.default) : IO Unit := do
+  AsyncTask.block <| ←
+    Async.toIO do
+      runBackground t₀ x em? ctx env callback prio
+  return ()
+
+end Async
 
 end TranslateM
 

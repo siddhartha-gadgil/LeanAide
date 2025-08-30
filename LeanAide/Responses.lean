@@ -83,6 +83,26 @@ def echoTask (data: Json) (_ : Translator) : TranslateM Json := do
   let result := Json.mkObj [("result", "success"), ("data", data)]
   return result
 
+def Translator.translateThm (text: String) (translator : Translator) (fallback greedy : Bool) : TranslateM <| (Except (Array ElabError) String) × Bool := do
+  let res? ←
+    if greedy then
+      let (json, _) ←
+        translator.getLeanCodeJson  text
+      let output ← getMessageContents json
+      let res' ← greedyBestExprWithErr? output
+      res'.mapM fun res' => res'.view
+      else
+        let (res'?, _) ←
+          translator.translateM  text
+        res'?.mapM fun res' => res'.view
+  match res? with
+  | .ok res => return (.ok res, false)
+  | .error es =>
+    if fallback then
+      return (← ElabError.fallback? es, true)
+    else
+      return (.error es, false)
+
 /--
 Translates a theorem to Lean Code. If `greedy` is true, it uses a greedy approach to find the best expression.
 
@@ -97,24 +117,15 @@ def translateThmTask (data: Json) (translator : Translator) : TranslateM Json :=
     | Except.ok text => do
       let greedy :=
         data.getObjValAs? Bool "greedy" |>.toOption |>.getD true
-      let res? ← if greedy then
-        let (json, _) ←
-          translator.getLeanCodeJson  text
-        let output ← getMessageContents json
-        let res' ← greedyBestExprWithErr? output
-        res'.mapM fun res' => res'.view
-        else
-          let (res'?, _) ←
-            translator.translateM  text
-          res'?.mapM fun res' => res'.view
+      let res? ← translator.translateThm text fallback greedy
       match res? with
-      | Except.error es =>
-        if fallback then
-          fallBackThm es
-        else
+      | (Except.error es, _) =>
           return Json.mkObj [("result", "error"), ("errors", toJson es)]
-      | Except.ok translation => do
-        return Json.mkObj [("result", "success"), ("theorem", translation)]
+      | (Except.ok translation, fb) => do
+        if fb then
+          return Json.mkObj [("result", "fallback"), ("theorem", translation)]
+        else
+          return Json.mkObj [("result", "success"), ("theorem", translation)]
 
 /--
 Translates a theorem to Lean Code with detailed information, including an attempted proof using `exact?`. The `statement` is the theorem statement with proof (which may be `sorry`). Definitions used in the theorem and in the proof are also returned.

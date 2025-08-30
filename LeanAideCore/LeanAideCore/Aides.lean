@@ -22,6 +22,26 @@ partial def showSyntax : Syntax → String
 | Lean.Syntax.ident _ _ val _ => val.toString
 | _ => ""
 
+syntax (name := showTerm)  "show%" term : term
+
+open Term in
+@[term_elab showTerm] def showTermImpl : TermElab :=
+   fun stx expectedType =>
+   match stx with
+  | `(show% $t) => do
+    let e ← Term.elabTerm t expectedType
+    let v ← mkAppM ``repr #[e]
+    let v ← Term.withoutPostponing do
+      mkAppM ``toString #[v]
+    Term.synthesizeSyntheticMVarsNoPostponing
+    let s ← unsafe evalExpr String (mkConst ``String) v
+    TryThis.addSuggestion stx s
+    return e
+  | _ => throwUnsupportedSyntax
+
+-- def five  := 5
+
+-- #eval show% five + 3
 
 def leanAidePath : IO System.FilePath := do
   return (← baseDir) / ".lake" /"packages" /"leanaide"
