@@ -387,7 +387,7 @@ def runWithEmbeddings (em : EmbedMap)
   x.run' {} |>.run'.run'
 
 
-def runToCore (x: TranslateM α) (em?: Option EmbedMap) : CoreM α := do
+def runToCore (x: TranslateM α) (em?: Option EmbedMap := none) : CoreM α := do
   match em? with
   | some em => runWithEmbeddings em x
   | none => x.run' {} |>.run'.run'

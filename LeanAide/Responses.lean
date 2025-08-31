@@ -83,6 +83,12 @@ def echoTask (data: Json) (_ : Translator) : TranslateM Json := do
   let result := Json.mkObj [("result", "success"), ("data", data)]
   return result
 
+@[response "echo20"]
+def echo20Task (data: Json) (_ : Translator) : TranslateM Json := do
+  IO.sleep 20000
+  let result := Json.mkObj [("result", "success"), ("data", data)]
+  return result
+
 def Translator.translateThm (text: String) (translator : Translator) (fallback greedy : Bool) : TranslateM <| (Except (Array ElabError) String) × Bool := do
   let res? ←
     if greedy then

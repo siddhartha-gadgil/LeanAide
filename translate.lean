@@ -42,8 +42,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   let core :=
     translator.translateViewVerboseM type   |>.runToCore
   let io? :=
-    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
-    {env := env}
+    core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000} {env := env}
   let io?' ← io?.toIO'
   match io?' with
   | Except.ok (translation?, output, prompt) =>

@@ -12,13 +12,16 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
-    (translator : Translator) (dataMap : EmbedMap) : IO UInt32 := do
+    (translator : Translator) (dataMap : EmbedMap) (states : TasksState) : IO UInt32 := do
   IO.eprintln "Server ready. Waiting for input..."
   let inp ← stdin.getLine
+  if inp.trim.isEmpty then
+    process_loop env stdin stdout translator dataMap states
+  else
   match Json.parse inp with
   | Except.error e =>
      IO.eprintln s!"Error parsing input: {e}"
-     process_loop env stdin stdout translator dataMap
+     process_loop env stdin stdout translator dataMap states
   | Except.ok js =>
     let mode? := js.getObjValAs? String "mode" |>.toOption
     let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
@@ -26,15 +29,23 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
     | some "async" =>
       IO.eprintln "Running in background"
       let hash := hash js
+      states.addStart hash js
       let callback (js res : Json) : IO Unit := do
         IO.eprintln s!"Background process completed for token: {hash}\ninput: {js.pretty}"
         IO.eprintln s!"Output: {res.pretty}"
+        states.addResult hash res
       TranslateM.runBackgroundIO js
         (Actor.response translator) dataMap ctx env
         callback
       IO.eprintln "Background process launched"
       IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
-      return 0
+    | some "lookup" =>
+      IO.eprintln "Running in lookup mode"
+      let .ok hash :=
+        js.getObjValAs? UInt64 "token" | IO.throwServerError "No token provided"
+      let result ← states.lookupJson hash
+      stdout.putStrLn <| result.compress
+      stdout.flush
     | _ =>
       IO.eprintln "Running in foreground"
       let core := Actor.response translator js |>.runWithEmbeddings dataMap
@@ -44,12 +55,12 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
       stdout.putStrLn <| result.compress
       stdout.flush
       IO.eprintln "Output sent."
-      process_loop env stdin stdout translator dataMap
+    process_loop env stdin stdout translator dataMap states
 
 unsafe def launchProcess (p : Parsed) : IO UInt32 := do
   initSearchPath (← findSysroot)
   let translator : Translator ←  Translator.ofCli p
-  IO.eprintln <| toJson translator
+  -- IO.eprintln <| toJson translator
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
@@ -67,7 +78,9 @@ unsafe def launchProcess (p : Parsed) : IO UInt32 := do
     EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let stdin ←  IO.getStdin
   let stdout ← IO.getStdout
-  process_loop env stdin stdout translator dataMap
+  let states : TasksState ←
+    Std.Mutex.new <| Std.HashMap.emptyWithCapacity 100
+  process_loop env stdin stdout translator dataMap states
 
 
 unsafe def leanAideProcess : Cmd := `[Cli|

@@ -74,6 +74,13 @@ def response (translator : Translator)(data: Json)  :
       appendLog "server" (force:=true) <| Json.mkObj [("data", data), ("output", result)]
       return result.mergeObj data
 
+
+end LeanAide.Actor
+
+namespace LeanAide
+
+open Lean
+
 inductive TaskStatus
 | running (input: Json)
 | completed (input result: Json)
@@ -119,4 +126,4 @@ def lookupJson (ts: TasksState) (hash: UInt64) : IO Json := do
 
 end TasksState
 
-end LeanAide.Actor
+end LeanAide
