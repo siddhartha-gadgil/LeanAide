@@ -106,8 +106,8 @@ def myName: MetaM Name :=  do
 #eval myName
 
 
-initialize mn : IO.Mutex Nat
-        ← IO.Mutex.new 0
+initialize mn : Std.Mutex Nat
+        ← Std.Mutex.new 0
 
 def mnVal : IO Nat := mn.atomically do
   let m ← get

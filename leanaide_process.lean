@@ -20,23 +20,31 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
      IO.eprintln s!"Error parsing input: {e}"
      process_loop env stdin stdout translator dataMap
   | Except.ok js =>
-    let core := Actor.response translator js |>.runWithEmbeddings dataMap
+    let mode? := js.getObjValAs? String "mode" |>.toOption
     let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
-    IO.eprintln "Running in background"
-    let result ←
-      core.run' ctx {env := env} |>.runToIO'
-    IO.eprintln "Ran successfully"
-    stdout.putStrLn <| result.compress
-    -- TranslateM.runBackgroundIO js
-    --   (Actor.response translator) dataMap ctx env
-    --   (fun _ js => IO.eprintln s!"Output: {js.pretty}")
-    -- IO.eprintln "Background process launched"
-    -- IO.println (json% {"token" : "dummy"})
-    stdout.flush
-    IO.eprintln "Output sent."
-    process_loop env stdin stdout translator dataMap
-  return 0
-
+    match mode? with
+    | some "async" =>
+      IO.eprintln "Running in background"
+      let hash := hash js
+      let callback (js res : Json) : IO Unit := do
+        IO.eprintln s!"Background process completed for token: {hash}\ninput: {js.pretty}"
+        IO.eprintln s!"Output: {res.pretty}"
+      TranslateM.runBackgroundIO js
+        (Actor.response translator) dataMap ctx env
+        callback
+      IO.eprintln "Background process launched"
+      IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
+      return 0
+    | _ =>
+      IO.eprintln "Running in foreground"
+      let core := Actor.response translator js |>.runWithEmbeddings dataMap
+      let result ←
+        core.run' ctx {env := env} |>.runToIO'
+      IO.eprintln "Ran successfully"
+      stdout.putStrLn <| result.compress
+      stdout.flush
+      IO.eprintln "Output sent."
+      process_loop env stdin stdout translator dataMap
 
 unsafe def launchProcess (p : Parsed) : IO UInt32 := do
   initSearchPath (← findSysroot)
