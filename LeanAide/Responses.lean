@@ -392,9 +392,9 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
         let logs ←  logs.toList.mapM (fun lg => lg.data.format)
         let logs := logs.map (fun lg => lg.pretty)
         let sorries ← exprs.mapM fun (n, e) => do
-          let ss ← Meta.getSorryTypes e
-          let e' ← Meta.purgeLets e
-          let ss' ← Meta.getSorryTypes e'
+          let ss ← getSorryTypes e
+          let e' ← purgeLets e
+          let ss' ← getSorryTypes e'
           ss.mapM fun expr => do
             let s ← PrettyPrinter.ppExpr expr
             let s := s.pretty
@@ -430,8 +430,8 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
             else
               pure res
         let sorries' ← exprs.mapM fun (n, e) => do
-          let e' ← Meta.purgeLets e
-          let ss' ← Meta.getSorryTypes e'
+          let e' ← purgeLets e
+          let ss' ← getSorryTypes e'
           ss'.mapM fun expr => do
             let s ← PrettyPrinter.ppExpr expr
             let s := s.pretty

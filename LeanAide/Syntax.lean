@@ -27,7 +27,7 @@ namespace LeanAide.Meta
   | _ => throwUnsupportedSyntax
   where go (s: String) (stx: Syntax) (name? : Option Name) : TermElabM Unit := do
     if s.endsWith "." then
-      let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams}
+      let translator : Translator ← Translator.defaultDefM
       let (js, _) ←
         translator.getLeanCodeJson  s |>.run' {}
       let e? ←
@@ -69,7 +69,7 @@ namespace LeanAide.Meta
   | _ => throwUnsupportedSyntax
   where go (s: String) (stx: Syntax) : TermElabM Unit := do
     if s.endsWith "." then
-      let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams, toChat := .doc}
+      let translator : Translator ← Translator.defaultDefM
       let cmd? ←
         translator.translateDefCmdM?  s |>.run' {}
       match cmd? with

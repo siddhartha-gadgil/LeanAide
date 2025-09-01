@@ -158,3 +158,132 @@ def CodeGenerator.default : CodeGenerator :=
   {}
 -- #eval toJson <| ({} : CodeGenerator)
 -- #eval (fromJson? (toJson <| ({} : CodeGenerator)) : Except _ Translator)
+
+register_option lean_aide.translate.prompt_size : Nat :=
+  { defValue := 10
+    group := "lean_aide.translate"
+    descr := "Number of document strings in a prompt (default 10)" }
+
+register_option lean_aide.translate.concise_desc_size : Nat :=
+  { defValue := 0
+    group := "lean_aide.translate"
+    descr := "Number of concise descriptions in a prompt (default 0)" }
+
+register_option lean_aide.translate.desc_size : Nat :=
+  { defValue := 0
+    group := "lean_aide.translate"
+    descr := "Number of descriptions in a prompt (default 0)" }
+
+
+register_option lean_aide.translate.choices : Nat :=
+  { defValue := 10
+    group := "lean_aide.translate"
+    descr := "Number of outputs to request in a query (default 5)." }
+
+register_option lean_aide.translate.use_defintions : Bool :=
+  { defValue := true
+    group := "lean_aide.translate"
+    descr := "Whether to use docstrings of definitions (in addition to theorems)." }
+
+register_option lean_aide.translate.definition_penalty : Nat :=
+  { defValue := 20
+    group := "lean_aide.translate"
+    descr := "Penalty for a prompt being from a definition scaled by 10" }
+
+register_option lean_aide.translate.model : String :=
+  { defValue := "gpt-4o"
+    group := "lean_aide.translate"
+    descr := "Model to use (gpt-4o)." }
+
+register_option lean_aide.translate.azure : Bool :=
+  { defValue := false
+    group := "lean_aide.translate"
+    descr := "Whether to use Azure OpenAI." }
+
+register_option lean_aide.translate.url? : String :=
+  { defValue := ""
+    group := "lean_aide.translate"
+    descr := "Local or generic url to query. Empty string for none" }
+
+register_option lean_aide.translate.authkey? : String :=
+  { defValue := ""
+    group := "lean_aide.translate"
+    descr := "Authentication key for OpenAI or generic model" }
+
+register_option lean_aide.translate.examples_url? : String :=
+  { defValue := ""
+    group := "lean_aide.translate"
+    descr := "Local or generic url to query for embeddings. Empty string for none" }
+
+register_option lean_aide.translate.greedy : Bool :=
+  { defValue := false
+    group := "lean_aide.translate"
+    descr := "Whether to choose the first elaboration." }
+
+register_option lean_aide.translate.has_sysprompt : Bool :=
+  { defValue := true
+    group := "lean_aide.translate"
+    descr := "Whether the server has a system prompt." }
+
+register_option lean_aide.translate.temperature10 : Int :=
+  { defValue := 8
+    group := "lean_aide.translate"
+    descr := "temperature * 10." }
+
+/--
+Number of similar sentences to query in interactive mode
+-/
+def promptSize : CoreM Nat := do
+  return  lean_aide.translate.prompt_size.get (← getOptions)
+
+/--
+Number of similar concise descriptions to query in interactive mode
+-/
+def conciseDescSize : CoreM Nat := do
+  return  lean_aide.translate.concise_desc_size.get (← getOptions)
+
+def descSize : CoreM Nat := do
+  return  lean_aide.translate.desc_size.get (← getOptions)
+
+/--
+Parameters for a chat query in interactive mode
+-/
+def chatParams : CoreM ChatParams := do
+  let opts ← getOptions
+  return {
+    n := lean_aide.translate.choices.get opts,
+    temp := {mantissa:= lean_aide.translate.temperature10.get opts, exponent :=1}
+  }
+
+def greedy : CoreM Bool := do
+  return lean_aide.translate.greedy.get (← getOptions)
+
+def hasSysPrompt : CoreM Bool := do
+  return lean_aide.translate.has_sysprompt.get (← getOptions)
+
+/--
+Chat server to use in interactive mode
+-/
+def chatServer : CoreM ChatServer := do
+  let opts ← getOptions
+  let model := lean_aide.translate.model.get opts
+  if lean_aide.translate.azure.get opts then
+    return ChatServer.azure
+  else
+    let authkeyString := lean_aide.translate.authkey?.get opts
+    let authKey? :=
+      if authkeyString = "" then none else some authkeyString
+    let url := lean_aide.translate.url?.get opts
+    if url.isEmpty then
+      return ChatServer.openAI model |>.addKeyOpt authKey?
+    else
+      return ChatServer.generic model url none (← hasSysPrompt)
+
+def Translator.defaultM : CoreM Translator := do
+  return {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams, toChat := .doc}
+
+def Translator.defaultDefM : CoreM Translator := do
+  let t ← defaultM
+  return t.forDef
+
+end LeanAide

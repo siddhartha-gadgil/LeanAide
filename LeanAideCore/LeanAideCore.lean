@@ -10,3 +10,4 @@ import LeanAideCore.TranslateM
 import LeanAideCore.Translator
 import LeanAideCore.Syntax
 import LeanAideCore.YAMLSyntax
+import LeanAideCore.Sorries

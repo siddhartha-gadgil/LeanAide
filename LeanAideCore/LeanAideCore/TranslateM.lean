@@ -460,7 +460,15 @@ instance : MonadBacktrack Translate.SavedState TranslateM where
     let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context}
     return (saved, σ)
   restoreState := fun ss => do
-    modify fun s =>
+  modify fun s =>
       {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, preludes := ss.preludes, context := ss.context}
+
+
+structure CodeElabResult where
+  names : List Name
+  defs : List (Name × Expr)
+  log : MessageLog
+  sorries : List (Name × List Expr)
+  sorriesAfterPurge : List (Name × List Expr)
 
 end LeanAide
