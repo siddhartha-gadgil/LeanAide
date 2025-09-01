@@ -12,16 +12,16 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
-    (translator : Translator) (dataMap : EmbedMap) (states : TasksState) : IO UInt32 := do
+    (translator : Translator) (dataMap : EmbedMap) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
   IO.eprintln "Server ready. Waiting for input..."
   let inp ← stdin.getLine
   if inp.trim.isEmpty then
-    process_loop env stdin stdout translator dataMap states
+    process_loop env stdin stdout translator dataMap states chains
   else
   match Json.parse inp with
   | Except.error e =>
      IO.eprintln s!"Error parsing input: {e}"
-     process_loop env stdin stdout translator dataMap states
+     process_loop env stdin stdout translator dataMap states chains
   | Except.ok js =>
     let mode? := js.getObjValAs? String "mode" |>.toOption
     let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
@@ -34,9 +34,11 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
         IO.eprintln s!"Background process completed for token: {hash}\ninput: {js.pretty}"
         IO.eprintln s!"Output: {res.pretty}"
         states.addResult hash res
-      TranslateM.runBackgroundIO js
+      let prios :=
+        (js.getObjValAs? Task.Priority "priority").toOption |>.getD Task.Priority.default
+      TranslateM.runBackgroundChainIO js
         (Actor.response translator) dataMap ctx env
-        callback
+        callback chains prios
       IO.eprintln "Background process launched"
       IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
     | some "lookup" =>
@@ -46,6 +48,9 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
       let result ← states.lookupJson hash
       stdout.putStrLn <| result.compress
       stdout.flush
+    | some "quit" =>
+      IO.eprintln "Exiting..."
+      return 0
     | _ =>
       IO.eprintln "Running in foreground"
       let core := Actor.response translator js |>.runWithEmbeddings dataMap
@@ -55,7 +60,7 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
       stdout.putStrLn <| result.compress
       stdout.flush
       IO.eprintln "Output sent."
-    process_loop env stdin stdout translator dataMap states
+    process_loop env stdin stdout translator dataMap states chains
 
 unsafe def launchProcess (p : Parsed) : IO UInt32 := do
   initSearchPath (← findSysroot)
@@ -80,7 +85,7 @@ unsafe def launchProcess (p : Parsed) : IO UInt32 := do
   let stdout ← IO.getStdout
   let states : TasksState ←
     Std.Mutex.new <| Std.HashMap.emptyWithCapacity 100
-  process_loop env stdin stdout translator dataMap states
+  process_loop env stdin stdout translator dataMap states (fun _ _ => #[])
 
 
 unsafe def leanAideProcess : Cmd := `[Cli|

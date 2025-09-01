@@ -416,13 +416,20 @@ def runBackgroundIO (t₀ : T)(x: T → TranslateM α)  (em?: Option EmbedMap)
   return ()
 
 partial def runBackgroundChain (t₀ : α)(x: α  → TranslateM α)   (em?: Option EmbedMap)
-    (ctx : Core.Context) (env: Environment) (callback : α →  α → IO Unit)(chains : α → α → Array (α → TranslateM α)) (prio: Task.Priority := Task.Priority.default) : Async Unit :=
-  background prio do
+    (ctx : Core.Context) (env: Environment) (callback : α →  α → IO Unit)(chains : α → α → Array (α → TranslateM α)) (prios: α → Task.Priority := fun _ => Task.Priority.default) : Async Unit :=
+  background (prios t₀) do
     let res ← runToAsync (x t₀) em? ctx env
     callback t₀ res
     let offspringTasks := chains t₀ res
     for childTask in offspringTasks do
-      runBackgroundChain res childTask em? ctx env callback chains prio
+      runBackgroundChain res childTask em? ctx env callback chains prios
+
+def runBackgroundChainIO (t₀ : α)(x: α  → TranslateM α)   (em?: Option EmbedMap)
+    (ctx : Core.Context) (env: Environment) (callback : α →  α → IO Unit)(chains : α → α → Array (α → TranslateM α)) (prios: α → Task.Priority := fun _ => Task.Priority.default) : IO Unit := do
+  AsyncTask.block <| ←
+    Async.toIO do
+      runBackgroundChain t₀ x em? ctx env callback chains prios
+  return ()
 
 end Async
 -- {"task" : "echo"}
