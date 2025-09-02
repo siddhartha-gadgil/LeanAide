@@ -33,12 +33,6 @@ class Kernel where
   codeFromJson? : ChatServer → String → IO (Except String (TSyntax ``commandSeq))
   codeElabResult? : TSyntax ``commandSeq → TermElabM (Except String CodeElabResult)
 
-/--
-# Markdown in DocStrings
 
-Yes, it works.
--/
-def HelloWorld : String :=
-  "Hello from LeanAideCore!"
 
 end LeanAide

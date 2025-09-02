@@ -122,3 +122,91 @@ syntax (name := codegenCmd) "#codegen" ppSpace term : command
 
 macro "#codegen" source:json : command =>
   `(command| #codegen json% $source)
+
+macro doc:docComment "#text" ppSpace n:ident : command =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  `(command| def $n := $textStx)
+
+def mkTextCmd (doc: String) (name: Name) : CoreM <| Syntax.Command := do
+  let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (doc ++ " -/")]
+  let ident := mkIdent name
+  `(command| $docs:docComment #text $ident)
+
+declare_syntax_cat filepath
+syntax str : filepath
+syntax filepath ppSpace "/" ppSpace str : filepath
+
+partial def filePath : TSyntax `filepath → System.FilePath
+  | `(filepath| $s:str) => s.getString
+  | `(filepath| $fs:filepath / $s) => (filePath fs / s.getString)
+  | _ => System.FilePath.mk ""
+
+
+syntax (name:= loadFile) "#load_file" (ppSpace ident)? (ppSpace filepath)? : command
+@[command_elab loadFile] def loadFileImpl : CommandElab := fun stx  =>
+ Command.liftTermElabM  do
+  match stx with
+  | `(command| #load_file $id:ident $file) =>
+    let filePath : System.FilePath := filePath file
+    let content ← try
+        IO.FS.readFile filePath
+      catch _ =>
+        if ← filePath.isDir then
+          let files ← filePath.readDir
+          let files := files.map (·.fileName)
+          for f in files do
+            let name := Syntax.mkStrLit f
+            let newPath ← `(filepath| $file / $name)
+            let newCommand ← `(command| #load_file $id $newPath)
+            TryThis.addSuggestion stx newCommand
+        else
+          logWarning s!"Failed to read file: {filePath}"
+        return
+    let content := "\n" ++ content.trim ++ "\n"
+    let name := id.getId
+    let textCmd ← mkTextCmd content name
+    TryThis.addSuggestion (header := "Load source:\n") stx textCmd
+  | `(command| #load_file $file:filepath) =>
+    let filePath : System.FilePath := filePath file
+    let content ← try
+        IO.FS.readFile filePath
+
+      catch _ =>
+        if ← filePath.isDir then
+          let files ← filePath.readDir
+          let files := files.map (·.fileName)
+          for f in files do
+            let name := Syntax.mkStrLit f
+            let newPath ← `(filepath| $file / $name)
+            let newCommand ← `(command| #load_file $newPath:filepath)
+            TryThis.addSuggestion stx newCommand
+        else
+          logWarning s!"Failed to read file: {filePath}"
+        return
+    let content := "\n" ++ content.trim ++ "\n"
+    let name := filePath.fileName.getD "source"
+    let textCmd ← mkTextCmd content name.toName
+    TryThis.addSuggestion (header := "Load source:\n") stx textCmd
+  | `(command| #load_file $id:ident) =>
+    let filePath : System.FilePath := "."
+    let files ← filePath.readDir
+    let files := files.map (·.fileName)
+    for f in files do
+      let name := Syntax.mkStrLit f
+      let newPath ← `(filepath| $name:str)
+      let newCommand ← `(command| #load_file $id $newPath:filepath)
+      TryThis.addSuggestion stx newCommand
+  | `(command| #load_file) =>
+    let filePath : System.FilePath := "."
+    let files ← filePath.readDir
+    let files := files.map (·.fileName)
+    for f in files do
+      let name := Syntax.mkStrLit f
+      let newPath ← `(filepath| $name:str)
+      let newCommand ← `(command| #load_file $newPath:filepath)
+      TryThis.addSuggestion stx newCommand
+  | _ => throwUnsupportedSyntax
+
+end LeanAide
