@@ -2,8 +2,11 @@ import Lean
 import LeanAideCore.Aides
 import LeanAideCore.Template
 import LeanAideCore.MathDoc
+import LeanAideCore.Resources
 
 open Lean Meta System
+
+namespace LeanAide
 
 variable [LeanAideBaseDir]
 /--
@@ -472,9 +475,23 @@ def prove (server: ChatServer)
   (thm: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (examples: Array ChatExample := #[]): CoreM (Array String) := do
-  let queryString ← fromTemplate "prove" [("theorem", thm)]
+  let queryString ← fromTemplate "prove_theorem_for_formalization" [("theorem", thm)]
   ChatServer.mathCompletions server queryString n params examples
 
+def proveForFormalization (server: ChatServer)
+  (thm statement definitions: String)(n: Nat := 1)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array String) := do
+  let queryString ← fromTemplate "prove_theorem_for_formalization" [("theorem", thm),  ("statement", statement), ("definitions", definitions), ("proof_guidelines", Resources.proofGuidelines)]
+  ChatServer.mathCompletions server queryString n params examples
+
+def jsonStructured (server: ChatServer)
+  (document: String)(n: Nat := 1)
+  (params: ChatParams := {n := n, stopTokens := #[]})
+  (examples: Array ChatExample := #[]): CoreM (Array Json) := do
+  let queryString ← fromTemplate "json_structured" [("document", document), ("schema", Resources.paperStructure.pretty)]
+  let outs ← ChatServer.mathCompletions server queryString n params examples
+  outs.mapM extractJsonM
 
 def prove_with_outline (server: ChatServer)
   (thm outline: String)(n: Nat := 3)

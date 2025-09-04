@@ -303,6 +303,22 @@ def proveTask (data: Json) (translator : Translator) : TranslateM Json := do
       return Json.mkObj [("result", "success"), ("proof", toJson pf)]
 
 /--
+Use an LLM to prove a theorem. The input is a JSON object with a `text` field containing the theorem text, a `theorem` field containing the statement of the theorem and `definitions` containing relevant definitions.
+-/
+@[response "prove_theorem_for_formalization"]
+def proveForFormalizationTask (data: Json) (translator : Translator) : TranslateM Json := do
+  match data.getObjValAs? String "text", data.getObjValAs? String "theorem" with
+  | Except.ok thm, Except.ok statement => do
+    let definitions := data.getObjValAs? String "definitions" |>.toOption.getD ""
+    let docs ← translator.server.proveForFormalization thm statement definitions 1 translator.params
+    match docs[0]? with
+    | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
+    | some doc => do
+      return Json.mkObj [("result", "success"), ("document", toJson doc)]
+  | _, _ => return Json.mkObj [("result", "error"), ("error", s!"no theorem found")]
+
+
+/--
 Proves a proposition using an LLM. The input is a JSON object with a `prop` field containing the proposition in Lean Syntax.
 -/
 @[response "prove_prop"]
@@ -321,6 +337,18 @@ def provePropTask (data: Json) (translator : Translator) : TranslateM Json := do
           return Json.mkObj [("result", "success"), ("theorem_proof", toJson proof)]
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in proving `prop`: {← e.toMessageData.format}")]
+
+@[response "json_structured"]
+def jsonStructuredTask (data: Json) (translator : Translator) : TranslateM Json := do
+  match data.getObjValAs? String "document" with
+  | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no document found: {e}")]
+  | Except.ok document => do
+    let jsons ←
+      translator.server.jsonStructured document 1 translator.params
+    match jsons[0]? with
+    | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
+    | some json => do
+      return Json.mkObj [("result", "success"), ("json_structured", json)]
 
 /--
 Converts a theorem and proof to structured JSON. The input is a JSON object with a `theorem`, `proof`, or `theorem_proof` field containing the theorem statement and proof

@@ -77,7 +77,7 @@ In Lean, this encourages reuse and better composability.
 Human readers disambiguate easily; Lean does not.
 * Clarify the scope of variables and the domains of quantification.
   
-* Prefer “Let x∈X \in X” over “Take xx”.
+* Prefer “Let x∈X \in X” over “Take x”.
   
 
 In Lean, `x : X` is always the form in contexts and proofs.

@@ -54,3 +54,10 @@ Yes, it works, including *emphasis* and **bold** and live changes.
 #check System.FilePath
 
 #eval System.FilePath.readDir <| ".." / "LeanSearchClient"
+
+example : 1 = 1 := by nlinarith
+
+def text :=
+  IO.FS.readFile <| "resources" / "ProofGuidelines.md"
+
+#eval text

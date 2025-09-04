@@ -1,5 +1,6 @@
 import Lean
 import LeanAideCore.Config
+import LeanAideCore.Resources
 
 open Lean Meta System
 
@@ -25,7 +26,8 @@ def componentTemplates : IO Json := do
     IO.throwServerError s!"Error parsing JSON: {e}; source: {js}"
 
 def getTemplate (name: String) : IO String := do
-  let js ← promptTemplates
+  let js := LeanAide.Resources.templates
+    -- ← promptTemplates
   match js.getObjValAs? String name with
   | Except.ok s => return s
   | _ =>
