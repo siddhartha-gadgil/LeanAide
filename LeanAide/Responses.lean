@@ -126,7 +126,7 @@ def translateThmTask (data: Json) (translator : Translator) : TranslateM Json :=
       let res? ← translator.translateThm text fallback greedy
       match res? with
       | (Except.error es, _) =>
-          return Json.mkObj [("result", "error"), ("errors", toJson es)]
+          return Json.mkObj [("result", "failure"), ("outputs", toJson es)]
       | (Except.ok translation, fb) => do
         if fb then
           return Json.mkObj [("result", "fallback"), ("theorem", translation)]
@@ -247,7 +247,7 @@ def translateDefTask (data: Json) (translator : Translator) : TranslateM Json :=
           else
             let res ←  CmdElabError.fallback es
             return Json.mkObj [("result", "fallback"), ("definition", res)]
-        return Json.mkObj [("result", "error"), ("errors", toJson es)]
+        return Json.mkObj [("result", "failure"), ("outputs", toJson es)]
       | Except.ok cmd => do
         let fmt ← PrettyPrinter.ppCommand cmd
         let result := Json.mkObj [("result", "success"), ("definition", fmt.pretty)]
