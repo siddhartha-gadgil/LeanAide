@@ -305,11 +305,11 @@ def proveTask (data: Json) (translator : Translator) : TranslateM Json := do
 /--
 Use an LLM to prove a theorem. The input is a JSON object with a `text` field containing the theorem text, a `theorem` field containing the statement of the theorem and `definitions` containing relevant definitions.
 -/
-@[response "prove_theorem_for_formalization"]
+@[response "prove_for_formalization"]
 def proveForFormalizationTask (data: Json) (translator : Translator) : TranslateM Json := do
   match data.getObjValAs? String "text", data.getObjValAs? String "theorem" with
   | Except.ok thm, Except.ok statement => do
-    let definitions := data.getObjValAs? String "definitions" |>.toOption.getD ""
+    let definitions := data.getObjValAs? String "definitions" |>.toOption.getD "" -- should search for relevant defs
     let docs ← translator.server.proveForFormalization thm statement definitions 1 translator.params
     match docs[0]? with
     | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
@@ -464,8 +464,9 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
             let s ← PrettyPrinter.ppExpr expr
             let s := s.pretty
             let res := Json.mkObj [("declaration_name", toJson n), ("sorry_type", s)]
+            pure res
         let response := Json.mkObj
-          [("result", result), ("logs", toJson logs), ("declarations", toJson names), ("sorries", toJson sorries), ("sorries_purged", toJson sorries')]
+          [("result", result), ("logs", toJson logs), ("declarations", toJson names), ("sorries", toJson sorries), ("sorries_after_purge", toJson sorries')]
         return response
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code elaboration: {← e.toMessageData.format}")]

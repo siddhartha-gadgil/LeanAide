@@ -850,6 +850,11 @@ def parseCommands (s: String) : CoreM (TSyntax ``commandSeq) := do
   | .error err =>
     throwError m!"Error parsing commandSeq: {err}"
 
+def printCommands (cs: TSyntax `commandSeq) : CoreM String := do
+  let cmds := commands cs
+  let fmtCmds ← cmds.mapM fun c => PrettyPrinter.ppCommand c
+  return fmtCmds.foldl (fun acc f => acc ++ f.pretty ++ "\n\n") ""
+
 declare_syntax_cat tacticSeqWrap
 syntax tacticSeq : tacticSeqWrap
 

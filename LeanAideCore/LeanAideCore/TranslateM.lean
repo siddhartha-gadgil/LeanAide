@@ -465,10 +465,25 @@ instance : MonadBacktrack Translate.SavedState TranslateM where
 
 
 structure CodeElabResult where
-  names : List Name
-  defs : List (Name × Expr)
-  log : MessageLog
-  sorries : List (Name × List Expr)
-  sorriesAfterPurge : List (Name × List Expr)
+  declarations : List Name
+  logs : List String
+  sorries : List (Name × Expr)
+  sorriesAfterPurge : List (Name × Expr)
+
+def getSorriesFromJson (js: Json) : TermElabM (Name × Expr) := do
+  let .ok declaration_name := js.getObjValAs? String "declaration_name" | throwError "no 'declaration_name' field"
+  let .ok sorryTypeText := js.getObjValAs? String "sorry_type" | throwError "no 'sorry_type' field"
+  let .ok stx := Parser.runParserCategory (← getEnv) `term sorryTypeText | throwError s!"could not parse sorry type: {sorryTypeText}"
+  let expr ← elabType stx
+  return (declaration_name.toName, expr)
+
+def CodeElabResult.fromJson (js: Json) : TermElabM CodeElabResult := do
+  let .ok declarations := js.getObjValAs? (List Name) "declarations" | throwError "no 'declarations' field"
+  let .ok logs := js.getObjValAs? (List String) "logs" | throwError "no 'logs' field"
+  let .ok sorriesJson := js.getObjValAs? (Array Json) "sorries" | throwError "no 'sorries' field"
+  let sorries ← sorriesJson.mapM getSorriesFromJson
+  let .ok sorriesAfterPurgeJson := js.getObjValAs? (Array Json) "sorries_after_purge" | throwError "no 'sorries_after_purge' field"
+  let sorriesAfterPurge ← sorriesAfterPurgeJson.mapM getSorriesFromJson
+  return { declarations := declarations, logs := logs, sorries := sorries.toList, sorriesAfterPurge := sorriesAfterPurge.toList }
 
 end LeanAide

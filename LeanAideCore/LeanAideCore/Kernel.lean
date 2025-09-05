@@ -23,14 +23,14 @@ We want the same functions and the same syntax to work in LeanAide itself and a 
 The core functions of LeanAide, implemented directly in the server and via querying in the client.
 -/
 class Kernel where
-  translateThm : String → TranslateM (Except (Array ElabError) Expr)
-  translateDef : String → TranslateM (Except (Array CmdElabError) Syntax.Command)
-  theoremDoc : Syntax.Command → TranslateM String
-  defDoc : Syntax.Command → TranslateM String
-  theoremName : Syntax.Command → IO Name
-  prove : Name → Expr → TranslateM String
-  structuredJson : String → IO Json
-  codeFromJson? : String → IO (TSyntax ``commandSeq)
+  translateThm : String → TermElabM (Except (Array ElabError) Expr)
+  translateDef : String → TermElabM (Except (Array CmdElabError) Syntax.Command)
+  theoremDoc : Name → Syntax.Command → TermElabM String
+  defDoc : Name → Syntax.Command → TermElabM String
+  theoremName : String → IO Name
+  proveForFormalization : Name → Expr → TermElabM String
+  jsonStructured : String → IO Json
+  codeFromJson : String → TermElabM (TSyntax ``commandSeq)
   elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
 
 
@@ -50,8 +50,8 @@ def fromURL (url: String) : LeanAidePipe := {
 def response [pipe: LeanAidePipe] (req: Json) : IO Json :=
   pipe.queryResponse req
 
-def translateThm [pipe: LeanAidePipe] (text: String) : TranslateM (Except (Array ElabError) Expr) := do
-  let req := Json.mkObj [("task", "translateThm"), ("text", text)]
+def translateThm [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array ElabError) Expr) := do
+  let req := Json.mkObj [("task", "translate_thm"), ("text", text)]
   let response ← response req
   match response.getObjValAs? String "result" with
   | .ok "success" =>
@@ -66,6 +66,132 @@ def translateThm [pipe: LeanAidePipe] (text: String) : TranslateM (Except (Array
   | .ok "error" =>
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while translating theorem: {error}"
+  | _ =>
+    throwError "Invalid response"
+
+def translateDef [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
+  let req := Json.mkObj [("task", "translate_def"), ("text", text)]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok defTxt := response.getObjValAs? String "definition" | throwError "response has no 'definition' field"
+    match runParserCategory (← getEnv) `command defTxt with
+    | .ok stx =>
+        return .ok ⟨stx⟩
+    | .error e => throwError s!"Error while parsing {defTxt} : {e}"
+  | .ok "failure" =>
+      let .ok outputs := response.getObjValAs? (Array CmdElabError) "outputs" | throwError "response has no 'outputs' field"
+      return .error outputs
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while translating definition: {error}"
+  | _ =>
+    throwError "Invalid response"
+
+def theoremDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM String := do
+  let req :=
+    Json.mkObj [("task", "theorem_doc"), ("name", toString name), ("syntax", (← PrettyPrinter.ppCommand stx).pretty)]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok doc := response.getObjValAs? String "doc" | throwError "response has no 'doc' field"
+    return doc
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while getting theorem doc: {error}"
+  | _ =>
+    throwError "Invalid response"
+
+def defDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM String := do
+  let req :=
+    Json.mkObj [("task", "def_doc"), ("name", toString name), ("syntax", (← PrettyPrinter.ppCommand stx).pretty)]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok doc := response.getObjValAs? String "doc" | throwError "response has no 'doc' field"
+    return doc
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while getting definition doc: {error}"
+  | _ =>
+    throwError "Invalid response"
+
+def theoremName [pipe: LeanAidePipe] (text: String) : IO Name := do
+  let req := Json.mkObj [("task", "theorem_name"), ("text", text)]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok nameStr := response.getObjValAs? String "name" | IO.throwServerError "response has no 'name' field"
+    return Name.mkStr Name.anonymous nameStr
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | IO.throwServerError "response has no 'error' field"
+      IO.throwServerError s!"Error while getting theorem name: {error}"
+  | _ =>
+    IO.throwServerError "Invalid response"
+
+def proveForFormalization [pipe: LeanAidePipe] (name: Name) (type: Expr) : TermElabM String := do
+  let req :=
+    Json.mkObj [("task", "prove_for_formalization"), ("name", toString name), ("type", toString type)]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok proof := response.getObjValAs? String "document" | throwError "response has no 'document' field"
+    return proof
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while proving for formalization: {error}"
+  | _ =>
+    throwError "Invalid response"
+
+def jsonStructured [pipe: LeanAidePipe] (document: String) : IO Json := do
+  let req := Json.mkObj [("task", "json_structured"), ("document", document)]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok json := response.getObjValAs? Json "json" | IO.throwServerError "response has no 'json' field"
+    return json
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | IO.throwServerError "response has no 'error' field"
+      IO.throwServerError s!"Error while getting structured JSON: {error}"
+  | _ =>
+    IO.throwServerError "Invalid response"
+
+def codeFromJson [pipe: LeanAidePipe] (json: String) : TermElabM (TSyntax ``commandSeq) := do
+  let req := Json.mkObj [("task", "lean_from_json_structured"), ("json_structured", json)]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok code := response.getObjValAs? String "lean_code" | IO.throwServerError "response has no 'lean_code' field"
+    parseCommands code
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | IO.throwServerError "response has no 'error' field"
+      IO.throwServerError s!"Error while getting code from JSON: {error}"
+  | _ =>
+    IO.throwServerError "Invalid response"
+
+/-
+structure CodeElabResult where
+  declarations : List Name
+  logs : List String
+  sorries : List (Name × Expr)
+  sorriesAfterPurge : List (Name × Expr)
+-/
+def elabCode [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM CodeElabResult := do
+  let code ← printCommands stx
+  let req := Json.mkObj [("task", "elaborate"), ("lean_code", code)]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok decls := response.getObjValAs? (List Name) "declarations" | throwError "response has no 'declarations' field"
+    let .ok logs := response.getObjValAs? (List String) "logs" | throwError "response has no 'logs' field"
+    let .ok sorries := response.getObjValAs? (List Json) "sorries" | throwError "response has no 'sorries' field"
+    let sorries ←  sorries.mapM getSorriesFromJson
+    let .ok sorriesAfterPurge := response.getObjValAs? (List Json) "sorries_after_purge" | throwError "response has no 'sorries_after_purge' field"
+    let sorriesAfterPurge ← sorriesAfterPurge.mapM getSorriesFromJson
+    return { declarations := decls, logs := logs, sorries := sorries, sorriesAfterPurge := sorriesAfterPurge }
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while elaborating code: {error}"
   | _ =>
     throwError "Invalid response"
 
