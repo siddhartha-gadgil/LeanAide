@@ -32,6 +32,7 @@ class Kernel where
   jsonStructured : String → CoreM Json
   codeFromJson : String → TermElabM (TSyntax ``commandSeq)
   elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
+  mathQuery : String → CoreM (List String)
 
 
 class LeanAidePipe where
@@ -195,6 +196,20 @@ def elabCode [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM CodeEl
   | _ =>
     throwError "Invalid response"
 
+def mathQuery [pipe: LeanAidePipe] (query: String) : CoreM (List String) := do
+  let req := Json.mkObj [("task", "math_query"), ("query", query
+  )]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok answers := response.getObjValAs? (List String) "answers" | throwError "response has no 'answers' field"
+    return answers
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while performing math query: {error}"
+  | _ =>
+    throwError "Invalid response"
+
 end LeanAidePipe
 
 instance [LeanAidePipe] : Kernel where
@@ -207,6 +222,8 @@ instance [LeanAidePipe] : Kernel where
   jsonStructured := LeanAidePipe.jsonStructured
   codeFromJson := LeanAidePipe.codeFromJson
   elabCode := LeanAidePipe.elabCode
+  mathQuery := LeanAidePipe.mathQuery
+
 
 macro "#leanaide_connect" url?:(str)? : command =>
 match url? with

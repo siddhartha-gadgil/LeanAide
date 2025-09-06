@@ -473,6 +473,17 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
         return Json.mkObj [("result", "error"), ("error", s!"error in code elaboration: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no lean code found")]
 
+@[response "math_query"]
+def mathQueryTask (data: Json) (translator : Translator) : TranslateM Json := do
+  match data.getObjValAs? String "query" with
+  | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no query found: {e}")]
+  | Except.ok query => do
+    try
+      let res ← translator.server.mathCompletions query 1 translator.params
+      return Json.mkObj [("result", "success"), ("answers", toJson res)]
+    catch e =>
+      return Json.mkObj [("result", "error"), ("error", s!"error in math query: {← e.toMessageData.format}")]
+
 /--
 Implementation of the `Kernel` class which provides various functionalities such as translating theorems and definitions, generating documentation, naming theorems, proving theorems, converting to and from structured JSON, and elaborating code. This is the "server-side" implementation that uses the `Translator` to perform these tasks.
 
@@ -555,6 +566,10 @@ instance kernel : Kernel := {
       for type in ss' do
         sorriesAfterPurge := sorriesAfterPurge.push (n, type)
     return {declarations := names, logs := logs, sorries := sorries.toList, sorriesAfterPurge := sorriesAfterPurge.toList}
+  mathQuery := fun query => do
+    let translator ← Translator.defaultM
+    let res ← translator.server.mathCompletions query 1 translator.params
+    return res.toList
 }
 
 end LeanAide
