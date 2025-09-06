@@ -27,15 +27,15 @@ class Kernel where
   translateDef : String → TermElabM (Except (Array CmdElabError) Syntax.Command)
   theoremDoc : Name → Syntax.Command → TermElabM String
   defDoc : Name → Syntax.Command → TermElabM String
-  theoremName : String → IO Name
-  proveForFormalization : Name → Expr → TermElabM String
-  jsonStructured : String → IO Json
+  theoremName : String → CoreM Name
+  proveForFormalization : String → Expr → TermElabM String
+  jsonStructured : String → CoreM Json
   codeFromJson : String → TermElabM (TSyntax ``commandSeq)
   elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
 
 
 class LeanAidePipe where
-  queryResponse : Json → IO Json
+  queryResponse : Json → CoreM Json
 
 namespace LeanAidePipe
 
@@ -43,11 +43,11 @@ def fromURL (url: String) : LeanAidePipe := {
   queryResponse (data: Json) := do
     let output ← IO.Process.run {cmd := "curl", args := #[url, "-X", "POST", "-H", "Content-Type: application/json", "--data", data.compress]}
     let .ok response :=
-      Json.parse output | IO.throwServerError "Failed to parse response"
+      Json.parse output | throwError "Failed to parse response"
     return response
 }
 
-def response [pipe: LeanAidePipe] (req: Json) : IO Json :=
+def response [pipe: LeanAidePipe] (req: Json) : CoreM Json :=
   pipe.queryResponse req
 
 def translateThm [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array ElabError) Expr) := do
@@ -116,22 +116,22 @@ def defDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM S
   | _ =>
     throwError "Invalid response"
 
-def theoremName [pipe: LeanAidePipe] (text: String) : IO Name := do
+def theoremName [pipe: LeanAidePipe] (text: String) : CoreM Name := do
   let req := Json.mkObj [("task", "theorem_name"), ("text", text)]
   let response ← response req
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok nameStr := response.getObjValAs? String "name" | IO.throwServerError "response has no 'name' field"
+    let .ok nameStr := response.getObjValAs? String "name" | throwError "response has no 'name' field"
     return Name.mkStr Name.anonymous nameStr
   | .ok "error" =>
-      let .ok error := response.getObjValAs? String "error" | IO.throwServerError "response has no 'error' field"
-      IO.throwServerError s!"Error while getting theorem name: {error}"
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while getting theorem name: {error}"
   | _ =>
-    IO.throwServerError "Invalid response"
+    throwError "Invalid response"
 
-def proveForFormalization [pipe: LeanAidePipe] (name: Name) (type: Expr) : TermElabM String := do
+def proveForFormalization [pipe: LeanAidePipe] (statement: String) (thm: Expr) : TermElabM String := do
   let req :=
-    Json.mkObj [("task", "prove_for_formalization"), ("name", toString name), ("type", toString type)]
+    Json.mkObj [("task", "prove_for_formalization"), ("text", statement), ("theorem", (← ppExpr thm).pretty)]
   let response ← response req
   match response.getObjValAs? String "result" with
   | .ok "success" =>
@@ -143,31 +143,31 @@ def proveForFormalization [pipe: LeanAidePipe] (name: Name) (type: Expr) : TermE
   | _ =>
     throwError "Invalid response"
 
-def jsonStructured [pipe: LeanAidePipe] (document: String) : IO Json := do
+def jsonStructured [pipe: LeanAidePipe] (document: String) : CoreM Json := do
   let req := Json.mkObj [("task", "json_structured"), ("document", document)]
   let response ← response req
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok json := response.getObjValAs? Json "json" | IO.throwServerError "response has no 'json' field"
+    let .ok json := response.getObjValAs? Json "json" | throwError "response has no 'json' field"
     return json
   | .ok "error" =>
-      let .ok error := response.getObjValAs? String "error" | IO.throwServerError "response has no 'error' field"
-      IO.throwServerError s!"Error while getting structured JSON: {error}"
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while getting structured JSON: {error}"
   | _ =>
-    IO.throwServerError "Invalid response"
+    throwError "Invalid response"
 
 def codeFromJson [pipe: LeanAidePipe] (json: String) : TermElabM (TSyntax ``commandSeq) := do
   let req := Json.mkObj [("task", "lean_from_json_structured"), ("json_structured", json)]
   let response ← response req
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok code := response.getObjValAs? String "lean_code" | IO.throwServerError "response has no 'lean_code' field"
+    let .ok code := response.getObjValAs? String "lean_code" | throwError "response has no 'lean_code' field"
     parseCommands code
   | .ok "error" =>
-      let .ok error := response.getObjValAs? String "error" | IO.throwServerError "response has no 'error' field"
-      IO.throwServerError s!"Error while getting code from JSON: {error}"
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while getting code from JSON: {error}"
   | _ =>
-    IO.throwServerError "Invalid response"
+    throwError "Invalid response"
 
 /-
 structure CodeElabResult where
@@ -197,9 +197,26 @@ def elabCode [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM CodeEl
 
 end LeanAidePipe
 
+instance [LeanAidePipe] : Kernel where
+  translateThm := LeanAidePipe.translateThm
+  translateDef := LeanAidePipe.translateDef
+  theoremDoc := LeanAidePipe.theoremDoc
+  defDoc := LeanAidePipe.defDoc
+  theoremName := LeanAidePipe.theoremName
+  proveForFormalization := LeanAidePipe.proveForFormalization
+  jsonStructured := LeanAidePipe.jsonStructured
+  codeFromJson := LeanAidePipe.codeFromJson
+  elabCode := LeanAidePipe.elabCode
+
 macro "#leanaide_connect" url?:(str)? : command =>
 match url? with
 | some url => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL $url)
 | none => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL "localhost:7654")
+
+def getKernel [k: Kernel] : Kernel := k
+
+def getKernelM : MetaM Kernel := do
+  let inst ←  synthInstance (mkConst ``Kernel)
+  unsafe evalExpr Kernel (mkConst ``Kernel) inst
 
 end LeanAide

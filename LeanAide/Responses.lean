@@ -5,6 +5,7 @@ import LeanAide.TranslatorParams
 import LeanAide.Codegen
 import LeanAide.PaperCodes
 import LeanAide.ResponseExt
+import LeanAideCore.Kernel
 import Lean
 
 namespace LeanAide
@@ -472,5 +473,88 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
         return Json.mkObj [("result", "error"), ("error", s!"error in code elaboration: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no lean code found")]
 
+/--
+Implementation of the `Kernel` class which provides various functionalities such as translating theorems and definitions, generating documentation, naming theorems, proving theorems, converting to and from structured JSON, and elaborating code. This is the "server-side" implementation that uses the `Translator` to perform these tasks.
+
+```lean4
+class Kernel where
+  translateThm : String → TermElabM (Except (Array ElabError) Expr)
+  translateDef : String → TermElabM (Except (Array CmdElabError) Syntax.Command)
+  theoremDoc : Name → Syntax.Command → TermElabM String
+  defDoc : Name → Syntax.Command → TermElabM String
+  theoremName : String → CoreM Name
+  proveForFormalization : Name → Expr → TermElabM String
+  jsonStructured : String → CoreM Json
+  codeFromJson : String → TermElabM (TSyntax ``commandSeq)
+  elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
+```
+-/
+instance kernel : Kernel := {
+  translateThm := fun text => do
+    let translator ← Translator.defaultM
+    let resM? := translator.translateToProp? text
+    let res? ← resM?.run' {}
+    return res?
+  translateDef := fun text => do
+    let translator ← Translator.defaultM
+    let resM? := translator.translateDefCmdM? text
+    let res? ← resM?.run' {}
+    return res?
+  theoremDoc := fun name cmd => do
+    let translator ← Translator.defaultM
+    let cmdStr ← PrettyPrinter.ppCommand cmd
+    let type : Expr ← elabFrontThmExprM cmdStr.pretty name true
+    match ← translator.getTypeDescriptionM type {} with
+      | some (desc, _) =>
+        return desc
+      | none => throwError  s!"no description found for {name} after elaboration of {cmd}"
+
+  defDoc := fun name cmd => do
+    let translator ← Translator.defaultDefM
+    let (type, value) ← elabFrontDefTypeValExprM (← PrettyPrinter.ppCommand cmd).pretty name true
+    match ← translator.getDefDescriptionM type value name {} with
+    | some (desc, _) =>
+      return desc
+    | none => throwError s!"no description found for {name} after elaboration of {cmd}"
+  theoremName := fun text => do
+    let translator ← Translator.defaultM
+    translator.server.theoremName text
+  proveForFormalization := fun text thm => do
+    let translator ← Translator.defaultM
+    let defs := "" -- should search for relevant defs
+    let results ← translator.server.proveForFormalization text (← PrettyPrinter.ppExpr thm).pretty defs 1 translator.params
+    return results[0]?.getD (s!"No document found for {text}")
+  jsonStructured := fun document => do
+    let translator ← Translator.defaultM
+    let jsons ←
+      translator.server.jsonStructured document 1 translator.params
+    match jsons[0]? with
+    | none => throwError "no proof found"
+    | some json => return json
+  codeFromJson := fun jsonStructured => do
+    let translator ← Translator.defaultM
+    let qp := translator.codeGenerator
+    let codeTM := Codegen.getCode qp none ``commandSeq jsonStructured
+    let some codeStx ← codeTM.run' {} |
+      throwError "Did not obtain code"
+    return codeStx
+  elabCode := fun codeStx => do
+    let code ← printCommands codeStx
+    let (exprs, logs) ←  elabFrontDefsNewExprM code
+    let names := exprs.map (fun (n, _) => n)
+    let logs ←  logs.toList.mapM (fun lg => lg.data.format)
+    let logs := logs.map (fun lg => lg.pretty)
+    let mut sorries := #[]
+    let mut sorriesAfterPurge := #[]
+    for (n, e) in exprs do
+      let ss ← getSorryTypes e
+      for type in ss do
+        sorries := sorries.push (n, type)
+      let e' ← purgeLets e
+      let ss' ← getSorryTypes e'
+      for type in ss' do
+        sorriesAfterPurge := sorriesAfterPurge.push (n, type)
+    return {declarations := names, logs := logs, sorries := sorries.toList, sorriesAfterPurge := sorriesAfterPurge.toList}
+}
 
 end LeanAide
