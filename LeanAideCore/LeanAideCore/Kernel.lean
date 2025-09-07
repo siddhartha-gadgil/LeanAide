@@ -30,9 +30,22 @@ class Kernel where
   theoremName : String → CoreM Name
   proveForFormalization : String → Expr → TermElabM String
   jsonStructured : String → CoreM Json
-  codeFromJson : String → TermElabM (TSyntax ``commandSeq)
+  codeFromJson : Json → TermElabM (TSyntax ``commandSeq)
   elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
   mathQuery : String → CoreM (List String)
+
+namespace Kernel
+
+def leanFromDoc [kernel: Kernel] (doc: String) : TermElabM (TSyntax ``commandSeq) := do
+  let json ← kernel.jsonStructured doc
+  codeFromJson json
+
+def proveWithCode [kernel: Kernel] (statement: String) (thm: Expr) :
+    TermElabM (String × (TSyntax ``commandSeq)) := do
+  let doc ← kernel.proveForFormalization statement thm
+  return (doc, ← kernel.leanFromDoc doc)
+
+end Kernel
 
 
 class LeanAidePipe where
@@ -157,7 +170,7 @@ def jsonStructured [pipe: LeanAidePipe] (document: String) : CoreM Json := do
   | _ =>
     throwError "Invalid response"
 
-def codeFromJson [pipe: LeanAidePipe] (json: String) : TermElabM (TSyntax ``commandSeq) := do
+def codeFromJson [pipe: LeanAidePipe] (json: Json) : TermElabM (TSyntax ``commandSeq) := do
   let req := Json.mkObj [("task", "lean_from_json_structured"), ("json_structured", json)]
   let response ← response req
   match response.getObjValAs? String "result" with
