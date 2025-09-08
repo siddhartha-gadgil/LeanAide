@@ -243,14 +243,39 @@ match url? with
 | some url => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL $url)
 | none => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL "localhost:7654")
 
--- #leanaide_connect
-
--- #eval LeanAidePipe.response <| json% {"task": "echo"}
-
 def getKernel [k: Kernel] : Kernel := k
 
 def getKernelM : MetaM Kernel := do
   let inst ←  synthInstance (mkConst ``Kernel)
   unsafe evalExpr Kernel (mkConst ``Kernel) inst
+
+namespace KernelM
+
+def translateThm (text: String) : TermElabM (Except (Array ElabError) Expr) := do
+  (← getKernelM).translateThm text
+
+def translateDef (text: String) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
+  (← getKernelM).translateDef text
+
+def theoremDoc (name: Name) (stx: Syntax.Command) : TermElabM String := do
+  (← getKernelM).theoremDoc name stx
+
+def defDoc (name: Name) (stx: Syntax.Command) : TermElabM String := do
+  (← getKernelM).defDoc name stx
+
+def theoremName (text: String) : MetaM Name := do
+  (← getKernelM).theoremName text
+
+def proveForFormalization (statement: String) (thm: Expr) : TermElabM String := do
+  (← getKernelM).proveForFormalization statement thm
+
+def jsonStructured (document: String) : MetaM Json := do
+  (← getKernelM).jsonStructured document
+
+def codeFromJson (json: Json) : TermElabM (TSyntax ``commandSeq) := do
+  (← getKernelM).codeFromJson json
+
+
+end KernelM
 
 end LeanAide
