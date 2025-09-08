@@ -243,6 +243,10 @@ match url? with
 | some url => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL $url)
 | none => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL "localhost:7654")
 
+-- #leanaide_connect
+
+-- #eval LeanAidePipe.response <| json% {"task": "echo"}
+
 def getKernel [k: Kernel] : Kernel := k
 
 def getKernelM : MetaM Kernel := do
