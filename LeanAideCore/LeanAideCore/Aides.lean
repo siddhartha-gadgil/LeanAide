@@ -347,7 +347,7 @@ def openAIKey : IO String := do
           if (← path.pathExists) then
             return (← IO.FS.readFile path).trim
           else
-            panic! "OPENAI_API_KEY not set"
+            IO.throwServerError "OPENAI_API_KEY not set"
 
 def geminiAPIKey? : IO (Option String) := IO.getEnv "GEMINI_API_KEY"
 
