@@ -286,4 +286,29 @@ def Translator.defaultDefM : CoreM Translator := do
   let t ← defaultM
   return t.forDef
 
+def ElabError.fallback (errs : Array ElabError) :
+    TranslateM String := do
+  let bestParsed? := errs.findSome? (fun e => do
+    match e with
+    | ElabError.parsed e .. => some e
+    | _ => none)
+  match bestParsed? with
+  | some e => return e
+  | none => match errs[0]? with
+    | some e => return e.text
+    | _ => throwError "no outputs found"
+
+def ElabError.fallback? (errs : Array ElabError) :
+    TranslateM (Except (Array ElabError) String) := do
+  let bestParsed? := errs.findSome? (fun e => do
+    match e with
+    | ElabError.parsed e .. => return .ok e
+    | _ => none)
+  match bestParsed? with
+  | some e => return e
+  | none => match errs[0]? with
+    | some e => return .ok e.text
+    | _ => return .error errs
+
+
 end LeanAide

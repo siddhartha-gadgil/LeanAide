@@ -476,10 +476,11 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
 @[response "math_query"]
 def mathQueryTask (data: Json) (translator : Translator) : TranslateM Json := do
   match data.getObjValAs? String "query" with
-  | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no query found: {e}")]
+| Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no query found: {e}")]
   | Except.ok query => do
     try
-      let res ← translator.server.mathCompletions query 1 translator.params
+      let n := data.getObjValAs? Nat "n" |>.toOption |>.getD 1
+      let res ← translator.server.mathCompletions query n translator.params
       return Json.mkObj [("result", "success"), ("answers", toJson res)]
     catch e =>
       return Json.mkObj [("result", "error"), ("error", s!"error in math query: {← e.toMessageData.format}")]
@@ -566,9 +567,9 @@ instance kernel : Kernel := {
       for type in ss' do
         sorriesAfterPurge := sorriesAfterPurge.push (n, type)
     return {declarations := names, logs := logs, sorries := sorries.toList, sorriesAfterPurge := sorriesAfterPurge.toList}
-  mathQuery := fun query => do
+  mathQuery := fun query n => do
     let translator ← Translator.defaultM
-    let res ← translator.server.mathCompletions query 1 translator.params
+    let res ← translator.server.mathCompletions query n translator.params
     return res.toList
 }
 

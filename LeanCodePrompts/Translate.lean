@@ -361,30 +361,6 @@ def jsonToExpr' (json: Json)(greedy: Bool)(splitOutput := false) : TranslateM Ex
   else
     bestElab output
 
-def ElabError.fallback (errs : Array ElabError) :
-    TranslateM String := do
-  let bestParsed? := errs.findSome? (fun e => do
-    match e with
-    | ElabError.parsed e .. => some e
-    | _ => none)
-  match bestParsed? with
-  | some e => return e
-  | none => match errs[0]? with
-    | some e => return e.text
-    | _ => throwError "no outputs found"
-
-def ElabError.fallback? (errs : Array ElabError) :
-    TranslateM (Except (Array ElabError) String) := do
-  let bestParsed? := errs.findSome? (fun e => do
-    match e with
-    | ElabError.parsed e .. => return .ok e
-    | _ => none)
-  match bestParsed? with
-  | some e => return e
-  | none => match errs[0]? with
-    | some e => return .ok e.text
-    | _ => return .error errs
-
 
 /-- given json returned by open-ai obtain the best translation -/
 def jsonToExprFallback (json: Json)(greedy: Bool)(splitOutput := false) : TranslateM <|Except String Expr := do

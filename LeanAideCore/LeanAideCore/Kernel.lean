@@ -33,7 +33,7 @@ class Kernel where
   jsonStructured : String → MetaM Json
   codeFromJson : Json → TermElabM (TSyntax ``commandSeq)
   elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
-  mathQuery : String → MetaM (List String)
+  mathQuery (s: String) (n: Nat := 3) : MetaM (List String)
 
 namespace Kernel
 
@@ -273,8 +273,8 @@ def elabCode [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM CodeEl
   let response ← response req
   elabCodeDecode response
 
-def mathQueryEncode (query: String) : MetaM Json :=
-  return Json.mkObj [("task", "math_query"), ("query", query)]
+def mathQueryEncode (query: String) (n: Nat := 3) : MetaM Json := do
+  return Json.mkObj [("task", "math_query"), ("query", query), ("n", n)]
 
 def mathQueryDecode (response: Json) : MetaM (List String) := do
   match response.getObjValAs? String "result" with
@@ -287,8 +287,8 @@ def mathQueryDecode (response: Json) : MetaM (List String) := do
   | _ =>
     throwError "Invalid response"
 
-def mathQuery [pipe: LeanAidePipe] (query: String) : MetaM (List String) := do
-  let req ← mathQueryEncode query
+def mathQuery [pipe: LeanAidePipe] (query: String) (n: Nat := 3) : MetaM (List String) := do
+  let req ← mathQueryEncode query n
   let response ← response req
   mathQueryDecode response
 
@@ -334,7 +334,7 @@ instance [LeanAidePipe] : Kernel where
   jsonStructured := LeanAidePipe.jsonStructured
   codeFromJson := LeanAidePipe.codeFromJson
   elabCode := LeanAidePipe.elabCode
-  mathQuery := LeanAidePipe.mathQuery
+  mathQuery := fun s n => LeanAidePipe.mathQuery s n
 
 
 macro "#leanaide_connect" url?:(str)? : command =>
@@ -353,8 +353,20 @@ namespace KernelM
 def translateThm (text: String) : TermElabM (Except (Array ElabError) Expr) := do
   (← getKernelM).translateThm text
 
+def translateThmFallback (text: String) : TermElabM <| Except String Expr := do
+  match (← translateThm text) with
+  | .ok e => return .ok e
+  | .error errs =>
+     return .error <| ←  ElabError.fallback errs |>.run' {}
+
 def translateDef (text: String) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
   (← getKernelM).translateDef text
+
+def translateDefFallback (text: String) : TermElabM <| Except String Syntax.Command := do
+  match (← translateDef text) with
+  | .ok e => return .ok e
+  | .error errs =>
+     return .error <| ←  CmdElabError.fallback errs |>.run' {}
 
 def theoremDoc (name: Name) (stx: Syntax.Command) : TermElabM String := do
   (← getKernelM).theoremDoc name stx
@@ -374,6 +386,8 @@ def jsonStructured (document: String) : MetaM Json := do
 def codeFromJson (json: Json) : TermElabM (TSyntax ``commandSeq) := do
   (← getKernelM).codeFromJson json
 
+def mathQuery (s: String) (n: Nat := 3) : MetaM (List String) := do
+  (← getKernelM).mathQuery s n
 
 end KernelM
 
