@@ -475,7 +475,7 @@ def prove (server: ChatServer)
   (thm: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (examples: Array ChatExample := #[]): CoreM (Array String) := do
-  let queryString ← fromTemplate "prove_theorem_for_formalization" [("theorem", thm)]
+  let queryString ← fromTemplate "prove" [("theorem", thm)]
   ChatServer.mathCompletions server queryString n params examples
 
 def proveForFormalization (server: ChatServer)

@@ -2,6 +2,7 @@ import Lean
 import LeanAideCore.Aides
 import LeanAideCore.TranslateM
 import LeanAideCore.Translator
+import LeanAideCore.TaskStatus
 
 
 open Lean Meta Elab Term Parser
@@ -27,12 +28,12 @@ class Kernel where
   translateDef : String → TermElabM (Except (Array CmdElabError) Syntax.Command)
   theoremDoc : Name → Syntax.Command → TermElabM String
   defDoc : Name → Syntax.Command → TermElabM String
-  theoremName : String → CoreM Name
+  theoremName : String → MetaM Name
   proveForFormalization : String → Expr → TermElabM String
-  jsonStructured : String → CoreM Json
+  jsonStructured : String → MetaM Json
   codeFromJson : Json → TermElabM (TSyntax ``commandSeq)
   elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
-  mathQuery : String → CoreM (List String)
+  mathQuery : String → MetaM (List String)
 
 namespace Kernel
 
@@ -47,19 +48,29 @@ def proveWithCode [kernel: Kernel] (statement: String) (thm: Expr) :
 
 end Kernel
 
-universe u
-
-inductive Deferred (α : Type u) where
+inductive Deferred [Monad m][MonadLift MetaM m](α : Type)  where
   | done (result: α)
-  | running (update: Unit → Deferred α) : Deferred α
+  | running
+      (update : Unit → m (Option α)) : Deferred α
 
-def Deferred.update {α} (d: Deferred α) : Deferred α :=
+def Deferred.update [Monad m][MonadLift MetaM m]
+  {α} (d: Deferred (m := m) α) : m (Deferred (m := m) α) :=
   match d with
-  | .done r => .done r
-  | .running u => u ()
+  | .done r => return .done r
+  | .running update => do
+    let result ← update ()
+    match result with
+    | .none => return .running update
+    | .some r => return .done r
+
+def Deferred.updateM [Monad m][MonadLift MetaM m]
+  {α} (dm: m (Deferred (m := m) α)) :
+    m (Deferred (m := m) α)  := do
+  let d ← dm
+  Deferred.update d
 
 class LeanAidePipe where
-  queryResponse : Json → CoreM Json
+  queryResponse : Json → MetaM Json
 
 namespace LeanAidePipe
 
@@ -71,10 +82,10 @@ def fromURL (url: String) : LeanAidePipe := {
     return response
 }
 
-def response [pipe: LeanAidePipe] (req: Json) : CoreM Json :=
+def response [pipe: LeanAidePipe] (req: Json) : MetaM Json :=
   pipe.queryResponse req
 
-def translateThmEncode (text: String) : CoreM Json :=
+def translateThmEncode (text: String) : MetaM Json :=
   return Json.mkObj [("task", "translate_thm"), ("text", text)]
 
 def translateThmDecode (response: Json) : TermElabM (Except (Array ElabError) Expr) := do
@@ -98,7 +109,7 @@ def translateThm [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array 
   let response ← response <| ← translateThmEncode text
   translateThmDecode response
 
-def translateDefEncode (text: String) : CoreM Json :=
+def translateDefEncode (text: String) : MetaM Json :=
   return Json.mkObj [("task", "translate_def"), ("text", text)]
 
 def translateDefDecode (response: Json) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
@@ -122,7 +133,7 @@ def translateDef [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array 
   let response ← response <| ← translateDefEncode text
   translateDefDecode response
 
-def theoremDocEncode (name: Name) (stx: Syntax.Command) : CoreM Json := do
+def theoremDocEncode (name: Name) (stx: Syntax.Command) : MetaM Json := do
   return Json.mkObj [("task", "theorem_doc"), ("name", toString name), ("syntax", (← PrettyPrinter.ppCommand stx).pretty)]
 
 def theoremDocDecode (response: Json) : TermElabM String := do
@@ -141,7 +152,7 @@ def theoremDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermEla
   let response ← response req
   theoremDocDecode response
 
-def defDocEncode (name: Name) (stx: Syntax.Command) : CoreM Json := do
+def defDocEncode (name: Name) (stx: Syntax.Command) : MetaM Json := do
   return Json.mkObj [("task", "def_doc"), ("name", toString name), ("syntax", (← PrettyPrinter.ppCommand stx).pretty)]
 
 def defDocDecode (response: Json) : TermElabM String := do
@@ -160,10 +171,10 @@ def defDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM S
   let response ← response req
   defDocDecode response
 
-def theoremNameEncode (text: String) : CoreM Json :=
+def theoremNameEncode (text: String) : MetaM Json :=
   return Json.mkObj [("task", "theorem_name"), ("text", text)]
 
-def theoremNameDecode (response: Json) : CoreM Name := do
+def theoremNameDecode (response: Json) : MetaM Name := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok nameStr := response.getObjValAs? String "name" | throwError "response has no 'name' field"
@@ -174,7 +185,7 @@ def theoremNameDecode (response: Json) : CoreM Name := do
   | _ =>
     throwError "Invalid response"
 
-def theoremName [pipe: LeanAidePipe] (text: String) : CoreM Name := do
+def theoremName [pipe: LeanAidePipe] (text: String) : MetaM Name := do
   let req ← theoremNameEncode text
   let response ← response req
   theoremNameDecode response
@@ -199,10 +210,10 @@ def proveForFormalization [pipe: LeanAidePipe] (statement: String) (thm: Expr) :
   let response ← response req
   proveForFormalizationDecode response
 
-def jsonStructuredEncode (document: String) : CoreM Json :=
+def jsonStructuredEncode (document: String) : MetaM Json :=
   return Json.mkObj [("task", "json_structured"), ("document", document)]
 
-def jsonStructuredDecode (response: Json) : CoreM Json := do
+def jsonStructuredDecode (response: Json) : MetaM Json := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok json := response.getObjValAs? Json "json" | throwError "response has no 'json' field"
@@ -213,12 +224,12 @@ def jsonStructuredDecode (response: Json) : CoreM Json := do
   | _ =>
     throwError "Invalid response"
 
-def jsonStructured [pipe: LeanAidePipe] (document: String) : CoreM Json := do
+def jsonStructured [pipe: LeanAidePipe] (document: String) : MetaM Json := do
   let req ← jsonStructuredEncode document
   let response ← response req
   jsonStructuredDecode response
 
-def codeFromJsonEncode (json: Json) : CoreM Json :=
+def codeFromJsonEncode (json: Json) : MetaM Json :=
   return Json.mkObj [("task", "lean_from_json_structured"), ("json_structured", json)]
 
 def codeFromJsonDecode (response: Json) : TermElabM (TSyntax ``commandSeq) := do
@@ -244,7 +255,7 @@ structure CodeElabResult where
   sorries : List (Name × Expr)
   sorriesAfterPurge : List (Name × Expr)
 -/
-def elabCodeEncode (stx: TSyntax ``commandSeq) : CoreM Json := do
+def elabCodeEncode (stx: TSyntax ``commandSeq) : MetaM Json := do
   let code ← printCommands stx
   return Json.mkObj [("task", "elaborate"), ("lean_code", code)]
 
@@ -262,10 +273,10 @@ def elabCode [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM CodeEl
   let response ← response req
   elabCodeDecode response
 
-def mathQueryEncode (query: String) : CoreM Json :=
+def mathQueryEncode (query: String) : MetaM Json :=
   return Json.mkObj [("task", "math_query"), ("query", query)]
 
-def mathQueryDecode (response: Json) : CoreM (List String) := do
+def mathQueryDecode (response: Json) : MetaM (List String) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok answers := response.getObjValAs? (List String) "answers" | throwError "response has no 'answers' field"
@@ -276,11 +287,40 @@ def mathQueryDecode (response: Json) : CoreM (List String) := do
   | _ =>
     throwError "Invalid response"
 
-def mathQuery [pipe: LeanAidePipe] (query: String) : CoreM (List String) := do
+def mathQuery [pipe: LeanAidePipe] (query: String) : MetaM (List String) := do
   let req ← mathQueryEncode query
   let response ← response req
   mathQueryDecode response
 
+def updateByToken [pipe: LeanAidePipe] [Monad m]
+    [MonadLift MetaM m][MonadError m] {α}
+    (decode: Json → m α) (token: UInt64) :
+    Unit → m (Option α)  := fun _ => do
+  let req := Json.mkObj [("mode", "lookup"), ("token", toJson token)]
+  let json ← response req
+  let .ok status :=
+    json.getObjValAs? TaskStatus "status" | throwError "response has no 'status' field"
+  match status with
+  | .completed _ result => return some <| ← decode result
+  | .running _ => return none
+
+def queryAsyncAux [pipe: LeanAidePipe]
+    (encode: α → MetaM Json) (input : α)
+    : MetaM UInt64 := do
+  let req ← encode input
+  let req := req.mergeObj (Json.mkObj [("mode", "async")])
+  let json ← response req
+  let .ok token := json.getObjValAs? UInt64 "token" | throwError "response has no 'token' field"
+  return token
+
+def queryAsync [pipe: LeanAidePipe] [Monad m]
+    [MonadLift MetaM m][MonadError m] {α β}
+    (encode: α → MetaM Json)
+    (decode: Json → m β)
+    (input : α) :
+    m (Deferred (m := m) β) := do
+  let token ← queryAsyncAux encode input
+  return .running (updateByToken decode token)
 
 end LeanAidePipe
 
