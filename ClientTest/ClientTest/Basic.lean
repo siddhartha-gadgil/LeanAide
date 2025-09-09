@@ -2,7 +2,7 @@ import LeanAideCore
 import Mathlib
 
 open LeanAide
-
+universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 @[default_instance]
 instance : Add ℤ := inferInstance
 @[default_instance]
@@ -25,3 +25,13 @@ def showDfEg : TermElabM Unit := do
   | .error err => logError m!"Error: {repr err}"
 
 #eval showDfEg
+
+
+
+#theorem silly "If a vector space has dimension `2`, then it is finite dimensional"
+
+#theorem "There are infinitely many odd numbers"
+
+#ask "Prove that there are infinitely many even numbers"
+
+#def "A group is said to be sane if every proper normal subgroup is cyclic"
