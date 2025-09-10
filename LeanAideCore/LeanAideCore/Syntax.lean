@@ -6,11 +6,30 @@ open Lean Meta Elab Term PrettyPrinter Tactic Command Parser
 
 namespace LeanAide
 
-macro doc:docComment "#quote" ppSpace n:ident : command =>
+syntax (name := quoteCommand) docComment "#quote" ppSpace (ident)? ("<|" term ";")? : command
+
+macro_rules
+| `(command|$doc:docComment #quote $n:ident) =>
   let text := doc.raw.reprint.get!
   let text := text.drop 4 |>.dropRight 4
   let textStx := Syntax.mkStrLit text
   `(command| def $n := $textStx)
+| `(command|$doc:docComment #quote) =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  `(command| example := $textStx)
+| `(command|$doc:docComment #quote $n:ident <| $t:term ;) =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  `(command| def $n := $t $textStx)
+| `(command|$doc:docComment #quote <|$t:term ;) =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  `(command| example := $t $textStx)
+
 
 def mkQuoteCmd (doc: String) (name: Name) : CoreM <| Syntax.Command := do
   let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ doc ++ " -/")]

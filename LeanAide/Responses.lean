@@ -310,7 +310,8 @@ Use an LLM to prove a theorem. The input is a JSON object with a `text` field co
 def proveForFormalizationTask (data: Json) (translator : Translator) : TranslateM Json := do
   match data.getObjValAs? String "text", data.getObjValAs? String "theorem" with
   | Except.ok thm, Except.ok statement => do
-    let definitions := data.getObjValAs? String "definitions" |>.toOption.getD "" -- should search for relevant defs
+    let .ok type ← elabThm statement | return Json.mkObj [("result", "error"), ("error", s!"error in elaboration of theorem statement")]
+    let definitions := data.getObjValAs? String "definitions" |>.toOption.getD ((← Meta.defsBlob? type).getD "")
     let docs ← translator.server.proveForFormalization thm statement definitions 1 translator.params
     match docs[0]? with
     | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
