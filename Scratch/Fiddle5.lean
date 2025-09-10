@@ -22,7 +22,7 @@ def HelloWorld : String :=
   "Hello from LeanAideCore!"
 
 open Lean Meta Elab
-elab doc:docComment "#text" n:ident : command =>
+elab doc:docComment "#quote" n:ident : command =>
   Command.liftTermElabM do
   let text := doc.raw.reprint.get!
   let text := text.drop 4 |>.dropRight 4
@@ -34,9 +34,9 @@ elab doc:docComment "#text" n:ident : command =>
 
 Yes, it works, including *emphasis* and **bold**.
 -/
-#text HelloWorld
+#quote HelloWorld
 
-macro doc:docComment "#text" n:ident : command =>
+macro doc:docComment "#quote" n:ident : command =>
   let text := doc.raw.reprint.get!
   let text := text.drop 4 |>.dropRight 4
   let textStx := Syntax.mkStrLit text
@@ -47,7 +47,7 @@ macro doc:docComment "#text" n:ident : command =>
 
 Yes, it works, including *emphasis* and **bold** and live changes.
 -/
-#text HelloW
+#quote HelloW
 
 #eval HelloW
 

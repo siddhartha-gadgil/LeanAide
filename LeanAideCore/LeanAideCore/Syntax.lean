@@ -4,6 +4,22 @@ import LeanAideCore.Kernel
 
 open Lean Meta Elab Term PrettyPrinter Tactic Command Parser
 
+namespace LeanAide
+
+macro doc:docComment "#quote" ppSpace n:ident : command =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  `(command| def $n := $textStx)
+
+def mkQuoteCmd (doc: String) (name: Name) : CoreM <| Syntax.Command := do
+  let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ doc ++ " -/")]
+  let ident := mkIdent name
+  `(command| $docs:docComment #quote $ident)
+
+
+end LeanAide
+
 namespace LeanAide.Meta
 
 syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
@@ -40,7 +56,7 @@ def mkProofStx (s: String) : Syntax :=
   | _ => throwUnsupportedSyntax
 
 
-syntax (name := textCmd) withPosition("#text" ppLine (colGt (str <|> proofBody) )) : command
+syntax (name := quoteCmd) withPosition("#quote" ppLine (colGt (str <|> proofBody) )) : command
 
 syntax (name:= whyTac) "why" : tactic
 
@@ -52,16 +68,13 @@ syntax (name:= addDocs) "#doc" command : command
 syntax (name := askCommand) "#ask" (num)? str : command
 
 
+def mkQuoteStx (s: String) : Syntax.Command :=
+  ⟨mkNode ``quoteCmd #[mkAtom "#quote", mkAtom s, mkAtom "∎"]⟩
 
-
-
-def mkTextStx (s: String) : Syntax :=
-  mkNode ``textCmd #[mkAtom "#text", mkAtom s, mkAtom "∎"]
-
-@[command_elab textCmd] def elabTextCmd : CommandElab :=
+@[command_elab quoteCmd] def elabQuoteCmd : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
-  | `(command| #text $t:proofBodyInit ∎) =>
+  | `(command| #quote $t:proofBodyInit ∎) =>
     -- let s := stx.getArgs[1]!.reprint.get!.trim
     return
   | _ => throwUnsupportedSyntax
@@ -209,10 +222,11 @@ def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) :
       let responses ← KernelM.mathQuery s n
       for r in responses do
         logInfo r
-      let stxs ← responses.mapM fun res =>
+      let stxs ← responses.mapM fun res => do
         let qr := s!"**Query**: {s}\n\n **Response:** {res}"
-        let stx := mkNode ``textCmd #[mkAtom "#text", mkAtom qr, mkAtom "∎"]
-        ppCategory ``textCmd stx
+        let res := s!"response_{hash s}" |>.toName
+        let stx ←  mkQuoteCmd qr res
+        ppCommand stx
       let stxs : List TryThis.Suggestion :=
         stxs.map fun stx => stx.pretty
       TryThis.addSuggestions stx <| stxs.toArray
@@ -266,6 +280,8 @@ end LeanAide.Meta
 
 namespace LeanAide
 
+open Meta
+
 declare_syntax_cat theorem_head
 syntax "theorem" : theorem_head
 syntax "def" : theorem_head
@@ -286,16 +302,6 @@ syntax (name := codegenCmd) "#codegen" ppSpace term : command
 macro "#codegen" source:json : command =>
   `(command| #codegen json% $source)
 
-macro doc:docComment "#text" ppSpace n:ident : command =>
-  let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
-  let textStx := Syntax.mkStrLit text
-  `(command| def $n := $textStx)
-
-def mkTextCmd (doc: String) (name: Name) : CoreM <| Syntax.Command := do
-  let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (doc ++ " -/")]
-  let ident := mkIdent name
-  `(command| $docs:docComment #text $ident)
 
 declare_syntax_cat filepath
 syntax str : filepath
@@ -329,7 +335,7 @@ syntax (name:= loadFile) "#load_file" (ppSpace ident)? (ppSpace filepath)? : com
         return
     let content := "\n" ++ content.trim ++ "\n"
     let name := id.getId
-    let textCmd ← mkTextCmd content name
+    let textCmd ← mkQuoteCmd content name
     TryThis.addSuggestion (header := "Load source:\n") stx textCmd
   | `(command| #load_file $file:filepath) =>
     let filePath : System.FilePath := filePath file
@@ -350,7 +356,7 @@ syntax (name:= loadFile) "#load_file" (ppSpace ident)? (ppSpace filepath)? : com
         return
     let content := "\n" ++ content.trim ++ "\n"
     let name := filePath.fileName.getD "source"
-    let textCmd ← mkTextCmd content name.toName
+    let textCmd ← mkQuoteCmd content name.toName
     TryThis.addSuggestion (header := "Load source:\n") stx textCmd
   | `(command| #load_file $id:ident) =>
     let filePath : System.FilePath := "."
