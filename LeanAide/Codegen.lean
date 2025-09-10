@@ -359,7 +359,8 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
 end Codegen
 
 open Command Elab Term Tactic Codegen
-@[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab
+-- @[command_elab codegenCmd]
+def elabCodegenCmdImpl' : CommandElab
 | stx@`(command| #codegen $s:term) =>
   Command.liftTermElabM do
   withoutModifyingEnv do

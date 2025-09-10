@@ -1,5 +1,6 @@
 import LeanAide
 import LeanAideCore.Syntax
+import LeanAide.Responses
 import Lean
 import Qq
 

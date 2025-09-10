@@ -321,6 +321,19 @@ syntax (name := codegenCmd) "#codegen" ppSpace term : command
 macro "#codegen" source:json : command =>
   `(command| #codegen json% $source)
 
+open Command Elab Term Meta in
+@[command_elab codegenCmd] def elabCodegenCmdImpl : CommandElab
+| stx@`(command| #codegen $s:term) =>
+  Command.liftTermElabM do
+  withoutModifyingEnv do
+    let sourceTerm ←  Term.elabTerm s (mkConst ``Json)
+    let sourceJson ←  unsafe evalExpr Json (mkConst ``Json) sourceTerm
+    let code ←
+      KernelM.codeFromJson sourceJson |>.run' {}
+    TryThis.addSuggestion stx code
+| _ => throwUnsupportedSyntax
+
+
 
 declare_syntax_cat filepath
 syntax str : filepath
