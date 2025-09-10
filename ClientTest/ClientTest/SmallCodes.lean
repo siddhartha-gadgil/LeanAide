@@ -1,4 +1,6 @@
-import LeanAide
+import LeanAideCore
+import LeanAideCore.Kernel
+import Mathlib
 
 open LeanAide Lean -- Meta Elab Parser Tactic
 set_option linter.unusedTactic false
@@ -6,6 +8,8 @@ set_option linter.unusedTactic false
 open Nat
 
 namespace LeanAideTest.SmallCodes
+
+open LeanAide
 
 def eg₁ : Json := json% {
   "document" : [
@@ -30,6 +34,8 @@ def eg₁ : Json := json% {
       {"lean": "example : 0 < 42 := fortyTwoPos"}
       ]
     }
+
+#leanaide_connect
 
 #codegen eg₁
 
