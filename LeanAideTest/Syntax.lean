@@ -11,7 +11,7 @@ This is the basic form of the quote command syntax
 -/
 #quote test_quote
 
-#eval test_quote
+#eval test_quote -- "## Testing Quote Command\n\nThis is the basic form of the quote command syntax"
 
 /--
 Quote command *without* identifier
