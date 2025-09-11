@@ -1,4 +1,3 @@
-import urllib
 import json
 
 import requests
@@ -43,7 +42,7 @@ with st.expander("Load input Conversation from JSON"):
             json_data = json.load(uploaded_file)
             sts.val_input = json_data["input"]
             sts.task_tbd = json_data["tasks"]
-            sts.temp_structured_json = json_data["input"]["json_structured"] if "json_structured" in json_data["input"] else {}
+            sts.temp_structured_json = json_data["input"]["document_json"] if "document_json" in json_data["input"] else {}
             sts.proof = json_data.get("proof", "")
             sts.theorem = json_data.get("theorem", "")
             sts.self_input_button = True
@@ -74,7 +73,7 @@ st.subheader("Structured Input: Select Tasks", help = "Select the tasks you want
 
 sts._task_tbd = sts.task_tbd
 # list of tasks, each task has "name" field. use that
-st.multiselect("Select task(s) to be performed:", list(reversed(list(TASKS.keys()))), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", key = "_task_tbd", on_change=lambda: setattr(sts, "task_tbd", sts._task_tbd))
+st.multiselect("Select task(s) to be performed:", list(reversed([task for task in TASKS.keys() if TASKS[task].get("commonly_used", False)])), help = "Select the tasks to be performed by the backend server. You can select multiple tasks.", key = "_task_tbd", on_change=lambda: setattr(sts, "task_tbd", sts._task_tbd))
 sts.selected_tasks = sts.task_tbd
 
 ## Multiselect box color set
@@ -89,82 +88,139 @@ span[data-baseweb="tag"] {
 </style>
 
 """, unsafe_allow_html=True)
-
-if st.button("Build Query", help = "Provide inputs to the your selected tasks. Note: It is not compulsary to fill all of them.", type = "primary") or sts.self_input_button:
+if sts.self_input_button or sts.selected_tasks:
     sts.self_input_button = True
-    for task in sts.selected_tasks:
+    
+    for task in sts.selected_tasks: 
         # Get input for each task
-        for key, val_type in TASKS[task].get("input",{}).items():
-            help = f"Please provide input for `{key}` of type `{val_type}`."
-            # Special case for input being "json_structured"
-            if key.lower() == "json_structured":
-                help += " Just paste your `json` object here."
+        for key, val_type in TASKS[task].get("input", {}).items():
+            help_text = f"Please provide input for `{key}` of type `{val_type}`."
+            
+            # Special case for input being "document_json"
+            if key.lower() == "document_json":
+                help_text += " Just paste your `json` object here."
                 
-                jsbtn, clbtn = st.columns([1, 1])
-                with jsbtn:
-                    if st.button("Use Structured JSON generated", help = "Use the structured JSON generated in the `Structured Json` page of LeanAide website.", key = f"use_structured_json_{task}"):
+                col1, col2 = st.columns([1, 2])
+                with col1:
+                    if st.button(
+                        "Input JSON Yourself", 
+                        help="Input your own JSON object for structured input.", 
+                        key=f"input_json_{task}"
+                    ):
+                        sts.temp_structured_json = sts.temp_structured_json or ""
+                        
+                with col2:
+                    if st.button(
+                        "Use Generated Structured JSON", 
+                        help="Use the structured JSON generated in the 'Structured Json' page of LeanAide website.", 
+                        key=f"use_structured_json_{task}"
+                    ):
                         if structured_json := sts.get("structured_proof", {}):
                             sts.temp_structured_json = structured_json 
                         else:
                             st.warning("No structured JSON found. Please generate it first in the 'Structured Json' page.")
-                with clbtn:
-                    if st.button("Clear Current Query", help = "Clear the current query and start fresh."):
-                        sts.temp_structured_json = ""
-                        sts.val_input = {}
- 
-                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value'}", value = sts.temp_structured_json)
-                sts.temp_structured_json = val_in  # Store the structured JSON input
 
-            # Other cases for input
-            elif "json" in key.lower() and key.lower() != "json_structured":
-                help += " Just paste your `json` object here."
-                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, placeholder = "{'key': 'value', etc}", value = sts.val_input.get(key, "")) 
+                val_in = st.text_area(
+                    f"{task.capitalize()} - {key} ({val_type}):", 
+                    help=help_text, 
+                    placeholder="{'key': 'value'}", 
+                    value=sts.temp_structured_json,
+                    height=150
+                )
+                sts.temp_structured_json = val_in
+
+            # Other JSON inputs
+            elif "json" in key.lower() and key.lower() != "document_json":
+                help_text += " Just paste your `json` object here."
+                val_in = st.text_area(
+                    f"{task.capitalize()} - {key} ({val_type}):", 
+                    help=help_text, 
+                    placeholder="{'key': 'value', etc}", 
+                    value=sts.val_input.get(key, ""),
+                    height=120
+                )
+            
+            # Text inputs
             else:
-                val_in = st.text_area(f"{task.capitalize()} - {key} ({val_type}):", help = help, value = sts.val_input.get(key, ""))
+                val_in = st.text_area(
+                    f"{task.capitalize()} - {key} ({val_type}):", 
+                    help=help_text, 
+                    value=sts.val_input.get(key, ""),
+                    height=100
+                )
 
+            # Clean lean code if needed
             if key.lower() == "lean_code":
-                val_in = lean_code_cleanup(val_in, elaborate=True) # Elaborate does not take "import" statements
+                val_in = lean_code_cleanup(val_in, elaborate=True)
 
+            # Process input value
             if str(val_in).strip() == "":
                 sts.val_input[key] = None
-            ## Put input value in session state
-            if val_in:
+            elif val_in:
                 inp_type, sts.val_input[key] = get_actual_input(val_in)
                 if validate_input_type(inp_type, val_type):
                     sts.valid_input = True
                 else:
-                    st.warning(
-                        f"Invalid input type for {key}. Expected `{val_type}`, got `{inp_type.__name__}`. See help for each input for more info. Please try again."
+                    st.error(
+                        f"Invalid input type for `{key}`. Expected `{val_type}`, got `{inp_type.__name__}`. "
+                        f"See help for each input for more info."
                     )
                     sts.valid_input = False
                     sts.val_input[key] = None
 
-        # Parameters for each task
-        for param, param_type in TASKS[task].get("parameters", {}).items():
-            if "boolean" in param_type.lower() or "bool" in param_type.lower():
-                sts.valid_input = True
-
-                # Checked for True, Unchecked for False
-                default_val = True if "true" in param_type.lower() else False
-                sts.val_input[param] = default_val
-                checkbox_state = st.checkbox(
-                    f"{task.capitalize()} - {param} (Boolean)",
-                    help="Checked box: `True`, Unchecked box: `False`",
-                    value=default_val
-                )
-                sts.val_input[param] = checkbox_state
-            else:
-                help = f"Please provide a value for `{param}` of type `{param_type}`. If you want to skip this parameter, just leave it unchecked."
-                if param_in := st.text_input(f"{task.capitalize()} - {param} ({param_type}):", help=help):
-                    sts.val_input[param] = param_in
+        # Parameters section for each task
+        parameters = TASKS[task].get("parameters", {})
+        if parameters: 
+            for param, param_type in parameters.items():
+                if "boolean" in param_type.lower() or "bool" in param_type.lower():
                     sts.valid_input = True
+                    default_val = "true" in param_type.lower()
+                    
+                    checkbox_state = st.checkbox(
+                        f"{task.capitalize()} - {param} (Boolean)",
+                        help="Checked: `True`, Unchecked: `False`",
+                        value=default_val
+                    )
+                    sts.val_input[param] = checkbox_state
+                    
+                else:
+                    help_text = (
+                        f"Please provide a value for `{param}` of type `{param_type}`. "
+                        f"Leave empty to use default value."
+                    )
+                    
+                    param_input = st.text_input(
+                        f"{task.capitalize()} - {param} ({param_type}):", 
+                        help=help_text
+                    )
+                    
+                    if param_input:
+                        sts.val_input[param] = param_input
+                        sts.valid_input = True
 
+    # Control buttons
+    st.divider()
+    
+    if st.button("🗑️ Clear Current Query", help="Clear the current query and start fresh."):
+        sts.val_input = {}
+        sts.temp_structured_json = ""
+        st.success("Query cleared successfully!")
+        st.rerun()
+
+    # Display query results
     if sts.valid_input:
-        st.subheader("Query Obtained", help = "Note that default values will be used for any parameters that you did not provide input for.")
-        # Remove the values in val_input that are empty strings or None
-        sts.val_input = {k: v for k, v in sts.val_input.items() if v not in ["", None]}
-        st.json(sts.val_input)
+        st.subheader("Query Obtained", divider=True, help="Default values will be used for any parameters not provided.")
+        
+        # Clean up empty values
+        if sts.val_input:
+            sts.val_input = {k: v for k, v in sts.val_input.items() if v not in ["", None]}
+        
+        with st.container():
+            st.success("Query successfully validated!")
+            st.json(sts.val_input, expanded=True)
+            
         log_write("Streamlit", "Query Obtained: Success")
+
 
 st.write("")
 # Show Response function
