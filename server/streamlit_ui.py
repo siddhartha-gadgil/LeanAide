@@ -3,6 +3,25 @@ from streamlit import session_state as sts
 from llm_response import get_supported_models, provider_info
 from logging_utils import post_env_args
 from api_server import HOST, PORT
+import subprocess
+import os
+
+def get_git_commit_info():
+    """Get current git commit information"""
+    try:
+        sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=os.getcwd()).decode('utf-8').strip()
+        branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], cwd=os.getcwd()).decode('utf-8').strip()
+        repository = subprocess.check_output(['git', 'config', 'remote.origin.url'], cwd=os.getcwd()).decode('utf-8').strip().strip(".git")
+        html_url = f"{repository}/commit/{sha}"
+
+        return {
+            'sha': sha,
+            'branch': branch,
+            'html_url': html_url
+        }
+    except Exception:
+        return None
+
 # Initialize session state variables
 # Global variables for session state initialization
 
@@ -158,6 +177,13 @@ with st.sidebar:
 
     st.divider()
     st.warning("The Website is Under Development.")
+
+    # Mention the commit(with link) and branch which the code refers to, by getting it
+    commit_info = get_git_commit_info()
+    if commit_info:
+        st.info(f"Latest Build: [{commit_info['sha'][:7]}]({commit_info['html_url']})")
+    else:
+        st.warning("Error: Could not fetch commit details.")
 
     with st.expander("Other LeanAide Settings", expanded=False):
         st.info("These are side default settings, you may safely ignore them. More settings on top-right 3-dot menu.")
