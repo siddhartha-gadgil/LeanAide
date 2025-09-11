@@ -31,20 +31,20 @@ TASKS = {
     },
     "Documentation for a Theorem": {
         "task_name": "theorem_doc",
-        "input": {"name": "String", "command": "String"},
-        "output": {"doc": "String"},
+        "input": {"theorem_name": "String", "theorem_statement": "String"},
+        "output": {"theorem_doc": "String"},
         "commonly_used": False,
     },
     "Documentation for a Definition": {
         "task_name": "def_doc",
-        "input": {"name": "String", "command": "String"},
-        "output": {"doc": "String"},
+        "input": {"definition_name": "String", "definition_code": "String"},
+        "output": {"definition_doc": "String"},
         "commonly_used": False,
     },
     "Translate Theorem": {
         "task_name": "translate_thm",
-        "input": {"text": "String"},
-        "output": {"theorem": "String"},
+        "input": {"theorem_text": "String"},
+        "output": {"theorem_code": "String"},
         "parameters": {
             "greedy": "Bool (default: true)",
             "fallback": "Bool (default: true)",
@@ -53,31 +53,31 @@ TASKS = {
     },
     "Translate Definition": {
         "task_name": "translate_def",
-        "input": {"text": "String"},
-        "output": {"definition": "String"},
+        "input": {"definition_text": "String"},
+        "output": {"definition_code": "String"},
         "parameters": {"fallback": "Bool (default: true)"},
         "commonly_used": False,
     },
     "Theorem Name": {
         "task_name": "theorem_name",
-        "input": {"text": "String"},
-        "output": {"name": "String"},
+        "input": {"theorem_text": "String"},
+        "output": {"theorem_name": "String"},
         "commonly_used": False,
     },
     "Prove": {
         "task_name": "prove",
-        "input": {"theorem": "String"},
-        "output": {"proof": "String"},
+        "input": {"theorem_text": "String"},
+        "output": {"proof_text": "String"},
         "commonly_used": False,
     },
     "Translate Theorem Detailed": {
         "task_name": "translate_thm_detailed",
-        "input": {"text": "String"},
+        "input": {"theorem_text": "String"},
         "output": {
-            "theorem": "String",
-            "name": "String",
+            "theorem_code": "String",
+            "theorem_name": "String",
             "proved": "Bool",
-            "statement": "String",
+            "theorem_statement": "String",
             "definitions_used": "String"
         },
         "parameters": {
@@ -88,13 +88,13 @@ TASKS = {
     },
     "Structured JSON Proof": {
         "task_name": "structured_json_proof",
-        "input": {"theorem": "String", "proof": "String"},
-        "output": {"json_structured": "Json"},
+        "input": {"theorem_text": "String", "proof_text": "String"},
+        "output": {"document_json": "Json"},
         "commonly_used": False,
     },
     "Elaborate Lean Code": {
         "task_name": "elaborate",
-        "input": {"lean_code": "String", "declarations": "List Name"},
+        "input": {"document_code": "String", "declarations": "List Name"},
         "output": {"logs": "List String", "sorries": "List Json"},
         "parameters": {
             "top_code": 'String (default: "")',
@@ -104,9 +104,9 @@ TASKS = {
     },
     "Lean from JSON Structured": {
         "task_name": "lean_from_json_structured",
-        "input": {"json_structured": "Json"},
+        "input": {"document_json": "Json"},
         "output": {
-            "lean_code": "String",
+            "document_code": "String",
             "declarations": "List String",
             "top_code": "String",
         },

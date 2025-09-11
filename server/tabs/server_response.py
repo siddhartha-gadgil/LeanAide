@@ -42,7 +42,7 @@ with st.expander("Load input Conversation from JSON"):
             json_data = json.load(uploaded_file)
             sts.val_input = json_data["input"]
             sts.task_tbd = json_data["tasks"]
-            sts.temp_structured_json = json_data["input"]["json_structured"] if "json_structured" in json_data["input"] else {}
+            sts.temp_structured_json = json_data["input"]["document_json"] if "document_json" in json_data["input"] else {}
             sts.proof = json_data.get("proof", "")
             sts.theorem = json_data.get("theorem", "")
             sts.self_input_button = True
@@ -96,8 +96,8 @@ if sts.self_input_button or sts.selected_tasks:
         for key, val_type in TASKS[task].get("input", {}).items():
             help_text = f"Please provide input for `{key}` of type `{val_type}`."
             
-            # Special case for input being "json_structured"
-            if key.lower() == "json_structured":
+            # Special case for input being "document_json"
+            if key.lower() == "document_json":
                 help_text += " Just paste your `json` object here."
                 
                 col1, col2 = st.columns([1, 2])
@@ -130,7 +130,7 @@ if sts.self_input_button or sts.selected_tasks:
                 sts.temp_structured_json = val_in
 
             # Other JSON inputs
-            elif "json" in key.lower() and key.lower() != "json_structured":
+            elif "json" in key.lower() and key.lower() != "document_json":
                 help_text += " Just paste your `json` object here."
                 val_in = st.text_area(
                     f"{task.capitalize()} - {key} ({val_type}):", 
