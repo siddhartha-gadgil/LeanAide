@@ -93,22 +93,6 @@ def describeTheoremPrompt (name: Name) :
       return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
       statement)
 
-def defsBlob? (type: Expr) : MetaM <| Option String := do
-  let dfns ← defsInExpr type
-  if dfns.isEmpty then return none
-  else
-    let defsStrs ← dfns.filterMapM fun n => do
-      let info ← getConstInfo n
-      let doc? ← findDocString? (← getEnv) n
-      match doc? with
-      | some doc =>
-        let value? ← info.value?.mapM fun e => PrettyPrinter.delab e
-        pure <| some <| ←  mkStatementWithDoc n
-          (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
-      | none =>
-        mkStatement n (← PrettyPrinter.delab info.type) none false
-    return some <| defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-
 def describeAnonymousTheoremPrompt (type: Expr) :
     MetaM <| Option (String × String × Option String) := do
   let typeStx ← PrettyPrinter.delab type
@@ -403,7 +387,7 @@ def lemmaUserPrompt (name: Name)(thm description: String) :
 
 
 def lemmaChatExamples (name: Name)(description: String) : MetaM <|
-  Option (Array ChatExample) := do
+  Option (Array ChatPair) := do
   let env ← getEnv
   let info? := env.find? name
   match info? with
@@ -420,13 +404,13 @@ def lemmaChatExamples (name: Name)(description: String) : MetaM <|
     | _ => return none
 
 def allLemmaChatExamples (pairs: List (Name × String)) : MetaM <|
-  Array ChatExample := do
+  Array ChatPair := do
   let examples ← pairs.filterMapM fun (name, desc) =>
     lemmaChatExamples name desc
   return examples.foldl (init := #[]) (· ++ ·)
 
 def selectedChatExamples (n: Nat) (pairs: List (Name × String)) : MetaM <|
-  List ChatExample := do
+  List ChatPair := do
   let examples ← allLemmaChatExamples pairs
   List.range n |>.mapM fun _ => do
     let i ← IO.rand 0 (examples.size - 1)

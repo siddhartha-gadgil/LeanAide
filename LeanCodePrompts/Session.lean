@@ -314,7 +314,7 @@ def addDefByName (name: Name)(doc? : Option String := none) : SessionM Unit := d
 
 def chatQuery (queryString: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatExample := #[]) : SessionM (Array String) := do
+  (examples: Array ChatPair := #[]) : SessionM (Array String) := do
   unless queryString.endsWith "." || queryString.endsWith "?" do
     say "Query should end with a full stop or question mark" `chatQuery
     return #[]

@@ -1,4 +1,5 @@
 import Lean
+import LeanAideCore.Aides
 
 open Lean Meta Elab Parser PrettyPrinter
 
@@ -99,3 +100,19 @@ def mkStatementWithDoc (name?: Option Name)(type: Syntax.Term)
     let stx ← mkStatementWithDocStx name? type value? isProp useExample doc (isNoncomputable := isNoncomputable)
     let fmt ← ppCategory `command stx
     return fmt.pretty
+
+def defsBlob? (type: Expr) : MetaM <| Option String := do
+  let dfns ← defsInExpr type
+  if dfns.isEmpty then return none
+  else
+    let defsStrs ← dfns.filterMapM fun n => do
+      let info ← getConstInfo n
+      let doc? ← findDocString? (← getEnv) n
+      match doc? with
+      | some doc =>
+        let value? ← info.value?.mapM fun e => PrettyPrinter.delab e
+        pure <| some <| ←  mkStatementWithDoc n
+          (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
+      | none =>
+        mkStatement n (← PrettyPrinter.delab info.type) none false
+    return some <| defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""

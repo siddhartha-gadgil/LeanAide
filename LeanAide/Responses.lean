@@ -164,7 +164,7 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
         else
           return Json.mkObj [("result", "error"), ("errors", toJson es)]
       | Except.ok translation => do
-        let defs ← Meta.defsBlob? translation
+        let defs ← defsBlob? translation
         let typeStx ← delabDetailed translation
         let thmFmt ← PrettyPrinter.ppExpr translation
         let pf? ←
@@ -305,7 +305,7 @@ def proveForFormalizationTask (data: Json) (translator : Translator) : Translate
   match data.getObjValAs? String "theorem_text", data.getObjValAs? String "theorem_code" with
   | Except.ok thm, Except.ok statement => do
     let .ok type ← elabThm statement | return Json.mkObj [("result", "error"), ("error", s!"error in elaboration of theorem statement")]
-    let definitions := data.getObjValAs? String "definitions" |>.toOption.getD ((← Meta.defsBlob? type).getD "")
+    let definitions := data.getObjValAs? String "definitions" |>.toOption.getD ((← defsBlob? type).getD "")
     let docs ← translator.server.proveForFormalization thm statement definitions 1 translator.params
     match docs[0]? with
     | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
@@ -428,7 +428,7 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
               match desc with
               | some (desc, _) =>
                 let res := res.mergeObj <| Json.mkObj [("sorry_description", desc)]
-                let defs ← Meta.defsBlob? expr
+                let defs ← defsBlob? expr
                 let typeStx ← delabDetailed expr
                 let thmFmt ← PrettyPrinter.ppExpr expr
                 let pf? ←
@@ -528,7 +528,7 @@ instance kernel : Kernel := {
     translator.server.theoremName text
   proveForFormalization := fun text thm => do
     let translator ← Translator.defaultM
-    let defs := (←  Meta.defsBlob? thm).getD ""
+    let defs := (←  defsBlob? thm).getD ""
     let results ← translator.server.proveForFormalization text (← PrettyPrinter.ppExpr thm).pretty defs 1 translator.params
     return results[0]?.getD (s!"No document found for {text}")
   jsonStructured := fun document => do
