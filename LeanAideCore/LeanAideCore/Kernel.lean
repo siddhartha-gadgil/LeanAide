@@ -86,16 +86,16 @@ def response [pipe: LeanAidePipe] (req: Json) : MetaM Json :=
   pipe.queryResponse req
 
 def translateThmEncode (text: String) : MetaM Json :=
-  return Json.mkObj [("task", "translate_thm"), ("text", text)]
+  return Json.mkObj [("task", "translate_thm"), ("theorem_text", text)]
 
 def translateThmDecode (response: Json) : TermElabM (Except (Array ElabError) Expr) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok thmTxt := response.getObjValAs? String "theorem" | throwError "response has no 'theorem' field"
-    match runParserCategory (← getEnv) `term thmTxt with
+    let .ok thmCodeTxt := response.getObjValAs? String "theorem_code" | throwError "response has no 'theorem_code' field"
+    match runParserCategory (← getEnv) `term thmCodeTxt with
     | .ok stx =>
         return .ok <| ← elabTerm stx none
-    | .error e => throwError s!"Error while parsing {thmTxt} : {e}"
+    | .error e => throwError s!"Error while parsing {thmCodeTxt} : {e}"
   | .ok "failure" =>
       let .ok outputs := response.getObjValAs? (Array ElabError) "outputs" | throwError "response has no 'outputs' field"
       return .error outputs
@@ -110,16 +110,16 @@ def translateThm [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array 
   translateThmDecode response
 
 def translateDefEncode (text: String) : MetaM Json :=
-  return Json.mkObj [("task", "translate_def"), ("text", text)]
+  return Json.mkObj [("task", "translate_def"), ("definition_text", text)]
 
 def translateDefDecode (response: Json) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok defTxt := response.getObjValAs? String "definition" | throwError "response has no 'definition' field"
-    match runParserCategory (← getEnv) `command defTxt with
+    let .ok defCodeTxt := response.getObjValAs? String "definition_code" | throwError "response has no 'definition_code' field"
+    match runParserCategory (← getEnv) `command defCodeTxt with
     | .ok stx =>
         return .ok ⟨stx⟩
-    | .error e => throwError s!"Error while parsing {defTxt} : {e}"
+    | .error e => throwError s!"Error while parsing {defCodeTxt} : {e}"
   | .ok "failure" =>
       let .ok outputs := response.getObjValAs? (Array CmdElabError) "outputs" | throwError "response has no 'outputs' field"
       return .error outputs
@@ -134,12 +134,12 @@ def translateDef [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array 
   translateDefDecode response
 
 def theoremDocEncode (name: Name) (stx: Syntax.Command) : MetaM Json := do
-  return Json.mkObj [("task", "theorem_doc"), ("name", toString name), ("syntax", (← PrettyPrinter.ppCommand stx).pretty)]
+  return Json.mkObj [("task", "theorem_doc"), ("theorem_name", toString name), ("theorem_statement", (← PrettyPrinter.ppCommand stx).pretty)]
 
 def theoremDocDecode (response: Json) : TermElabM String := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok doc := response.getObjValAs? String "doc" | throwError "response has no 'doc' field"
+    let .ok doc := response.getObjValAs? String "theorem_doc" | throwError "response has no 'theorem_doc' field"
     return doc
   | .ok "error" =>
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
@@ -153,7 +153,7 @@ def theoremDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermEla
   theoremDocDecode response
 
 def defDocEncode (name: Name) (stx: Syntax.Command) : MetaM Json := do
-  return Json.mkObj [("task", "def_doc"), ("name", toString name), ("syntax", (← PrettyPrinter.ppCommand stx).pretty)]
+  return Json.mkObj [("task", "def_doc"), ("definition_name", toString name), ("definition_code", (← PrettyPrinter.ppCommand stx).pretty)]
 
 def defDocDecode (response: Json) : TermElabM String := do
   match response.getObjValAs? String "result" with
@@ -172,12 +172,12 @@ def defDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM S
   defDocDecode response
 
 def theoremNameEncode (text: String) : MetaM Json :=
-  return Json.mkObj [("task", "theorem_name"), ("text", text)]
+  return Json.mkObj [("task", "theorem_name"), ("theorem_text", text)]
 
 def theoremNameDecode (response: Json) : MetaM Name := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok nameStr := response.getObjValAs? String "name" | throwError "response has no 'name' field"
+    let .ok nameStr := response.getObjValAs? String "theorem_name" | throwError "response has no 'theorem_name' field"
     return Name.mkStr Name.anonymous nameStr
   | .ok "error" =>
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
@@ -190,13 +190,13 @@ def theoremName [pipe: LeanAidePipe] (text: String) : MetaM Name := do
   let response ← response req
   theoremNameDecode response
 
-def proveForFormalizationEncode (statement: String) (thm: Expr) : MetaM Json := do
-  return Json.mkObj [("task", "prove_for_formalization"), ("text", statement), ("theorem", (← ppExpr thm).pretty)]
+def proveForFormalizationEncode (theoremText: String) (theoremCode: Expr) : MetaM Json := do
+  return Json.mkObj [("task", "prove_for_formalization"), ("theorem_text", theoremText), ("theorem_code", (← ppExpr theoremCode).pretty)]
 
 def proveForFormalizationDecode (response: Json) : TermElabM String := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok proof := response.getObjValAs? String "document" | throwError "response has no 'document' field"
+    let .ok proof := response.getObjValAs? String "document_text" | throwError "response has no 'document_text' field"
     return proof
   | .ok "error" =>
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
@@ -205,18 +205,18 @@ def proveForFormalizationDecode (response: Json) : TermElabM String := do
     throwError "Invalid response"
 
 
-def proveForFormalization [pipe: LeanAidePipe] (statement: String) (thm: Expr) : TermElabM String := do
-  let req ← proveForFormalizationEncode statement thm
+def proveForFormalization [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) : TermElabM String := do
+  let req ← proveForFormalizationEncode theoremText theoremCode
   let response ← response req
   proveForFormalizationDecode response
 
 def jsonStructuredEncode (document: String) : MetaM Json :=
-  return Json.mkObj [("task", "json_structured"), ("document", document)]
+  return Json.mkObj [("task", "json_structured"), ("document_text", document)]
 
 def jsonStructuredDecode (response: Json) : MetaM Json := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok json := response.getObjValAs? Json "json" | throwError "response has no 'json' field"
+    let .ok json := response.getObjValAs? Json "document_json" | throwError "response has no 'document_json' field"
     return json
   | .ok "error" =>
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
@@ -230,12 +230,12 @@ def jsonStructured [pipe: LeanAidePipe] (document: String) : MetaM Json := do
   jsonStructuredDecode response
 
 def codeFromJsonEncode (json: Json) : MetaM Json :=
-  return Json.mkObj [("task", "lean_from_json_structured"), ("json_structured", json)]
+  return Json.mkObj [("task", "lean_from_json_structured"), ("document_json", json)]
 
 def codeFromJsonDecode (response: Json) : TermElabM (TSyntax ``commandSeq) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok code := response.getObjValAs? String "lean_code" | throwError "response has no 'lean_code' field"
+    let .ok code := response.getObjValAs? String "document_code" | throwError "response has no 'document_code' field"
     parseCommands code
   | .ok "error" =>
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
@@ -257,7 +257,7 @@ structure CodeElabResult where
 -/
 def elabCodeEncode (stx: TSyntax ``commandSeq) : MetaM Json := do
   let code ← printCommands stx
-  return Json.mkObj [("task", "elaborate"), ("lean_code", code)]
+  return Json.mkObj [("task", "elaborate"), ("document_code", code)]
 
 def elabCodeDecode (response: Json) : TermElabM CodeElabResult := do
   let .ok decls := response.getObjValAs? (List Name) "declarations" | throwError "response has no 'declarations' field"

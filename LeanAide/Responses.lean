@@ -119,8 +119,8 @@ The input is a JSON object with a `text` field containing the theorem text, and 
 def translateThmTask (data: Json) (translator : Translator) : TranslateM Json := do
     let fallback :=
       data.getObjValAs? Bool "fallback" |>.toOption |>.getD true
-    match data.getObjValAs? String "text" with
-    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
+    match data.getObjValAs? String "theorem_text" with
+    | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no 'theorem_text' found: {e}")]
     | Except.ok text => do
       let greedy :=
         data.getObjValAs? Bool "greedy" |>.toOption |>.getD true
@@ -132,7 +132,7 @@ def translateThmTask (data: Json) (translator : Translator) : TranslateM Json :=
         if fb then
           return Json.mkObj [("result", "fallback"), ("theorem", translation)]
         else
-          return Json.mkObj [("result", "success"), ("theorem", translation)]
+          return Json.mkObj [("result", "success"), ("theorem_code", translation)]
 
 /--
 Translates a theorem to Lean Code with detailed information, including an attempted proof using `exact?`. The `statement` is the theorem statement with proof (which may be `sorry`). Definitions used in the theorem and in the proof are also returned.
@@ -143,7 +143,7 @@ The input is a JSON object with a `text` field containing the theorem text, and 
 def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM Json := do
     let fallback :=
       data.getObjValAs? Bool "fallback" |>.toOption |>.getD true
-    match data.getObjValAs? String "text" with
+    match data.getObjValAs? String "theorem_text" with
     | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
     | Except.ok text => do
       let greedy :=
@@ -182,9 +182,9 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
           `(command| theorem $thmName : $typeStx := by $pf)
         let statementFormat ← PrettyPrinter.ppCommand thmStx
         let defsInProof? ← getExactTermParts? translation
-        return Json.mkObj [("result", "success"), ("theorem",  thmFmt.pretty),
-          ("name", toJson name), ("proved", pf?.isSome),
-          ("statement", statementFormat.pretty), ("definitions_used", toJson defs),
+        return Json.mkObj [("result", "success"), ("theorem_code",  thmFmt.pretty),
+          ("theorem_name", toJson name), ("proved", pf?.isSome),
+          ("theorem_statement", statementFormat.pretty), ("definitions_used", toJson defs),
           ("definitions_in_proof", toJson defsInProof?)]
 
 /--
@@ -219,12 +219,12 @@ Looks up a constant by its name and returns its description.
 -/
 @[response "theorem_doc"]
 def theoremDocTask (data: Json) (translator : Translator) : TranslateM Json := do
-    match data.getObjValAs? String "name", data.getObjValAs? String "command" with
+    match data.getObjValAs? String "theorem_name", data.getObjValAs? String "theorem_statement" with
     | Except.ok name, Except.ok cmd => do
       let type : Expr ← elabFrontThmExprM cmd name.toName true
       match ← translator.getTypeDescriptionM type {} with
       | some (desc, _) =>
-        return Json.mkObj [("result", "success"), ("doc", desc)]
+        return Json.mkObj [("result", "success"), ("theorem_doc", desc)]
       | none => return Json.mkObj [("result", "error"), ("error", s!"no description found for {name} after elaboration of {cmd}")]
     | _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no name or command found")]
@@ -236,7 +236,7 @@ Translates a definition to Lean code and returns the definition.
 def translateDefTask (data: Json) (translator : Translator) : TranslateM Json := do
     let fallback :=
       data.getObjValAs? Bool "fallback" |>.toOption |>.getD true
-    match data.getObjValAs? String "text" with
+    match data.getObjValAs? String "definition_text" with
     | Except.error e =>
       return Json.mkObj [("result", "error"), ("error", s!"no text found: {e}")]
     | Except.ok text => do
@@ -247,11 +247,11 @@ def translateDefTask (data: Json) (translator : Translator) : TranslateM Json :=
             return Json.mkObj [("result", "error"), ("error", "no translation found")]
           else
             let res ←  CmdElabError.fallback es
-            return Json.mkObj [("result", "fallback"), ("definition", res)]
+            return Json.mkObj [("result", "fallback"), ("definition_code", res)]
         return Json.mkObj [("result", "failure"), ("outputs", toJson es)]
       | Except.ok cmd => do
         let fmt ← PrettyPrinter.ppCommand cmd
-        let result := Json.mkObj [("result", "success"), ("definition", fmt.pretty)]
+        let result := Json.mkObj [("result", "success"), ("definition_code", fmt.pretty)]
         return result
 
 /--
@@ -259,12 +259,12 @@ Generates documentation for a definition. The input is a JSON object with a `nam
 -/
 @[response "def_doc"]
 def defDocTask (data: Json) (translator : Translator) : TranslateM Json := do
-    match data.getObjValAs? String "name", data.getObjValAs? String "command" with
+    match data.getObjValAs? String "definition_name", data.getObjValAs? String "definition_code" with
     | Except.ok name, Except.ok cmd => do
       let (type, value) ← elabFrontDefTypeValExprM cmd name.toName true
       match ← translator.getDefDescriptionM type value name.toName {} with
       | some (desc, _) =>
-        return Json.mkObj [("result", "success"), ("doc", desc)]
+        return Json.mkObj [("result", "success"), ("definition_doc", desc)]
       | none => return Json.mkObj [("result", "error"), ("error", s!"no description found for {name} after elaboration of {cmd}")]
     | _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no name or command found")]
@@ -274,41 +274,35 @@ Assigns a name to a theorem. The input is a JSON object with a `theorem` or `tex
 -/
 @[response "theorem_name"]
 def theoremNameTask (data: Json) (translator : Translator) : TranslateM Json := do
-  match data.getObjValAs? String "theorem", data.getObjValAs? String "text" with
-  | Except.ok thm, _ => do
+  match data.getObjValAs? String "theorem_text" with
+  | Except.ok thm => do
     try
       let name ← translator.server.theoremName thm
-      return Json.mkObj [("result", "success"), ("name", toJson name)]
+      return Json.mkObj [("result", "success"), ("theorem_name", toJson name)]
     catch e =>
       return Json.mkObj [("result", "error"), ("error", s!"error in theorem name: {← e.toMessageData.format}")]
-  | _, Except.ok text => do
-    try
-      let name ← translator.server.theoremName text
-      return Json.mkObj [("result", "success"), ("name", toJson name)]
-    catch e =>
-      return Json.mkObj [("result", "error"), ("error", s!"error in theorem name: {← e.toMessageData.format}")]
-  | _, _ => return Json.mkObj [("result", "error"), ("error", "no theorem or text found")]
+  | _ => return Json.mkObj [("result", "error"), ("error", "no theorem or text found")]
 
 /--
 Use an LLM to prove a theorem. The input is a JSON object with a `theorem` field containing the theorem text.
 -/
 @[response "prove"]
 def proveTask (data: Json) (translator : Translator) : TranslateM Json := do
-  match data.getObjValAs? String "theorem" with
+  match data.getObjValAs? String "theorem_text" with
   | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no theorem found: {e}")]
   | Except.ok thm => do
     let pfs ← translator.server.prove thm 1 translator.params
     match pfs[0]? with
     | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
     | some pf => do
-      return Json.mkObj [("result", "success"), ("proof", toJson pf)]
+      return Json.mkObj [("result", "success"), ("proof_text", toJson pf)]
 
 /--
 Use an LLM to prove a theorem. The input is a JSON object with a `text` field containing the theorem text, a `theorem` field containing the statement of the theorem and `definitions` containing relevant definitions.
 -/
 @[response "prove_for_formalization"]
 def proveForFormalizationTask (data: Json) (translator : Translator) : TranslateM Json := do
-  match data.getObjValAs? String "text", data.getObjValAs? String "theorem" with
+  match data.getObjValAs? String "theorem_text", data.getObjValAs? String "theorem_code" with
   | Except.ok thm, Except.ok statement => do
     let .ok type ← elabThm statement | return Json.mkObj [("result", "error"), ("error", s!"error in elaboration of theorem statement")]
     let definitions := data.getObjValAs? String "definitions" |>.toOption.getD ((← Meta.defsBlob? type).getD "")
@@ -342,7 +336,7 @@ def provePropTask (data: Json) (translator : Translator) : TranslateM Json := do
 
 @[response "json_structured"]
 def jsonStructuredTask (data: Json) (translator : Translator) : TranslateM Json := do
-  match data.getObjValAs? String "document" with
+  match data.getObjValAs? String "document_text" with
   | Except.error e => return Json.mkObj [("result", "error"), ("error", s!"no document found: {e}")]
   | Except.ok document => do
     let jsons ←
@@ -350,14 +344,14 @@ def jsonStructuredTask (data: Json) (translator : Translator) : TranslateM Json 
     match jsons[0]? with
     | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
     | some json => do
-      return Json.mkObj [("result", "success"), ("json_structured", json)]
+      return Json.mkObj [("result", "success"), ("document_json", json)]
 
 /--
 Converts a theorem and proof to structured JSON. The input is a JSON object with a `theorem`, `proof`, or `theorem_proof` field containing the theorem statement and proof
 -/
 @[response "structured_json_proof"]
 def structuredJsonTask (data: Json) (translator : Translator) : TranslateM Json := do
-    match data.getObjValAs? String "theorem", data.getObjValAs? String "proof", data.getObjValAs? String "theorem_proof" with
+    match data.getObjValAs? String "theorem_text", data.getObjValAs? String "proof_text", data.getObjValAs? String "theorem_proof" with
     | _, _, Except.ok block => do
       let jsons ←
         translator.server.structuredProof block 1 translator.params
@@ -372,7 +366,7 @@ def structuredJsonTask (data: Json) (translator : Translator) : TranslateM Json 
       match jsons[0]? with
       | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
       | some json => do
-        return Json.mkObj [("result", "success"), ("json_structured", json)]
+        return Json.mkObj [("result", "success"), ("document_json", json)]
     | _, _, _ =>
       return Json.mkObj [("result", "error"), ("error", "no theorem or proof found")]
 
@@ -381,7 +375,7 @@ Generates Lean code from structured JSON. The input is a JSON object with a `jso
 -/
 @[response "lean_from_json_structured"]
 def leanFromStructuredJsonTask (data: Json) (translator : Translator) : TranslateM Json := do
-    match data.getObjVal? "json_structured" with
+    match data.getObjVal? "document_json" with
     | Except.ok js => do
       try
         let qp := translator.codeGenerator
@@ -392,7 +386,7 @@ def leanFromStructuredJsonTask (data: Json) (translator : Translator) : Translat
         let code ←
           PrettyPrinter.ppCategory ``commandSeq codeStx
         return Json.mkObj
-          [("result", "success"), ("lean_code", code.pretty), ("declarations", toJson declarations), ("top_code", CodeGenerator.topCode)]
+          [("result", "success"), ("document_code", code.pretty), ("declarations", toJson declarations), ("top_code", CodeGenerator.topCode)]
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
@@ -404,7 +398,7 @@ The output is a JSON object with the result of the elaboration, including logs a
 -/
 @[response "elaborate"]
 def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
-    match data.getObjValAs? String "lean_code" with
+    match data.getObjValAs? String "document_code" with
     | Except.ok code => do
       let names? := data.getObjValAs? (List Name) "declarations" |>.toOption
       try
