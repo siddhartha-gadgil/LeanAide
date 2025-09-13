@@ -11,18 +11,18 @@ Types for a discussion thread involving chatbots, humans and leanaide. Wrapper t
 
 namespace LeanAide
 
-open Lean Meta
+open Lean Meta Elab Term
 
 /-- A query message in a discussion thread. -/
 structure Query where
   message : String
-  queryParams : Json
+  queryParams : Json := Json.mkObj []
 deriving Inhabited, Repr, ToJson, FromJson
 
 /-- A response message in a discussion thread. -/
 structure Response where
   message : String
-  responseParams : Json
+  responseParams : Json := Json.mkObj []
 deriving Inhabited, Repr, ToJson, FromJson
 
 structure TheoremText where
@@ -31,6 +31,7 @@ deriving Inhabited, Repr, ToJson, FromJson
 
 structure TheoremCode where
   statement : String
+  name: Name
   type : Expr
   code : TSyntax ``commandSeq
 deriving Inhabited, Repr
@@ -75,20 +76,146 @@ instance : Content Document where
 instance : Content Comment where
   content c := c.message
 
-inductive Discussion : Type → Type _ where
-  | root (sysPrompt? : Option String) : Discussion Unit
-  | query {α : Type} (q : Query) : Discussion α  → Discussion Query
-  | response (r : Response) : Discussion Query → Discussion Response
-  | digress {α : Type} (d : Discussion α) : Discussion Unit
-  | translateTheoremQuery (tt : TheoremText) : Discussion Unit → Discussion TheoremText
-  | theoremTranslation (tt : TheoremText) : Discussion TheoremText → Discussion TheoremCode
-  | translateDefinitionQuery (dt : DefinitionText) : Discussion Unit → Discussion DefinitionText
-  | definitionTranslation (dt : DefinitionText) : Discussion DefinitionText → Discussion DefinitionCode
-  | comment (c : Comment) : Discussion α → Discussion Comment
-  | proveTheoremQuery (tt : TheoremText) : Discussion TheoremText
-  | proofDocument (doc : Document) (prompt? : Option String := none) : Discussion TheoremCode → Discussion Document
-  | proofStructuredDocument (sdoc : StructuredDocument) (prompt? : Option String := none) (schema : Option Json := none) : Discussion Document → Discussion StructuredDocument
-  | proofCode (tc : TheoremCode) : Discussion StructuredDocument → Discussion TheoremCode
-  | rewrittenDocument {α} [Content α] (doc : Document) (prompt? : Option String := none) : Discussion α  → Discussion Document
+inductive ResponseType where
+  | query | response | document | structuredDocument | code | comment | theoremText | theoremCode | definitionText | definitionCode | documentCode
+deriving Repr, Inhabited
+
+def ResponseType.toType : ResponseType → Type
+| .query => Query
+| .response => Response
+| .document => Document
+| .structuredDocument => StructuredDocument
+| .code => DocumentCode
+| .comment => Comment
+| .theoremText => TheoremText
+| .theoremCode => TheoremCode
+| .definitionText => DefinitionText
+| .definitionCode => DefinitionCode
+| .documentCode => DocumentCode
+
+instance (rt: ResponseType) : Repr rt.toType where
+  reprPrec := by
+    cases rt <;> simp [ResponseType.toType] <;> apply reprPrec
+
+#check Repr Query
+
+class ResponseType.OfType (α : Type)  where
+  rt : ResponseType
+  ofType : α → rt.toType := by exact fun x ↦ x
+  eqn : rt.toType = α := by rfl
+
+instance queryOfType : ResponseType.OfType Query where
+  rt := .query
+
+instance responseOfType : ResponseType.OfType Response where
+  rt := .response
+
+instance documentOfType : ResponseType.OfType Document where
+  rt := .document
+
+instance structuredDocumentOfType : ResponseType.OfType StructuredDocument where
+  rt := .structuredDocument
+
+instance codeOfType : ResponseType.OfType DocumentCode where
+  rt := .code
+
+instance commentOfType : ResponseType.OfType Comment where
+  rt := .comment
+
+instance theoremTextOfType : ResponseType.OfType TheoremText where
+  rt := .theoremText
+
+instance theoremCodeOfType : ResponseType.OfType TheoremCode where
+  rt := .theoremCode
+
+instance definitionTextOfType : ResponseType.OfType DefinitionText where
+  rt := .definitionText
+
+instance definitionCodeOfType : ResponseType.OfType DefinitionCode where
+  rt := .definitionCode
+
+instance documentCodeOfType : ResponseType.OfType DocumentCode where
+  rt := .documentCode
+
+
+
+inductive Discussion : Type → Type where
+  | start {rt: ResponseType} (sysPrompt? : Option String) (elem: rt.toType) : Discussion rt.toType
+  | query {rt: ResponseType} (init: Discussion rt.toType) (q : Query) : Discussion Query
+  | response (init: Discussion Query) (r : Response) : Discussion Response
+  | digress {a b : ResponseType}  (init: Discussion a.toType) (elem : b.toType): Discussion b.toType
+  | translateTheoremQuery (init : Discussion Unit) (tt : TheoremText) : Discussion TheoremText
+  | theoremTranslation (init : Discussion TheoremText) (tc : TheoremCode) :Discussion TheoremCode
+  | translateDefinitionQuery (init : Discussion Unit) (dt : DefinitionText) : Discussion DefinitionText
+  | definitionTranslation (init : Discussion DefinitionText) (dc : DefinitionCode) : Discussion DefinitionCode
+  | comment {rt : ResponseType} (init: Discussion rt.toType) (c : Comment) : Discussion Comment
+  | proveTheoremQuery (init: Discussion Unit) (tt : TheoremText) : Discussion TheoremText
+  | proofDocument (init: Discussion TheoremCode) (doc : Document) (prompt? : Option String := none) :  Discussion Document
+  | proofStructuredDocument (init: Discussion Document) (sdoc : StructuredDocument) (prompt? : Option String := none) (schema : Option Json := none) :  Discussion StructuredDocument
+  | proofCode (init: Discussion StructuredDocument) (tc : DocumentCode) : Discussion DocumentCode
+  | rewrittenDocument (init: Discussion Document ) (doc : Document) (prompt? : Option String := none) :  Discussion Document
+  | edit {rt : ResponseType} (userName? : Option String := none) : Discussion rt.toType  → Discussion rt.toType
+deriving Repr
+
+namespace Discussion
+
+def last {α} : Discussion α → α
+| start _ elem => elem
+| query _ q => q
+| response _ r => r
+| digress _ d => d
+| translateTheoremQuery _ tt => tt
+| theoremTranslation _ tc => tc
+| translateDefinitionQuery _ d =>  d
+| definitionTranslation _ d =>  d
+| comment _ d => d
+| proveTheoremQuery _ tt => tt
+| proofDocument _ doc _  => doc
+| proofStructuredDocument _ sdoc _ _ => sdoc
+| proofCode _ tc => tc
+| rewrittenDocument _ doc _ => doc
+| edit _ d => d.last
+
+def lastM {α} : TermElabM (Discussion α) → TermElabM α
+| d => do return (← d).last
+
+def init {α} [inst : ResponseType.OfType α ] (elem : α):
+  Discussion α :=
+  let disc := .start (rt := inst.rt) none (inst.ofType elem)
+  inst.eqn ▸ disc
+
+class GeneratorM (α β : Type) where
+  generateM : (Discussion α) → TermElabM (Discussion β)
+
+def generateM {α} (β : Type) [r : GeneratorM α β] (d : Discussion α) : TermElabM (Discussion β) :=
+  r.generateM d
+
+set_option synthInstance.checkSynthOrder false in
+instance composition (α γ : Type) (β : outParam Type) [r1 : GeneratorM α β] [r2 : GeneratorM β γ] : GeneratorM α γ where
+  generateM d := do
+    let d' ← r1.generateM d
+    r2.generateM d'
+
+-- dummies for testing
+instance queryResponse : GeneratorM Query Response where
+  generateM d := do
+    let q := d.last
+    let res := { message := s!"This is a response to {q.message}", responseParams := Json.null }
+    return Discussion.response d res
+
+instance responseComment : GeneratorM Response Comment where
+  generateM d := do
+    let r := d.last
+    let c := { message := s!"This is a comment on {r.message}", user := "user" }
+    return Discussion.comment (rt := .response) d c
+
+#synth GeneratorM Query Comment
+
+def q : Discussion Query :=
+  init { message := "What is 2+2?"}
+
+#eval q.generateM Comment
+
+end Discussion
 
 end LeanAide

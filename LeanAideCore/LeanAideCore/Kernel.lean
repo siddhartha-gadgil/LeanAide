@@ -29,7 +29,7 @@ class Kernel where
   theoremDoc : Name → Syntax.Command → TermElabM String
   defDoc : Name → Syntax.Command → TermElabM String
   theoremName : String → MetaM Name
-  proveForFormalization : String → Expr → TermElabM String
+  proveForFormalization : String → Expr → Syntax.Command → TermElabM String
   jsonStructured : String → MetaM Json
   codeFromJson : Json → TermElabM (TSyntax ``commandSeq)
   elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
@@ -41,9 +41,9 @@ def leanFromDoc [kernel: Kernel] (doc: String) : TermElabM (TSyntax ``commandSeq
   let json ← kernel.jsonStructured doc
   codeFromJson json
 
-def proveWithCode [kernel: Kernel] (statement: String) (thm: Expr) :
+def proveWithCode [kernel: Kernel] (theorem_text: String) (theorem_code: Expr) (theorem_statement : TSyntax `command) :
     TermElabM (String × (TSyntax ``commandSeq)) := do
-  let doc ← kernel.proveForFormalization statement thm
+  let doc ← kernel.proveForFormalization theorem_text theorem_code theorem_statement
   return (doc, ← kernel.leanFromDoc doc)
 
 end Kernel
@@ -190,8 +190,8 @@ def theoremName [pipe: LeanAidePipe] (text: String) : MetaM Name := do
   let response ← response req
   theoremNameDecode response
 
-def proveForFormalizationEncode (theoremText: String) (theoremCode: Expr) : MetaM Json := do
-  return Json.mkObj [("task", "prove_for_formalization"), ("theorem_text", theoremText), ("theorem_code", (← ppExpr theoremCode).pretty)]
+def proveForFormalizationEncode (theoremText: String) (theoremCode: Expr) (theoremStatement : TSyntax `command) : MetaM Json := do
+  return Json.mkObj [("task", "prove_for_formalization"), ("theorem_text", theoremText), ("theorem_code", (← ppExpr theoremCode).pretty), ("theorem_statement", (← PrettyPrinter.ppCommand theoremStatement).pretty)]
 
 def proveForFormalizationDecode (response: Json) : TermElabM String := do
   match response.getObjValAs? String "result" with
@@ -205,8 +205,8 @@ def proveForFormalizationDecode (response: Json) : TermElabM String := do
     throwError "Invalid response"
 
 
-def proveForFormalization [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) : TermElabM String := do
-  let req ← proveForFormalizationEncode theoremText theoremCode
+def proveForFormalization [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) (theoremStatement : Syntax.Command) : TermElabM String := do
+  let req ← proveForFormalizationEncode theoremText theoremCode theoremStatement
   let response ← response req
   proveForFormalizationDecode response
 
@@ -377,8 +377,8 @@ def defDoc (name: Name) (stx: Syntax.Command) : TermElabM String := do
 def theoremName (text: String) : MetaM Name := do
   (← getKernelM).theoremName text
 
-def proveForFormalization (statement: String) (thm: Expr) : TermElabM String := do
-  (← getKernelM).proveForFormalization statement thm
+def proveForFormalization (theorem_text: String) (theorem_code: Expr) (theorem_statement: TSyntax `command) : TermElabM String := do
+  (← getKernelM).proveForFormalization theorem_text theorem_code theorem_statement
 
 def jsonStructured (document: String) : MetaM Json := do
   (← getKernelM).jsonStructured document
