@@ -33,7 +33,7 @@ class Kernel where
   jsonStructured : String → MetaM Json
   codeFromJson : Json → TermElabM (TSyntax ``commandSeq)
   elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
-  mathQuery (s: String) (n: Nat := 3) : MetaM (List String)
+  mathQuery (s: String) (history : List ChatPair := []) (n: Nat := 3) : MetaM (List String)
 
 namespace Kernel
 
@@ -273,8 +273,8 @@ def elabCode [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM CodeEl
   let response ← response req
   elabCodeDecode response
 
-def mathQueryEncode (query: String) (n: Nat := 3) : MetaM Json := do
-  return Json.mkObj [("task", "math_query"), ("query", query), ("n", n)]
+def mathQueryEncode (query: String) (history : List ChatPair := []) (n: Nat := 3) : MetaM Json := do
+  return Json.mkObj [("task", "math_query"), ("query", query), ("n", n), ("history", toJson history)]
 
 def mathQueryDecode (response: Json) : MetaM (List String) := do
   match response.getObjValAs? String "result" with
@@ -287,8 +287,8 @@ def mathQueryDecode (response: Json) : MetaM (List String) := do
   | _ =>
     throwError "Invalid response"
 
-def mathQuery [pipe: LeanAidePipe] (query: String) (n: Nat := 3) : MetaM (List String) := do
-  let req ← mathQueryEncode query n
+def mathQuery [pipe: LeanAidePipe] (query: String) (history : List ChatPair := []) (n: Nat := 3) : MetaM (List String) := do
+  let req ← mathQueryEncode query history n
   let response ← response req
   mathQueryDecode response
 
@@ -334,7 +334,7 @@ instance [LeanAidePipe] : Kernel where
   jsonStructured := LeanAidePipe.jsonStructured
   codeFromJson := LeanAidePipe.codeFromJson
   elabCode := LeanAidePipe.elabCode
-  mathQuery := fun s n => LeanAidePipe.mathQuery s n
+  mathQuery := fun s h n => LeanAidePipe.mathQuery s h n
 
 
 macro "#leanaide_connect" url?:(str)? : command =>
@@ -386,8 +386,8 @@ def jsonStructured (document: String) : MetaM Json := do
 def codeFromJson (json: Json) : TermElabM (TSyntax ``commandSeq) := do
   (← getKernelM).codeFromJson json
 
-def mathQuery (s: String) (n: Nat := 3) : MetaM (List String) := do
-  (← getKernelM).mathQuery s n
+def mathQuery (s: String) (history : List ChatPair := []) (n: Nat := 3)  : MetaM (List String) := do
+  (← getKernelM).mathQuery s history n
 
 end KernelM
 

@@ -475,7 +475,8 @@ def mathQueryTask (data: Json) (translator : Translator) : TranslateM Json := do
   | Except.ok query => do
     try
       let n := data.getObjValAs? Nat "n" |>.toOption |>.getD 1
-      let res ← translator.server.mathCompletions query n translator.params
+      let history := data.getObjValAs? (List ChatPair) "history" |>.toOption |>.getD []
+      let res ← translator.server.mathCompletions query n translator.params history.toArray
       return Json.mkObj [("result", "success"), ("answers", toJson res)]
     catch e =>
       return Json.mkObj [("result", "error"), ("error", s!"error in math query: {← e.toMessageData.format}")]
@@ -562,9 +563,9 @@ instance kernel : Kernel := {
       for type in ss' do
         sorriesAfterPurge := sorriesAfterPurge.push (n, type)
     return {declarations := names, logs := logs, sorries := sorries.toList, sorriesAfterPurge := sorriesAfterPurge.toList}
-  mathQuery := fun query n => do
+  mathQuery := fun query history n => do
     let translator ← Translator.defaultM
-    let res ← translator.server.mathCompletions query n translator.params
+    let res ← translator.server.mathCompletions query n translator.params history.toArray
     return res.toList
 }
 

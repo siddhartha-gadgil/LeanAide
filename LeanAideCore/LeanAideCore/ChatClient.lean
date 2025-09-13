@@ -454,8 +454,8 @@ namespace ChatServer
 def completions (server: ChatServer)
   (queryString: String)(sysPrompt: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
-  let messages ←  mkMessages queryString examples sysPrompt !(server.hasSysPrompt)
+  (history: Array ChatPair := #[]): CoreM (Array String) := do
+  let messages ←  mkMessages queryString history sysPrompt !(server.hasSysPrompt)
   let data ← ChatServer.query server messages params
   match data.getObjVal? "choices" with
   | Except.error _ =>
@@ -467,9 +467,9 @@ def completions (server: ChatServer)
 def mathCompletions (server: ChatServer)
   (queryString: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (history: Array ChatPair := #[]): CoreM (Array String) := do
   let sysPrompt ← mathPrompt
-  ChatServer.completions server queryString sysPrompt n params examples
+  ChatServer.completions server queryString sysPrompt n params history
 
 def prove (server: ChatServer)
   (thm: String)(n: Nat := 3)

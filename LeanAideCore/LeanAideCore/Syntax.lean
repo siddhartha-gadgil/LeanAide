@@ -238,7 +238,7 @@ def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) :
     if s.endsWith "." || s.endsWith "?" then
       -- let server ← chatServer
       let n := n?.getD 3
-      let responses ← KernelM.mathQuery s n
+      let responses ← KernelM.mathQuery s [] n
       for r in responses do
         logInfo r
       let stxs ← responses.mapM fun res => do
