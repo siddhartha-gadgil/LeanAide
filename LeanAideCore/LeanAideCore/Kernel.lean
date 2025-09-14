@@ -26,6 +26,7 @@ The core functions of LeanAide, implemented directly in the server and via query
 class Kernel where
   translateThm : String → TermElabM (Except (Array ElabError) Expr)
   translateDef : String → TermElabM (Except (Array CmdElabError) Syntax.Command)
+  translateThmDetailed : String → Option Name → TermElabM (Name × Expr × Syntax.Command)
   theoremDoc : Name → Syntax.Command → TermElabM String
   defDoc : Name → Syntax.Command → TermElabM String
   theoremName : String → MetaM Name
@@ -108,6 +109,33 @@ def translateThmDecode (response: Json) : TermElabM (Except (Array ElabError) Ex
 def translateThm [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array ElabError) Expr) := do
   let response ← response <| ← translateThmEncode text
   translateThmDecode response
+
+def translateThmDetailedEncode (text: String) (name? : Option Name) : MetaM Json :=
+  return Json.mkObj [("task", "translate_thm_detailed"), ("theorem_text", text), ("theorem_name", toJson name?)]
+
+def translateThmDetailedDecode (response: Json) : TermElabM (Name × Expr × Syntax.Command) := do
+  match response.getObjValAs? String "result" with
+  | .ok "success" =>
+    let .ok nameStr := response.getObjValAs? String "theorem_name" | throwError "response has no 'theorem_name' field"
+    let name := Name.mkStr Name.anonymous nameStr
+    let .ok thmCodeTxt := response.getObjValAs? String "theorem_code" | throwError "response has no 'theorem_code' field"
+    let .ok thmStxTxt := response.getObjValAs? String "theorem_statement" | throwError "response has no 'theorem_statement' field"
+    let thmExpr ←
+      match runParserCategory (← getEnv) `term thmCodeTxt with
+      | .ok stx =>
+          elabType stx
+      | .error e => throwError s!"Error while parsing {thmCodeTxt}  : {e}"
+    let .ok thmStx := runParserCategory (← getEnv) `command thmStxTxt | throwError s!"Error while parsing {thmStxTxt}"
+    return (name, thmExpr, ⟨thmStx⟩)
+  | .ok "error" =>
+      let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
+      throwError s!"Error while translating theorem: {error}"
+  | _ =>
+    throwError "Invalid response"
+
+def translateThmDetailed [pipe: LeanAidePipe] (text: String) (name? : Option Name) : TermElabM (Name × Expr × Syntax.Command) := do
+  let response ← response <| ← translateThmDetailedEncode text name?
+  translateThmDetailedDecode response
 
 def translateDefEncode (text: String) : MetaM Json :=
   return Json.mkObj [("task", "translate_def"), ("definition_text", text)]
@@ -327,6 +355,7 @@ end LeanAidePipe
 instance [LeanAidePipe] : Kernel where
   translateThm := LeanAidePipe.translateThm
   translateDef := LeanAidePipe.translateDef
+  translateThmDetailed := LeanAidePipe.translateThmDetailed
   theoremDoc := LeanAidePipe.theoremDoc
   defDoc := LeanAidePipe.defDoc
   theoremName := LeanAidePipe.theoremName
@@ -358,6 +387,9 @@ def translateThmFallback (text: String) : TermElabM <| Except String Expr := do
   | .ok e => return .ok e
   | .error errs =>
      return .error <| ←  ElabError.fallback errs |>.run' {}
+
+def translateThmDetailed (text: String) (name? : Option Name) : TermElabM (Name × Expr × Syntax.Command) := do
+  (← getKernelM).translateThmDetailed text name?
 
 def translateDef (text: String) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
   (← getKernelM).translateDef text

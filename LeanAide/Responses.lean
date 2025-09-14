@@ -169,13 +169,14 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
         let thmFmt ← PrettyPrinter.ppExpr translation
         let pf? ←
           getSimpOrExactTactics? translation <||> getHammerTactics? translation
-        let name ← try
+        let name? := data.getObjValAs? Name "theorem_name" |>.toOption
+        let name := name?.getD (← try
           translator.server.theoremName text
           catch e =>
             IO.eprintln s!"Error in theorem name: {← e.toMessageData.format}"
             let hash := hash thmFmt.pretty
             let name := s!"thm_{hash}"
-            pure name.toName
+            pure name.toName)
         let thmName := mkIdent name
         let pf := pf?.getD (← `(tacticSeq| sorry))
         let thmStx ←
@@ -508,6 +509,35 @@ instance kernel : Kernel := {
     let resM? := translator.translateDefCmdM? text
     let res? ← resM?.run' {}
     return res?
+  translateThmDetailed := fun text name? => do
+    let translator ← Translator.defaultM
+    let greedy := true
+    let fallback := true
+    let (json, _) ←
+          translator.getLeanCodeJson  text |>.run' {}
+    let output ← getMessageContents json
+    let res? ← greedyBestExprWithErr? output |>.run' {}
+    match res? with
+    | Except.error es =>
+        throwError s!"Errors in translation: {repr es}"
+    | Except.ok translation => do
+      let defs ← defsBlob? translation
+      let typeStx ← delabDetailed translation
+      let thmFmt ← PrettyPrinter.ppExpr translation
+      let pf? ←
+        getSimpOrExactTactics? translation <||> getHammerTactics? translation
+      let name := name?.getD (← try
+        translator.server.theoremName text
+        catch e =>
+          IO.eprintln s!"Error in theorem name: {← e.toMessageData.format}"
+          let hash := hash thmFmt.pretty
+          let name := s!"thm_{hash}"
+          pure name.toName)
+      let thmName := mkIdent name
+      let pf := pf?.getD (← `(tacticSeq| sorry))
+      let thmStx ←
+        `(command| theorem $thmName : $typeStx := by $pf)
+      return (name, translation, thmStx)
   theoremDoc := fun name cmd => do
     let translator ← Translator.defaultM
     let cmdStr ← PrettyPrinter.ppCommand cmd

@@ -13,3 +13,4 @@ import LeanAideCore.YAMLSyntax
 import LeanAideCore.Sorries
 import LeanAideCore.Kernel
 import LeanAideCore.TaskStatus
+import LeanAideCore.Discussion

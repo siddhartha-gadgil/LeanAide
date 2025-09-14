@@ -28,7 +28,8 @@ structure Response where
 deriving Inhabited, Repr, ToJson, FromJson
 
 structure TheoremText where
-  statement : String
+  name? : Option Name
+  text : String
 deriving Inhabited, Repr, ToJson, FromJson
 
 structure TheoremCode where
@@ -47,14 +48,17 @@ structure DefinitionCode where
 deriving Inhabited, Repr
 
 structure Document where
+  name : Name
   content : String
 deriving Inhabited, Repr, ToJson, FromJson
 
 structure StructuredDocument where
+  name : Name
   json: Json
 deriving Inhabited, Repr, ToJson, FromJson
 
 structure DocumentCode where
+  name : Name
   code : TSyntax ``commandSeq
 deriving Inhabited, Repr
 
@@ -99,8 +103,6 @@ def ResponseType.toType : ResponseType → Type
 instance (rt: ResponseType) : Repr rt.toType where
   reprPrec := by
     cases rt <;> simp [ResponseType.toType] <;> apply reprPrec
-
-#check Repr Query
 
 class ResponseType.OfType (α : Type)  where
   rt : ResponseType
@@ -191,20 +193,76 @@ def mkQuery {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (q : Qu
   rw [inst.eqn]
   exact prev
 
+def mkComment {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (c : Comment) : Discussion Comment := by
+  apply Discussion.comment (rt := inst.rt) _ c
+  rw [inst.eqn]
+  exact prev
+
+class Append (α β : Type) where
+  append : Discussion α → β → Discussion β
+
+instance appendQuery (α : Type) [inst : ResponseType.OfType α] : Append α Query where
+  append d q := d.mkQuery q
+
+instance appendResponse : Append Query Response where
+  append d r := Discussion.response d r
+
+instance appendComment (α : Type) [inst : ResponseType.OfType α] : Append α Comment where
+  append d c := d.mkComment c
+
+instance appendTheoremText : Append Unit TheoremText where
+  append d tt := Discussion.translateTheoremQuery d tt
+instance appendTheoremCode : Append TheoremText TheoremCode where
+  append d tc := Discussion.theoremTranslation d tc
+instance appendDefinitionText : Append Unit DefinitionText where
+  append d dt := Discussion.translateDefinitionQuery d dt
+instance appendDefinitionCode : Append DefinitionText DefinitionCode where
+  append d dc := Discussion.definitionTranslation d dc
+instance appendProveTheorem : Append Unit TheoremText where
+  append d tt := Discussion.proveTheoremQuery d tt
+instance appendProofDocument : Append TheoremCode Document where
+  append d doc := Discussion.proofDocument d doc
+instance appendProofStructuredDocument : Append Document StructuredDocument where
+  append d sdoc := Discussion.proofStructuredDocument d sdoc
+instance appendProofCode : Append StructuredDocument DocumentCode where
+  append d tc := Discussion.proofCode d tc
+instance appendRewrittenDocument : Append Document Document where
+  append d doc := Discussion.rewrittenDocument d doc
+
+def append {α β : Type} [r : Append α β] (d : Discussion α) (b : β) : Discussion β :=
+  r.append d b
+
 def initQuery (q: Query) : Discussion Query :=
   Discussion.start none |>.mkQuery q
 
-class GeneratorM (α β : Type) where
-  generateM : (Discussion α) → TermElabM (Discussion β)
+class GenerateM (α β : Type) where
+  generateM : α →  TermElabM β
 
-def generateM {α} (β : Type) [r : GeneratorM α β] (d : Discussion α) : TermElabM (Discussion β) :=
-  r.generateM d
+def generateM {α} (β : Type) [r : GenerateM α β] (a : α) : TermElabM β :=
+  r.generateM a
 
 set_option synthInstance.checkSynthOrder false in
-instance composition (α γ : Type) (β : outParam Type) [r1 : GeneratorM α β] [r2 : GeneratorM β γ] : GeneratorM α γ where
-  generateM d := do
-    let d' ← r1.generateM d
-    r2.generateM d'
+instance GenerateM.composition (α γ : Type) (β : outParam Type) [r1 : GenerateM α β] [r2 : GenerateM β γ] : GenerateM α γ where
+  generateM a := do
+    let d ← r1.generateM a
+    r2.generateM d
+
+class Continuation (α β : Type) where
+  continueM : (Discussion α) → TermElabM (Discussion β)
+
+def continueM {α} (β : Type) [r : Continuation α β] (d : Discussion α) : TermElabM (Discussion β) :=
+  r.continueM d
+
+set_option synthInstance.checkSynthOrder false in
+instance Continuation.composition (α γ : Type) (β : outParam Type) [r1 : Continuation α β] [r2 : Continuation β γ] : Continuation α γ where
+  continueM d := do
+    let d' ← r1.continueM d
+    r2.continueM d'
+
+instance {α β : Type} [inst : GenerateM α β][inst' : Append α β] : Continuation α β where
+  continueM d := do
+    let x ← inst.generateM d.last
+    return d.append x
 
 def historyM {α : Type } (d : Discussion α ) :
   MetaM ((List ChatPair) × Option String) := do
@@ -254,24 +312,24 @@ where
 
 -- dummies for testing
 section
-local instance queryResponse : GeneratorM Query Response where
-  generateM d := do
-    let q := d.last
-    let res := { message := s!"This is a response to {q.message}", responseParams := Json.null }
-    return Discussion.response d res
 
-local instance responseComment : GeneratorM Response Comment where
-  generateM d := do
-    let r := d.last
-    let c := { message := s!"This is a comment on {r.message}", user := "user" }
-    return Discussion.comment (rt := .response) d c
+local instance queryResponse : GenerateM Query Response where
+  generateM q := do
+    let res := { message := s!"This is a response to: {q.message}", responseParams := Json.null }
+    return res
 
--- #synth GeneratorM Query Comment
+
+local instance responseComment : GenerateM Response Comment where
+  generateM r := do
+    let c := { message := s!"This is a comment on: {r.message}", user := "user" }
+    return c
 
 def q : Discussion Query :=
   initQuery { message := "What is 2+2?"}
 
--- #eval q.generateM Comment
+#eval q.continueM Comment
+
+#eval generateM Comment ({ message := "What is 2+2?"} : Query)
 
 end
 end Discussion
