@@ -44,8 +44,12 @@ end LeanAide
 
 namespace LeanAide.Meta
 
-syntax (name := thmCommand) "#theorem" (ident)? (":")? str : command
-syntax (name := defCommand) "#def"  str : command
+declare_syntax_cat thmAction
+syntax "translate" : thmAction
+
+syntax (name := thmCommand) "#theorem" (ppSpace ident)? (ppSpace ":")? ppSpace str (ppSpace "||" ppSpace thmAction)?: command
+
+syntax (name := defCommand) "#def" ppSpace str (ppSpace "||" ppSpace "translate")? : command
 
 syntax (name:= addDocs) "#doc" command : command
 
@@ -76,28 +80,36 @@ def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) :
   fun stx => Command.liftTermElabM do
   match stx with
   | `(command| #theorem $s:str) =>
+    let stx' ← `(command| #theorem : $s:str || translate)
+    TryThis.addSuggestion stx stx' (header :="Choose action on theorem text:\n")
+  | `(command| #theorem $name:ident $s:str) =>
+    let stx' ← `(command| #theorem $name:ident : $s:str || translate)
+    TryThis.addSuggestion stx stx' (header :="Choose action on theorem text:\n")
+  | `(command| #theorem : $s:str) =>
+    let stx' ← `(command| #theorem : $s:str || translate)
+    TryThis.addSuggestion stx stx' (header :="Choose action on theorem text:\n")
+  | `(command| #theorem $name:ident : $s:str) =>
+    let stx' ← `(command| #theorem $name:ident : $s:str || translate)
+    TryThis.addSuggestion stx stx' (header :="Choose action on theorem text:\n")
+  -- Now handle the actual translation
+  | `(command| #theorem $s:str || translate) =>
     let s := s.getString
     go s stx none
-  | `(command| #theorem $name:ident $s:str) =>
+  | `(command| #theorem $name:ident $s:str || translate) =>
     let s := s.getString
     let name := name.getId
     go s stx (some name)
-  | `(command| #theorem : $s:str) =>
+  | `(command| #theorem : $s:str || translate) =>
     let s := s.getString
     go s stx none
-  | `(command| #theorem $name:ident : $s:str) =>
+  | `(command| #theorem $name:ident : $s:str || translate) =>
     let s := s.getString
     let name := name.getId
     go s stx (some name)
   | _ => throwUnsupportedSyntax
   where go (s: String) (stx: Syntax) (name? : Option Name) : TermElabM Unit := do
-    if s.endsWith "." then
-      -- let translator : Translator ← Translator.defaultDefM
-      -- let (js, _) ←
-      --   translator.getLeanCodeJson  s |>.run' {}
+    -- if s.endsWith "." then
       let e? ← KernelM.translateThmFallback s
-      -- let e? ←
-      --   jsonToExprFallback js (← greedy) !(← chatParams).stopColEq |>.run' {}
       let name ← match name? with
       | some name => pure name
       | none =>
@@ -109,29 +121,32 @@ def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) :
         let stx' ← delab e
         -- logTimed "obtained syntax"
         let cmd ← `(command| theorem $name : $stx' := by sorry)
-        TryThis.addSuggestion stx cmd
+        -- TryThis.addSuggestion stx cmd
         -- logTimed "added suggestion"
         let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
         let cmd ←
           `(command| $docs:docComment theorem $name:ident : $stx' := by sorry)
-        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+        TryThis.addSuggestion stx cmd
         return
       | .error e =>
         logWarning "No valid lean code found, suggesting best option"
         let cmd := s!"theorem {name} : {e} := by sorry"
-        TryThis.addSuggestion stx cmd
+        -- TryThis.addSuggestion stx cmd
         let cmd := s!"/-- {s} -/\ntheorem {name} : {e} := by sorry"
-        TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+        TryThis.addSuggestion stx cmd
 
-    else
-      logWarning "To translate a theorem, end the string with a `.`."
+    -- else
+    --   logWarning "To translate a theorem, end the string with a `.`."
 
 @[command_elab defCommand] def defCommandImpl : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
-  | `(command| #def $s:str) =>
+  | `(command| #def $s:str || translate) =>
     let s := s.getString
     go s stx
+  | `(command| #def $s:str) =>
+    let stx' ← `(command| #def $s:str || translate)
+    TryThis.addSuggestion stx stx' (header :="Choose action on definition text:\n")
   | _ => throwUnsupportedSyntax
   where go (s: String) (stx: Syntax) : TermElabM Unit := do
     if s.endsWith "." then
@@ -140,19 +155,19 @@ def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) :
         KernelM.translateDefFallback  s |>.run' {}
       match cmd? with
       | .ok cmd =>
-        TryThis.addSuggestion stx cmd
+        -- TryThis.addSuggestion stx cmd
         -- logTimed "added suggestion"
         let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ " -/")]
         match cmd with
         | `(command| def $name $args* : $stx' := $val) =>
           let cmd ←
             `(command| $docs:docComment def $name $args* : $stx' := $val)
-          TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
+          TryThis.addSuggestion stx cmd
         | `(command| noncomputable def $name:ident $args* : $stx' := $val) =>
           let cmd ←
             `(command| $docs:docComment noncomputable def $name:ident $args* : $stx' := $val)
-          TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
-        | _ => pure ()
+          TryThis.addSuggestion stx cmd
+        | _ => TryThis.addSuggestion stx cmd
         return
       | .error e =>
         -- let e ← CmdElabError.fallback es
