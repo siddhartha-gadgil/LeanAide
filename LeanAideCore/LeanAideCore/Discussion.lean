@@ -40,11 +40,12 @@ structure TheoremCode where
 deriving Inhabited, Repr
 
 structure DefinitionText where
-  statement : String
+  text : String
 deriving Inhabited, Repr, ToJson, FromJson
 
 structure DefinitionCode where
-  code : TSyntax ``commandSeq
+  text : String
+  statement : Syntax.Command
 deriving Inhabited, Repr
 
 structure Document where
@@ -238,7 +239,7 @@ def initQuery (q: Query) : Discussion Query :=
 class GenerateM (α β : Type) where
   generateM : α →  TermElabM β
 
-def generateM {α} (β : Type) [r : GenerateM α β] (a : α) : TermElabM β :=
+def generateM {α} (a : α) (β : Type) [r : GenerateM α β]  : TermElabM β :=
   r.generateM a
 
 set_option synthInstance.checkSynthOrder false in
@@ -327,9 +328,10 @@ local instance responseComment : GenerateM Response Comment where
 def q : Discussion Query :=
   initQuery { message := "What is 2+2?"}
 
-#eval q.continueM Comment
+-- #eval q.continueM Comment
 
-#eval generateM Comment ({ message := "What is 2+2?"} : Query)
+-- #eval generateM  ({ message := "What is 2+2?"} : Query)
+-- Comment
 
 end
 end Discussion

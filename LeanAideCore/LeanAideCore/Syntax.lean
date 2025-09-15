@@ -31,8 +31,12 @@ macro_rules
   `(command| example := $t $textStx)
 
 
-def mkQuoteCmd (doc: String) (name: Name) : CoreM <| Syntax.Command := do
+def mkQuoteCmd (doc: String) (name?: Option Name) : CoreM <| Syntax.Command := do
   let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ doc ++ " -/")]
+  match name? with
+  | none =>
+    `(command| $docs:docComment #quote)
+  | some name =>
   let ident := mkIdent name
   `(command| $docs:docComment #quote $ident)
 
@@ -409,5 +413,36 @@ syntax (name:= loadFile) "#load_file" (ppSpace ident)? (ppSpace filepath)? : com
       let newCommand ← `(command| #load_file $newPath:filepath)
       TryThis.addSuggestion stx newCommand
   | _ => throwUnsupportedSyntax
+
+instance : DefinitionCommand String where
+  cmd s name? := do
+    mkQuoteCmd s name?
+
+
+syntax (name := considerCmd) "#consider" (ident ":=")? ppSpace term : command
+@[command_elab considerCmd] def elabConsiderCmdImpl : CommandElab
+| stx@`(command| #consider $s:term) =>
+  Command.liftTermElabM do
+  let x ← Term.elabTerm s none
+  let e ← mkAppM ``definitionCommandAnonymous #[x]
+  let type ← mkAppM ``TermElabM #[mkConst ``Syntax.Command]
+  Term.synthesizeSyntheticMVarsNoPostponing
+  let cmdM ← unsafe evalExpr (TermElabM Syntax.Command) type e
+  let cmd ← cmdM
+  TryThis.addSuggestion stx cmd
+| stx@`(command| #consider $n := $s:term) =>
+  Command.liftTermElabM do
+  let x ← Term.elabTerm s none
+  let id := n.getId
+  let optName ←  mkAppM ``some #[toExpr id]
+  let e ← mkAppM ``definitionCommand #[x, optName]
+  let type ← mkAppM ``TermElabM #[mkConst ``Syntax.Command]
+  Term.synthesizeSyntheticMVarsNoPostponing
+  let cmdM ← unsafe evalExpr (TermElabM Syntax.Command) type e
+  let cmd ← cmdM
+  TryThis.addSuggestion stx cmd
+| _ => throwUnsupportedSyntax
+
+-- #consider x := "Hello there."
 
 end LeanAide
