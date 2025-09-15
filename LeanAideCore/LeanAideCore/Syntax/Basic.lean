@@ -397,4 +397,37 @@ syntax (name := considerCmd) "#consider" (ident ":=")? ppSpace term : command
 
 -- #consider x := "Hello there."
 
+declare_syntax_cat json_wrap
+syntax json : json_wrap
+
+def getJsonSyntax (js : Json) : MetaM <| TSyntax `json := do
+  let .ok stx :=
+    runParserCategory (← getEnv) `json_wrap js.pretty | throwError "Failed to parse JSON: {js}"
+  match stx with
+  | `(json_wrap| $j:json) =>
+    return j
+  | _ => throwError "Unexpected syntax: {stx}"
+
+
+-- Test code
+syntax (name:= rt_json) "#rt_json" ppSpace json : command
+
+@[command_elab rt_json] def elabRtJsonImpl : CommandElab
+| stx_cmd@`(command| #rt_json $js:json) =>
+  Command.liftTermElabM do
+  let tExp ← elabTerm (← `(json% $js)) (mkConst ``Json)
+  Term.synthesizeSyntheticMVarsNoPostponing
+  let term ← unsafe evalExpr Json (mkConst ``Json) tExp
+  let stx ← getJsonSyntax term -- extract syntax from JSON
+  logInfo m!"JSON Syntax: {stx}"
+  let n := mkIdent `json_example
+  let cmd ← `(command| def $n := json% $stx:json)
+  logInfo m!"Command: {cmd}"
+  TryThis.addSuggestion stx_cmd cmd
+  logInfo m!"Done"
+| _ => throwUnsupportedSyntax
+
+-- #rt_json {"c": {"d": -3.4}, "b": [true, false, null], "a": 1}
+
+
 end LeanAide
