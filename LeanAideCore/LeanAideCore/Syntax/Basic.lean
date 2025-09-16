@@ -45,11 +45,11 @@ end LeanAide
 namespace LeanAide.Meta
 
 declare_syntax_cat thmAction
-syntax "translate" : thmAction
+syntax "translate_theorem" : thmAction
 
-syntax (name := thmCommand) "#theorem" (ppSpace ident)? (ppSpace ":")? ppSpace str (ppSpace "||" ppSpace thmAction)?: command
+syntax (name := thmCommand) "#theorem" (ppSpace ident)? (ppSpace ":")? ppSpace str (ppSpace ">>" ppSpace thmAction)?: command
 
-syntax (name := defCommand) "#def" ppSpace str (ppSpace "||" ppSpace "translate")? : command
+syntax (name := defCommand) "#def" ppSpace str (ppSpace ">>" ppSpace "translate_definition")? : command
 
 syntax (name:= addDocs) "#doc" command : command
 
@@ -80,29 +80,29 @@ def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) :
   fun stx => Command.liftTermElabM do
   match stx with
   | `(command| #theorem $s:str) =>
-    let stx' ← `(command| #theorem : $s:str || translate)
+    let stx' ← `(command| #theorem : $s:str >> translate_theorem)
     TryThis.addSuggestion stx stx' (header :="Choose action on theorem text:\n")
   | `(command| #theorem $name:ident $s:str) =>
-    let stx' ← `(command| #theorem $name:ident : $s:str || translate)
+    let stx' ← `(command| #theorem $name:ident : $s:str >> translate_theorem)
     TryThis.addSuggestion stx stx' (header :="Choose action on theorem text:\n")
   | `(command| #theorem : $s:str) =>
-    let stx' ← `(command| #theorem : $s:str || translate)
+    let stx' ← `(command| #theorem : $s:str >> translate_theorem)
     TryThis.addSuggestion stx stx' (header :="Choose action on theorem text:\n")
   | `(command| #theorem $name:ident : $s:str) =>
-    let stx' ← `(command| #theorem $name:ident : $s:str || translate)
+    let stx' ← `(command| #theorem $name:ident : $s:str >> translate_theorem)
     TryThis.addSuggestion stx stx' (header :="Choose action on theorem text:\n")
   -- Now handle the actual translation
-  | `(command| #theorem $s:str || translate) =>
+  | `(command| #theorem $s:str >> translate_theorem) =>
     let s := s.getString
     go s stx none
-  | `(command| #theorem $name:ident $s:str || translate) =>
+  | `(command| #theorem $name:ident $s:str >> translate_theorem) =>
     let s := s.getString
     let name := name.getId
     go s stx (some name)
-  | `(command| #theorem : $s:str || translate) =>
+  | `(command| #theorem : $s:str >> translate_theorem) =>
     let s := s.getString
     go s stx none
-  | `(command| #theorem $name:ident : $s:str || translate) =>
+  | `(command| #theorem $name:ident : $s:str >> translate_theorem) =>
     let s := s.getString
     let name := name.getId
     go s stx (some name)
@@ -141,11 +141,11 @@ def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) :
 @[command_elab defCommand] def defCommandImpl : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
-  | `(command| #def $s:str || translate) =>
+  | `(command| #def $s:str >> translate_definition) =>
     let s := s.getString
     go s stx
   | `(command| #def $s:str) =>
-    let stx' ← `(command| #def $s:str || translate)
+    let stx' ← `(command| #def $s:str >> translate_definition)
     TryThis.addSuggestion stx stx' (header :="Choose action on definition text:\n")
   | _ => throwUnsupportedSyntax
   where go (s: String) (stx: Syntax) : TermElabM Unit := do
