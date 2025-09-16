@@ -48,17 +48,17 @@ structure DefinitionCode where
   statement : Syntax.Command
 deriving Inhabited, Repr
 
-structure Document where
+structure ProofDocument where
   name : Name
   content : String
 deriving Inhabited, Repr, ToJson, FromJson
 
-structure StructuredDocument where
+structure StructuredProof where
   name : Name
   json: Json
 deriving Inhabited, Repr, ToJson, FromJson
 
-structure DocumentCode where
+structure ProofCode where
   name : Name
   code : TSyntax ``commandSeq
 deriving Inhabited, Repr
@@ -77,7 +77,7 @@ instance : Content Query where
 instance : Content Response where
   content r := r.message
 
-instance : Content Document where
+instance : Content ProofDocument where
   content d := d.content
 
 instance : Content Comment where
@@ -91,15 +91,15 @@ def ResponseType.toType : ResponseType → Type
 | .start => Unit
 | .query => Query
 | .response => Response
-| .document => Document
-| .structuredDocument => StructuredDocument
-| .code => DocumentCode
+| .document => ProofDocument
+| .structuredDocument => StructuredProof
+| .code => ProofCode
 | .comment => Comment
 | .theoremText => TheoremText
 | .theoremCode => TheoremCode
 | .definitionText => DefinitionText
 | .definitionCode => DefinitionCode
-| .documentCode => DocumentCode
+| .documentCode => ProofCode
 
 instance (rt: ResponseType) : Repr rt.toType where
   reprPrec := by
@@ -119,13 +119,13 @@ instance queryOfType : ResponseType.OfType Query where
 instance responseOfType : ResponseType.OfType Response where
   rt := .response
 
-instance documentOfType : ResponseType.OfType Document where
+instance documentOfType : ResponseType.OfType ProofDocument where
   rt := .document
 
-instance structuredDocumentOfType : ResponseType.OfType StructuredDocument where
+instance structuredDocumentOfType : ResponseType.OfType StructuredProof where
   rt := .structuredDocument
 
-instance codeOfType : ResponseType.OfType DocumentCode where
+instance codeOfType : ResponseType.OfType ProofCode where
   rt := .code
 
 instance commentOfType : ResponseType.OfType Comment where
@@ -143,7 +143,7 @@ instance definitionTextOfType : ResponseType.OfType DefinitionText where
 instance definitionCodeOfType : ResponseType.OfType DefinitionCode where
   rt := .definitionCode
 
-instance documentCodeOfType : ResponseType.OfType DocumentCode where
+instance documentCodeOfType : ResponseType.OfType ProofCode where
   rt := .documentCode
 
 
@@ -159,10 +159,10 @@ inductive Discussion : Type → Type where
   | definitionTranslation (init : Discussion DefinitionText) (dc : DefinitionCode) : Discussion DefinitionCode
   | comment {rt : ResponseType} (init: Discussion rt.toType) (c : Comment) : Discussion Comment
   | proveTheoremQuery (init: Discussion Unit) (tt : TheoremText) : Discussion TheoremText
-  | proofDocument (init: Discussion TheoremCode) (doc : Document) (prompt? : Option String := none) :  Discussion Document
-  | proofStructuredDocument (init: Discussion Document) (sdoc : StructuredDocument) (prompt? : Option String := none) (schema : Option Json := none) :  Discussion StructuredDocument
-  | proofCode (init: Discussion StructuredDocument) (tc : DocumentCode) : Discussion DocumentCode
-  | rewrittenDocument (init: Discussion Document ) (doc : Document) (prompt? : Option String := none) :  Discussion Document
+  | proofDocument (init: Discussion TheoremCode) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
+  | proofStructuredDocument (init: Discussion ProofDocument) (sdoc : StructuredProof) (prompt? : Option String := none) (schema : Option Json := none) :  Discussion StructuredProof
+  | proofCode (init: Discussion StructuredProof) (tc : ProofCode) : Discussion ProofCode
+  | rewrittenDocument (init: Discussion ProofDocument ) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
   | edit {rt : ResponseType} (userName? : Option String := none) : Discussion rt.toType  → Discussion rt.toType
 deriving Repr
 
@@ -221,13 +221,13 @@ instance appendDefinitionCode : Append DefinitionText DefinitionCode where
   append d dc := Discussion.definitionTranslation d dc
 instance appendProveTheorem : Append Unit TheoremText where
   append d tt := Discussion.proveTheoremQuery d tt
-instance appendProofDocument : Append TheoremCode Document where
+instance appendProofDocument : Append TheoremCode ProofDocument where
   append d doc := Discussion.proofDocument d doc
-instance appendProofStructuredDocument : Append Document StructuredDocument where
+instance appendProofStructuredDocument : Append ProofDocument StructuredProof where
   append d sdoc := Discussion.proofStructuredDocument d sdoc
-instance appendProofCode : Append StructuredDocument DocumentCode where
+instance appendProofCode : Append StructuredProof ProofCode where
   append d tc := Discussion.proofCode d tc
-instance appendRewrittenDocument : Append Document Document where
+instance appendRewrittenDocument : Append ProofDocument ProofDocument where
   append d doc := Discussion.rewrittenDocument d doc
 
 def append {α β : Type} [r : Append α β] (d : Discussion α) (b : β) : Discussion β :=

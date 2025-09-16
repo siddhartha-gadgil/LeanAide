@@ -13,35 +13,35 @@ def pruneName (n : Name) : Name :=
   let cs := cs.tail.reverse
   cs.foldl (fun acc c => if c == Name.anonymous then acc else acc.append c) Name.anonymous
 
-macro doc:docComment "#document" ppSpace n:ident : command =>
+macro doc:docComment "#proof_document" ppSpace n:ident : command =>
   let text := doc.raw.reprint.get!
   let text := text.drop 4 |>.dropRight 4
   let textStx := Syntax.mkStrLit text
   let name := n.getId
   let nameStx := mkIdent name
   let docName := pruneName name
-  `(command| def $nameStx : Document := { name := $(quote docName), content := $(textStx) } )
+  `(command| def $nameStx : ProofDocument := { name := $(quote docName), content := $(textStx) } )
 
-instance documentCommand : DefinitionCommand Document where
+instance documentCommand : DefinitionCommand ProofDocument where
   cmd d  := do
-    let nameStx := Lean.mkIdent <| d.name ++ "doc".toName
+    let nameStx := Lean.mkIdent <| d.name ++ "proof_doc".toName
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ( d.content ++ " -/")]
 
-    `(command| $docs:docComment #document $nameStx)
+    `(command| $docs:docComment #proof_document $nameStx)
 
 /-- world -/
-#document hello.doc
+#proof_document hello.doc
 
 #eval hello.doc
 
-instance structuredDocumentCommand : DefinitionCommand StructuredDocument where
+instance structuredDocumentCommand : DefinitionCommand StructuredProof where
   cmd s := do
-    let nameStx := Lean.mkIdent (s.name  ++ "struct_doc".toName)
+    let nameStx := Lean.mkIdent (s.name  ++ "struct_proof".toName)
     let jsStx ← getJsonSyntax s.json
-    let typeId := Lean.mkIdent ``StructuredDocument
+    let typeId := Lean.mkIdent ``StructuredProof
     `(command| def $nameStx : $typeId := ⟨ $(quote s.name),  json% $jsStx ⟩  )
 
-#consider ({name := `hello, json := json% {a : {b : 1}} }: StructuredDocument)
+#consider ({name := `hello, json := json% {a : {b : 1}} }: StructuredProof)
 
 macro doc:docComment "#conjecture" ppSpace n:ident ppSpace ":" ppSpace t:term : command => do
   let name := n.getId
@@ -69,7 +69,7 @@ instance : DefinitionCommand TheoremText where
   cmd t := do
     mkQuoteCmd t.text t.name?
 
-instance : ReplaceCommand DocumentCode where
+instance : ReplaceCommand ProofCode where
   replace stx dc := do
     let codeText ← printCommands dc.code
     let text := s!"section {dc.name}\n\n{codeText}\n\nend {dc.name}"
@@ -88,8 +88,12 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
     let resultEffectExpr ← mkAppM ``replaceCommandM #[result]
     let resultEffect ← unsafe evalExpr (Syntax → (TermElabM Unit)) SideEffect resultEffectExpr
     resultEffect stx
-  | `(command| #prove $_:term ) =>
-    return
+  | stx@`(command| #prove $t:term ) => Command.liftTermElabM do
+    let tc := mkIdent ``TheoremCode
+    let pd := mkIdent ``ProofDocument
+    let sp := mkIdent ``StructuredProof
+    let pc := mkIdent ``ProofCode
+    TryThis.addSuggestions stx #[(← `(command| #prove $t:term >> $tc)), (← `(command| #prove $t:term >> $pd)), (← `(command| #prove $t:term >> $sp)), (← `(command| #prove $t:term >> $pc))] (header := "Specify output type with >>")
   | _ => throwUnsupportedSyntax
 
 end LeanAide

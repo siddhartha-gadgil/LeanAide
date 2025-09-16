@@ -30,17 +30,17 @@ instance : GenerateM DefinitionText DefinitionCode where
     let .ok (cmd : Syntax.Command) ← KernelM.translateDef d.text | throwError "Translation failed"
      return { text := d.text, statement := cmd }
 
-instance : GenerateM TheoremCode Document where
+instance : GenerateM TheoremCode ProofDocument where
   generateM t := do
     let doc ← proveForFormalization t.text t.type t.statement
     return { name := t.name, content := doc }
 
-instance : GenerateM Document StructuredDocument where
+instance : GenerateM ProofDocument StructuredProof where
   generateM d := do
     let sdoc ← jsonStructured d.content
     return { name := d.name, json := sdoc }
 
-instance : GenerateM StructuredDocument DocumentCode where
+instance : GenerateM StructuredProof ProofCode where
   generateM s := do
     let cmd ← codeFromJson s.json
     return { name := s.name, code := cmd }
