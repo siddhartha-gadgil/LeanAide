@@ -7,8 +7,6 @@ We now (as of early February 2025) have a convenient way to use LeanAide in your
 
 ## Example usage
 
-**Note:** We are migrating to a better setup, with some changes of Syntax as well. This will be stable by about September 20, 2025. We will document the new setup then. For a preview of what is coming, see the file `PlanSept25.md`. Some of the stuff in the file already works.
-
 The most convenient way to use LeanAide is with syntax we provide that gives code-actions. We have syntax for translating theorems and definitions from natural language to Lean, and for adding documentation strings to theorems and definitions. For example, the following code in a Lean file (with correct dependencies) will give code actions:
 
 ```lean
@@ -23,13 +21,10 @@ import Mathlib
 theorem InfiniteOddNumbers : {n  ∣  Odd n}.Infinite := by sorry
 ```
 
-We also provide syntax for generating/completing proofs. For now this is slow and not of good quality. Experiments and feedback are welcome. The first of the examples below uses a command and the second uses a tactic. 
+We also provide syntax for generating/completing proofs. For now this is slow and not of good quality. Experiments and feedback are welcome. The first of the examples below uses a command and the second uses a tactic.
 
 ```lean
 #prove "The product of two successive natural numbers is even"
-
-theorem eg₁ (n: Nat) : 2 ∣ n * (n + 1) := by
-  #prove
 ```
 
 ## Setting up LeanAide
@@ -69,48 +64,219 @@ lake exe translate "There are infinitely many primes"
 
 Adding `LeanAide` as a dependency to your project is brittle and slow. In particular, toolchains need to match exactly. Further, there may be a collision of transitive dependencies. 
 
-We provide a server-client setup that is more robust and faster, based on the **zero-dependency** project [LeanAideTools](https://github.com/siddhartha-gadgil/LeanAideTools). This acts as a client to the server in this repository.
+We provide a server-client setup that is more robust and faster, based on the **zero-dependency** sub-project `LeanAideCore`, which is the corresponding folder in this repository (and a dependency of `LeanAide`). This can act as a client to the server in this repository.
 
 The simplest (and we expect the most common) way to set up LeanAide to use in your project is to run a server locally. To do this, first set up LeanAide as described above. Then run the following command from the root of the repository:
 
 ```bash
 python3 leanaide_server.py
 ```
-We assume you have Python 3 installed but we only use builtin packages. If you wish to use a different model supporting the OpenAI API, you can pass parameters as in the following example where we use the Mistral API. To use a local model, you can run with the OpenAI Chat API using, for example `vLLM` and give a local url.
+
+We assume you have Python 3 installed but we only use builtin packages. There is a nicer interactive version of the server. To use this, install the packages in `server/requirements.txt` and start the server with the "--ui" parameter.
+
+```bash
+python3 leanaide_server.py --ui
+```
+
+If you wish to use a different model supporting the OpenAI API, you can pass parameters as in the following example where we use the Mistral API. To use a local model, you can run with the OpenAI Chat API using, for example `vLLM` and give a local url.
 
 ```bash
  python3 leanaide_server.py --url https://api.mistral.ai/v1/chat/completions --auth_key <Mistral API key> --model  "mistral-small-latest"
 ```
 
-Next, add `LeanAideTools` as a dependency to your project. This can be done by adding the following line to your `lakefile.toml` file:
+Next, add `LeanAideCore` as a dependency to your project. This can be done by adding the following line to your `lakefile.toml` file:
 
 ```toml
 [[require]]
-name = "LeanAideTools"
-git = "https://github.com/siddhartha-gadgil/LeanAideTools.git"
+name = "leanaidecore"
+git = "https://github.com/siddhartha-gadgil/LeanAide.git"
 rev = "main"
+subDir = "LeanAideCore"
 ```
 
 If you use a `lakefile.lean` file, you can add the following line to the file:
 
 ```lean
-require LeanAideTools from git "https://github.com/siddhartha-gadgil/LeanAideTools"@"main"
+require "leanaidecore" from git "https://github.com/siddhartha-gadgil/LeanAide.git" @ "main" / "LeanAideCore"
 ```
 
-Now you can use the `LeanAideTools` package in your project. The following is an example of how to use it:
+Now you can use the `LeanAideCore` package in your project. The following is an example of how to use it:
 
 ```lean
 import LeanAideTools
+import Mathlib -- as the translated/generated code is likely to use it
 
-#theorem "There are infinitely many primes"
+#leanaide_connect -- also start a server as above.
+
+#theorem "There are infinitely many primes."
 ```
+
+### Proving with LeanAide
+
+Generating proofs and Autoformalization of documents is still very experimental. All are welcome to experiment (and let us know what breaks).
+
+Our approach to proving (and formalization of proofs and documents) is to do this in multiple steps. We have various stages of a proof, with corresponding types:
+
+* `TheoremText` : The statement of a theorem and optionally a name. We can use a string in place of this.
+
+* `TheoremCode` : This is generated by translation of statements.
+  * The statement of a theorem.
+  * A name for the theorem.
+  * The type as a Lean Expression.
+  * A Lean command defining the theorem, with the proof usually `by sorry`.
+
+* `ProofDocument`: This has a name and text "content". It is generated by an LLM based on detailed instructions including those making it suitable for formalization in Lean and relevant Lean definitions included.
+
+* `StructuredProof`: This has name and a document in a custom JSON schema designed for formalization. This is generated from a `ProofDocument` by an LLM given the schema.
+
+* `ProofCode`: This is Lean code for the theorems and proofs (in general with `sorry` in proofs). This is generated from the structured proof using translations of statements and definitions along with Lean meta-programming to build the code from the pieces, and tactics like `simp`, `aesop`, `hammer` and `grind` to finish proofs.
+
+We have syntax to generate any later stage of the above from an earlier stage. For example, suppose (in the setup as above) you type the following command:
+
+```lean
+#prove "The inverse of the identity element in a group is the identity element"
+```
+
+You will be offered code actions (including hyperlinks) to commands of the following format:
+
+```lean
+#prove "The inverse of the identity element in a group is the identity element" >> <target-type>
+```
+
+If one chooses (or directly enters) `StructuredProof` as the target type, then an element is generated of this type. For convenience some additional syntax has been introduced to represent terms of some of these types.
+
+### Using the JSON API
+
+To experiment from some other language (or even the command line), one can directly POST Json to the server and handle the JSON output. Indeed the server is a thin wrapper around the lean executable `leanaide_process.lean`, so one can start this with `lake exe leanaide_process.lean` and use stdio/stdin.
+
+The JSON for each task has a "task" field with the name of the task and should have the other fields required by the task. One can also chain tasks by having a "tasks" field which is a list of tasks instead of the "task" field. In this case the output of each task is merged with its input and becomes the input of the next task.
+
+The tasks supported are the following:
+
+#### **Tasks with Inputs & Outputs**
+
+* **`translate_thm`** — *Translate a natural-language theorem into Lean and elaborate its type*
+
+  * **Inputs:**
+
+    * `theorem_text : String` — natural-language statement of the theorem
+  * **Outputs:**
+
+    * `Except (Array ElabError) Expr` — either a successfully elaborated theorem type (`Expr`) or a list of elaboration errors
+
+* **`translate_thm_detailed`** — *Translate a natural-language theorem with name and produce Lean declaration*
+
+  * **Inputs:**
+
+    * `theorem_text : String` — natural-language statement
+    * `theorem_name : Option Name` — optional name to assign to the theorem
+  * **Outputs:**
+
+    * `(Name × Expr × Syntax.Command)`
+
+      * `Name` — theorem name
+      * `Expr` — elaborated type of the theorem
+      * `Syntax.Command` — Lean command syntax for the full theorem declaration
+
+* **`translate_def`** — *Translate a natural-language definition into Lean code*
+
+  * **Inputs:**
+
+    * `definition_text : String` — natural-language definition
+  * **Outputs:**
+
+    * `Except (Array CmdElabError) Syntax.Command` — either a Lean definition command or elaboration errors
+
+* **`theorem_doc`** — *Generate natural-language documentation for a theorem*
+
+  * **Inputs:**
+
+    * `theorem_name : Name` — name of the theorem
+    * `theorem_statement : Syntax.Command` — Lean syntax of the theorem statement
+  * **Outputs:**
+
+    * `String` — natural-language documentation of the theorem
+
+* **`def_doc`** — *Generate natural-language documentation for a definition*
+
+  * **Inputs:**
+
+    * `definition_name : Name` — name of the definition
+    * `definition_code : Syntax.Command` — Lean syntax of the definition
+  * **Outputs:**
+
+    * `String` — natural-language documentation for the definition
+
+* **`theorem_name`** — *Generate a Lean Prover name for the theorem*
+
+  * **Inputs:**
+
+    * `theorem_text : String` — natural-language statement
+  * **Outputs:**
+
+    * `Name` — automatically generated Lean name for the theorem
+
+* **`prove_for_formalization`** — *Generate a detailed proof or proof sketch for a theorem*
+
+  * **Inputs:**
+
+    * `theorem_text : String` — natural-language theorem
+    * `theorem_code : Expr` — elaborated theorem type
+    * `theorem_statement : Syntax.Command` — full Lean statement
+  * **Outputs:**
+
+    * `String` — a document (likely a natural-language or partially formal proof)
+
+* **`json_structured`** — *Convert a natural-language document into a structured JSON representation*
+
+  * **Inputs:**
+
+    * `document_text : String` — some natural-language math text
+  * **Outputs:**
+
+    * `Json` — structured JSON representation of the document
+
+* **`lean_from_json_structured`** — *Generate Lean code from structured JSON*
+
+  * **Inputs:**
+
+    * `document_json : Json` — structured JSON of a document
+  * **Outputs:**
+
+    * `TSyntax ``commandSeq` — Lean code parsed from the JSON
+
+* **`elaborate`** — *Elaborate Lean code and collect results, logs, and unsolved goals*
+
+  * **Inputs:**
+
+    * `document_code : String` — Lean code (as text)
+  * **Outputs:**
+
+    * `CodeElabResult` — structured result with:
+
+      * `declarations : List Name` — names of elaborated declarations
+      * `logs : List String` — log messages
+      * `sorries : List (Name × Expr)` — unproven obligations
+      * `sorriesAfterPurge : List (Name × Expr)` — remaining obligations after simplification
+
+* **`math_query`** — *Answer a math question in natural language*
+
+  * **Inputs:**
+
+    * `query : String` — math question
+    * `history : List ChatPair` (optional, default `[]`) — conversation context
+    * `n : Nat` (optional, default `3`) — number of answers to generate
+  * **Outputs:**
+
+    * `List String` — candidate answers to the math question
+
 
 ### Hosting a server
 
-The server is by default launched at `http://localhost:7654`. This can be customized by setting the variables `HOST` and `LEANAIDE_PORT`. To use a shared server, simply set `HOST` to the IP of the hosting machine. In the client, i.e., the project with `LeanAideTools` as a dependency, add the configuration:
+The server is by default launched at `http://localhost:7654`. This can be customized by setting the variables `HOST` and `LEANAIDE_PORT`. To use a shared server, simply set `HOST` to the IP of the hosting machine. In the client, i.e., the project with `LeanAideCore` as a dependency, replace the `#leanaide_connect` with the following.
 
 ```lean
-set_option leanaide.url <hosts IP address>:7654
+#leanaide_connect <hosts IP address>:7654
 ```
 
 to use the host. Further, unless you want all clients to use the hosts authentication for OpenAI or whatever is the model used, the host should not specify an authentication key (better still, start the server with `--auth_key "A key that will not work"`). The client should then supply the authentication key with
@@ -160,5 +326,3 @@ More recently (since about October 2024) the work has been done in collaboration
 This is supported by ARCNet, ART-PARK, IISc.
 
 Our work is described in a [note](https://mathai2022.github.io/papers/17.pdf) at the [2nd Math AI workshop](https://mathai2022.github.io/papers/) and in more detail (along with related work) in a [preprint](https://arxiv.org/abs/2211.07524).
-
-
