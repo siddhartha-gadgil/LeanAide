@@ -67,7 +67,7 @@ theorem forall_nat_cast_succ_eq_add_one_then_eq_id :
       simp_all only
     | succ n ih =>
       trace "Automation tactics found for f (n + 1) = n + 1, closing goal"
-      simp_all only [Nat.add_left_cancel_iff]
+      simp_all only
     done
 
 def pattern_eg := json% {

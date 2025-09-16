@@ -367,27 +367,16 @@ syntax (name:= loadFile) "#load_file" (ppSpace ident)? (ppSpace filepath)? : com
   | _ => throwUnsupportedSyntax
 
 instance : DefinitionCommand String where
-  cmd s name? := do
-    mkQuoteCmd s name?
+  cmd s  := do
+    mkQuoteCmd s none
 
 
-syntax (name := considerCmd) "#consider" (ident ":=")? ppSpace term : command
+syntax (name := considerCmd) "#consider"  ppSpace term : command
 @[command_elab considerCmd] def elabConsiderCmdImpl : CommandElab
 | stx@`(command| #consider $s:term) =>
   Command.liftTermElabM do
   let x ← Term.elabTerm s none
-  let e ← mkAppM ``definitionCommandAnonymous #[x]
-  let type ← mkAppM ``TermElabM #[mkConst ``Syntax.Command]
-  Term.synthesizeSyntheticMVarsNoPostponing
-  let cmdM ← unsafe evalExpr (TermElabM Syntax.Command) type e
-  let cmd ← cmdM
-  TryThis.addSuggestion stx cmd
-| stx@`(command| #consider $n := $s:term) =>
-  Command.liftTermElabM do
-  let x ← Term.elabTerm s none
-  let id := n.getId
-  let optName ←  mkAppM ``some #[toExpr id]
-  let e ← mkAppM ``definitionCommand #[x, optName]
+  let e ← mkAppM ``definitionCommand #[x]
   let type ← mkAppM ``TermElabM #[mkConst ``Syntax.Command]
   Term.synthesizeSyntheticMVarsNoPostponing
   let cmdM ← unsafe evalExpr (TermElabM Syntax.Command) type e
@@ -395,7 +384,7 @@ syntax (name := considerCmd) "#consider" (ident ":=")? ppSpace term : command
   TryThis.addSuggestion stx cmd
 | _ => throwUnsupportedSyntax
 
--- #consider x := "Hello there."
+#consider "Hello there."
 
 declare_syntax_cat json_wrap
 syntax json : json_wrap

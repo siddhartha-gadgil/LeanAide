@@ -424,12 +424,9 @@ def mathQuery (s: String) (history : List ChatPair := []) (n: Nat := 3)  : MetaM
 end KernelM
 
 class DefinitionCommand (α : Type) where
-  cmd (x: α) (name? : Option Name) : TermElabM Syntax.Command
+  cmd (x: α)  : TermElabM Syntax.Command
 
-def definitionCommand {α} [r : DefinitionCommand α] (x: α) (name? : Option Name := none)  : TermElabM Syntax.Command :=
-  r.cmd x name?
-
-def definitionCommandAnonymous {α} [r : DefinitionCommand α] (x: α)  : TermElabM Syntax.Command :=
-  r.cmd x none
+def definitionCommand {α} [r : DefinitionCommand α] (x: α)  : TermElabM Syntax.Command :=
+  r.cmd x
 
 end LeanAide

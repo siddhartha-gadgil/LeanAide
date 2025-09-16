@@ -195,6 +195,21 @@ def egTheorem : Json :=
   ]
 }
 
+/-!
+Generated code for the above JSON structure.
+-/
+namespace Codegen
+  theorem group.inv_eq_one_of_eq_one : ∀ {G : Type u} [inst : Group G] (a : G), a = 1 → a⁻¹ = 1 :=
+    by
+    intro G inst_14157295161945824867 a h₁
+    subst h₁
+    simp_all only [inv_one]
+  theorem inv_eq_of_eq_one : ∀ (G : Type u) [inst : Group G] (e : G), e = 1 → e⁻¹ = e :=
+    by
+    intro G inst_14157295161945824867 e h₂
+    subst h₂
+    simp_all only [inv_one]
+end Codegen
 
 def egTheorem' : Json :=
   json% {"document" : {"body" : [{
