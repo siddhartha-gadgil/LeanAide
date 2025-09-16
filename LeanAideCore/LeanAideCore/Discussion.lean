@@ -236,10 +236,11 @@ def append {α β : Type} [r : Append α β] (d : Discussion α) (b : β) : Disc
 def initQuery (q: Query) : Discussion Query :=
   Discussion.start none |>.mkQuery q
 
+end Discussion
 class GenerateM (α β : Type) where
   generateM : α →  TermElabM β
 
-def generateM {α} (a : α) (β : Type) [r : GenerateM α β]  : TermElabM β :=
+def generateM {α}  (β : Type) [r : GenerateM α β] (a : α) : TermElabM β :=
   r.generateM a
 
 set_option synthInstance.checkSynthOrder false in
@@ -248,6 +249,7 @@ instance GenerateM.composition (α γ : Type) (β : outParam Type) [r1 : Generat
     let d ← r1.generateM a
     r2.generateM d
 
+namespace Discussion
 class Continuation (α β : Type) where
   continueM : (Discussion α) → TermElabM (Discussion β)
 

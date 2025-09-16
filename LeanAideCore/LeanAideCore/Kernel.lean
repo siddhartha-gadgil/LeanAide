@@ -429,4 +429,19 @@ class DefinitionCommand (α : Type) where
 def definitionCommand {α} [r : DefinitionCommand α] (x: α)  : TermElabM Syntax.Command :=
   r.cmd x
 
+class ReplaceCommand (α : Type) where
+  replace (stx: Syntax) (x: α)  : TermElabM Unit
+
+def replaceCommand {α} [r : ReplaceCommand α] (x: α) (stx: Syntax)   : TermElabM Unit :=
+  r.replace stx x
+
+def replaceCommandM {α} [r : ReplaceCommand α] (xm: TermElabM α) (stx: Syntax)   : TermElabM Unit := do
+  r.replace stx (← xm)
+
+open Tactic in
+instance replaceByDefn {α} [r : DefinitionCommand α] : ReplaceCommand α where
+  replace stx x := do
+    let cmd ← r.cmd x
+    TryThis.addSuggestion stx cmd
+
 end LeanAide

@@ -1,5 +1,6 @@
 import LeanAideCore.Syntax
-
+import LeanAideCore
+import LeanAide.Responses
 namespace LeanAide
 
 open Meta
@@ -26,3 +27,11 @@ We can apply any function with domain `String`, for example the constructor of a
 #quote fn_test <| fun s ↦ "Hello, world!\n" ++ s ;
 
 #eval fn_test
+
+-- Generation
+open LeanAide.Discussion
+
+
+-- #eval generateM "There are infinitely many odd numbers." Document
+
+-- #prove "There are infinitely many odd numbers." >> Document

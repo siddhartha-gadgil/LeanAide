@@ -19,6 +19,12 @@ instance : GenerateM TheoremText TheoremCode where
       translateThmDetailed t.text t.name?
     return { text:= t.text, name := name, type := expr,  statement := cmd }
 
+instance : GenerateM String TheoremCode where
+  generateM s := do
+    let (name, expr, cmd) ←
+      translateThmDetailed s none
+    return { text:= s, name := name, type := expr,  statement := cmd }
+
 instance : GenerateM DefinitionText DefinitionCode where
   generateM d := do
     let .ok (cmd : Syntax.Command) ← KernelM.translateDef d.text | throwError "Translation failed"

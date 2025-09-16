@@ -29,7 +29,7 @@ instance documentCommand : DefinitionCommand Document where
 
 instance structuredDocumentCommand : DefinitionCommand StructuredDocument where
   cmd s := do
-    let nameStx := Lean.mkIdent s.name
+    let nameStx := Lean.mkIdent (s.name ++ "struct_doc".toName)
     let jsStx ← getJsonSyntax s.json
     let typeId := Lean.mkIdent ``StructuredDocument
     `(command| def $nameStx : $typeId := ⟨ $(quote s.name),  json% $jsStx ⟩  )
@@ -38,9 +38,8 @@ instance structuredDocumentCommand : DefinitionCommand StructuredDocument where
 
 macro doc:docComment "#conjecture" ppSpace n:ident ppSpace ":" ppSpace t:term : command => do
   let name := n.getId ++ "conj".toName
-  let propId ← `(Prop)
   let nameStx := mkIdent name
-  `(command| $doc:docComment def $nameStx : $propId := $t )
+  `(command| $doc:docComment def $nameStx : Prop := $t )
 
 /--
 Just a test
@@ -49,20 +48,41 @@ Just a test
 
 #check easy.conj
 
-#check Syntax.Level
+instance : DefinitionCommand TheoremCode where
+  cmd c := do
+    let nameStx := Lean.mkIdent (c.name ++ "conj".toName)
+    let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ( c.text ++ " -/")]
+    let typeStx ← delab c.type
+    `(command| $docs:docComment #conjecture $nameStx : $typeStx)
 
-#check mkSort
+instance : DefinitionCommand DefinitionCode where
+  cmd d := return d.statement
 
-elab "#propview" : command =>
-  Command.liftTermElabM do
-  let t ← Term.elabTerm (← `(Prop)) none
-  let s := mkSort Level.zero
-  let ss ← delab s
-  let pp ← PrettyPrinter.ppExpr t
-  logInfo m!"{pp}, {t}"
-  let pp ← PrettyPrinter.ppExpr s
-  logInfo m!"Sort: {pp}, {repr ss}"
+instance : DefinitionCommand TheoremText where
+  cmd t := do
+    mkQuoteCmd t.text t.name?
 
-#propview
+instance : ReplaceCommand DocumentCode where
+  replace stx dc := do
+    let codeText ← printCommands dc.code
+    let text := s!"section {dc.name}\n\n{codeText}\n\nend {dc.name}"
+    TryThis.addSuggestion stx text
+
+syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
+
+@[command_elab proofGenCmd] def elabProofGenCmd : CommandElab
+  | stx@`(command| #prove $t:term >> $out:term) =>
+    Command.liftTermElabM do
+    let type ← elabType out
+    let init ← Term.elabTerm t none
+    let result ← mkAppM ``generateM #[type, init]
+    let SideEffect' ← mkAppM ``TermElabM #[mkConst ``Unit]
+    let SideEffect ← mkArrow (mkConst ``Syntax) SideEffect'
+    let resultEffectExpr ← mkAppM ``replaceCommandM #[result]
+    let resultEffect ← unsafe evalExpr (Syntax → (TermElabM Unit)) SideEffect resultEffectExpr
+    resultEffect stx
+  | `(command| #prove $_:term ) =>
+    return
+  | _ => throwUnsupportedSyntax
 
 end LeanAide
