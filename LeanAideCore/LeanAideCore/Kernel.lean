@@ -111,13 +111,16 @@ def translateThm [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array 
   translateThmDecode response
 
 def translateThmDetailedEncode (text: String) (name? : Option Name) : MetaM Json :=
-  return Json.mkObj [("task", "translate_thm_detailed"), ("theorem_text", text), ("theorem_name", toJson name?)]
+  match name? with
+  | some name =>
+    return Json.mkObj [("task", "translate_thm_detailed"), ("theorem_text", text), ("theorem_name", toJson name)]
+  | none =>
+    return Json.mkObj [("task", "translate_thm_detailed"), ("theorem_text", text)]
 
 def translateThmDetailedDecode (response: Json) : TermElabM (Name × Expr × Syntax.Command) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok nameStr := response.getObjValAs? String "theorem_name" | throwError "response has no 'theorem_name' field"
-    let name := Name.mkStr Name.anonymous nameStr
+    let .ok name := response.getObjValAs? Name "theorem_name" | throwError "response has no 'theorem_name' field"
     let .ok thmCodeTxt := response.getObjValAs? String "theorem_code" | throwError "response has no 'theorem_code' field"
     let .ok thmStxTxt := response.getObjValAs? String "theorem_statement" | throwError "response has no 'theorem_statement' field"
     let thmExpr ←
