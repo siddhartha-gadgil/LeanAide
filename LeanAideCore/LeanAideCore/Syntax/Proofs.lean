@@ -8,28 +8,35 @@ open Lean Meta Elab Term PrettyPrinter Tactic Command Parser
 
 namespace LeanAide
 
+def pruneName (n : Name) : Name :=
+  let cs := n.componentsRev
+  let cs := cs.tail.reverse
+  cs.foldl (fun acc c => if c == Name.anonymous then acc else acc.append c) Name.anonymous
+
 macro doc:docComment "#document" ppSpace n:ident : command =>
   let text := doc.raw.reprint.get!
   let text := text.drop 4 |>.dropRight 4
   let textStx := Syntax.mkStrLit text
-  let name := n.getId ++ "doc".toName
+  let name := n.getId
   let nameStx := mkIdent name
-  `(command| def $nameStx : Document := { name := $(quote n.getId), content := $(textStx) } )
+  let docName := pruneName name
+  `(command| def $nameStx : Document := { name := $(quote docName), content := $(textStx) } )
 
 instance documentCommand : DefinitionCommand Document where
   cmd d  := do
-    let nameStx := Lean.mkIdent d.name
+    let nameStx := Lean.mkIdent <| d.name ++ "doc".toName
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ( d.content ++ " -/")]
 
     `(command| $docs:docComment #document $nameStx)
 
-#consider ({name := `hello, content := "world" }: Document)
+/-- world -/
+#document hello.doc
 
-#check Name.components
+#eval hello.doc
 
 instance structuredDocumentCommand : DefinitionCommand StructuredDocument where
   cmd s := do
-    let nameStx := Lean.mkIdent (s.name ++ "struct_doc".toName)
+    let nameStx := Lean.mkIdent (s.name  ++ "struct_doc".toName)
     let jsStx ← getJsonSyntax s.json
     let typeId := Lean.mkIdent ``StructuredDocument
     `(command| def $nameStx : $typeId := ⟨ $(quote s.name),  json% $jsStx ⟩  )
@@ -37,7 +44,7 @@ instance structuredDocumentCommand : DefinitionCommand StructuredDocument where
 #consider ({name := `hello, json := json% {a : {b : 1}} }: StructuredDocument)
 
 macro doc:docComment "#conjecture" ppSpace n:ident ppSpace ":" ppSpace t:term : command => do
-  let name := n.getId ++ "conj".toName
+  let name := n.getId
   let nameStx := mkIdent name
   `(command| $doc:docComment def $nameStx : Prop := $t )
 
@@ -46,7 +53,7 @@ Just a test
 -/
 #conjecture easy : 2 + 2 = 4
 
-#check easy.conj
+#check easy
 
 instance : DefinitionCommand TheoremCode where
   cmd c := do
