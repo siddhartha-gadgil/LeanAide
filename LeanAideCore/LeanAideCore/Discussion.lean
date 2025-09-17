@@ -267,6 +267,9 @@ instance {α β : Type} [inst : GenerateM α β][inst' : Append α β] : Continu
     let x ← inst.generateM d.last
     return d.append x
 
+/--
+The simplified chat history. In case of complex queries with examples etc., a simple query is substituted.
+-/
 def historyM {α : Type } (d : Discussion α ) :
   MetaM ((List ChatPair) × Option String) := do
   match d with
@@ -281,21 +284,43 @@ def historyM {α : Type } (d : Discussion α ) :
     let (h, sp?) ← init.historyM
     return addQuery h sp? c.message
   | digress _ _ => return ([], none) -- reset history on digression
-  | translateTheoremQuery _ _ => return ([], none)
-  | theoremTranslation _ _ => return ([], none)
-  | translateDefinitionQuery _ _ => return ([], none)
-  | definitionTranslation _ _ => return ([], none)
-  | proveTheoremQuery _ _ => return ([], none)
+  | translateTheoremQuery init tt =>
+    let (h, sp?) ← init.historyM
+    let q := s!"Translate the following theorem statement into a formal Lean theorem statement and its type:\n{tt.text}\n"
+    return addQuery h sp? q
+  | theoremTranslation init tc =>
+    let (h, sp?) ← init.historyM
+    let q := s!"Translate the following theorem statement into a formal Lean theorem statement and its type:\n{tc.text}\n"
+    let response := s!"{tc.statement}"
+    return addSyntheticPair h sp? q response
+  | translateDefinitionQuery init tt =>
+    let (h, sp?) ← init.historyM
+    let q := s!"Translate the following definition into a formal Lean definition and its type:\n{tt.text}\n"
+    return addQuery h sp? q
+  | definitionTranslation init tt =>
+    let (h, sp?) ← init.historyM
+    let q := s!"Translate the following definition into a formal Lean definition and its type:\n{tt.text}\n"
+    let response := s!"{tt.statement}"
+    return addSyntheticPair h sp? q response
+  | proveTheoremQuery init tt =>
+    let (h, sp?) ← init.historyM
+    let q := s!"Provide a detailed proof of the following theorem:\n{tt.text}\n"
+    return addQuery h sp? q
   | proofDocument init doc prompt? =>
-    let prompt := prompt?.getD
-      (← Prompts.proveForFormalization init.last.text init.last.type init.last.statement)
-    return ([{user := prompt, assistant := doc.content}], none)
-  | proofStructuredDocument init sdoc prompt? schema? => do
-    let doc := init.last
-    let prompt := prompt?.getD
-      (← Prompts.jsonStructured doc.content schema?)
-    return ([{user := prompt, assistant := sdoc.json.pretty}], none)
-  | proofCode init _ => init.historyM
+    let statement := init.last.text
+    let (h, sp?) ← init.historyM
+    let q := s!"Provide a detailed proof of the following theorem:\n{statement}\n"
+    return addSyntheticPair h sp? q doc.content
+  | proofStructuredDocument init sdoc _ _ => do
+    let (h, sp?) ← init.historyM
+    let q := "Write the proof in the structured JSON format of LeanAide."
+    let response := s!"{sdoc.json.pretty}"
+    return addSyntheticPair h sp? q response
+  | proofCode init c =>
+    let (h, sp?) ← init.historyM
+    let q := "Write the proof in Lean code."
+    let response ← printCommands c.code
+    return addSyntheticPair h sp? q response
   | rewrittenDocument init _ _ => init.historyM
   | edit _ d => d.historyM
 where
@@ -312,8 +337,13 @@ where
       match h.getLast? with
       | some lastPair => (h.dropLast ++ [{lastPair with assistant := lastPair.assistant ++ "\n" ++ r}], none) -- response appended to last
       | none => (h, none) -- response to nothing is discarded
-
--- dummies for testing
+  addSyntheticPair (h: List ChatPair) (sp? : Option String) (q: String) (response : String) : (List ChatPair) × Option String :=
+    match sp? with
+    | some sp =>
+      let newPair : ChatPair := {user := sp, assistant := response}
+      (h ++ [newPair], none)
+    | none =>
+      (h ++ [ {user := q, assistant := response} ], none)
 section
 
 local instance queryResponse : GenerateM Query Response where

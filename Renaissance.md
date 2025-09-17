@@ -1,10 +1,10 @@
 # Announcement
 
-I am delighted to have been selected for the award of a grant from Renaissance Philanthropy from the [AI for Mathematics Fund](https://www.renaissancephilanthropy.org/ai-for-math-fund-projects) managed by Renaissance Philanthropy in partnership with founding donor XTX Markets.
+I am delighted to have been selected for the award of a grant from Renaissance Philanthropy from the [AI for Mathematics Fund](https://www.renaissancephilanthropy.org/ai-for-math-fund-projects) managed by Renaissance Philanthropy in partnership with founding donor XTX Markets. This is a grant over two years for my project **LeanAide**.
 
-## Introduction
+## LeanAide: Bridging AI and Mathematics with Autoformalization
 
-AI/ML systems, especially Foundation Models, are now capable of mathematical reasoning at high levels, with models such as Gemini-2.5-pro and OpenAI’s o3 and GPT-5 solving problems at levels comparable to excellent research students. Yet three related limitations come in the way of their more widespread adoption - their accuracy, scalability and autonomy. Indeed to allow scalable and/or autonomous use, it is not sufficient to have a reasonably high accuracy as a single error makes a chain of mathematical reasoning invalid. 
+AI/ML systems, especially Foundation Models, are now capable of mathematical reasoning at high levels, with models such as Gemini-2.5-pro and OpenAI’s o3 and GPT-5 solving problems at levels comparable to excellent research students. Yet three related limitations come in the way of their more widespread adoption - their accuracy, scalability and autonomy. Indeed to allow scalable and/or autonomous use, it is not sufficient to have a reasonably high accuracy as a single error makes a chain of mathematical reasoning invalid.
 
 It is widely believed that the best way to overcome these limitations is to integrate with Interactive Theorem Provers, with the Lean Theorem Prover being the most promising choice.
 
@@ -25,6 +25,15 @@ This work will build on both [existing code](https://github.com/siddhartha-gadgi
 I started my career working in mathematics (with a PhD from Caltech), specifically Topology, Geometric Group theory and related fields and continue to work to some extent with these. I have also been fortunate to interact closely with top mathematicians and am immersed in an environment with many first-rate mathematicians. The design of the tools will be informed by this experience.
 
 My primary work for a decade or so has been in Automated Theorem Proving, for the last three years with the Lean Prover and LLMs. My work in Lean is at various levels - formalization, programming and (mostly) meta-programming. Meta-programming is where we work with not just a language but with internal representations in the language. Meta-programming in Lean will be a core component of implementation.
+
+## Developing LeanAide
+
+The grant will play a crucial role in many aspects of the development of LeanAide. With these funds, I will have:
+
+* A team to collaborate on the work.
+* API access to frontier models.
+* Cloud computing for hosting servers for development and demos.
+* Collaborations and feedback through visits and conferences.
 
 ## Running the code
 
