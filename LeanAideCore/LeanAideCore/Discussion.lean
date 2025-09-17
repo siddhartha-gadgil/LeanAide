@@ -152,7 +152,6 @@ inductive Discussion : Type → Type where
   | start  (sysPrompt? : Option String)  : Discussion Unit
   | query {rt: ResponseType} (init: Discussion rt.toType) (q : Query) : Discussion Query
   | response (init: Discussion Query) (r : Response) : Discussion Response
-  | digress {a b : ResponseType}  (init: Discussion a.toType) (elem : b.toType): Discussion b.toType
   | translateTheoremQuery (init : Discussion Unit) (tt : TheoremText) : Discussion TheoremText
   | theoremTranslation (init : Discussion TheoremText) (tc : TheoremCode) :Discussion TheoremCode
   | translateDefinitionQuery (init : Discussion Unit) (dt : DefinitionText) : Discussion DefinitionText
@@ -172,7 +171,6 @@ def last {α} : Discussion α → α
 | start _  => ()
 | query _ q => q
 | response _ r => r
-| digress _ d => d
 | translateTheoremQuery _ tt => tt
 | theoremTranslation _ tc => tc
 | translateDefinitionQuery _ d =>  d
@@ -283,7 +281,6 @@ def historyM {α : Type } (d : Discussion α ) :
   | comment init c => do
     let (h, sp?) ← init.historyM
     return addQuery h sp? c.message
-  | digress _ _ => return ([], none) -- reset history on digression
   | translateTheoremQuery init tt =>
     let (h, sp?) ← init.historyM
     let q := s!"Translate the following theorem statement into a formal Lean theorem statement and its type:\n{tt.text}\n"
