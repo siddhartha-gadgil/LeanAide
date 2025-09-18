@@ -40,9 +40,16 @@ def mkQuoteCmd (doc: String) (name?: Option Name) : CoreM <| Syntax.Command := d
   `(command| $docs:docComment #quote $ident)
 
 
+declare_syntax_cat discussion
+syntax "following" term : discussion
+syntax "initiate" : discussion
+
+syntax (name := askCommand) "#ask" (num)? str (discussion)? : command
+
 end LeanAide
 
 namespace LeanAide.Meta
+
 
 declare_syntax_cat thmAction
 syntax "translate_theorem" : thmAction
@@ -53,7 +60,7 @@ syntax (name := defCommand) "#def" ppSpace str (ppSpace ">>" ppSpace "translate_
 
 syntax (name:= addDocs) "#doc" command : command
 
-syntax (name := askCommand) "#ask" (num)? str : command
+
 
 
 open Lean.Parser.Command
@@ -177,36 +184,6 @@ def getProofStringText [Monad m] [MonadError m] (stx : TSyntax ``proofComment) :
         TryThis.addSuggestion stx cmd (header := "Try This (with docstring): ")
     else
       logWarning "To translate a definition, end the string with a `.`."
-
-
-@[command_elab askCommand] def askCommandImpl : CommandElab :=
-  fun stx => Command.liftTermElabM do
-  match stx with
-  | `(command| #ask $s:str) =>
-    let s := s.getString
-    go s none stx
-  | `(command| #ask $n:num $s:str) =>
-    let s := s.getString
-    let n := n.getNat
-    go s n stx
-  | _ => throwUnsupportedSyntax
-  where go (s: String) (n?: Option Nat)(stx: Syntax) : TermElabM Unit := do
-    if s.endsWith "." || s.endsWith "?" then
-      -- let server ← chatServer
-      let n := n?.getD 3
-      let responses ← KernelM.mathQuery s [] n
-      for r in responses do
-        logInfo r
-      let stxs ← responses.mapM fun res => do
-        let qr := s!"**Query**: {s}\n\n **Response:** {res}"
-        let res := s!"response_{hash s}" |>.toName
-        let stx ←  mkQuoteCmd qr res
-        ppCommand stx
-      let stxs : List TryThis.Suggestion :=
-        stxs.map fun stx => stx.pretty
-      TryThis.addSuggestions stx <| stxs.toArray
-    else
-      logWarning "To make a query, end the string with a `.` or `?`."
 
 open Command in
 @[command_elab addDocs] def elabAddDocsImpl : CommandElab := fun stx =>

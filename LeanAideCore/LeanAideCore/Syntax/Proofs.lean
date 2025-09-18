@@ -7,6 +7,7 @@ import LeanAideCore.Syntax.Basic
 open Lean Meta Elab Term PrettyPrinter Tactic Command Parser
 
 namespace LeanAide
+open Meta
 
 def pruneName (n : Name) : Name :=
   let cs := n.componentsRev
@@ -32,7 +33,7 @@ instance documentCommand : DefinitionCommand ProofDocument where
 /-- world -/
 #proof_document hello.doc
 
-#eval hello.doc
+-- #eval hello.doc
 
 instance structuredDocumentCommand : DefinitionCommand StructuredProof where
   cmd s := do
@@ -41,7 +42,7 @@ instance structuredDocumentCommand : DefinitionCommand StructuredProof where
     let typeId := Lean.mkIdent ``StructuredProof
     `(command| def $nameStx : $typeId := ⟨ $(quote s.name),  json% $jsStx ⟩  )
 
-#consider ({name := `hello, json := json% {a : {b : 1}} }: StructuredProof)
+-- #consider ({name := `hello, json := json% {a : {b : 1}} }: StructuredProof)
 
 macro doc:docComment "#conjecture" ppSpace n:ident ppSpace ":" ppSpace t:term : command => do
   let name := n.getId
@@ -95,5 +96,45 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
     let pc := mkIdent ``ProofCode
     TryThis.addSuggestions stx #[(← `(command| #prove $t:term >> $tc)), (← `(command| #prove $t:term >> $pd)), (← `(command| #prove $t:term >> $sp)), (← `(command| #prove $t:term >> $pc))] (header := "Specify output type with >>")
   | _ => throwUnsupportedSyntax
+
+@[command_elab askCommand] def askCommandImpl : CommandElab :=
+  fun stx => Command.liftTermElabM do
+  match stx with
+  | `(command| #ask  $_:str) =>
+    logWarning "Follow ask command with 'following <term>' or 'initiate' to continue/start a discussion."
+  | `(command| #ask $_:num $_:str) =>
+    logWarning "Follow ask command with 'following <term>' or 'initiate' to continue/start a discussion."
+  | `(command| #ask $s:str following $p:term) =>
+    let s := s.getString
+    let _p ← Term.elabTerm p none
+    go s none stx
+  | `(command| #ask $n:num $s:str following $p:term) =>
+    let s := s.getString
+    let _p ← Term.elabTerm p none
+    let n := n.getNat
+    go s (some n) stx
+  | `(command| #ask $s:str initiate) =>
+    let s := s.getString
+    go s none stx
+  | `(command| #ask $n:num $s:str initiate) =>
+    let s := s.getString
+    let n := n.getNat
+    go s (some n) stx
+  | _ => throwUnsupportedSyntax
+  where go (s: String) (n?: Option Nat)(stx: Syntax) : TermElabM Unit := do
+      -- let server ← chatServer
+      let n := n?.getD 3
+      let responses ← KernelM.mathQuery s [] n
+      for r in responses do
+        logInfo r
+      let stxs : List TryThis.Suggestion ← responses.mapM fun res => do
+        -- let qr := s!"**Query**: {s}\n\n **Response:** {res}"
+        let queryName := s!"query_{hash s}" |>.toName
+        let resName := s!"response_{hash s}" |>.toName
+        let stxQ ← mkQuoteCmd s queryName
+        let stxR ←  mkQuoteCmd res resName
+        printCommands <| ←  toCommandSeq #[stxQ, stxR]
+      TryThis.addSuggestions stx <| stxs.toArray
+
 
 end LeanAide
