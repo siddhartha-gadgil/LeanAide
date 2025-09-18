@@ -61,3 +61,25 @@ def text :=
   IO.FS.readFile <| "resources" / "ProofGuidelines.md"
 
 #eval text
+
+open TSyntax
+
+open Lean Elab Term
+elab "template%" s:term : term => do
+  let t ← elabTerm s (mkConst ``String)
+  let str ← unsafe evalExpr String (mkConst ``String) t
+  let istr := s!"s!\"{str}\""
+  logInfo m!"{istr}"
+  let .ok stx := Parser.runParserCategory (← getEnv) `term istr
+    | throwError "failed to parse {istr}"
+  let res ← withoutErrToSorry do
+    elabTerm stx (mkConst ``String)
+  return res
+
+def nn := 2
+
+def s := "Hello {1 + 1 + nn}!"
+
+def t := template% s
+
+#eval t

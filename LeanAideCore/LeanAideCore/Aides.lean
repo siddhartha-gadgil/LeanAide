@@ -918,3 +918,14 @@ partial def identNames : Syntax → MetaM (List Name)
     let groups ← ss.toList.mapM identNames
     return groups.flatten.eraseDups
 | _ => return []
+
+elab "s%" s:term : term => do
+  let t ← elabTerm s (mkConst ``String)
+  let str ← unsafe evalExpr String (mkConst ``String) t
+  let istr := s!"s!\"{str}\""
+  logInfo m!"{istr}"
+  let .ok stx := Parser.runParserCategory (← getEnv) `term istr
+    | throwError "failed to parse {istr}"
+  let res ← withoutErrToSorry do
+    elabTerm stx (mkConst ``String)
+  return res

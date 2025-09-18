@@ -231,8 +231,11 @@ instance appendRewrittenDocument : Append ProofDocument ProofDocument where
 def append {α β : Type} [r : Append α β] (d : Discussion α) (b : β) : Discussion β :=
   r.append d b
 
-def initQuery (q: Query) : Discussion Query :=
-  Discussion.start none |>.mkQuery q
+def initQuery (q: Query) (sysPrompt : Option String := none) : Discussion Query :=
+  Discussion.start sysPrompt |>.mkQuery q
+
+def initComment (c: Comment) (sysPrompt : Option String := none) : Discussion Comment :=
+  Discussion.start sysPrompt |>.mkComment c
 
 end Discussion
 class GenerateM (α β : Type) where
