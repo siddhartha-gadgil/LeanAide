@@ -44,7 +44,7 @@ declare_syntax_cat discussion
 syntax "following" term : discussion
 syntax "initiate" : discussion
 
-syntax (name := askCommand) "#ask" (num)? str (discussion)? : command
+syntax (name := askCommand) "#ask" (ppSpace num)? ppSpace str (ppSpace discussion)? : command
 
 end LeanAide
 
@@ -345,7 +345,8 @@ syntax (name:= loadFile) "#load_file" (ppSpace ident)? (ppSpace filepath)? : com
 
 instance : DefinitionCommand String where
   cmd s  := do
-    mkQuoteCmd s none
+    let name := s!"source_{s.hash}".toName
+    return (← mkQuoteCmd s (some name), name)
 
 
 syntax (name := considerCmd) "#consider"  ppSpace term : command

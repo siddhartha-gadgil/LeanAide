@@ -25,22 +25,20 @@ macro doc:docComment "#proof_document" ppSpace n:ident : command =>
 
 instance documentCommand : DefinitionCommand ProofDocument where
   cmd d  := do
-    let nameStx := Lean.mkIdent <| d.name ++ "proof_doc".toName
+    let name := d.name ++ ".proof_doc".toName
+    let nameStx := Lean.mkIdent (d.name ++ "proof_doc".toName)
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ( d.content ++ " -/")]
 
-    `(command| $docs:docComment #proof_document $nameStx)
+    return (← `(command| $docs:docComment #proof_document $nameStx), name)
 
-/-- world -/
-#proof_document hello.doc
-
--- #eval hello.doc
 
 instance structuredDocumentCommand : DefinitionCommand StructuredProof where
   cmd s := do
-    let nameStx := Lean.mkIdent (s.name  ++ "struct_proof".toName)
+    let name := s.name ++ ".struct_proof".toName
+    let nameStx := Lean.mkIdent name
     let jsStx ← getJsonSyntax s.json
     let typeId := Lean.mkIdent ``StructuredProof
-    `(command| def $nameStx : $typeId := ⟨ $(quote s.name),  json% $jsStx ⟩  )
+    return (← `(command| def $nameStx : $typeId := ⟨ $(quote s.name),  json% $jsStx ⟩), name)
 
 -- #consider ({name := `hello, json := json% {a : {b : 1}} }: StructuredProof)
 
@@ -58,23 +56,33 @@ Just a test
 
 instance : DefinitionCommand TheoremCode where
   cmd c := do
-    let nameStx := Lean.mkIdent (c.name ++ "conj".toName)
+    let name := c.name ++ ".conj".toName
+    let nameStx := Lean.mkIdent name
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ( c.text ++ " -/")]
     let typeStx ← delab c.type
-    `(command| $docs:docComment #conjecture $nameStx : $typeStx)
+    return (← `(command| $docs:docComment #conjecture $nameStx : $typeStx), name)
 
 instance : DefinitionCommand DefinitionCode where
-  cmd d := return d.statement
+  cmd d := return (d.statement, d.name)
 
 instance : DefinitionCommand TheoremText where
   cmd t := do
-    mkQuoteCmd t.text t.name?
+    let name := t.name? |>.getD ("theorem_" ++ toString (hash t.text)).toName
+    return (← mkQuoteCmd t.text name, name)
 
 instance : ReplaceCommand ProofCode where
   replace stx dc := do
     let codeText ← printCommands dc.code
     let text := s!"section {dc.name}\n\n{codeText}\n\nend {dc.name}"
     TryThis.addSuggestion stx text
+
+instance : ReplaceCommand (Discussion ProofCode) where
+  replace stx dc := do
+    let dc := dc.last
+    let codeText ← printCommands dc.code
+    let text := s!"section {dc.name}\n\n{codeText}\n\nend {dc.name}"
+    TryThis.addSuggestion stx text
+
 
 syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
 

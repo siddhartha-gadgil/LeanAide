@@ -44,6 +44,7 @@ structure DefinitionText where
 deriving Inhabited, Repr, ToJson, FromJson
 
 structure DefinitionCode where
+  name: Name
   text : String
   statement : Syntax.Command
 deriving Inhabited, Repr

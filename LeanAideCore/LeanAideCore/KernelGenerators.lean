@@ -28,7 +28,8 @@ instance : GenerateM String TheoremCode where
 instance : GenerateM DefinitionText DefinitionCode where
   generateM d := do
     let .ok (cmd : Syntax.Command) ← KernelM.translateDef d.text | throwError "Translation failed"
-     return { text := d.text, statement := cmd }
+    let .some name := getCommandName cmd | throwError "Cannot extract name from definition"
+    return { text := d.text, statement := cmd, name := name }
 
 instance : GenerateM TheoremCode ProofDocument where
   generateM t := do

@@ -427,10 +427,11 @@ def mathQuery (s: String) (history : List ChatPair := []) (n: Nat := 3)  : MetaM
 end KernelM
 
 class DefinitionCommand (α : Type) where
-  cmd (x: α)  : TermElabM Syntax.Command
+  cmd (x: α)  : TermElabM <| Syntax.Command × Name
 
-def definitionCommand {α} [r : DefinitionCommand α] (x: α)  : TermElabM Syntax.Command :=
-  r.cmd x
+def definitionCommand {α} [r : DefinitionCommand α] (x: α)  : TermElabM Syntax.Command := do
+  let pair ← r.cmd x
+  return pair.1
 
 class ReplaceCommand (α : Type) where
   replace (stx: Syntax) (x: α)  : TermElabM Unit
@@ -445,6 +446,13 @@ open Tactic in
 instance replaceByDefn {α} [r : DefinitionCommand α] : ReplaceCommand α where
   replace stx x := do
     let cmd ← r.cmd x
-    TryThis.addSuggestion stx cmd
+    TryThis.addSuggestion stx cmd.1
+
+class RelativDefinitionCommand (α : Type) where
+  cmd (x: α) : Syntax.Term →  TermElabM Syntax.Command
+
+def relativDefinitionCommand {α} [r : RelativDefinitionCommand α] (x: α)  :
+  Syntax.Term →   TermElabM Syntax.Command :=
+  r.cmd x
 
 end LeanAide
