@@ -2,6 +2,7 @@ import Lean
 import LeanAideCore.Aides
 import LeanAideCore.ChatClient
 import LeanAideCore.Prompts
+import LeanAideCore.Kernel
 
 /-!
 Types for a discussion thread involving chatbots, humans and leanaide. Wrapper types for messages and an indexed inductive type for a discussion thread.
@@ -268,6 +269,28 @@ instance {α β : Type} [inst : GenerateM α β][inst' : Append α β] : Continu
   continueM d := do
     let x ← inst.generateM d.last
     return d.append x
+
+class ContinuationCommands (α β : Type) where
+  continueCommandsM : (Discussion α) → Syntax.Term → TermElabM (List Syntax.Command × (Discussion β) × Name)
+
+set_option synthInstance.checkSynthOrder false in
+instance ContinuationCommands.composition (α γ : Type) (β : outParam Type) [r1 : ContinuationCommands α β] [r2 : ContinuationCommands β γ] : ContinuationCommands α γ where
+  continueCommandsM d stx := do
+    let (cmds1, b, name1) ← r1.continueCommandsM d stx
+    let (cmds2, c, name2) ← r2.continueCommandsM b (mkIdent name1)
+    return (cmds1 ++ cmds2, c, name2)
+
+instance {α β : Type} [inst : GenerateM α β][inst' : Append α β] [inst'' : DefinitionCommand β] : ContinuationCommands α β where
+  continueCommandsM d stx := do
+    let x ← inst.generateM d.last
+    let (elemDef, name) ← definitionCommandPair x
+    let descName := name ++ ".chat".toName
+    let appendIdent := mkIdent ``append
+    let descId := mkIdent descName
+    let nameIdent := mkIdent name
+    let cmd ← `(command| def $descId := $appendIdent $stx $nameIdent)
+    let d' := d.append x
+    return ([elemDef, cmd], d', descName)
 
 /--
 The simplified chat history. In case of complex queries with examples etc., a simple query is substituted.

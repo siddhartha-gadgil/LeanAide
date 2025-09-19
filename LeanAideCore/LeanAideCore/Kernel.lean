@@ -433,6 +433,9 @@ def definitionCommand {α} [r : DefinitionCommand α] (x: α)  : TermElabM Synta
   let pair ← r.cmd x
   return pair.1
 
+def definitionCommandPair {α} [r : DefinitionCommand α] (x: α)  : TermElabM (Syntax.Command × Name) :=
+  r.cmd x
+
 class ReplaceCommand (α : Type) where
   replace (stx: Syntax) (x: α)  : TermElabM Unit
 
