@@ -112,17 +112,17 @@ instance : DefinitionCommand Comment where
     return (← mkQuoteCmd c.message name, name)
 
 open Discussion in
-def definitionCommandsAux [DefinitionCommand α] (prevName : Name) (d : α) : TermElabM (List Syntax.Command  × Name) := do
+def definitionCommandsAux [DefinitionCommand α] (prevName : Syntax.Term) (d : α) : TermElabM (List Syntax.Command  × Name) := do
   let (elemDef, name) ← definitionCommandPair d
   let descName := name ++ "chat".toName
   let appendIdent := mkIdent ``append
   let descId := mkIdent descName
   let nameIdent := mkIdent name
-  let stx := mkIdent prevName
+  let stx := prevName
   let cmd ← `(command| def $descId := $appendIdent $stx $nameIdent)
   return ([elemDef, cmd], descName)
 
-def definitionCommands (disc: Discussion α)  (chatName : Name) (prevLength : Nat := 0) : TermElabM (List Syntax.Command  × Name) := do
+def definitionCommands (disc: Discussion α)  (chatName : Syntax.Term) (prevLength : Nat := 0) : TermElabM (List Syntax.Command  × Syntax.Term) := do
   if disc.length <= prevLength then
     return ([], chatName)
   else
@@ -132,43 +132,43 @@ def definitionCommands (disc: Discussion α)  (chatName : Name) (prevLength : Na
   | .query init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .response init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .translateTheoremQuery init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .theoremTranslation init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .translateDefinitionQuery init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .definitionTranslation init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .comment init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .proveTheoremQuery init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .proofDocument init d _ =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .proofStructuredDocument init d _ _ =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .proofCode init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let cmds := commands d.code
@@ -176,15 +176,20 @@ def definitionCommands (disc: Discussion α)  (chatName : Name) (prevLength : Na
   | .rewrittenDocument init d _ =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
       let (cmds, name) ← definitionCommandsAux prevname d
-      return (prevcmds ++ cmds, name)
+      return (prevcmds ++ cmds, mkIdent name)
   | .edit _ init  =>
       definitionCommands init chatName prevLength
+
+def relDefinitionCommands (disc: Discussion α) (prevDisc : Discussion β) : Syntax.Term → TermElabM (List Syntax.Command) := fun stx => do
+  let prevLength := prevDisc.length
+  let (cmds, _) ← definitionCommands disc stx prevLength
+  return cmds
 
 
 def discEg := (Discussion.start none) |>.mkQuery (⟨"Prove that 2 + 2 = 4.", Json.null⟩) |>.response (⟨"Sure, here's a proof: /-- 2 + 2 = 4 -/ theorem two_plus_two : 2 + 2 = 4 := by norm_num", Json.null⟩)
 
 elab "#disc_eg_cmds" : command => Command.liftTermElabM do
-  let (cmds, name) ← definitionCommands discEg `chat_eg
+  let (cmds, name) ← definitionCommands discEg (mkIdent `chat_eg)
   logInfo s!"Final name: {name}"
   for c in cmds do
     logInfo c
@@ -198,12 +203,27 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
     Command.liftTermElabM do
     let type ← elabType out
     let init ← Term.elabTerm t none
+    let discussion ←
+      Discussion.isDiscussionType <| ← inferType init
+    let type ← if discussion && !(← Discussion.isDiscussionType type) then
+      mkAppM ``Discussion #[type]
+    else
+      pure type
     let result ← mkAppM ``generateM #[type, init]
-    let SideEffect' ← mkAppM ``TermElabM #[mkConst ``Unit]
-    let SideEffect ← mkArrow (mkConst ``Syntax) SideEffect'
-    let resultEffectExpr ← mkAppM ``replaceCommandM #[result]
-    let resultEffect ← unsafe evalExpr (Syntax → (TermElabM Unit)) SideEffect resultEffectExpr
-    resultEffect stx
+    if discussion then
+      let cmdsMapExpr ← mkAppM ``relDefinitionCommands #[result, init]
+      let cmdsMapType ← mkArrow (mkConst ``Syntax.Term) (← mkAppM ``TermElabM #[(← mkAppM ``List #[mkConst ``Syntax.Command])])
+      let cmdsMap ← unsafe evalExpr (Syntax.Term → TermElabM (List Syntax.Command)) cmdsMapType cmdsMapExpr
+      let cmds ← cmdsMap t
+      let cmds := cmds.toArray
+      let s ← printCommands (← `(commandSeq | $cmds*))
+      TryThis.addSuggestion stx s (header := "Generated commands:")
+    else
+      let SideEffect' ← mkAppM ``TermElabM #[mkConst ``Unit]
+      let SideEffect ← mkArrow (mkConst ``Syntax) SideEffect'
+      let resultEffectExpr ← mkAppM ``replaceCommandM #[result]
+      let resultEffect ← unsafe evalExpr (Syntax → (TermElabM Unit)) SideEffect resultEffectExpr
+      resultEffect stx
   | stx@`(command| #prove $t:term ) => Command.liftTermElabM do
     let tc := mkIdent ``TheoremCode
     let pd := mkIdent ``ProofDocument

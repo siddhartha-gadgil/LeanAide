@@ -416,6 +416,22 @@ def q : Discussion Query :=
 
 
 end
+
+def isDiscussionType (e: Expr) : MetaM Bool := do
+  let typeExpr := mkSort (Level.succ Level.zero)
+  let mvar ← mkFreshExprMVar typeExpr
+  let discType := mkApp (mkConst ``Discussion) mvar
+  isDefEq e discType
+
+elab "isDiscussionType%" e:term : term => do
+  let e ← elabTerm e none
+  if (← isDiscussionType e) then
+    mkConst ``true
+  else
+    mkConst ``false
+
+#eval isDiscussionType% (Discussion Query)
+
 end Discussion
 
 end LeanAide
