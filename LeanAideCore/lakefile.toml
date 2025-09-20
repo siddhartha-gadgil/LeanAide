@@ -3,3 +3,6 @@ defaultTargets = [ "LeanAideCore" ]
 
 [[lean_lib]]
 name = "LeanAideCore"
+
+[[lean_lib]]
+name = "LeanLog"

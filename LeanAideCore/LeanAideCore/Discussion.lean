@@ -33,6 +33,8 @@ structure TheoremText where
   text : String
 deriving Inhabited, Repr, ToJson, FromJson
 
+def thmText (s: String) (name? : Option Name := none) : TheoremText := { text := s , name? := name? }
+
 structure TheoremCode where
   text : String
   name: Name
@@ -218,6 +220,9 @@ def mkComment {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (c : 
 
 class Append (α β : Type) where
   append : Discussion α → β → Discussion β
+
+instance [Append α β] : HAdd (Discussion α) β (Discussion β) where
+  hAdd := Append.append
 
 instance appendQuery (α : Type) [inst : ResponseType.OfType α] : Append α Query where
   append d q := d.mkQuery q
