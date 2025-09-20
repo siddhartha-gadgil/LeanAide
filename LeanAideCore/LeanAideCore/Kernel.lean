@@ -451,6 +451,16 @@ instance replaceByDefn {α} [r : DefinitionCommand α] : ReplaceCommand α where
     let cmd ← r.cmd x
     TryThis.addSuggestion stx cmd.1
 
+class TermCommands (α : Type) where
+  commandArray (x: α)  : TermElabM (Array Syntax.Command)
+
+open Tactic in
+instance hasCommandsDefn {α} [r : TermCommands α] : ReplaceCommand α where
+  replace stx x := do
+    let cmds ← r.commandArray x
+    let s ←  printCommands <| ←  `(commandSeq| $cmds*)
+    TryThis.addSuggestion stx s
+
 class RelativDefinitionCommand (α : Type) where
   cmd (x: α) : Syntax.Term →  TermElabM Syntax.Command
 

@@ -107,6 +107,8 @@ instance (rt: ResponseType) : Repr rt.toType where
   reprPrec := by
     cases rt <;> simp [ResponseType.toType] <;> apply reprPrec
 
+
+
 class ResponseType.OfType (α : Type)  where
   rt : ResponseType
   ofType : α → rt.toType := by exact fun x ↦ x
@@ -188,6 +190,21 @@ def last {α} : Discussion α → α
 def lastM {α} : TermElabM (Discussion α) → TermElabM α
 | d => do return (← d).last
 
+def length {α} : Discussion α → Nat
+| start _  => 0
+| query init _ => init.length + 1
+| response init _ => init.length + 1
+| translateTheoremQuery init _ => init.length + 1
+| theoremTranslation init _ => init.length + 1
+| translateDefinitionQuery init _ => init.length + 1
+| definitionTranslation init _ => init.length + 1
+| comment init _ => init.length + 1
+| proveTheoremQuery init _ => init.length + 1
+| proofDocument init _ _ => init.length + 1
+| proofStructuredDocument init _ _ _ => init.length + 1
+| proofCode init _ => init.length + 1
+| rewrittenDocument init _ _ => init.length + 1
+| edit _ d => d.length
 
 def mkQuery {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (q : Query) : Discussion Query := by
   apply Discussion.query (rt := inst.rt)  _ q
@@ -270,6 +287,12 @@ instance {α β : Type} [inst : GenerateM α β][inst' : Append α β] : Continu
     let x ← inst.generateM d.last
     return d.append x
 
+instance {α β : Type} [inst : GenerateM α β][inst' : Append α β] : GenerateM (Discussion α) (Discussion β) where
+  generateM d := do
+    let x ← inst.generateM d.last
+    return d.append x
+
+
 class ContinuationCommands (α β : Type) where
   continueCommandsM : (Discussion α) → Syntax.Term → TermElabM (List Syntax.Command × (Discussion β) × Name)
 
@@ -284,7 +307,7 @@ instance {α β : Type} [inst : GenerateM α β][inst' : Append α β] [inst'' :
   continueCommandsM d stx := do
     let x ← inst.generateM d.last
     let (elemDef, name) ← definitionCommandPair x
-    let descName := name ++ ".chat".toName
+    let descName := name ++ "chat".toName
     let appendIdent := mkIdent ``append
     let descId := mkIdent descName
     let nameIdent := mkIdent name
@@ -386,8 +409,11 @@ def q : Discussion Query :=
 
 -- #eval q.continueM Comment
 
--- #eval generateM  ({ message := "What is 2+2?"} : Query)
--- Comment
+
+-- #eval generateM Comment  ({ message := "What is 2+2?"} : Query)
+
+-- #eval generateM (Discussion Comment)  q
+
 
 end
 end Discussion

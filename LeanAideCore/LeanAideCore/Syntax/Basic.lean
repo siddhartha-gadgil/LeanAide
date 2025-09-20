@@ -31,7 +31,7 @@ macro_rules
 
 
 def mkQuoteCmd (doc: String) (name?: Option Name) : CoreM <| Syntax.Command := do
-  let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ doc ++ " -/")]
+  let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ doc ++ "\n" ++ " -/")]
   match name? with
   | none =>
     `(command| $docs:docComment #quote)
@@ -362,7 +362,7 @@ syntax (name := considerCmd) "#consider"  ppSpace term : command
   TryThis.addSuggestion stx cmd
 | _ => throwUnsupportedSyntax
 
-#consider "Hello there."
+-- #consider "Hello there."
 
 declare_syntax_cat json_wrap
 syntax json : json_wrap
