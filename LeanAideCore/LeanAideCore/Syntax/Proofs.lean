@@ -185,6 +185,8 @@ def relDefinitionCommands (disc: Discussion α) (prevDisc : Discussion β) : Syn
   let (cmds, _) ← definitionCommands disc stx prevLength
   return cmds
 
+def relDefinitionCommandsM (discM: TermElabM (Discussion α)) (prevDisc : Discussion β) : TermElabM (Syntax.Term → TermElabM (List Syntax.Command)) := do
+  return relDefinitionCommands (← discM) prevDisc
 
 def discEg := (Discussion.start none) |>.mkQuery (⟨"Prove that 2 + 2 = 4.", Json.null⟩) |>.response (⟨"Sure, here's a proof: /-- 2 + 2 = 4 -/ theorem two_plus_two : 2 + 2 = 4 := by norm_num", Json.null⟩)
 
@@ -211,9 +213,11 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
       pure type
     let result ← mkAppM ``generateM #[type, init]
     if discussion then
-      let cmdsMapExpr ← mkAppM ``relDefinitionCommands #[result, init]
-      let cmdsMapType ← mkArrow (mkConst ``Syntax.Term) (← mkAppM ``TermElabM #[(← mkAppM ``List #[mkConst ``Syntax.Command])])
-      let cmdsMap ← unsafe evalExpr (Syntax.Term → TermElabM (List Syntax.Command)) cmdsMapType cmdsMapExpr
+      let cmdsMapExpr ← mkAppM ``relDefinitionCommandsM #[result, init]
+      let cmdsMapType' ← mkArrow (mkConst ``Syntax.Term) (← mkAppM ``TermElabM #[(← mkAppM ``List #[mkConst ``Syntax.Command])])
+      let cmdsMapType ← mkAppM ``TermElabM #[cmdsMapType']
+      let cmdsMapM ← unsafe evalExpr (TermElabM (Syntax.Term → TermElabM (List Syntax.Command))) cmdsMapType cmdsMapExpr
+      let cmdsMap ← cmdsMapM
       let cmds ← cmdsMap t
       let cmds := cmds.toArray
       let s ← printCommands (← `(commandSeq | $cmds*))

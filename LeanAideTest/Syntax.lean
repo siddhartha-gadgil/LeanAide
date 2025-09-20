@@ -34,4 +34,14 @@ open LeanAide.Discussion
 
 -- #eval generateM "There are infinitely many odd numbers." Document
 
--- #prove "There are infinitely many odd numbers." >> Document
+#prove "There are infinitely many odd numbers." >> ProofDocument
+
+#start_chat chatEg
+
+def chatEg₁ := chatEg + (thmText  "There are infinitely many odd numbers.")
+
+#eval chatEg₁
+
+#prove chatEg₁ >> ProofDocument
+
+end LeanAide
