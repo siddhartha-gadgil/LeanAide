@@ -919,6 +919,8 @@ partial def identNames : Syntax → MetaM (List Name)
     return groups.flatten.eraseDups
 | _ => return []
 
+namespace LeanAide
+
 elab "s%" s:term : term => do
   let t ← elabTerm s (mkConst ``String)
   let str ← unsafe evalExpr String (mkConst ``String) t
@@ -929,3 +931,21 @@ elab "s%" s:term : term => do
   let res ← withoutErrToSorry do
     elabTerm stx (mkConst ``String)
   return res
+
+class Proxy (α β : Type) [Repr β] [ToJson β] [FromJson β] where
+  to : α → TermElabM β
+  of : β → TermElabM α
+
+def proxy {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (a : α) : TermElabM β :=
+  Proxy.to a
+
+def unproxy {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (b : β) : TermElabM α :=
+  Proxy.of b
+
+def proxyJson {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (a : α) : TermElabM Json := do
+  let b : β  ← proxy a
+  return toJson b
+
+def unproxyJson {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (j: Json) : TermElabM α := do
+  let .ok (b : β) := fromJson? j | throwError s!"failed to parse {j}"
+  unproxy b

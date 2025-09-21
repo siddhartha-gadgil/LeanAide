@@ -62,7 +62,7 @@ Just a test
 -/
 #conjecture easy : 2 + 2 = 4
 
-#check easy
+-- #check easy
 
 instance : DefinitionCommand TheoremCode where
   cmd c := do

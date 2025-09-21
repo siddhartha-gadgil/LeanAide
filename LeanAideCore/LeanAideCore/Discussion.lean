@@ -274,6 +274,18 @@ instance GenerateM.composition (α γ : Type) (β : outParam Type) [r1 : Generat
     let d ← r1.generateM a
     r2.generateM d
 
+set_option synthInstance.checkSynthOrder false in
+instance GenerateM.compositionProxyTo (α γ : Type) (β : outParam Type) [r1 : Proxy α β] [r2 : GenerateM β γ] : GenerateM α γ where
+  generateM a := do
+    let d ← r1.to a
+    r2.generateM d
+
+set_option synthInstance.checkSynthOrder false in
+instance GenerateM.compositionProxyOf (α γ : Type) (β : outParam Type) [r1 : GenerateM α β] [r2 : Proxy γ β] : GenerateM α γ where
+  generateM a := do
+    let d ← r1.generateM a
+    r2.of d
+
 namespace Discussion
 class Continuation (α β : Type) where
   continueM : (Discussion α) → TermElabM (Discussion β)
