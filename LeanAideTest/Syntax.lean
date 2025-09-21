@@ -34,7 +34,14 @@ open LeanAide.Discussion
 
 -- #eval generateM "There are infinitely many odd numbers." Document
 
+/-- There are infinitely many odd numbers. -/
+#theorem_code infinitely_many_odd_numbers.theorem_code : {n | Odd n}.Infinite
+
+#eval infinitely_many_odd_numbers.theorem_code
+
 #prove "There are infinitely many odd numbers." >> ProofDocument
+
+
 
 #start_chat chatEg
 

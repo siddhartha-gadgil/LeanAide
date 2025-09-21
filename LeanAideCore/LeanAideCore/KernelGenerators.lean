@@ -13,17 +13,30 @@ instance : Continuation Query Response where
     let res ← mathQuery d.last.message history 1
     return d.append {message := res.head!}
 
-instance : GenerateM TheoremText TheoremCodeM where
+instance thmTextToCode : GenerateM TheoremText TheoremCodeM where
   generateM t := do
     let (name, expr, cmd) ←
       translateThmDetailed t.text t.name?
     return { text:= t.text, name := name, type := expr,  statement := cmd }
 
-instance : GenerateM String TheoremCodeM where
+instance stringToThmCode : GenerateM String TheoremCodeM where
   generateM s := do
     let (name, expr, cmd) ←
       translateThmDetailed s none
     return { text:= s, name := name, type := expr,  statement := cmd }
+
+-- instance : GenerateM String TheoremCode where
+--   generateM t := do
+--     let x ← stringToThmCode.generateM t
+--     proxy x
+
+instance : GenerateM TheoremCodeM TheoremCode where
+  generateM t := do
+    proxy t
+
+instance : GenerateM TheoremCode TheoremCodeM where
+  generateM t := do
+    unproxy t
 
 instance : GenerateM DefinitionText DefinitionCodeM where
   generateM d := do
@@ -46,7 +59,8 @@ instance : GenerateM StructuredProof ProofCode where
     let cmd ← codeFromJson s.json
     return { name := s.name, code := cmd }
 
-#synth GenerateM String ProofCode
+-- #synth GenerateM String ProofCode
 
+-- #synth GenerateM TheoremCode ProofCode
 
 end LeanAide

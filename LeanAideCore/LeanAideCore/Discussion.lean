@@ -49,7 +49,8 @@ structure TheoremCode where
   statement : String
 deriving Inhabited, Repr, ToJson, FromJson
 
-instance : Proxy TheoremCodeM TheoremCode where
+instance : Proxy TheoremCodeM  where
+  β := TheoremCode
   to t := do
     let typeStr ← ppExpr t.type
     let stmtStr ← PrettyPrinter.ppCommand t.statement
@@ -59,6 +60,21 @@ instance : Proxy TheoremCodeM TheoremCode where
     let typeExpr ← elabType typeStx
     let .ok stmtCmd := Parser.runParserCategory (← getEnv) `command t.statement | throwError "Failed to parse statement"
     return { text := t.text, name := t.name, type := typeExpr, statement := ⟨stmtCmd⟩ }
+
+
+instance : InverseProxy TheoremCode  where
+  α := TheoremCodeM
+  of t := do
+    let .ok typeStx := Parser.runParserCategory (← getEnv) `term t.type | throwError "Failed to parse type"
+    let typeExpr ← elabType typeStx
+    let .ok stmtCmd := Parser.runParserCategory (← getEnv) `command t.statement | throwError "Failed to parse statement"
+    return { text := t.text, name := t.name, type := typeExpr, statement := ⟨stmtCmd⟩ }
+  to t := do
+    let typeStr ← ppExpr t.type
+    let stmtStr ← PrettyPrinter.ppCommand t.statement
+    return { text := t.text, name := t.name, type := typeStr.pretty, statement := stmtStr.pretty }
+
+
 
 structure DefinitionText where
   text : String
@@ -293,13 +309,13 @@ instance GenerateM.composition (α γ : Type) (β : outParam Type) [r1 : Generat
     r2.generateM d
 
 set_option synthInstance.checkSynthOrder false in
-def GenerateM.compositionProxyTo (α γ : Type) {β : outParam Type} [ToJson β] [FromJson β] [Repr β] [r1 : Proxy α β] [r2 : GenerateM β γ] : GenerateM α γ where
+def GenerateM.compositionProxyTo (α γ : Type)  [r1 : Proxy α ] [r2 : GenerateM r1.β γ] : GenerateM α γ where
   generateM a := do
     let d ← r1.to a
     r2.generateM d
 
 set_option synthInstance.checkSynthOrder false in
-def GenerateM.compositionProxyOf (α γ : Type) {β : outParam Type}  [ToJson β] [FromJson β] [Repr β] [r2 : Proxy γ β][r1 : GenerateM α β] : GenerateM α γ where
+def GenerateM.compositionProxyOf (α : Type) {β : outParam Type}  [ToJson β] [FromJson β] [Repr β] [r2 : InverseProxy β][r1 : GenerateM α β] : GenerateM α r2.α where
   generateM a := do
     let d ← r1.generateM a
     r2.of d

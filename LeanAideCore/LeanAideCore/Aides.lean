@@ -932,20 +932,28 @@ elab "s%" s:term : term => do
     elabTerm stx (mkConst ``String)
   return res
 
-class Proxy (α β : Type) [Repr β] [ToJson β] [FromJson β] where
+class Proxy (α : Type)  where
+  β : Type
+  toJsonInst : ToJson β := by apply inferInstance
   to : α → TermElabM β
   of : β → TermElabM α
 
-def proxy {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (a : α) : TermElabM β :=
-  Proxy.to a
+class InverseProxy (β  : Type)  where
+  α  : Type
+  of : β → TermElabM α
+  to : α → TermElabM β
 
-def unproxy {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (b : β) : TermElabM α :=
-  Proxy.of b
+def proxy {α: Type}[inst: Proxy α ] (a : α) : TermElabM inst.β :=
+  inst.to a
 
-def proxyJson {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (a : α) : TermElabM Json := do
-  let b : β  ← proxy a
+def unproxy {β : Type}   [inst : InverseProxy β] (b : β) : TermElabM inst.α :=
+  inst.of b
+
+def proxyJson {α : Type} [inst: Proxy α] (a : α) : TermElabM Json := do
+  let b   ← proxy a
+  let _ : ToJson (Proxy.β α) := inst.toJsonInst
   return toJson b
 
-def unproxyJson {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (j: Json) : TermElabM α := do
+def unproxyJson {β : Type} [FromJson β] [inst: InverseProxy β] (j: Json) : TermElabM inst.α := do
   let .ok (b : β) := fromJson? j | throwError s!"failed to parse {j}"
   unproxy b
