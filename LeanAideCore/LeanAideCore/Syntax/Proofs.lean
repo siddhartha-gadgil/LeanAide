@@ -64,7 +64,36 @@ Just a test
 
 -- #check easy
 
-instance : DefinitionCommand TheoremCode where
+#check ppTerm
+
+elab doc:docComment "#theorem_code" n:ident ppSpace ":" ppSpace t:term : command => do
+  let name := n.getId
+  let nameStx := mkIdent name
+  let termName := pruneName name
+  let termNameStx := Syntax.mkStrLit (toString termName)
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  let typeFmt ← Command.liftTermElabM do
+    ppTerm t
+  let typeStx := Syntax.mkStrLit typeFmt.pretty
+  let propName := termName ++ "prop".toName
+  let propId := mkIdent propName
+  let statement ← Command.liftTermElabM do
+    let cmd ← `(command| def $propId : Prop := $typeStx )
+    ppCommand cmd
+  let statementStx := Syntax.mkStrLit statement.pretty
+  let stx ←  `(command| $doc:docComment def $nameStx : TheoremCode := {name := $termNameStx |>.toName, text := $textStx, type := $typeStx, statement := $statementStx} )
+  elabCommand stx
+
+/--
+Just a test
+-/
+#theorem_code easy₁.theorem_code : 2 + 2 = 4
+
+#eval easy₁.theorem_code
+
+instance : DefinitionCommand TheoremCodeM where
   cmd c := do
     let name := c.name ++ "conj".toName
     let nameStx := Lean.mkIdent name
@@ -72,7 +101,15 @@ instance : DefinitionCommand TheoremCode where
     let typeStx ← delab c.type
     return (← `(command| $docs:docComment #conjecture $nameStx : $typeStx), name)
 
-instance : DefinitionCommand DefinitionCode where
+instance : DefinitionCommand TheoremCode where
+  cmd c := do
+    let name := c.name ++ "theorem_code".toName
+    let nameStx := Lean.mkIdent name
+    let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ( c.text ++ " -/")]
+    let typeStx := Syntax.mkStrLit c.type
+    return (← `(command| $docs:docComment #theorem_code $nameStx : $typeStx), name)
+
+instance : DefinitionCommand DefinitionCodeM where
   cmd d := return (d.statement, d.name)
 
 instance : DefinitionCommand TheoremText where
@@ -98,7 +135,7 @@ instance : DefinitionCommand Response where
     let name := s!"response_{hash r.message}".toName
     return (← mkQuoteCmd r.message name, name)
 
-instance : DefinitionCommand DefinitionCode where
+instance : DefinitionCommand DefinitionCodeM where
   cmd d := return (d.statement, d.name)
 
 instance : DefinitionCommand DefinitionText where
@@ -229,7 +266,7 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
       let resultEffect ← unsafe evalExpr (Syntax → (TermElabM Unit)) SideEffect resultEffectExpr
       resultEffect stx
   | stx@`(command| #prove $t:term ) => Command.liftTermElabM do
-    let tc := mkIdent ``TheoremCode
+    let tc := mkIdent ``TheoremCodeM
     let pd := mkIdent ``ProofDocument
     let sp := mkIdent ``StructuredProof
     let pc := mkIdent ``ProofCode

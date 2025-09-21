@@ -35,18 +35,36 @@ deriving Inhabited, Repr, ToJson, FromJson
 
 def thmText (s: String) (name? : Option Name := none) : TheoremText := { text := s , name? := name? }
 
-structure TheoremCode where
+structure TheoremCodeM where
   text : String
   name: Name
   type : Expr
   statement : Syntax.Command
 deriving Inhabited, Repr
 
+structure TheoremCode where
+  text : String
+  name: Name
+  type : String
+  statement : String
+deriving Inhabited, Repr, ToJson, FromJson
+
+instance : Proxy TheoremCodeM TheoremCode where
+  to t := do
+    let typeStr ← ppExpr t.type
+    let stmtStr ← PrettyPrinter.ppCommand t.statement
+    return { text := t.text, name := t.name, type := typeStr.pretty, statement := stmtStr.pretty }
+  of t := do
+    let .ok typeStx := Parser.runParserCategory (← getEnv) `term t.type | throwError "Failed to parse type"
+    let typeExpr ← elabType typeStx
+    let .ok stmtCmd := Parser.runParserCategory (← getEnv) `command t.statement | throwError "Failed to parse statement"
+    return { text := t.text, name := t.name, type := typeExpr, statement := ⟨stmtCmd⟩ }
+
 structure DefinitionText where
   text : String
 deriving Inhabited, Repr, ToJson, FromJson
 
-structure DefinitionCode where
+structure DefinitionCodeM where
   name: Name
   text : String
   statement : Syntax.Command
@@ -100,9 +118,9 @@ def ResponseType.toType : ResponseType → Type
 | .code => ProofCode
 | .comment => Comment
 | .theoremText => TheoremText
-| .theoremCode => TheoremCode
+| .theoremCode => TheoremCodeM
 | .definitionText => DefinitionText
-| .definitionCode => DefinitionCode
+| .definitionCode => DefinitionCodeM
 | .documentCode => ProofCode
 
 instance (rt: ResponseType) : Repr rt.toType where
@@ -140,13 +158,13 @@ instance commentOfType : ResponseType.OfType Comment where
 instance theoremTextOfType : ResponseType.OfType TheoremText where
   rt := .theoremText
 
-instance theoremCodeOfType : ResponseType.OfType TheoremCode where
+instance theoremCodeOfType : ResponseType.OfType TheoremCodeM where
   rt := .theoremCode
 
 instance definitionTextOfType : ResponseType.OfType DefinitionText where
   rt := .definitionText
 
-instance definitionCodeOfType : ResponseType.OfType DefinitionCode where
+instance definitionCodeOfType : ResponseType.OfType DefinitionCodeM where
   rt := .definitionCode
 
 instance documentCodeOfType : ResponseType.OfType ProofCode where
@@ -159,12 +177,12 @@ inductive Discussion : Type → Type where
   | query {rt: ResponseType} (init: Discussion rt.toType) (q : Query) : Discussion Query
   | response (init: Discussion Query) (r : Response) : Discussion Response
   | translateTheoremQuery (init : Discussion Unit) (tt : TheoremText) : Discussion TheoremText
-  | theoremTranslation (init : Discussion TheoremText) (tc : TheoremCode) :Discussion TheoremCode
+  | theoremTranslation (init : Discussion TheoremText) (tc : TheoremCodeM) :Discussion TheoremCodeM
   | translateDefinitionQuery (init : Discussion Unit) (dt : DefinitionText) : Discussion DefinitionText
-  | definitionTranslation (init : Discussion DefinitionText) (dc : DefinitionCode) : Discussion DefinitionCode
+  | definitionTranslation (init : Discussion DefinitionText) (dc : DefinitionCodeM) : Discussion DefinitionCodeM
   | comment {rt : ResponseType} (init: Discussion rt.toType) (c : Comment) : Discussion Comment
   | proveTheoremQuery (init: Discussion Unit) (tt : TheoremText) : Discussion TheoremText
-  | proofDocument (init: Discussion TheoremCode) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
+  | proofDocument (init: Discussion TheoremCodeM) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
   | proofStructuredDocument (init: Discussion ProofDocument) (sdoc : StructuredProof) (prompt? : Option String := none) (schema : Option Json := none) :  Discussion StructuredProof
   | proofCode (init: Discussion StructuredProof) (tc : ProofCode) : Discussion ProofCode
   | rewrittenDocument (init: Discussion ProofDocument ) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
@@ -235,15 +253,15 @@ instance appendComment (α : Type) [inst : ResponseType.OfType α] : Append α C
 
 instance appendTheoremText : Append Unit TheoremText where
   append d tt := Discussion.translateTheoremQuery d tt
-instance appendTheoremCode : Append TheoremText TheoremCode where
+instance appendTheoremCode : Append TheoremText TheoremCodeM where
   append d tc := Discussion.theoremTranslation d tc
 instance appendDefinitionText : Append Unit DefinitionText where
   append d dt := Discussion.translateDefinitionQuery d dt
-instance appendDefinitionCode : Append DefinitionText DefinitionCode where
+instance appendDefinitionCode : Append DefinitionText DefinitionCodeM where
   append d dc := Discussion.definitionTranslation d dc
 instance appendProveTheorem : Append Unit TheoremText where
   append d tt := Discussion.proveTheoremQuery d tt
-instance appendProofDocument : Append TheoremCode ProofDocument where
+instance appendProofDocument : Append TheoremCodeM ProofDocument where
   append d doc := Discussion.proofDocument d doc
 instance appendProofStructuredDocument : Append ProofDocument StructuredProof where
   append d sdoc := Discussion.proofStructuredDocument d sdoc
@@ -275,13 +293,13 @@ instance GenerateM.composition (α γ : Type) (β : outParam Type) [r1 : Generat
     r2.generateM d
 
 set_option synthInstance.checkSynthOrder false in
-instance GenerateM.compositionProxyTo (α γ : Type) (β : outParam Type) [r1 : Proxy α β] [r2 : GenerateM β γ] : GenerateM α γ where
+def GenerateM.compositionProxyTo (α γ : Type) {β : outParam Type} [ToJson β] [FromJson β] [Repr β] [r1 : Proxy α β] [r2 : GenerateM β γ] : GenerateM α γ where
   generateM a := do
     let d ← r1.to a
     r2.generateM d
 
 set_option synthInstance.checkSynthOrder false in
-instance GenerateM.compositionProxyOf (α γ : Type) (β : outParam Type) [r1 : GenerateM α β] [r2 : Proxy γ β] : GenerateM α γ where
+def GenerateM.compositionProxyOf (α γ : Type) {β : outParam Type}  [ToJson β] [FromJson β] [Repr β] [r2 : Proxy γ β][r1 : GenerateM α β] : GenerateM α γ where
   generateM a := do
     let d ← r1.generateM a
     r2.of d
