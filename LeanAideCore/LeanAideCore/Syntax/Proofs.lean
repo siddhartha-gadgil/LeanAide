@@ -95,8 +95,7 @@ elab doc:docComment "#theorem_code" ppSpace n:ident ppSpace ":" ppSpace t:term :
   let nameStx := mkIdent name
   let termName := pruneName name
   let termNameStx := Syntax.mkStrLit (toString termName)
-  let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
+  let text ← getDocStringText doc
   let textStx := Syntax.mkStrLit text
   let typeFmt ← Command.liftTermElabM do
     ppTerm t
@@ -119,7 +118,7 @@ Just a test
 
 #eval unproxy easy₁.theorem_code
 
-instance : DefinitionCommand TheoremCodeM where
+instance : DefinitionCommand Conjecture where
   cmd c := do
     let name := c.name ++ "conj".toName
     let nameStx := Lean.mkIdent name
@@ -293,7 +292,7 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
       let resultEffect ← unsafe evalExpr (Syntax → (TermElabM Unit)) SideEffect resultEffectExpr
       resultEffect stx
   | stx@`(command| #prove $t:term ) => Command.liftTermElabM do
-    let tc := mkIdent ``TheoremCodeM
+    let tc := mkIdent ``Conjecture
     let pd := mkIdent ``ProofDocument
     let sp := mkIdent ``StructuredProof
     let pc := mkIdent ``ProofCode
@@ -309,8 +308,7 @@ syntax (name:= askCommand) (docComment)? "#ask" (ppSpace str)? ppSpace "<<" ppSp
     go text stx t
   | stx@`(command| $doc:docComment #ask << $t:term) =>
     Command.liftTermElabM do
-    let text := doc.raw.reprint.get!
-    let text := text.drop 4 |>.dropRight 4
+    let text ← getDocStringText doc
     go text stx t
   | _ => throwUnsupportedSyntax
   where go (text: String) (stx : Syntax) (t: Syntax.Term) : TermElabM Unit := do
@@ -328,20 +326,6 @@ syntax (name:= askCommand) (docComment)? "#ask" (ppSpace str)? ppSpace "<<" ppSp
     let cmds := cmds.toArray
     let s ← printCommands (← `(commandSeq | $cmds*))
     TryThis.addSuggestion stx s (header := "Generated commands:")
-
--- macro "#ask" s:str ppSpace "<<" ppSpace t:term : command =>
---   let text := s.getString
---   let textStx := Syntax.mkStrLit text
---   let fnId := mkIdent ``Discussion.addQuery
---   `(command| #prove $fnId $t $textStx >> Response)
-
-
--- macro doc:docComment "#ask" ppSpace "<<" ppSpace t:term : command =>
---   let text := doc.raw.reprint.get!
---   let text := text.drop 4 |>.dropRight 4
---   let textStx := Syntax.mkStrLit text
---   `(command| #ask $textStx << $t)
-
 
 @[command_elab llmQueryCommand] def llmQueryCommandImpl : CommandElab :=
   fun stx => Command.liftTermElabM do

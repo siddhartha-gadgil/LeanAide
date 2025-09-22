@@ -35,7 +35,7 @@ deriving Inhabited, Repr, ToJson, FromJson
 
 def thmText (s: String) (name? : Option Name := none) : TheoremText := { text := s , name? := name? }
 
-structure TheoremCodeM where
+structure Conjecture where
   text : String
   name: Name
   type : Expr
@@ -49,7 +49,17 @@ structure TheoremCode where
   statement : String
 deriving Inhabited, Repr, ToJson, FromJson
 
-instance : Proxy TheoremCodeM  where
+def TheoremCode.ofNameM (name: Name) : TermElabM TheoremCode := do
+  let env ← getEnv
+  let some text ← findDocString? env name | throwError "No doc string for {name}"
+  let info ← getConstInfo name
+  let typeStr ← ppExpr info.type
+  let typeStx ← PrettyPrinter.delab info.type
+  let nameIdent := mkIdent <| name ++ "prop".toName
+  let statement ← `(command| def $nameIdent : Prop := $typeStx)
+  return { text := text, name := name, type := typeStr.pretty, statement := (← PrettyPrinter.ppCommand statement).pretty }
+
+instance : Proxy Conjecture  where
   β := TheoremCode
   to t := do
     let typeStr ← ppExpr t.type
@@ -63,7 +73,7 @@ instance : Proxy TheoremCodeM  where
 
 
 instance : InverseProxy TheoremCode  where
-  α := TheoremCodeM
+  α := Conjecture
   of t := do
     let .ok typeStx := Parser.runParserCategory (← getEnv) `term t.type | throwError "Failed to parse type"
     let typeExpr ← elabType typeStx
