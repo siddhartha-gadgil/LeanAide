@@ -59,7 +59,7 @@ instance : GenerateM StructuredProof ProofCode where
     let cmd ← codeFromJson s.json
     return { name := s.name, code := cmd }
 
-instance : GenerateM (Discussion Query) (Discussion Response) where
+instance queryResponse : GenerateM (Discussion Query) (Discussion Response) where
   generateM d := do
     let (history, _) ←  d.historyM
     let res ← mathQuery d.last.message history 1

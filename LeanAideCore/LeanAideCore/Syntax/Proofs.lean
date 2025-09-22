@@ -300,18 +300,47 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
     TryThis.addSuggestions stx #[(← `(command| #prove $t:term >> $tc)), (← `(command| #prove $t:term >> $pd)), (← `(command| #prove $t:term >> $sp)), (← `(command| #prove $t:term >> $pc))] (header := "Specify output type with >>")
   | _ => throwUnsupportedSyntax
 
-macro "#ask" s:str ppSpace "<<" ppSpace t:term : command =>
-  let text := s.getString
-  let textStx := Syntax.mkStrLit text
-  let fnId := mkIdent ``Discussion.addQuery
-  `(command| #prove $fnId $t $textStx >> Response)
+syntax (name:= askCommand) (docComment)? "#ask" (ppSpace str)? ppSpace "<<" ppSpace term : command
+
+@[command_elab askCommand] def elabAskCmd : CommandElab
+  | stx@`(command| #ask $s:str << $t:term) =>
+    Command.liftTermElabM do
+    let text := s.getString
+    go text stx t
+  | stx@`(command| $doc:docComment #ask << $t:term) =>
+    Command.liftTermElabM do
+    let text := doc.raw.reprint.get!
+    let text := text.drop 4 |>.dropRight 4
+    go text stx t
+  | _ => throwUnsupportedSyntax
+  where go (text: String) (stx : Syntax) (t: Syntax.Term) : TermElabM Unit := do
+    let textExpr := mkStrLit text
+    let init ← Term.elabTerm t none
+    let init' ← mkAppM ``Discussion.addQuery #[init, textExpr]
+    let type ← mkAppM ``Discussion #[mkConst ``Response]
+    let result ← mkAppM ``generateM #[type, init']
+    let cmdsMapExpr ← mkAppM ``relDefinitionCommandsM #[result, init]
+    let cmdsMapType' ← mkArrow (mkConst ``Syntax.Term) (← mkAppM ``TermElabM #[(← mkAppM ``List #[mkConst ``Syntax.Command])])
+    let cmdsMapType ← mkAppM ``TermElabM #[cmdsMapType']
+    let cmdsMapM ← unsafe evalExpr (TermElabM (Syntax.Term → TermElabM (List Syntax.Command))) cmdsMapType cmdsMapExpr
+    let cmdsMap ← cmdsMapM
+    let cmds ← cmdsMap t
+    let cmds := cmds.toArray
+    let s ← printCommands (← `(commandSeq | $cmds*))
+    TryThis.addSuggestion stx s (header := "Generated commands:")
+
+-- macro "#ask" s:str ppSpace "<<" ppSpace t:term : command =>
+--   let text := s.getString
+--   let textStx := Syntax.mkStrLit text
+--   let fnId := mkIdent ``Discussion.addQuery
+--   `(command| #prove $fnId $t $textStx >> Response)
 
 
-macro doc:docComment "#ask" ppSpace "<<" ppSpace t:term : command =>
-  let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
-  let textStx := Syntax.mkStrLit text
-  `(command| #ask $textStx << $t)
+-- macro doc:docComment "#ask" ppSpace "<<" ppSpace t:term : command =>
+--   let text := doc.raw.reprint.get!
+--   let text := text.drop 4 |>.dropRight 4
+--   let textStx := Syntax.mkStrLit text
+--   `(command| #ask $textStx << $t)
 
 
 @[command_elab llmQueryCommand] def llmQueryCommandImpl : CommandElab :=
