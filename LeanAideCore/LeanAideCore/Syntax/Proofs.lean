@@ -24,17 +24,16 @@ macro "#start_chat" n:ident s:term : command =>
 
 #start_chat chat2 "Prove that 2 + 2 = 4."
 
-macro doc:docComment "#query" ppSpace : command =>
+macro doc:docComment "#query" ppSpace n:ident : command =>
   let text := doc.raw.reprint.get!
   let text := text.drop 4 |>.dropRight 4
   let textStx := Syntax.mkStrLit text
-  let name := s!"query_{hash text}".toName
-  let nameStx := mkIdent name
-  `(command| def $nameStx : Query := { message := $textStx} )
+  `(command| def $n : Query := { message := $textStx} )
 
-def mkQueryCmd (s: String)  : CoreM Syntax.Command :=
+def mkQueryCmd (s: String) (name: Name)  : CoreM Syntax.Command :=
   let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ s ++ "\n" ++ " -/")]
-  `(command | $docs:docComment #query)
+  let nameStx := mkIdent name
+  `(command | $docs:docComment #query $nameStx)
 
 macro doc:docComment "#response" ppSpace name:ident : command =>
   let text := doc.raw.reprint.get!
@@ -156,7 +155,7 @@ instance [inst: TermCommands α] : TermCommands (Discussion α) where
 instance : DefinitionCommand Query where
   cmd q := do
     let name := s!"query_{hash q.message}".toName
-    return (← mkQueryCmd q.message, name)
+    return (← mkQueryCmd q.message name, name)
 
 instance : DefinitionCommand Response where
   cmd r := do
@@ -261,7 +260,7 @@ elab "#disc_eg_cmds" : command => Command.liftTermElabM do
   for c in cmds do
     logInfo c
 
-#disc_eg_cmds
+-- #disc_eg_cmds
 
 syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
 
@@ -301,26 +300,40 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
     TryThis.addSuggestions stx #[(← `(command| #prove $t:term >> $tc)), (← `(command| #prove $t:term >> $pd)), (← `(command| #prove $t:term >> $sp)), (← `(command| #prove $t:term >> $pc))] (header := "Specify output type with >>")
   | _ => throwUnsupportedSyntax
 
-@[command_elab askCommand] def askCommandImpl : CommandElab :=
+macro "#ask" s:str ppSpace "<<" ppSpace t:term : command =>
+  let text := s.getString
+  let textStx := Syntax.mkStrLit text
+  let fnId := mkIdent ``Discussion.addQuery
+  `(command| #prove $fnId $t $textStx >> Response)
+
+
+macro doc:docComment "#ask" ppSpace "<<" ppSpace t:term : command =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  `(command| #ask $textStx << $t)
+
+
+@[command_elab llmQueryCommand] def llmQueryCommandImpl : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
-  | `(command| #ask  $_:str) =>
+  | `(command| #llm_query  $_:str) =>
     logWarning "Follow ask command with 'following <term>' or 'initiate' to continue/start a discussion."
-  | `(command| #ask $_:num $_:str) =>
+  | `(command| #llm_query $_:num $_:str) =>
     logWarning "Follow ask command with 'following <term>' or 'initiate' to continue/start a discussion."
-  | `(command| #ask $s:str following $p:term) =>
+  | `(command| #llm_query $s:str following $p:term) =>
     let s := s.getString
     let _p ← Term.elabTerm p none
     go s none stx
-  | `(command| #ask $n:num $s:str following $p:term) =>
+  | `(command| #llm_query $n:num $s:str following $p:term) =>
     let s := s.getString
     let _p ← Term.elabTerm p none
     let n := n.getNat
     go s (some n) stx
-  | `(command| #ask $s:str initiate) =>
+  | `(command| #llm_query $s:str initiate) =>
     let s := s.getString
     go s none stx
-  | `(command| #ask $n:num $s:str initiate) =>
+  | `(command| #llm_query $n:num $s:str initiate) =>
     let s := s.getString
     let n := n.getNat
     go s (some n) stx
@@ -332,8 +345,9 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
       for r in responses do
         logInfo r
       let stxs : List TryThis.Suggestion ← responses.mapM fun res => do
-        let stxQ ← mkQueryCmd s
         let name := s!"query_{hash res}".toName
+        let stxQ ← mkQueryCmd s name
+        let name := s!"response_{hash res}".toName
         let stxR ←  mkResponseCmd res name
         printCommands <| ←  toCommandSeq #[stxQ, stxR]
       TryThis.addSuggestions stx <| stxs.toArray

@@ -39,7 +39,6 @@ open LeanAide.Discussion
 
 #eval infinitely_many_odd_numbers.theorem_code
 
-#prove "There are infinitely many odd numbers." >> ProofDocument
 
 
 
@@ -50,9 +49,18 @@ def chatEg₂ := chatEg.mkQuery  {message := "There are infinitely many even num
 #prove chatEg₂ >> Response
 
 
+#ask "Prove that there are infinitely many odd numbers" << chatEg
+
+/--
+Prove that there are infinitely many odd numnbers.
+-/
+#ask << chatEg
+
 def chatEg₁ := chatEg + (thmText  "There are infinitely many odd numbers.")
 
 #eval chatEg₁
+
+#prove "There are infinitely many odd numbers." >> ProofDocument
 
 namespace long_eg
 

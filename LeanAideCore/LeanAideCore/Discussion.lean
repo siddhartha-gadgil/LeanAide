@@ -247,6 +247,9 @@ def mkQuery {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (q : Qu
   rw [inst.eqn]
   exact prev
 
+def addQuery {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (s : String) : Discussion Query :=
+  prev.mkQuery { message := s }
+
 def mkComment {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (c : Comment) : Discussion Comment := by
   apply Discussion.comment (rt := inst.rt) _ c
   rw [inst.eqn]
