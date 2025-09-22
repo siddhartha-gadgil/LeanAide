@@ -134,7 +134,7 @@ def ResponseType.toType : ResponseType → Type
 | .code => ProofCode
 | .comment => Comment
 | .theoremText => TheoremText
-| .theoremCode => TheoremCodeM
+| .theoremCode => TheoremCode
 | .definitionText => DefinitionText
 | .definitionCode => DefinitionCodeM
 | .documentCode => ProofCode
@@ -174,7 +174,7 @@ instance commentOfType : ResponseType.OfType Comment where
 instance theoremTextOfType : ResponseType.OfType TheoremText where
   rt := .theoremText
 
-instance theoremCodeOfType : ResponseType.OfType TheoremCodeM where
+instance theoremCodeOfType : ResponseType.OfType TheoremCode where
   rt := .theoremCode
 
 instance definitionTextOfType : ResponseType.OfType DefinitionText where
@@ -193,12 +193,12 @@ inductive Discussion : Type → Type where
   | query {rt: ResponseType} (init: Discussion rt.toType) (q : Query) : Discussion Query
   | response (init: Discussion Query) (r : Response) : Discussion Response
   | translateTheoremQuery (init : Discussion Unit) (tt : TheoremText) : Discussion TheoremText
-  | theoremTranslation (init : Discussion TheoremText) (tc : TheoremCodeM) :Discussion TheoremCodeM
+  | theoremTranslation (init : Discussion TheoremText) (tc : TheoremCode) :Discussion TheoremCode
   | translateDefinitionQuery (init : Discussion Unit) (dt : DefinitionText) : Discussion DefinitionText
   | definitionTranslation (init : Discussion DefinitionText) (dc : DefinitionCodeM) : Discussion DefinitionCodeM
   | comment {rt : ResponseType} (init: Discussion rt.toType) (c : Comment) : Discussion Comment
   | proveTheoremQuery (init: Discussion Unit) (tt : TheoremText) : Discussion TheoremText
-  | proofDocument (init: Discussion TheoremCodeM) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
+  | proofDocument (init: Discussion TheoremCode) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
   | proofStructuredDocument (init: Discussion ProofDocument) (sdoc : StructuredProof) (prompt? : Option String := none) (schema : Option Json := none) :  Discussion StructuredProof
   | proofCode (init: Discussion StructuredProof) (tc : ProofCode) : Discussion ProofCode
   | rewrittenDocument (init: Discussion ProofDocument ) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
@@ -269,7 +269,7 @@ instance appendComment (α : Type) [inst : ResponseType.OfType α] : Append α C
 
 instance appendTheoremText : Append Unit TheoremText where
   append d tt := Discussion.translateTheoremQuery d tt
-instance appendTheoremCode : Append TheoremText TheoremCodeM where
+instance appendTheoremCode : Append TheoremText TheoremCode where
   append d tc := Discussion.theoremTranslation d tc
 instance appendDefinitionText : Append Unit DefinitionText where
   append d dt := Discussion.translateDefinitionQuery d dt
@@ -277,7 +277,7 @@ instance appendDefinitionCode : Append DefinitionText DefinitionCodeM where
   append d dc := Discussion.definitionTranslation d dc
 instance appendProveTheorem : Append Unit TheoremText where
   append d tt := Discussion.proveTheoremQuery d tt
-instance appendProofDocument : Append TheoremCodeM ProofDocument where
+instance appendProofDocument : Append TheoremCode ProofDocument where
   append d doc := Discussion.proofDocument d doc
 instance appendProofStructuredDocument : Append ProofDocument StructuredProof where
   append d sdoc := Discussion.proofStructuredDocument d sdoc
