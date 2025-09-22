@@ -45,10 +45,21 @@ open LeanAide.Discussion
 
 #start_chat chatEg
 
+def chatEg₂ := chatEg.mkQuery  {message := "There are infinitely many even numbers."}
+
+#prove chatEg₂ >> Response
+
+
 def chatEg₁ := chatEg + (thmText  "There are infinitely many odd numbers.")
 
 #eval chatEg₁
 
+namespace long_eg
+
 #prove chatEg₁ >> ProofDocument
+
+end long_eg
+
+
 
 end LeanAide

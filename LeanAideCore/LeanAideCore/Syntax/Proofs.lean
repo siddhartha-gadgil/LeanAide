@@ -24,6 +24,31 @@ macro "#start_chat" n:ident s:term : command =>
 
 #start_chat chat2 "Prove that 2 + 2 = 4."
 
+macro doc:docComment "#query" ppSpace : command =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  let name := s!"query_{hash text}".toName
+  let nameStx := mkIdent name
+  `(command| def $nameStx : Query := { message := $textStx} )
+
+def mkQueryCmd (s: String)  : CoreM Syntax.Command :=
+  let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ s ++ "\n" ++ " -/")]
+  `(command | $docs:docComment #query)
+
+macro doc:docComment "#response" ppSpace name:ident : command =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  let name := name.getId
+  let nameStx := mkIdent name
+  `(command| def $nameStx : Response := { message := $textStx} )
+
+def mkResponseCmd (s: String) (name: Name)  : CoreM Syntax.Command :=
+  let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ s ++ "\n" ++ " -/")]
+  let nameStx := mkIdent name
+  `(command | $docs:docComment #response $nameStx)
+
 macro doc:docComment "#proof_document" ppSpace n:ident : command =>
   let text := doc.raw.reprint.get!
   let text := text.drop 4 |>.dropRight 4
@@ -131,12 +156,12 @@ instance [inst: TermCommands α] : TermCommands (Discussion α) where
 instance : DefinitionCommand Query where
   cmd q := do
     let name := s!"query_{hash q.message}".toName
-    return (← mkQuoteCmd q.message name, name)
+    return (← mkQueryCmd q.message, name)
 
 instance : DefinitionCommand Response where
   cmd r := do
     let name := s!"response_{hash r.message}".toName
-    return (← mkQuoteCmd r.message name, name)
+    return (← mkResponseCmd r.message name, name)
 
 instance : DefinitionCommand DefinitionCodeM where
   cmd d := return (d.statement, d.name)
@@ -307,11 +332,9 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
       for r in responses do
         logInfo r
       let stxs : List TryThis.Suggestion ← responses.mapM fun res => do
-        -- let qr := s!"**Query**: {s}\n\n **Response:** {res}"
-        let queryName := s!"query_{hash s}" |>.toName
-        let resName := s!"response_{hash s}" |>.toName
-        let stxQ ← mkQuoteCmd s queryName
-        let stxR ←  mkQuoteCmd res resName
+        let stxQ ← mkQueryCmd s
+        let name := s!"query_{hash res}".toName
+        let stxR ←  mkResponseCmd res name
         printCommands <| ←  toCommandSeq #[stxQ, stxR]
       TryThis.addSuggestions stx <| stxs.toArray
 

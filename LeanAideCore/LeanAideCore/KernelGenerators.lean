@@ -59,6 +59,13 @@ instance : GenerateM StructuredProof ProofCode where
     let cmd ← codeFromJson s.json
     return { name := s.name, code := cmd }
 
+instance : GenerateM (Discussion Query) (Discussion Response) where
+  generateM d := do
+    let (history, _) ←  d.historyM
+    let res ← mathQuery d.last.message history 1
+    let response : Response := { message := res.head! }
+    return d.append response
+
 -- #synth GenerateM String ProofCode
 
 -- #synth GenerateM TheoremCode ProofCode
