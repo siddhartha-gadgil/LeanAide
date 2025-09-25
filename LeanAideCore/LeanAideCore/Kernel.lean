@@ -378,6 +378,9 @@ def mathQuery [pipe: LeanAidePipe] (query: String) (history : List ChatPair := [
   let response ← response req
   mathQueryDecode response
 
+/--
+Update a deferred computation by querying the server with a token.
+-/
 def updateByToken [pipe: LeanAidePipe] [Monad m]
     [MonadLift MetaM m][MonadError m] {α}
     (decode: Json → m α) (token: UInt64) :
@@ -390,6 +393,9 @@ def updateByToken [pipe: LeanAidePipe] [Monad m]
   | .completed _ result => return some <| ← decode result
   | .running _ => return none
 
+/--
+Send an asynchronous query to the server, returning a token.
+-/
 def queryAsyncAux [pipe: LeanAidePipe]
     (encode: α → MetaM Json) (input : α)
     : MetaM UInt64 := do
@@ -399,6 +405,9 @@ def queryAsyncAux [pipe: LeanAidePipe]
   let .ok token := json.getObjValAs? UInt64 "token" | throwError "response has no 'token' field"
   return token
 
+/--
+Function to build asynchrounous versions of the core functions of LeanAide.
+-/
 def queryAsync [pipe: LeanAidePipe] [Monad m]
     [MonadLift MetaM m][MonadError m] {α β}
     (encode: α → MetaM Json)
@@ -410,6 +419,11 @@ def queryAsync [pipe: LeanAidePipe] [Monad m]
 
 end LeanAidePipe
 
+-- TODO: Implement asynchronous versions of the core functions.
+
+/--
+An instance of `Kernel` using a `LeanAidePipe` to connect to a LeanAide server.
+-/
 instance [LeanAidePipe] : Kernel where
   translateThm := LeanAidePipe.translateThm
   translateDef := LeanAidePipe.translateDef
@@ -423,7 +437,9 @@ instance [LeanAidePipe] : Kernel where
   elabCode := LeanAidePipe.elabCode
   mathQuery := fun s h n => LeanAidePipe.mathQuery s h n
 
-
+/--
+A command to create a `LeanAidePipe` instance from a URL, defaulting to `localhost:7654` if no URL is provided.
+-/
 macro "#leanaide_connect" url?:(str)? : command =>
 match url? with
 | some url => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL $url)
@@ -431,95 +447,128 @@ match url? with
 
 def getKernel [k: Kernel] : Kernel := k
 
+/--
+Obtaining a kernel instance in `MetaM` by synthesizing the `Kernel` typeclass.
+-/
 def getKernelM : MetaM Kernel := do
   let inst ←  synthInstance (mkConst ``Kernel)
   unsafe evalExpr Kernel (mkConst ``Kernel) inst
 
 namespace KernelM
 
+@[inherit_doc Kernel.translateThm]
 def translateThm (text: String) : TermElabM (Except (Array ElabError) Expr) := do
   (← getKernelM).translateThm text
 
+@[inherit_doc Kernel.translateThm]
 def translateThmFallback (text: String) : TermElabM <| Except String Expr := do
   match (← translateThm text) with
   | .ok e => return .ok e
   | .error errs =>
      return .error <| ←  ElabError.fallback errs |>.run' {}
 
+@[inherit_doc Kernel.translateThmDetailed]
 def translateThmDetailed (text: String) (name? : Option Name) : TermElabM (Name × Expr × Syntax.Command) := do
   (← getKernelM).translateThmDetailed text name?
 
+@[inherit_doc Kernel.translateDef]
 def translateDef (text: String) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
   (← getKernelM).translateDef text
 
+@[inherit_doc Kernel.translateDef]
 def translateDefFallback (text: String) : TermElabM <| Except String Syntax.Command := do
   match (← translateDef text) with
   | .ok e => return .ok e
   | .error errs =>
      return .error <| ←  CmdElabError.fallback errs |>.run' {}
 
+@[inherit_doc Kernel.theoremDoc]
 def theoremDoc (name: Name) (stx: Syntax.Command) : TermElabM String := do
   (← getKernelM).theoremDoc name stx
 
+@[inherit_doc Kernel.defDoc]
 def defDoc (name: Name) (stx: Syntax.Command) : TermElabM String := do
   (← getKernelM).defDoc name stx
 
+@[inherit_doc Kernel.theoremName]
 def theoremName (text: String) : MetaM Name := do
   (← getKernelM).theoremName text
 
+@[inherit_doc Kernel.proveForFormalization]
 def proveForFormalization (theorem_text: String) (theorem_code: Expr) (theorem_statement: TSyntax `command) : TermElabM String := do
   (← getKernelM).proveForFormalization theorem_text theorem_code theorem_statement
 
+@[inherit_doc Kernel.jsonStructured]
 def jsonStructured (document: String) : MetaM Json := do
   (← getKernelM).jsonStructured document
 
+@[inherit_doc Kernel.codeFromJson]
 def codeFromJson (json: Json) : TermElabM (TSyntax ``commandSeq) := do
   (← getKernelM).codeFromJson json
 
+@[inherit_doc Kernel.mathQuery]
 def mathQuery (s: String) (history : List ChatPair := []) (n: Nat := 3)  : MetaM (List String) := do
   (← getKernelM).mathQuery s history n
 
 end KernelM
 
+/--
+Syntax for a command that defines something in Lean, returning the `Syntax.Command` and the `Name` defined.
+-/
 class DefinitionCommand (α : Type) where
   cmd (x: α)  : TermElabM <| Syntax.Command × Name
 
+/--
+Syntax for a command that defines something in Lean, returning the `Syntax.Command`.
+-/
 def definitionCommand {α} [r : DefinitionCommand α] (x: α)  : TermElabM Syntax.Command := do
   let pair ← r.cmd x
   return pair.1
 
+@[inherit_doc DefinitionCommand]
 def definitionCommandPair {α} [r : DefinitionCommand α] (x: α)  : TermElabM (Syntax.Command × Name) :=
   r.cmd x
 
+/--
+A command that replaces a syntax node with a command generated from some input of type `α`. Used in `TryThis` suggestions.
+-/
 class ReplaceCommand (α : Type) where
   replace (stx: Syntax) (x: α)  : TermElabM Unit
 
+@[inherit_doc ReplaceCommand]
 def replaceCommand {α} [r : ReplaceCommand α] (x: α) (stx: Syntax)   : TermElabM Unit :=
   r.replace stx x
 
+@[inherit_doc ReplaceCommand]
 def replaceCommandM {α} [r : ReplaceCommand α] (xm: TermElabM α) (stx: Syntax)   : TermElabM Unit := do
   r.replace stx (← xm)
 
 open Tactic in
+/--
+A command that replaces a syntax node with a command generated from some input of type `α` that has a `DefinitionCommand` instance, used in `TryThis` suggestions.
+-/
 instance replaceByDefn {α} [r : DefinitionCommand α] : ReplaceCommand α where
   replace stx x := do
     let cmd ← r.cmd x
     TryThis.addSuggestion stx cmd.1
 
+/--
+Syntax for commands associated to some input of type `α`, returning an array of commands. Used in `TryThis` suggestions.
+-/
 class TermCommands (α : Type) where
   commandArray (x: α)  : TermElabM (Array Syntax.Command)
 
 open Tactic in
-instance hasCommandsDefn {α} [r : TermCommands α] : ReplaceCommand α where
+instance termCommands {α} [r : TermCommands α] : ReplaceCommand α where
   replace stx x := do
     let cmds ← r.commandArray x
     let s ←  printCommands <| ←  `(commandSeq| $cmds*)
     TryThis.addSuggestion stx s
 
-class RelativDefinitionCommand (α : Type) where
+class RelativeDefinitionCommand (α : Type) where
   cmd (x: α) : Syntax.Term →  TermElabM Syntax.Command
 
-def relativDefinitionCommand {α} [r : RelativDefinitionCommand α] (x: α)  :
+def relativeDefinitionCommand {α} [r : RelativeDefinitionCommand α] (x: α)  :
   Syntax.Term →   TermElabM Syntax.Command :=
   r.cmd x
 
