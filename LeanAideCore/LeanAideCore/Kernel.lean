@@ -12,6 +12,18 @@ namespace LeanAide
 open Translate
 
 /-!
+## Kernel
+
+This is the collection of core functions that LeanAide provides, such as translating
+informal mathematics to Lean theorems and definitions, generating documentation, and so on.
+
+This module is to allow the functions to be used both in LeanAide itself and in clients of LeanAide, more precisely of LeanAideCore (which is the zero-dependency core).
+
+This is implemented via
+* A typeclass `Kernel`
+* An instance of `Kernel` for a connection to a LeanAide server.
+* An instance of `Kernel` for LeanAide itself.
+
 We want the same functions and the same syntax to work in LeanAide itself and a client. To do this, we will have:
 
 * A typeclass `Kernel` capturing these.
@@ -24,24 +36,41 @@ We want the same functions and the same syntax to work in LeanAide itself and a 
 The core functions of LeanAide, implemented directly in the server and via querying in the client.
 -/
 class Kernel where
+  /-- Translate a theorem from natural language to Lean code, specifically the `Expr` corresponding to the `Prop`. -/
   translateThm : String → TermElabM (Except (Array ElabError) Expr)
+  /-- Translate a definition from natural language to Lean code, specifically the `Syntax.Command` corresponding to the `def`. -/
   translateDef : String → TermElabM (Except (Array CmdElabError) Syntax.Command)
+  /-- Translate a theorem from natural language to Lean code, returning the name, the `Expr` corresponding to the `Prop`, and the `Syntax.Command` corresponding to the full theorem statement (including `theorem ... : ... := ...`). -/
   translateThmDetailed : String → Option Name → TermElabM (Name × Expr × Syntax.Command)
+  /-- Generate documentation for a theorem, given its name and statement. -/
   theoremDoc : Name → Syntax.Command → TermElabM String
+  /-- Generate documentation for a definition, given its name and statement. -/
   defDoc : Name → Syntax.Command → TermElabM String
+  /-- Suggest a name for a theorem given its natural language statement. -/
   theoremName : String → MetaM Name
+  /-- Prove a theorem given its natural language statement, its Lean code, and its statement. -/
   proveForFormalization : String → Expr → Syntax.Command → TermElabM String
+  /-- Convert a natural language statement to a JSON object. -/
   jsonStructured : String → MetaM Json
+  /-- Convert a JSON object to Lean code. -/
   codeFromJson : Json → TermElabM (TSyntax ``commandSeq)
+  /-- Elaborate a sequence of Lean commands. -/
   elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
+  /-- Query the LeanAide server with a natural language statement. -/
   mathQuery (s: String) (history : List ChatPair := []) (n: Nat := 3) : MetaM (List String)
 
 namespace Kernel
 
+/--
+Translate a theorem from a natural language document to Lean code via a structured proof -/
 def leanFromDoc [kernel: Kernel] (doc: String) : TermElabM (TSyntax ``commandSeq) := do
   let json ← kernel.jsonStructured doc
   codeFromJson json
 
+/--
+Prove a theorem given its natural language statement, its Lean `Expr`, and its statement, returning
+the documentation and the Lean code for the proof.
+-/
 def proveWithCode [kernel: Kernel] (theorem_text: String) (theorem_code: Expr) (theorem_statement : TSyntax `command) :
     TermElabM (String × (TSyntax ``commandSeq)) := do
   let doc ← kernel.proveForFormalization theorem_text theorem_code theorem_statement
@@ -49,11 +78,16 @@ def proveWithCode [kernel: Kernel] (theorem_text: String) (theorem_code: Expr) (
 
 end Kernel
 
+/-- A deferred computation that may be running or done. -/
 inductive Deferred [Monad m][MonadLift MetaM m](α : Type)  where
+  /-- The computation is done, with the result. -/
   | done (result: α)
+  /-- The computation is still running. The `update` function can be called to check if it is done, returning `none` if it is still running and `some result` if it is done. -/
   | running
       (update : Unit → m (Option α)) : Deferred α
 
+/--
+Update a `Deferred` computation, returning a new `Deferred` computation. -/
 def Deferred.update [Monad m][MonadLift MetaM m]
   {α} (d: Deferred (m := m) α) : m (Deferred (m := m) α) :=
   match d with
@@ -64,17 +98,23 @@ def Deferred.update [Monad m][MonadLift MetaM m]
     | .none => return .running update
     | .some r => return .done r
 
+/--
+Update a monadic `Deferred` computation, returning a new monadic `Deferred` computation. -/
 def Deferred.updateM [Monad m][MonadLift MetaM m]
   {α} (dm: m (Deferred (m := m) α)) :
     m (Deferred (m := m) α)  := do
   let d ← dm
   Deferred.update d
 
+/--
+A connection to a LeanAide server, which can be used to query for responses.
+-/
 class LeanAidePipe where
   queryResponse : Json → MetaM Json
 
 namespace LeanAidePipe
 
+/-- Create a `LeanAidePipe` from a URL, using `curl` to send requests. -/
 def fromURL (url: String) : LeanAidePipe := {
   queryResponse (data: Json) := do
     let output ← IO.Process.run {cmd := "curl", args := #[url, "-X", "POST", "-H", "Content-Type: application/json", "--data", data.compress]}
@@ -83,8 +123,13 @@ def fromURL (url: String) : LeanAidePipe := {
     return response
 }
 
+/-- Response from a LeanAide pipe -/
 def response [pipe: LeanAidePipe] (req: Json) : MetaM Json :=
   pipe.queryResponse req
+
+/-!
+The various core functions of LeanAide, implemented via querying the LeanAide server. These are implemented using an encoding function that converts the input to JSON, a decoding function that converts the JSON response to the output, and a function that combines these two with a query to the server. This is done to allow for asynchronous queries later.
+-/
 
 def translateThmEncode (text: String) : MetaM Json :=
   return Json.mkObj [("task", "translate_thm"), ("theorem_text", text)]
@@ -106,6 +151,7 @@ def translateThmDecode (response: Json) : TermElabM (Except (Array ElabError) Ex
   | _ =>
     throwError "Invalid response"
 
+@[inherit_doc Kernel.translateThm]
 def translateThm [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array ElabError) Expr) := do
   let response ← response <| ← translateThmEncode text
   translateThmDecode response
@@ -136,6 +182,7 @@ def translateThmDetailedDecode (response: Json) : TermElabM (Name × Expr × Syn
   | _ =>
     throwError "Invalid response"
 
+@[inherit_doc Kernel.translateThmDetailed]
 def translateThmDetailed [pipe: LeanAidePipe] (text: String) (name? : Option Name) : TermElabM (Name × Expr × Syntax.Command) := do
   let response ← response <| ← translateThmDetailedEncode text name?
   translateThmDetailedDecode response
@@ -160,6 +207,7 @@ def translateDefDecode (response: Json) : TermElabM (Except (Array CmdElabError)
   | _ =>
     throwError "Invalid response"
 
+@[inherit_doc Kernel.translateDef]
 def translateDef [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
   let response ← response <| ← translateDefEncode text
   translateDefDecode response
@@ -178,6 +226,7 @@ def theoremDocDecode (response: Json) : TermElabM String := do
   | _ =>
     throwError "Invalid response"
 
+@[inherit_doc Kernel.theoremDoc]
 def theoremDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM String := do
   let req ←  theoremDocEncode name stx
   let response ← response req
@@ -197,6 +246,7 @@ def defDocDecode (response: Json) : TermElabM String := do
   | _ =>
     throwError "Invalid response"
 
+@[inherit_doc Kernel.defDoc]
 def defDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM String := do
   let req ← defDocEncode name stx
   let response ← response req
@@ -216,6 +266,7 @@ def theoremNameDecode (response: Json) : MetaM Name := do
   | _ =>
     throwError "Invalid response"
 
+@[inherit_doc Kernel.theoremName]
 def theoremName [pipe: LeanAidePipe] (text: String) : MetaM Name := do
   let req ← theoremNameEncode text
   let response ← response req
@@ -235,7 +286,7 @@ def proveForFormalizationDecode (response: Json) : TermElabM String := do
   | _ =>
     throwError "Invalid response"
 
-
+@[inherit_doc Kernel.proveForFormalization]
 def proveForFormalization [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) (theoremStatement : Syntax.Command) : TermElabM String := do
   let req ← proveForFormalizationEncode theoremText theoremCode theoremStatement
   let response ← response req
@@ -255,6 +306,7 @@ def jsonStructuredDecode (response: Json) : MetaM Json := do
   | _ =>
     throwError "Invalid response"
 
+@[inherit_doc Kernel.jsonStructured]
 def jsonStructured [pipe: LeanAidePipe] (document: String) : MetaM Json := do
   let req ← jsonStructuredEncode document
   let response ← response req
@@ -274,6 +326,7 @@ def codeFromJsonDecode (response: Json) : TermElabM (TSyntax ``commandSeq) := do
   | _ =>
     throwError "Invalid response"
 
+@[inherit_doc Kernel.codeFromJson]
 def codeFromJson [pipe: LeanAidePipe] (json: Json) : TermElabM (TSyntax ``commandSeq) := do
   let req ← codeFromJsonEncode json
   let response ← response req
@@ -299,6 +352,7 @@ def elabCodeDecode (response: Json) : TermElabM CodeElabResult := do
   let sorriesAfterPurge ← sorriesAfterPurge.mapM getSorriesFromJson
   return { declarations := decls, logs := logs, sorries := sorries, sorriesAfterPurge := sorriesAfterPurge }
 
+@[inherit_doc Kernel.elabCode]
 def elabCode [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM CodeElabResult := do
   let req ← elabCodeEncode stx
   let response ← response req
@@ -318,6 +372,7 @@ def mathQueryDecode (response: Json) : MetaM (List String) := do
   | _ =>
     throwError "Invalid response"
 
+@[inherit_doc Kernel.mathQuery]
 def mathQuery [pipe: LeanAidePipe] (query: String) (history : List ChatPair := []) (n: Nat := 3) : MetaM (List String) := do
   let req ← mathQueryEncode query history n
   let response ← response req
