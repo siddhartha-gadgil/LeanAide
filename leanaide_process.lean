@@ -12,17 +12,17 @@ set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
+unsafe def process_loop (env: Environment)(getLine : IO String) (putStrLn : String → IO Unit)
     (translator : Translator) (dataMap : EmbedMap) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
   IO.eprintln "Server ready. Waiting for input..."
-  let inp ← stdin.getLine
+  let inp ← getLine
   if inp.trim.isEmpty then
-    process_loop env stdin stdout translator dataMap states chains
+    process_loop env getLine putStrLn translator dataMap states chains
   else
   match Json.parse inp with
   | Except.error e =>
      IO.eprintln s!"Error parsing input: {e}"
-     process_loop env stdin stdout translator dataMap states chains
+     process_loop env getLine putStrLn translator dataMap states chains
   | Except.ok js =>
     let mode? := js.getObjValAs? String "mode" |>.toOption
     let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
@@ -47,8 +47,7 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
       let .ok hash :=
         js.getObjValAs? UInt64 "token" | IO.throwServerError "No token provided"
       let result ← states.lookupJson hash
-      stdout.putStrLn <| result.compress
-      stdout.flush
+      putStrLn <| result.compress
     | some "quit" =>
       IO.eprintln "Exiting..."
       return 0
@@ -58,10 +57,9 @@ unsafe def process_loop (env: Environment) (stdin stdout : IO.FS.Stream)
       let result ←
         core.run' ctx {env := env} |>.runToIO'
       IO.eprintln "Ran successfully"
-      stdout.putStrLn <| result.compress
-      stdout.flush
+      putStrLn <| result.compress
       IO.eprintln "Output sent."
-    process_loop env stdin stdout translator dataMap states chains
+    process_loop env getLine putStrLn translator dataMap states chains
 
 unsafe def launchProcess (p : Parsed) : IO UInt32 := do
   initSearchPath (← findSysroot)
@@ -85,9 +83,13 @@ unsafe def launchProcess (p : Parsed) : IO UInt32 := do
     EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let stdin ←  IO.getStdin
   let stdout ← IO.getStdout
+  let getLine : IO String := stdin.getLine
+  let putStrLn : String → IO Unit := fun s => do
+    stdout.putStrLn s
+    stdout.flush
   let states : TasksState ←
     Std.Mutex.new <| Std.HashMap.emptyWithCapacity 100
-  process_loop env stdin stdout translator dataMap states (fun _ _ => #[])
+  process_loop env getLine putStrLn translator dataMap states (fun _ _ => #[])
 
 
 unsafe def leanAideProcess : Cmd := `[Cli|

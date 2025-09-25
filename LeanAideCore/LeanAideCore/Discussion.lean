@@ -5,6 +5,8 @@ import LeanAideCore.Prompts
 import LeanAideCore.Kernel
 
 /-!
+## DSL and Discussion types
+
 Types for a discussion thread involving chatbots, humans and leanaide. Wrapper types for messages and an indexed inductive type for a discussion thread.
 
 * The main line for the present code is
