@@ -1,0 +1,1 @@
+# Python code to run similarity search given query and numSim
