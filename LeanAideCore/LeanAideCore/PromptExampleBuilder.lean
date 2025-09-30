@@ -9,12 +9,14 @@ local instance : Hashable Float where
 /--
   A `PromptExampleBuilder` is a way to specify how to generate a prompt
   for a given example. It can be a sequence of different builders, or a blend
-  of different builders. The `embedSearch` builders use embeddings
+  of different builders. The `similarSearch` builders use FAISS similarity search
+  to search for a given field in the Lean 4 documentation. The `embedSearch` builders use embeddings
   to search for a given field in the Lean 4 documentation. The `leansearch` and `moogle`
   builders use the `leansearch` and `moogle` endpoints respectively to search for a given
   field in the Lean 4 documentation. The `fixed` builder uses a fixed set of prompts.
 -/
 inductive PromptExampleBuilder where
+| similarSearch (descField : String) (n : Nat) : PromptExampleBuilder
 | embedSearch (descField : String) (n: Nat) (penalty: Float := 1.0) : PromptExampleBuilder
 | leansearch (descFields : List String)
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
@@ -90,13 +92,13 @@ instance : Append PromptExampleBuilder :=
 The new default PromptExampleBuilder.
 -/
 def default :=
-  PromptExampleBuilder.embedBuilder 8 4 4 ++ .searchBuilder 4 4
+  PromptExampleBuilder.embedBuilder 8 4 4 ++ .searchBuilder 4 4 -- to change
 
 /--
 The classic default PromptExampleBuilder (which seems to work better).
 -/
 def classicDefault :=
-  PromptExampleBuilder.embedBuilder 20 2 2
+  PromptExampleBuilder.embedBuilder 20 2 2 -- to change
 
 instance : Inhabited PromptExampleBuilder := ⟨default⟩
 
@@ -105,6 +107,7 @@ partial def purge? (pb: PromptExampleBuilder) : Option PromptExampleBuilder :=
   | .sequence [] => none
   | .blend [] => none
   | .embedSearch _ 0 _ => none
+  | .similarSearch _ 0 => none
   | .leansearch _ _ 0 => none
   | .moogle _ _ 0 => none
   | .sequence ps => some <| .sequence <| ps.filterMap purge?
