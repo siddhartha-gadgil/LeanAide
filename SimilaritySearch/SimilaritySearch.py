@@ -9,8 +9,16 @@ from sentence_transformers import SentenceTransformer
 
 # Config the model and file paths
 MODEL = 'all-MiniLM-L6-v2' 
-DATA_FILE = 'TestEmbeddings/UnpickledFiles/prompt_emb.jsonl'
-INDEX_FILE = 'TestEmbeddings/FAISSIndex/theorems_all-MiniLM-L6-v2.index'
+DESCFIELD_PATHS = {
+    "docString" : "TestEmbeddings/UnpickledFiles/prompt_emb.jsonl",
+    "concise-description" : "TestEmbeddings/UnpickledFiles/concise_desc_emb.jsonl"
+    "description" : "TestEmbeddings/UnpickledFiles/desc_emb.jsonl"
+}
+INDEX_PATHS = {
+    "docString" : "TestEmbeddings/FAISSIndex/docString_all-MiniLM-L6-v2.index",
+    "concise-description" : "TestEmbeddings/FAISSIndex/concise-description_all-MiniLM-L6-v2.index"
+    "description" : "TestEmbeddings/FAISSIndex/description_all-MiniLM-L6-v2.index"
+}
 
 def check_GPU():
   try:
@@ -30,7 +38,7 @@ def load_model():
     return model
 
 # Creates new index
-def create_index(index_file, data, model):
+def create_index(INDEX_PATHS[descField], data, model):
     # Extract the theorems out of full data
     theorems = [js["docString"] for js in data]  
     # Encode all theorems into vectors
@@ -41,8 +49,8 @@ def create_index(index_file, data, model):
     index = faiss.IndexFlatL2(d)
     # Add the theorem vectors to the index
     index.add(embeddings)
-    # Save the index to index_file
-    faiss.write_index(index, index_file)
+    # Save the index to INDEX_PATHS[descField]
+    faiss.write_index(index, INDEX_PATHS[descField])
     return index
 
 def similarity_search(query, model, index, data, num):
@@ -68,16 +76,16 @@ def main(args):
     except: descField = "docString" # default value for descField
     if descField not in ["docString", "concise-description", "description"] :
         descField = "docString" # default value for descField
-    # Check if DATA_FILE exists
-    if not os.path.exists(DATA_FILE):
-        raise Exception(f"ERROR: docStrings NOT found at {DATA_FILE}")
-    # Get the full data from DATA_FILE
-    data = load_data(DATA_FILE)
+    # Check if DESCFIELD_PATHS[descField] exists
+    if not os.path.exists(DESCFIELD_PATHS[descField]):
+        raise Exception(f"ERROR: docStrings NOT found at {DESCFIELD_PATHS[descField]}")
+    # Get the full data from DESCFIELD_PATHS[descField]
+    data = load_data(DESCFIELD_PATHS[descField])
     # Read index; create it if it doesn't exist
-    if os.path.exists(INDEX_FILE):
-        index = faiss.read_index(INDEX_FILE)
+    if os.path.exists(INDEX_PATHS[descField]):
+        index = faiss.read_index(INDEX_PATHS[descField])
     else:
-        index = create_index(INDEX_FILE, data, model)
+        index = create_index(INDEX_PATHS[descField], data, model)
     # Load the model
     model = load_model()
     # Run similarity search and print to standard output
