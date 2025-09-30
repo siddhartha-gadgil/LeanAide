@@ -29,7 +29,7 @@ def Translator.ofCli (p: Parsed) : IO Translator :=
     | some pb => pb
     | none =>
       let pb₁ :=
-        PromptExampleBuilder.mkEmbedBuilder embedUrl? numSim numConcise numDesc
+        PromptExampleBuilder.mkSimilarBuilder embedUrl? numSim numConcise numDesc
       let pb₂ := PromptExampleBuilder.searchBuilder numLeanSeach numMoogle |>.simplify
       if numLeanSeach + numMoogle > 0 then
         pb₁ ++ pb₂
