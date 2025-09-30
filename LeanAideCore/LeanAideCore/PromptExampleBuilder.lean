@@ -45,6 +45,15 @@ deriving Repr, FromJson, ToJson
 namespace PromptExampleBuilder
 
 /--
+  A `PromptExampleBuilder` that uses FAISS similarity search to search for a given field in the Lean 4 documentation.
+-/
+def similarBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
+  .blend [
+    .similarSearch "docString" numSim,
+    .similarSearch "concise-description" numConcise,
+    .similarSearch "description" numDesc]
+
+/--
   A `PromptExampleBuilder` that uses embeddings to search for a given field in the Lean 4 documentation.
 -/
 def embedBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
@@ -67,6 +76,11 @@ def genericEmbedBuilder (url: String) (numSim numConcise numDesc: Nat)  (headers
     .generic url (Json.mkObj [("prompt_type", "description")]) headers numDesc,
   ]
 
+def mkSimilarBuilder (url?: Option String) (numSim numConcise numDesc: Nat) (headers : Array String := #[]) : PromptExampleBuilder :=
+  match url? with
+  | some url => genericEmbedBuilder url numSim numConcise numDesc headers
+  | none => similarBuilder numSim numConcise numDesc
+  
 def mkEmbedBuilder (url?: Option String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
   match url? with
   | some url => genericEmbedBuilder url numSim numConcise numDesc headers
