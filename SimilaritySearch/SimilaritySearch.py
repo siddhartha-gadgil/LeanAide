@@ -60,9 +60,14 @@ def similarity_search(query, model, index, data, num):
 
 def main(args):
     # Get the args
-    query = args[0]
+    try: query = args[0]
+    except: query = "mathematics" #default value for query
     try: num = int(args[1])
     except: num = 10 # default value for num
+    try: descField = args[2]
+    except: descField = "docString" # default value for descField
+    if descField not in ["docString", "concise-description", "description"] :
+        descField = "docString" # default value for descField
     # Check if DATA_FILE exists
     if not os.path.exists(DATA_FILE):
         raise Exception(f"ERROR: docStrings NOT found at {DATA_FILE}")
