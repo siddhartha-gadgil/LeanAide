@@ -26,7 +26,7 @@ def load_data(file_path):
     return data
 
 def load_model():
-    model = SentenceTransformer(MODEL)
+    model = SentenceTransformer(MODEL, model_kwargs={"dtype": "float16"})
     return model
 
 # Creates new index
