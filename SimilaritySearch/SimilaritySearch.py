@@ -11,12 +11,12 @@ from sentence_transformers import SentenceTransformer
 MODEL = 'all-MiniLM-L6-v2' 
 DESCFIELD_PATHS = {
     "docString" : "TestEmbeddings/UnpickledFiles/prompt_emb.jsonl",
-    "concise-description" : "TestEmbeddings/UnpickledFiles/concise_desc_emb.jsonl"
+    "concise-description" : "TestEmbeddings/UnpickledFiles/concise_desc_emb.jsonl",
     "description" : "TestEmbeddings/UnpickledFiles/desc_emb.jsonl"
 }
 INDEX_PATHS = {
     "docString" : "TestEmbeddings/FAISSIndex/docString_all-MiniLM-L6-v2.index",
-    "concise-description" : "TestEmbeddings/FAISSIndex/concise-description_all-MiniLM-L6-v2.index"
+    "concise-description" : "TestEmbeddings/FAISSIndex/concise-description_all-MiniLM-L6-v2.index",
     "description" : "TestEmbeddings/FAISSIndex/description_all-MiniLM-L6-v2.index"
 }
 
@@ -38,7 +38,7 @@ def load_model():
     return model
 
 # Creates new index
-def create_index(INDEX_PATHS[descField], data, model):
+def create_index(index_path, data, model):
     # Extract the theorems out of full data
     theorems = [js["docString"] for js in data]  
     # Encode all theorems into vectors
@@ -50,7 +50,7 @@ def create_index(INDEX_PATHS[descField], data, model):
     # Add the theorem vectors to the index
     index.add(embeddings)
     # Save the index to INDEX_PATHS[descField]
-    faiss.write_index(index, INDEX_PATHS[descField])
+    faiss.write_index(index, index_path)
     return index
 
 def similarity_search(query, model, index, data, num):
@@ -63,7 +63,7 @@ def similarity_search(query, model, index, data, num):
         js = data[idx]
         js["distance"] = float(distances[0][i])
         output.append(js)
-    js_string = json.dumps(js)
+    js_string = json.dumps(output)
     print(js_string)
 
 def main(args):
@@ -81,13 +81,13 @@ def main(args):
         raise Exception(f"ERROR: docStrings NOT found at {DESCFIELD_PATHS[descField]}")
     # Get the full data from DESCFIELD_PATHS[descField]
     data = load_data(DESCFIELD_PATHS[descField])
+    # Load the model
+    model = load_model()
     # Read index; create it if it doesn't exist
     if os.path.exists(INDEX_PATHS[descField]):
         index = faiss.read_index(INDEX_PATHS[descField])
     else:
         index = create_index(INDEX_PATHS[descField], data, model)
-    # Load the model
-    model = load_model()
     # Run similarity search and print to standard output
     similarity_search(query, model, index, data, num)
 
