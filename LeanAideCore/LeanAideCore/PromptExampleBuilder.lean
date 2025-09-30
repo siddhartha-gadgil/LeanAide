@@ -80,7 +80,7 @@ def mkSimilarBuilder (url?: Option String) (numSim numConcise numDesc: Nat) (hea
   match url? with
   | some url => genericEmbedBuilder url numSim numConcise numDesc headers
   | none => similarBuilder numSim numConcise numDesc
-  
+
 def mkEmbedBuilder (url?: Option String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
   match url? with
   | some url => genericEmbedBuilder url numSim numConcise numDesc headers
@@ -106,13 +106,13 @@ instance : Append PromptExampleBuilder :=
 The new default PromptExampleBuilder.
 -/
 def default :=
-  PromptExampleBuilder.embedBuilder 8 4 4 ++ .searchBuilder 4 4 -- to change
+  PromptExampleBuilder.similarBuilder 8 4 4 ++ .searchBuilder 4 4
 
 /--
 The classic default PromptExampleBuilder (which seems to work better).
 -/
 def classicDefault :=
-  PromptExampleBuilder.embedBuilder 20 2 2 -- to change
+  PromptExampleBuilder.similarBuilder 20 2 2
 
 instance : Inhabited PromptExampleBuilder := ⟨default⟩
 
