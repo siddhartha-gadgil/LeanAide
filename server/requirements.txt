@@ -7,3 +7,5 @@ st-copy>=1.1.2
 openai>=1.86.0
 pymupdf>=1.26.1
 # streamlit-tags>=1.2.8
+faiss_cpu==1.12.0
+sentence_transformers==5.1.1
