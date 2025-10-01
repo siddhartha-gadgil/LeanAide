@@ -4,20 +4,19 @@ import sys
 import os
 import json
 import faiss
-import torch
 from sentence_transformers import SentenceTransformer
 
 # Config the model and file paths
-MODEL = 'all-MiniLM-L6-v2' 
+# MODEL = 'all-MiniLM-L6-v2' (moved over to server/api_server.py)
 DESCFIELD_PATHS = {
-    "docString" : "TestEmbeddings/UnpickledFiles/prompt_emb.jsonl",
-    "concise-description" : "TestEmbeddings/UnpickledFiles/concise_desc_emb.jsonl",
-    "description" : "TestEmbeddings/UnpickledFiles/desc_emb.jsonl"
+    "docString" : "SimilaritySearch/docStrings/prompt_emb.json",
+    "concise-description" : "SimilaritySearch/docStrings/concise_desc_emb.json",
+    "description" : "SimilaritySearch/docStrings/desc_emb.json"
 }
 INDEX_PATHS = {
-    "docString" : "TestEmbeddings/FAISSIndex/docString_all-MiniLM-L6-v2.index",
-    "concise-description" : "TestEmbeddings/FAISSIndex/concise-description_all-MiniLM-L6-v2.index",
-    "description" : "TestEmbeddings/FAISSIndex/description_all-MiniLM-L6-v2.index"
+    "docString" : "SimilaritySearch/Indexes/docString_all-MiniLM-L6-v2.index",
+    "concise-description" : "SimilaritySearch/Indexes/concise-description_all-MiniLM-L6-v2.index",
+    "description" : "SimilaritySearch/Indexes/description_all-MiniLM-L6-v2.index"
 }
 
 def check_GPU():
@@ -30,12 +29,8 @@ def check_GPU():
 
 def load_data(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
-        data = [json.loads(line) for line in file]
+        data = json.load(file)
     return data
-
-def load_model():
-    model = SentenceTransformer(MODEL, model_kwargs={"dtype": "float16"})
-    return model
 
 # Creates new index
 def create_index(index_path, data, model):
@@ -69,7 +64,7 @@ def similarity_search(query, model, index, data, num):
 def main(model, num, query = "mathematics", descField = "docString"):
     try: num = int(num)
     except: num = 10 # default value for num
-    if descField not in ["docString", "concise-description", "description"] :
+    if descField not in ["docString", "concise-description", "description"]:
         descField = "docString" # default value for descField
     # Check if DESCFIELD_PATHS[descField] exists
     if not os.path.exists(DESCFIELD_PATHS[descField]):
