@@ -26,9 +26,31 @@ We need complete tests. In many of these cases, we can temporarily add traces in
 
 ### Logging
 
-* [ ] Make an environment extension to allow subscribing by name.
-* [ ] Have helpers to add tracing, `IO.eprintln`, `logInfo`, writing to file, etc.
-* [ ] Have additional info automatically included, such as the time, source module and function etc.
+Some of the ways we want to log stuff:
+
+* `trace` - Lean already has this.
+* `IO.eprintln` - to log to stderr
+* Log to a log file.
+
+So the following scheme seems fine to me for now:
+
+* We use the same names as Lean's trace classes. So these should be initiated by registering the trace class as usual.
+* [ ] In the file `LeanAide.Config`have `def logToStdErr: Array Name := #[...]` and `def logToFile: Array Name := #[...]` which list the trace classes that will be logged using `IO.eprintln` and by writing to a file (maybe both a common file and one with name based on the trace class).
+* [ ] To allow future abstraction (such as inheritance), have functions `isLoggedToFile: Name -> Bool` etc and only call these.
+* [ ] Have a single function `logTrace (cls: Name) (msg: MessageData) : CoreM Unit` that:
+* [ ] runs `Lean.trace cls msg`.
+* [ ] writes to stderr and/or file based on whether the class name is in the lists in the config.
+
+There are many improvements, but for a start we should
+
+* [ ] Implement the function `logTrace`
+* [ ] Replace all the current logging: `trace`, `appendLog`, `IO.eprintln` and `logTimed` with calls to `logTrace`. 
+* [ ] To do this sensible classes are created and registered.
+
+#### Looking ahead
+
+* The main improvements should come indirectly, through better configuration.
+* We may want to add more information to the logs, such as timestamps, calling function and module and `IO.monoMsNow` (for relative times).
 
 ### Prompts
 
