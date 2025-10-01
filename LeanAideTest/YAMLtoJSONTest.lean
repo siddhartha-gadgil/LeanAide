@@ -206,3 +206,172 @@ info: {"document":
                         claim: "n^2 ≡ 1 (mod 4)"
           - type: "conclude_statement"
             claim: "n^2 mod 4 ∈ {0, 1}"
+
+def pf := yaml%
+  document:
+    - type: "Theorem"
+      header: "Theorem"
+      label: "thm:mod4-square"
+      claim: "For any integer n, n^2 mod 4 ∈ {0, 1}"
+      proof:
+        type: "Proof"
+        claim_label: "thm:mod4-square"
+        proof_steps:
+          - - type: "pattern_cases_statement"
+              on: "n mod 4"
+              proof_cases:
+                - type: "pattern_case"
+                  pattern: "0"
+                  proof:
+                    type: "Proof"
+                    claim_label: "thm:mod4-square"
+                    proof_steps:
+                      - - type: "let_statement"
+                          variable_name: "k"
+                          variable_type: "integer"
+                          statement: "k is an integer such that n = 4k"
+                        - type: "calculation"
+                          calculation_sequence:
+                            - "n^2 = (4k)^2 = 16k^2"
+                            - "16k^2 ≡ 0 (mod 4)"
+                        - type: "conclude_statement"
+                          claim: "n^2 ≡ 0 (mod 4)"
+                - type: "pattern_case"
+                  pattern: "1"
+                  proof:
+                    type: "Proof"
+                    claim_label: "thm:mod4-square"
+                    proof_steps:
+                      - - type: "let_statement"
+                          variable_name: "k"
+                          variable_type: "integer"
+                          statement: "k is an integer such that n = 4k + 1"
+                        - type: "calculation"
+                          calculation_sequence:
+                            - "n^2 = (4k + 1)^2 = 16k^2 + 8k + 1"
+                            - "16k^2 + 8k + 1 ≡ 1 (mod 4)"
+                        - type: "conclude_statement"
+                          claim: "n^2 ≡ 1 (mod 4)"
+                - type: "pattern_case"
+                  pattern: "2"
+                  proof:
+                    type: "Proof"
+                    claim_label: "thm:mod4-square"
+                    proof_steps:
+                      - - type: "let_statement"
+                          variable_name: "k"
+                          variable_type: "integer"
+                          statement: "k is an integer such that n = 4k + 2"
+                        - type: "calculation"
+                          calculation_sequence:
+                            - "n^2 = (4k + 2)^2 = 16k^2 + 16k + 4"
+                            - "16k^2 + 16k + 4 ≡ 0 (mod 4)"
+                        - type: "conclude_statement"
+                          claim: "n^2 ≡ 0 (mod 4)"
+                - type: "pattern_case"
+                  pattern: "3"
+                  proof:
+                    type: "Proof"
+                    claim_label: "thm:mod4-square"
+                    proof_steps:
+                      - - type: "let_statement"
+                          variable_name: "k"
+                          variable_type: "integer"
+                          statement: "k is an integer such that n = 4k + 3"
+                        - type: "calculation"
+                          calculation_sequence:
+                            - "n^2 = (4k + 3)^2 = 16k^2 + 24k + 9"
+                            - "16k^2 + 24k + 9 ≡ 1 (mod 4)"
+                        - type: "conclude_statement"
+                          claim: "n^2 ≡ 1 (mod 4)"
+            - type: "conclude_statement"
+              claim: "n^2 mod 4 ∈ {0, 1}"
+
+open Lean Meta Elab Term
+def pf2 : TermElabM Json := do
+  let stx ← `(yaml%
+      document:
+      - type: "Theorem"
+        header: "Theorem"
+        label: "thm:mod4-square"
+        claim: "For any integer n, n^2 mod 4 ∈ {0, 1}"
+        proof:
+          type: "Proof"
+          claim_label: "thm:mod4-square"
+          proof_steps:
+            - - type: "pattern_cases_statement"
+                on: "n mod 4"
+                proof_cases:
+                  - type: "pattern_case"
+                    pattern: "0"
+                    proof:
+                      type: "Proof"
+                      claim_label: "thm:mod4-square"
+                      proof_steps:
+                        - - type: "let_statement"
+                            variable_name: "k"
+                            variable_type: "integer"
+                            statement: "k is an integer such that n = 4k"
+                          - type: "calculation"
+                            calculation_sequence:
+                              - "n^2 = (4k)^2 = 16k^2"
+                              - "16k^2 ≡ 0 (mod 4)"
+                          - type: "conclude_statement"
+                            claim: "n^2 ≡ 0 (mod 4)"
+                  - type: "pattern_case"
+                    pattern: "1"
+                    proof:
+                      type: "Proof"
+                      claim_label: "thm:mod4-square"
+                      proof_steps:
+                        - - type: "let_statement"
+                            variable_name: "k"
+                            variable_type: "integer"
+                            statement: "k is an integer such that n = 4k + 1"
+                          - type: "calculation"
+                            calculation_sequence:
+                              - "n^2 = (4k + 1)^2 = 16k^2 + 8k + 1"
+                              - "16k^2 + 8k + 1 ≡ 1 (mod 4)"
+                          - type: "conclude_statement"
+                            claim: "n^2 ≡ 1 (mod 4)"
+                  - type: "pattern_case"
+                    pattern: "2"
+                    proof:
+                      type: "Proof"
+                      claim_label: "thm:mod4-square"
+                      proof_steps:
+                        - - type: "let_statement"
+                            variable_name: "k"
+                            variable_type: "integer"
+                            statement: "k is an integer such that n = 4k + 2"
+                          - type: "calculation"
+                            calculation_sequence:
+                              - "n^2 = (4k + 2)^2 = 16k^2 + 16k + 4"
+                              - "16k^2 + 16k + 4 ≡ 0 (mod 4)"
+                          - type: "conclude_statement"
+                            claim: "n^2 ≡ 0 (mod 4)"
+                  - type: "pattern_case"
+                    pattern: "3"
+                    proof:
+                      type: "Proof"
+                      claim_label: "thm:mod4-square"
+                      proof_steps:
+                        - - type: "let_statement"
+                            variable_name: "k"
+                            variable_type: "integer"
+                            statement: "k is an integer such that n = 4k + 3"
+                          - type: "calculation"
+                            calculation_sequence:
+                              - "n^2 = (4k + 3)^2 = 16k^2 + 24k + 9"
+                              - "16k^2 + 24k + 9 ≡ 1 (mod 4)"
+                          - type: "conclude_statement"
+                            claim: "n^2 ≡ 1 (mod 4)"
+              - type: "conclude_statement"
+                claim: "n^2 mod 4 ∈ {0, 1}"
+    )
+  -- let tstx ← `(yaml% $stx)
+  let term ←
+    elabTerm stx none
+  unsafe evalExpr Json (mkConst ``Json) term
+
+#eval pf2
