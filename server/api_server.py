@@ -1,5 +1,3 @@
-# Code from Gemini 2.0 Flash Experimental
-#
 import http.server
 import json
 import os
@@ -7,6 +5,10 @@ import queue
 import subprocess
 import sys
 import threading
+from socketserver import ThreadingMixIn
+from sentence_transformers import SentenceTransformer
+sys.path.insert(0, "SimilaritySearch/")
+import similarity_search
 
 from logging_utils import log_write, filter_logs, get_env, post_env, delete_env_file
 
@@ -15,6 +17,10 @@ HOST = os.environ.get("HOST", "localhost")
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     COMMAND = " " + arg
+
+print("Loading model...")
+MODEL = SentenceTransformer("all-MiniLM-L6-v2", model_kwargs={"dtype": "float16"})
+print("Model loaded!")
 
 def get_env_args():
     """Get environment variables for the server, mainly LLM details"""
@@ -84,8 +90,44 @@ def process_error_reader(process):  # New function for stderr
         print(f"process stderr: {line.strip()}")
         log_write("Server stderr", line.strip(), log_file=True)
 
+class ThreadingHTTPServer(ThreadingMixIn, http.server.HTTPServer):
+    # Handle requests in a separate thread.
+    pass
+
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
+        if self.path == '/run-sim-search':
+            try:
+                content_length = int(self.headers['Content-Length'])
+                post_data = self.rfile.read(content_length).decode('utf-8')
+                data = json.loads(post_data)
+
+                if not all(k in data for k in ['num', 'query', 'descField']):
+                    self.send_response(400)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    error_msg = {"error": "Missing parameters. Required: 'num', 'query', 'descField'"}
+                    self.wfile.write(json.dumps(error_msg).encode('utf-8'))
+                    return # Exit after handling
+
+                # Call the main function from similarity_search
+                result = similarity_search.main(MODEL, data['num'], data['query'], data['descField'])
+
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                response_body = {"status": "success", "output": result}
+                self.wfile.write(json.dumps(response_body).encode('utf-8'))
+            
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                error_msg = {"error": str(e)}
+                self.wfile.write(json.dumps(error_msg).encode('utf-8'))
+
+            return
+
         global process, process_lock
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length).decode('utf-8')
@@ -153,7 +195,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 def run(server_class=http.server.HTTPServer, handler_class=Handler, port=PORT, host=HOST):
     server_address = (host, port) # Use the host
-    httpd = server_class(server_address, handler_class)
+    ThreadingHTTPServer.allow_reuse_address = True
+    httpd = ThreadingHTTPServer(server_address, handler_class)
     print(f"Starting httpd on port {port}, command: {updated_leanaide_command()}")
     try:
         httpd.serve_forever()
