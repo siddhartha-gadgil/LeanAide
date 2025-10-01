@@ -64,16 +64,11 @@ def similarity_search(query, model, index, data, num):
         js["distance"] = float(distances[0][i])
         output.append(js)
     js_string = json.dumps(output)
-    print(js_string)
+    return js_string
 
-def main(args):
-    # Get the args
-    try: query = args[0]
-    except: query = "mathematics" #default value for query
-    try: num = int(args[1])
+def main(model, num, query = "mathematics", descField = "docString"):
+    try: num = int(num)
     except: num = 10 # default value for num
-    try: descField = args[2]
-    except: descField = "docString" # default value for descField
     if descField not in ["docString", "concise-description", "description"] :
         descField = "docString" # default value for descField
     # Check if DESCFIELD_PATHS[descField] exists
@@ -81,15 +76,11 @@ def main(args):
         raise Exception(f"ERROR: docStrings NOT found at {DESCFIELD_PATHS[descField]}")
     # Get the full data from DESCFIELD_PATHS[descField]
     data = load_data(DESCFIELD_PATHS[descField])
-    # Load the model
-    model = load_model()
     # Read index; create it if it doesn't exist
     if os.path.exists(INDEX_PATHS[descField]):
         index = faiss.read_index(INDEX_PATHS[descField])
     else:
         index = create_index(INDEX_PATHS[descField], data, model)
     # Run similarity search and print to standard output
-    similarity_search(query, model, index, data, num)
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
+    output = similarity_search(query, model, index, data, num)
+    return output
