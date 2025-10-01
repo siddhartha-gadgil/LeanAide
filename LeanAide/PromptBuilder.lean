@@ -194,7 +194,7 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
   let dataMap ← getEmbedMap
   match pb with
   | similarSearch descField n =>
-      IO.eprintln s!"similarSearch on {descField} with query : {query}"
+      IO.eprintln s!"similarSearch on {descField} with query: {query}"
       let outJs ← callSimilaritySearch descField query n
       match ← pairsFromEmbeddingJson outJs with
       | Except.ok jsArr => return jsArr
@@ -202,7 +202,7 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
         IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
         throwError e
   | embedSearch descField n p =>
-      IO.eprintln s!"embedSearch on {descField} with query : {query}"
+      IO.eprintln s!"embedSearch on {descField} with query: {query}"
       let outJs ←
         getNearestEmbeddingsFull query (← embedQueryCached query) n p (descField := descField) (dataMap := dataMap)
       match ← pairsFromEmbeddingJson outJs with
