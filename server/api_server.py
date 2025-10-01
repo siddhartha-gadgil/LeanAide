@@ -9,6 +9,7 @@ from socketserver import ThreadingMixIn
 from sentence_transformers import SentenceTransformer
 sys.path.insert(0, "SimilaritySearch/")
 import similarity_search
+import create_indexes
 
 from logging_utils import log_write, filter_logs, get_env, post_env, delete_env_file
 
@@ -21,6 +22,9 @@ for arg in sys.argv[1:]:
 print("Loading model...")
 MODEL = SentenceTransformer("all-MiniLM-L6-v2", model_kwargs={"dtype": "float16"})
 print("Model loaded!")
+
+print("Checking indexes...")
+create_indexes.main(MODEL)
 
 def get_env_args():
     """Get environment variables for the server, mainly LLM details"""
