@@ -1,6 +1,7 @@
 import Lean.Meta
 import LeanCodePrompts
 import LeanAide.TheoremElab
+import LeanAide.TheoremElabCheck
 import LeanCodePrompts.Makecaps
 import LeanAide.Config
 open Lean LeanAide
@@ -34,12 +35,12 @@ def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot)
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
-    {module:= `LeanAide.TheoremElab},
+    {module:= `LeanAide.TheoremElab}, {module:= `LeanAide.TheoremElabCheck},
     {module := `Mathlib}] {}
   match args with
   | [] => IO.println chkDocs
   | s::[] => do
-    let core := elabThmCore  s
+    let core := elabThm4  s |>.runToCore
     let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
@@ -50,7 +51,7 @@ def main (args: List String) : IO Unit := do
         IO.println expr
       | Except.error err =>
         IO.println "failure"
-        IO.println err
+        IO.println s!"{repr err}"
     | Except.error e =>
       IO.println "error"
       let m := e.toMessageData
