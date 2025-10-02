@@ -496,7 +496,7 @@ elab "isDiscussionType%" e:term : term => do
   else
     mkConst ``false
 
-#eval isDiscussionType% (Discussion Query)
+-- #eval isDiscussionType% (Discussion Query)
 
 end Discussion
 
