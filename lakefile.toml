@@ -71,10 +71,6 @@ name = "leanaide_process"
 supportInterpreter = true
 
 [[lean_exe]]
-name = "chkelab"
-supportInterpreter = true
-
-[[lean_exe]]
 name = "promptsgen"
 supportInterpreter = true
 

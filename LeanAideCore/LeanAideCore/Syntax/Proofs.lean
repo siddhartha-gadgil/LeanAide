@@ -88,7 +88,6 @@ Just a test
 
 -- #check easy
 
-#check ppTerm
 
 elab doc:docComment "#theorem_code" ppSpace n:ident ppSpace ":" ppSpace t:term : command => do
   let name := n.getId
@@ -114,9 +113,9 @@ Just a test
 -/
 #theorem_code easy₁.theorem_code : 2 + 2 = 4
 
-#eval easy₁.theorem_code
+-- #eval easy₁.theorem_code
 
-#eval unproxy easy₁.theorem_code
+-- #eval unproxy easy₁.theorem_code
 
 instance : DefinitionCommand Conjecture where
   cmd c := do
