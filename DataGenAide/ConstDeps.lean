@@ -234,15 +234,16 @@ def propMapFromDefns (dfns : Array DefDataRepr) : MetaM <| Std.HashMap Name (Str
         |>.toList.map fun d => (d.name, (d.type, d.statement))
 
 namespace DefDataRepr
-def getM : MetaM <| Array DefDataRepr := do
+def getM (withoutDocs: Bool := false) : MetaM <| Array DefDataRepr := do
     let cs ← constantNameValueTypes
     IO.println s!"Total: {cs.size}"
     let mut count := 0
     let mut dfns : Array DefDataRepr := #[]
     for (name, value, type, doc?) in cs do
-        if count % 1000 = 0 then
-          IO.println s!"count: {count}"
-        count := count + 1
+      if count % 1000 = 0 then
+        IO.println s!"count: {count}"
+      count := count + 1
+      if withoutDocs || doc?.isSome then
         let depth := type.approxDepth
         unless depth > 60 do
         try
@@ -372,10 +373,10 @@ def writeDocsM : MetaM <| Json := do
   IO.println "Getting defn types"
   let dfns ← DefDataRepr.getM
   IO.println s!"Total: {dfns.size}"
-  DefDataRepr.writeM dfns
+  -- DefDataRepr.writeM dfns
   let dfns := dfns.filter (fun d => d.doc?.isSome)
-  IO.println s!"Total: {dfns.size}"
-  DefDataRepr.writeM dfns "docs.jsonl"
+  IO.println s!"Total filtered: {dfns.size}"
+  -- DefDataRepr.writeM dfns "docs.jsonl"
   return Json.arr <| dfns.map toJson
 
 -- #check Json.mergeObj
