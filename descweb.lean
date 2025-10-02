@@ -28,7 +28,7 @@ def block? (name: Name)(js: Json) : IO <| Option String := do
   | _, _ => return none
 
 def main : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  initSearchPath (← Lean.findSysroot)
   let env ←
     importModules (loadExts := true) #[
     {module := `Mathlib},

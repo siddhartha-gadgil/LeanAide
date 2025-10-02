@@ -12,7 +12,7 @@ def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", posi
     }
 
 unsafe def main : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  initSearchPath (← Lean.findSysroot)
   enableInitializersExecution
   let env ←
     importModules (loadExts := true) #[
