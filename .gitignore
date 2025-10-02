@@ -88,3 +88,4 @@ leanaide_st_temp/
 .leanaide_cache/*/*.json
 TestEmbeddings/
 SimilaritySearch/Indexes
+SimilaritySearch/docStrings
