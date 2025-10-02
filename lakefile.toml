@@ -168,6 +168,10 @@ name = "descweb"
 supportInterpreter = true
 
 [[lean_exe]]
+name = "check_descs"
+supportInterpreter = true
+
+[[lean_exe]]
 name = "descdetails"
 supportInterpreter = true
 

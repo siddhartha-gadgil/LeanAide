@@ -247,7 +247,7 @@ def getM (withoutDocs: Bool := false) : MetaM <| Array DefDataRepr := do
         let depth := type.approxDepth
         unless depth > 60 do
         try
-          let typeFmt ← Meta.ppExpr type
+          let typeStr ← ppExprDetailed type
           let isProp ← isProof value
           let valueStr ←  do
             if isProp
@@ -262,7 +262,7 @@ def getM (withoutDocs: Bool := false) : MetaM <| Array DefDataRepr := do
           let statement ←
             mkStatement (some name) typeStx valueStx? isProp (isNoncomputable := isNoncomputable)
           dfns := dfns.push
-            ⟨name, typeFmt.pretty, isProp, isNoncomputable, doc?, valueStr, statement⟩
+            ⟨name, typeStr, isProp, isNoncomputable, doc?, valueStr, statement⟩
         catch e =>
           let msg := e.toMessageData
           IO.eprintln s!"Failed to process {name}; error {← msg.toString}"

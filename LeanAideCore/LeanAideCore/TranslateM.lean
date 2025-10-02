@@ -31,6 +31,14 @@ def ElabError.text : ElabError → String
   | .unparsed text _ _ => text
   | .parsed text _ _ _ => text
 
+def ElabError.error : ElabError → String
+  | .unparsed _ parseError _ => parseError
+  | .parsed _ _ cmdErrors _ =>
+      if cmdErrors.isEmpty then
+        "no front-end errors"
+      else
+        cmdErrors.foldr (· ++ "\n" ++ · ) ""
+
 instance : ToMessageData (ElabError) where
   toMessageData (err) := match err with
   | .unparsed text parseError _ => m!"Parsing error: {parseError} for {text}"
