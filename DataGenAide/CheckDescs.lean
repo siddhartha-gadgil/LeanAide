@@ -1,5 +1,6 @@
 import Lean
 import LeanAide.Aides
+import LeanAide.StatementSyntax
 import Mathlib
 
 namespace LeanAide
@@ -31,7 +32,7 @@ def namesSize : MetaM (Nat × Nat) := do
   let (valid, invalid) ← namesSplit
   return (valid.size, invalid.size)
 
-#eval namesSize
+-- #eval namesSize
 
 def writeInvalid : MetaM Unit := do
   let (_, invalid) ← namesSplit
@@ -40,5 +41,26 @@ def writeInvalid : MetaM Unit := do
     h.putStrLn s!"{n}"
 
 -- #eval writeInvalid
+
+-- #eval json%{"n" : 1, "s" : "hello"}.mergeObj (json%{"b" : true, "s" : "goodbye"})
+
+def update? (js: Json) : MetaM (Option Json) := do
+  let .ok name := js.getObjValAs? Name "name" | throwError s!"Failed to parse JSON: {js}"
+  let env ← getEnv
+  match env.find? name with
+  | none => return none
+  | some info =>
+    let typeStx ←
+      delabDetailed info.type
+    let typeStr ← ppExprDetailed info.type
+          let isNoncomputable := Lean.isNoncomputable (← getEnv) name
+    let statement ←
+            mkStatement (some name) typeStx none true (isNoncomputable := isNoncomputable)
+    let newJson :=
+      js.mergeObj (Json.mkObj [("type" , typeStr), ("statement", statement)])
+    return some newJson
+
+def updateDescCore? (js: Json) : CoreM (Option Json) :=
+  update? js |>.run'
 
 end LeanAide

@@ -164,6 +164,10 @@ name = "rewritedescs"
 supportInterpreter = true
 
 [[lean_exe]]
+name = "updatedescs"
+supportInterpreter = true
+
+[[lean_exe]]
 name = "descweb"
 supportInterpreter = true
 
