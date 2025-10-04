@@ -3,7 +3,6 @@ import json
 import faiss
 import numpy as np
 
-DIM = 768
 # Adjust the batch size according to your memory
 BATCH_SIZE = 4000
 DESCFIELD_PATHS = {
@@ -21,6 +20,8 @@ FIELD_NAME = {
     "concise-description" : "concise-description",
     "description" : "description"
 }
+
+DIM = 768 # If changed, add `truncate_dim = DIM` to model.encode function
 
 def batch_generator(descField, batch_size):
     batch, ids = [], []
