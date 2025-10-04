@@ -43,17 +43,14 @@ def create_index(descField, model):
     index = faiss.IndexIDMap(base_index)
     # Get the batch generator
     data_batches = batch_generator(descField, BATCH_SIZE)
-    num = 1
     # Loop over the batches and ids
     for batch, ids in data_batches:
-        print(f"ids : {ids}")
         # Embed the batch
         embeddings = model.encode(batch, show_progress_bar = True, convert_to_numpy = True)
         # Add it to the index
         index.add_with_ids(embeddings, ids)
         # Print progress
-        print(f"- Batch {num}. {num * BATCH_SIZE} docstrings encoded")
-        num += 1
+        print(f"- docstrings encoded: {ids[-1] + 1}")
     # Save the index to INDEX_PATHS[descField]
     faiss.write_index(index, INDEX_PATHS[descField])
 
