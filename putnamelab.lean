@@ -12,7 +12,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 unsafe def main (args : List String) : IO UInt32 := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  initSearchPath (← Lean.findSysroot)
   let translator : Translator := {}
   let translator : Translator := {translator with roundTrip := true, roundTripSelect := true}
   let dir := System.mkFilePath <| ["results", "putnam"]

@@ -24,6 +24,30 @@ macro "#start_chat" n:ident s:term : command =>
 
 #start_chat chat2 "Prove that 2 + 2 = 4."
 
+macro doc:docComment "#query" ppSpace n:ident : command =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  `(command| def $n : Query := { message := $textStx} )
+
+def mkQueryCmd (s: String) (name: Name)  : CoreM Syntax.Command :=
+  let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ s ++ "\n" ++ " -/")]
+  let nameStx := mkIdent name
+  `(command | $docs:docComment #query $nameStx)
+
+macro doc:docComment "#response" ppSpace name:ident : command =>
+  let text := doc.raw.reprint.get!
+  let text := text.drop 4 |>.dropRight 4
+  let textStx := Syntax.mkStrLit text
+  let name := name.getId
+  let nameStx := mkIdent name
+  `(command| def $nameStx : Response := { message := $textStx} )
+
+def mkResponseCmd (s: String) (name: Name)  : CoreM Syntax.Command :=
+  let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ("\n" ++ s ++ "\n" ++ " -/")]
+  let nameStx := mkIdent name
+  `(command | $docs:docComment #response $nameStx)
+
 macro doc:docComment "#proof_document" ppSpace n:ident : command =>
   let text := doc.raw.reprint.get!
   let text := text.drop 4 |>.dropRight 4
@@ -64,15 +88,13 @@ Just a test
 
 -- #check easy
 
-#check ppTerm
 
-elab doc:docComment "#theorem_code" n:ident ppSpace ":" ppSpace t:term : command => do
+elab doc:docComment "#theorem_code" ppSpace n:ident ppSpace ":" ppSpace t:term : command => do
   let name := n.getId
   let nameStx := mkIdent name
   let termName := pruneName name
   let termNameStx := Syntax.mkStrLit (toString termName)
-  let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
+  let text ← getDocStringText doc
   let textStx := Syntax.mkStrLit text
   let typeFmt ← Command.liftTermElabM do
     ppTerm t
@@ -80,7 +102,7 @@ elab doc:docComment "#theorem_code" n:ident ppSpace ":" ppSpace t:term : command
   let propName := termName ++ "prop".toName
   let propId := mkIdent propName
   let statement ← Command.liftTermElabM do
-    let cmd ← `(command| def $propId : Prop := $typeStx )
+    let cmd ← `(command| def $propId : Prop := $t )
     ppCommand cmd
   let statementStx := Syntax.mkStrLit statement.pretty
   let stx ←  `(command| $doc:docComment def $nameStx : TheoremCode := {name := $termNameStx |>.toName, text := $textStx, type := $typeStx, statement := $statementStx} )
@@ -91,9 +113,11 @@ Just a test
 -/
 #theorem_code easy₁.theorem_code : 2 + 2 = 4
 
-#eval easy₁.theorem_code
+-- #eval easy₁.theorem_code
 
-instance : DefinitionCommand TheoremCodeM where
+-- #eval unproxy easy₁.theorem_code
+
+instance : DefinitionCommand Conjecture where
   cmd c := do
     let name := c.name ++ "conj".toName
     let nameStx := Lean.mkIdent name
@@ -106,7 +130,8 @@ instance : DefinitionCommand TheoremCode where
     let name := c.name ++ "theorem_code".toName
     let nameStx := Lean.mkIdent name
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom ( c.text ++ " -/")]
-    let typeStx := Syntax.mkStrLit c.type
+    let .ok typeStx := runParserCategory (← getEnv) `term c.type | throwError "Failed to parse type"
+    let typeStx : Syntax.Term := ⟨typeStx⟩
     return (← `(command| $docs:docComment #theorem_code $nameStx : $typeStx), name)
 
 instance : DefinitionCommand DefinitionCodeM where
@@ -128,12 +153,12 @@ instance [inst: TermCommands α] : TermCommands (Discussion α) where
 instance : DefinitionCommand Query where
   cmd q := do
     let name := s!"query_{hash q.message}".toName
-    return (← mkQuoteCmd q.message name, name)
+    return (← mkQueryCmd q.message name, name)
 
 instance : DefinitionCommand Response where
   cmd r := do
     let name := s!"response_{hash r.message}".toName
-    return (← mkQuoteCmd r.message name, name)
+    return (← mkResponseCmd r.message name, name)
 
 instance : DefinitionCommand DefinitionCodeM where
   cmd d := return (d.statement, d.name)
@@ -233,7 +258,7 @@ elab "#disc_eg_cmds" : command => Command.liftTermElabM do
   for c in cmds do
     logInfo c
 
-#disc_eg_cmds
+-- #disc_eg_cmds
 
 syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
 
@@ -266,33 +291,61 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
       let resultEffect ← unsafe evalExpr (Syntax → (TermElabM Unit)) SideEffect resultEffectExpr
       resultEffect stx
   | stx@`(command| #prove $t:term ) => Command.liftTermElabM do
-    let tc := mkIdent ``TheoremCodeM
+    let tc := mkIdent ``Conjecture
     let pd := mkIdent ``ProofDocument
     let sp := mkIdent ``StructuredProof
     let pc := mkIdent ``ProofCode
     TryThis.addSuggestions stx #[(← `(command| #prove $t:term >> $tc)), (← `(command| #prove $t:term >> $pd)), (← `(command| #prove $t:term >> $sp)), (← `(command| #prove $t:term >> $pc))] (header := "Specify output type with >>")
   | _ => throwUnsupportedSyntax
 
-@[command_elab askCommand] def askCommandImpl : CommandElab :=
+syntax (name:= askCommand) (docComment)? "#ask" (ppSpace str)? ppSpace "<<" ppSpace term : command
+
+@[command_elab askCommand] def elabAskCmd : CommandElab
+  | stx@`(command| #ask $s:str << $t:term) =>
+    Command.liftTermElabM do
+    let text := s.getString
+    go text stx t
+  | stx@`(command| $doc:docComment #ask << $t:term) =>
+    Command.liftTermElabM do
+    let text ← getDocStringText doc
+    go text stx t
+  | _ => throwUnsupportedSyntax
+  where go (text: String) (stx : Syntax) (t: Syntax.Term) : TermElabM Unit := do
+    let textExpr := mkStrLit text
+    let init ← Term.elabTerm t none
+    let init' ← mkAppM ``Discussion.addQuery #[init, textExpr]
+    let type ← mkAppM ``Discussion #[mkConst ``Response]
+    let result ← mkAppM ``generateM #[type, init']
+    let cmdsMapExpr ← mkAppM ``relDefinitionCommandsM #[result, init]
+    let cmdsMapType' ← mkArrow (mkConst ``Syntax.Term) (← mkAppM ``TermElabM #[(← mkAppM ``List #[mkConst ``Syntax.Command])])
+    let cmdsMapType ← mkAppM ``TermElabM #[cmdsMapType']
+    let cmdsMapM ← unsafe evalExpr (TermElabM (Syntax.Term → TermElabM (List Syntax.Command))) cmdsMapType cmdsMapExpr
+    let cmdsMap ← cmdsMapM
+    let cmds ← cmdsMap t
+    let cmds := cmds.toArray
+    let s ← printCommands (← `(commandSeq | $cmds*))
+    TryThis.addSuggestion stx s (header := "Generated commands:")
+
+@[command_elab llmQueryCommand] def llmQueryCommandImpl : CommandElab :=
   fun stx => Command.liftTermElabM do
   match stx with
-  | `(command| #ask  $_:str) =>
+  | `(command| #llm_query  $_:str) =>
     logWarning "Follow ask command with 'following <term>' or 'initiate' to continue/start a discussion."
-  | `(command| #ask $_:num $_:str) =>
+  | `(command| #llm_query $_:num $_:str) =>
     logWarning "Follow ask command with 'following <term>' or 'initiate' to continue/start a discussion."
-  | `(command| #ask $s:str following $p:term) =>
+  | `(command| #llm_query $s:str following $p:term) =>
     let s := s.getString
     let _p ← Term.elabTerm p none
     go s none stx
-  | `(command| #ask $n:num $s:str following $p:term) =>
+  | `(command| #llm_query $n:num $s:str following $p:term) =>
     let s := s.getString
     let _p ← Term.elabTerm p none
     let n := n.getNat
     go s (some n) stx
-  | `(command| #ask $s:str initiate) =>
+  | `(command| #llm_query $s:str initiate) =>
     let s := s.getString
     go s none stx
-  | `(command| #ask $n:num $s:str initiate) =>
+  | `(command| #llm_query $n:num $s:str initiate) =>
     let s := s.getString
     let n := n.getNat
     go s (some n) stx
@@ -304,11 +357,10 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
       for r in responses do
         logInfo r
       let stxs : List TryThis.Suggestion ← responses.mapM fun res => do
-        -- let qr := s!"**Query**: {s}\n\n **Response:** {res}"
-        let queryName := s!"query_{hash s}" |>.toName
-        let resName := s!"response_{hash s}" |>.toName
-        let stxQ ← mkQuoteCmd s queryName
-        let stxR ←  mkQuoteCmd res resName
+        let name := s!"query_{hash res}".toName
+        let stxQ ← mkQueryCmd s name
+        let name := s!"response_{hash res}".toName
+        let stxR ←  mkResponseCmd res name
         printCommands <| ←  toCommandSeq #[stxQ, stxR]
       TryThis.addSuggestions stx <| stxs.toArray
 

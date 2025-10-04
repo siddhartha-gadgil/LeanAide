@@ -44,7 +44,7 @@ declare_syntax_cat discussion
 syntax "following" term : discussion
 syntax "initiate" : discussion
 
-syntax (name := askCommand) "#ask" (ppSpace num)? ppSpace str (ppSpace discussion)? : command
+syntax (name := llmQueryCommand) "#llm_query" (ppSpace num)? ppSpace str (ppSpace discussion)? : command
 
 end LeanAide
 

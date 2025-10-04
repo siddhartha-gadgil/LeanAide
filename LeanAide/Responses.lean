@@ -550,19 +550,6 @@ def mathQueryTask (data: Json) (translator : Translator) : TranslateM Json := do
 
 /--
 Implementation of the `Kernel` class which provides various functionalities such as translating theorems and definitions, generating documentation, naming theorems, proving theorems, converting to and from structured JSON, and elaborating code. This is the "server-side" implementation that uses the `Translator` to perform these tasks.
-
-```lean4
-class Kernel where
-  translateThm : String → TermElabM (Except (Array ElabError) Expr)
-  translateDef : String → TermElabM (Except (Array CmdElabError) Syntax.Command)
-  theoremDoc : Name → Syntax.Command → TermElabM String
-  defDoc : Name → Syntax.Command → TermElabM String
-  theoremName : String → CoreM Name
-  proveForFormalization : Name → Expr → TermElabM String
-  jsonStructured : String → CoreM Json
-  codeFromJson : String → TermElabM (TSyntax ``commandSeq)
-  elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
-```
 -/
 instance kernel : Kernel := {
   translateThm := fun text => do

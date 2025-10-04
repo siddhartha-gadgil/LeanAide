@@ -5,6 +5,8 @@ import LeanAideCore.Prompts
 import LeanAideCore.Kernel
 
 /-!
+## DSL and Discussion types
+
 Types for a discussion thread involving chatbots, humans and leanaide. Wrapper types for messages and an indexed inductive type for a discussion thread.
 
 * The main line for the present code is
@@ -35,7 +37,7 @@ deriving Inhabited, Repr, ToJson, FromJson
 
 def thmText (s: String) (name? : Option Name := none) : TheoremText := { text := s , name? := name? }
 
-structure TheoremCodeM where
+structure Conjecture where
   text : String
   name: Name
   type : Expr
@@ -49,7 +51,18 @@ structure TheoremCode where
   statement : String
 deriving Inhabited, Repr, ToJson, FromJson
 
-instance : Proxy TheoremCodeM TheoremCode where
+def TheoremCode.ofNameM (name: Name) : TermElabM TheoremCode := do
+  let env ← getEnv
+  let some text ← findDocString? env name | throwError "No doc string for {name}"
+  let info ← getConstInfo name
+  let typeStr ← ppExpr info.type
+  let typeStx ← PrettyPrinter.delab info.type
+  let nameIdent := mkIdent <| name ++ "prop".toName
+  let statement ← `(command| def $nameIdent : Prop := $typeStx)
+  return { text := text, name := name, type := typeStr.pretty, statement := (← PrettyPrinter.ppCommand statement).pretty }
+
+instance : Proxy Conjecture  where
+  β := TheoremCode
   to t := do
     let typeStr ← ppExpr t.type
     let stmtStr ← PrettyPrinter.ppCommand t.statement
@@ -59,6 +72,21 @@ instance : Proxy TheoremCodeM TheoremCode where
     let typeExpr ← elabType typeStx
     let .ok stmtCmd := Parser.runParserCategory (← getEnv) `command t.statement | throwError "Failed to parse statement"
     return { text := t.text, name := t.name, type := typeExpr, statement := ⟨stmtCmd⟩ }
+
+
+instance : InverseProxy TheoremCode  where
+  α := Conjecture
+  of t := do
+    let .ok typeStx := Parser.runParserCategory (← getEnv) `term t.type | throwError "Failed to parse type"
+    let typeExpr ← elabType typeStx
+    let .ok stmtCmd := Parser.runParserCategory (← getEnv) `command t.statement | throwError "Failed to parse statement"
+    return { text := t.text, name := t.name, type := typeExpr, statement := ⟨stmtCmd⟩ }
+  to t := do
+    let typeStr ← ppExpr t.type
+    let stmtStr ← PrettyPrinter.ppCommand t.statement
+    return { text := t.text, name := t.name, type := typeStr.pretty, statement := stmtStr.pretty }
+
+
 
 structure DefinitionText where
   text : String
@@ -118,7 +146,7 @@ def ResponseType.toType : ResponseType → Type
 | .code => ProofCode
 | .comment => Comment
 | .theoremText => TheoremText
-| .theoremCode => TheoremCodeM
+| .theoremCode => TheoremCode
 | .definitionText => DefinitionText
 | .definitionCode => DefinitionCodeM
 | .documentCode => ProofCode
@@ -158,7 +186,7 @@ instance commentOfType : ResponseType.OfType Comment where
 instance theoremTextOfType : ResponseType.OfType TheoremText where
   rt := .theoremText
 
-instance theoremCodeOfType : ResponseType.OfType TheoremCodeM where
+instance theoremCodeOfType : ResponseType.OfType TheoremCode where
   rt := .theoremCode
 
 instance definitionTextOfType : ResponseType.OfType DefinitionText where
@@ -177,12 +205,12 @@ inductive Discussion : Type → Type where
   | query {rt: ResponseType} (init: Discussion rt.toType) (q : Query) : Discussion Query
   | response (init: Discussion Query) (r : Response) : Discussion Response
   | translateTheoremQuery (init : Discussion Unit) (tt : TheoremText) : Discussion TheoremText
-  | theoremTranslation (init : Discussion TheoremText) (tc : TheoremCodeM) :Discussion TheoremCodeM
+  | theoremTranslation (init : Discussion TheoremText) (tc : TheoremCode) :Discussion TheoremCode
   | translateDefinitionQuery (init : Discussion Unit) (dt : DefinitionText) : Discussion DefinitionText
   | definitionTranslation (init : Discussion DefinitionText) (dc : DefinitionCodeM) : Discussion DefinitionCodeM
   | comment {rt : ResponseType} (init: Discussion rt.toType) (c : Comment) : Discussion Comment
   | proveTheoremQuery (init: Discussion Unit) (tt : TheoremText) : Discussion TheoremText
-  | proofDocument (init: Discussion TheoremCodeM) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
+  | proofDocument (init: Discussion TheoremCode) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
   | proofStructuredDocument (init: Discussion ProofDocument) (sdoc : StructuredProof) (prompt? : Option String := none) (schema : Option Json := none) :  Discussion StructuredProof
   | proofCode (init: Discussion StructuredProof) (tc : ProofCode) : Discussion ProofCode
   | rewrittenDocument (init: Discussion ProofDocument ) (doc : ProofDocument) (prompt? : Option String := none) :  Discussion ProofDocument
@@ -231,6 +259,9 @@ def mkQuery {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (q : Qu
   rw [inst.eqn]
   exact prev
 
+def addQuery {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (s : String) : Discussion Query :=
+  prev.mkQuery { message := s }
+
 def mkComment {α} [inst : ResponseType.OfType α ] (prev : Discussion α) (c : Comment) : Discussion Comment := by
   apply Discussion.comment (rt := inst.rt) _ c
   rw [inst.eqn]
@@ -253,7 +284,7 @@ instance appendComment (α : Type) [inst : ResponseType.OfType α] : Append α C
 
 instance appendTheoremText : Append Unit TheoremText where
   append d tt := Discussion.translateTheoremQuery d tt
-instance appendTheoremCode : Append TheoremText TheoremCodeM where
+instance appendTheoremCode : Append TheoremText TheoremCode where
   append d tc := Discussion.theoremTranslation d tc
 instance appendDefinitionText : Append Unit DefinitionText where
   append d dt := Discussion.translateDefinitionQuery d dt
@@ -261,7 +292,7 @@ instance appendDefinitionCode : Append DefinitionText DefinitionCodeM where
   append d dc := Discussion.definitionTranslation d dc
 instance appendProveTheorem : Append Unit TheoremText where
   append d tt := Discussion.proveTheoremQuery d tt
-instance appendProofDocument : Append TheoremCodeM ProofDocument where
+instance appendProofDocument : Append TheoremCode ProofDocument where
   append d doc := Discussion.proofDocument d doc
 instance appendProofStructuredDocument : Append ProofDocument StructuredProof where
   append d sdoc := Discussion.proofStructuredDocument d sdoc
@@ -293,13 +324,13 @@ instance GenerateM.composition (α γ : Type) (β : outParam Type) [r1 : Generat
     r2.generateM d
 
 set_option synthInstance.checkSynthOrder false in
-def GenerateM.compositionProxyTo (α γ : Type) {β : outParam Type} [ToJson β] [FromJson β] [Repr β] [r1 : Proxy α β] [r2 : GenerateM β γ] : GenerateM α γ where
+def GenerateM.compositionProxyTo (α γ : Type)  [r1 : Proxy α ] [r2 : GenerateM r1.β γ] : GenerateM α γ where
   generateM a := do
     let d ← r1.to a
     r2.generateM d
 
 set_option synthInstance.checkSynthOrder false in
-def GenerateM.compositionProxyOf (α γ : Type) {β : outParam Type}  [ToJson β] [FromJson β] [Repr β] [r2 : Proxy γ β][r1 : GenerateM α β] : GenerateM α γ where
+def GenerateM.compositionProxyOf (α : Type) {β : outParam Type}  [ToJson β] [FromJson β] [Repr β] [r2 : InverseProxy β][r1 : GenerateM α β] : GenerateM α r2.α where
   generateM a := do
     let d ← r1.generateM a
     r2.of d
@@ -465,7 +496,7 @@ elab "isDiscussionType%" e:term : term => do
   else
     mkConst ``false
 
-#eval isDiscussionType% (Discussion Query)
+-- #eval isDiscussionType% (Discussion Query)
 
 end Discussion
 

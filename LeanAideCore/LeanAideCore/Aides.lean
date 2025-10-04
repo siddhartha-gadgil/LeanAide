@@ -932,20 +932,50 @@ elab "s%" s:term : term => do
     elabTerm stx (mkConst ``String)
   return res
 
-class Proxy (α β : Type) [Repr β] [ToJson β] [FromJson β] where
+class Proxy (α : Type)  where
+  β : Type
+  toJsonInst : ToJson β := by apply inferInstance
   to : α → TermElabM β
   of : β → TermElabM α
 
-def proxy {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (a : α) : TermElabM β :=
-  Proxy.to a
+class InverseProxy (β  : Type)  where
+  α  : Type
+  of : β → TermElabM α
+  to : α → TermElabM β
 
-def unproxy {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (b : β) : TermElabM α :=
-  Proxy.of b
+def proxy {α: Type}[inst: Proxy α ] (a : α) : TermElabM inst.β :=
+  inst.to a
 
-def proxyJson {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (a : α) : TermElabM Json := do
-  let b : β  ← proxy a
+def unproxy {β : Type}   [inst : InverseProxy β] (b : β) : TermElabM inst.α :=
+  inst.of b
+
+def proxyJson {α : Type} [inst: Proxy α] (a : α) : TermElabM Json := do
+  let b   ← proxy a
+  let _ : ToJson (Proxy.β α) := inst.toJsonInst
   return toJson b
 
-def unproxyJson {α β : Type} [Repr β] [ToJson β] [FromJson β] [Proxy α β] (j: Json) : TermElabM α := do
+def unproxyJson {β : Type} [FromJson β] [inst: InverseProxy β] (j: Json) : TermElabM inst.α := do
   let .ok (b : β) := fromJson? j | throwError s!"failed to parse {j}"
   unproxy b
+
+partial def readableJson (js: Json) : Json :=
+   match js with
+  | Json.obj m =>
+   match m.toArray with
+   | jsArr =>
+     let keyVals := jsArr.map (fun ⟨k, v⟩ => (k, v))
+     let purged := jsArr.filter (fun ⟨k, _⟩ => k != "type")
+     let purged := purged.map fun ⟨k, v⟩ => (k, v)
+     let typeVal? := keyVals.findSome? (fun (k, v) => if k == "type" then some v else none)
+     match typeVal? with
+     | some typeVal =>
+       let type? := typeVal.getStr?.toOption
+       match type? with
+       | some type =>
+          Json.mkObj [(type, readableJson (Json.mkObj purged.toList))]
+       | none => js
+     | none =>
+       let keyValsModified := keyVals.map (fun (k,v) => (k, readableJson v))
+       Json.mkObj keyValsModified.toList
+  | Json.arr m => (m.map (fun x => readableJson x)).toJson
+  | _ => js

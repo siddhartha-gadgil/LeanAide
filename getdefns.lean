@@ -9,7 +9,7 @@ set_option compiler.extract_closed false
 
 
 def main (args: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  initSearchPath (← Lean.findSysroot)
   let start :=
     (args.get? 0 >>= fun s => s.toNat?).getD 0
   let stop :=
