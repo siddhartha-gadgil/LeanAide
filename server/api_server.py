@@ -7,9 +7,14 @@ import sys
 import threading
 from socketserver import ThreadingMixIn
 from sentence_transformers import SentenceTransformer
+import torch
 sys.path.insert(0, "SimilaritySearch/")
 import similarity_search
 import create_indexes
+
+# from huggingface_hub import login
+
+# login()
 
 from logging_utils import log_write, filter_logs, get_env, post_env, delete_env_file
 
@@ -19,8 +24,11 @@ COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     COMMAND = " " + arg
 
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+print(f"Using device: {device}...")
+MODEL_NAME = "google/embeddinggemma-300m"
 print("Loading model...")
-MODEL = SentenceTransformer("all-MiniLM-L6-v2", model_kwargs={"dtype": "float16"})
+MODEL = SentenceTransformer(MODEL_NAME, device=device, model_kwargs={"dtype": torch.bfloat16})
 print("Model loaded!")
 
 print("Checking indexes...")
@@ -110,8 +118,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     self.send_response(400)
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
-                    error_msg = {"error": "Missing parameters. Required: 'num', 'query', 'descField'"}
-                    self.wfile.write(json.dumps(error_msg).encode('utf-8'))
+                    error_msg = "error : Missing parameters. Required: 'num', 'query', 'descField'"
+                    self.wfile.write(error_msg.encode('utf-8'))
+                    print(f"ERROR: 400 Bad Request - {error_msg}", file=sys.stderr)
                     return # Exit after handling
 
                 # Call the main function from similarity_search
@@ -127,8 +136,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self.send_response(500)
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
-                error_msg = {"error": str(e)}
-                self.wfile.write(json.dumps(error_msg).encode('utf-8'))
+                error_msg = f"error: {str(e)}"
+                self.wfile.write(error_msg.encode('utf-8'))
+                print(f"ERROR: 500 Internal Server Error - {error_msg}", file=sys.stderr)
 
             return
 
