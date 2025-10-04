@@ -7,16 +7,21 @@ import faiss
 from sentence_transformers import SentenceTransformer
 
 # Config the model and file paths
-# MODEL = 'all-MiniLM-L6-v2' (moved over to server/api_server.py)
+DIM = 768
 DESCFIELD_PATHS = {
-    "docString" : "SimilaritySearch/docStrings/prompt_emb.json",
-    "concise-description" : "SimilaritySearch/docStrings/concise_desc_emb.json",
-    "description" : "SimilaritySearch/docStrings/desc_emb.json"
+    "docString" : "resources/mathlib4-prompts_new.jsonl",
+    "concise-description" : "resources/mathlib4-descs_new.jsonl",
+    "description" : "resources/mathlib4-descs_new.jsonl"
 }
 INDEX_PATHS = {
-    "docString" : "SimilaritySearch/Indexes/docString_all-MiniLM-L6-v2.index",
-    "concise-description" : "SimilaritySearch/Indexes/concise-description_all-MiniLM-L6-v2.index",
-    "description" : "SimilaritySearch/Indexes/description_all-MiniLM-L6-v2.index"
+    "docString" : "SimilaritySearch/Indexes/docString_embeddinggemma-300m-768dim.index",
+    "concise-description" : "SimilaritySearch/Indexes/concise-description_embeddinggemma-300m-768dim.index",
+    "description" : "SimilaritySearch/Indexes/description_embeddinggemma-300m-768dim.index"
+}
+FIELD_NAME = {
+    "docString" : "doc",
+    "concise-description" : "concise-description",
+    "description" : "description"
 }
 
 def check_GPU():
@@ -27,36 +32,30 @@ def check_GPU():
   except Exception as e:
       print(f"Failed to create FAISS GPU index: {e}")
 
-def load_data(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-    return data
+def get_data(descField, idx):
+    with open(DESCFIELD_PATHS[descField], "r", encoding="utf-8") as file:
+        for line_num, line in enumerate(file):
+            if line_num == idx:
+                data = json.loads(line)
+                return data
+    return None
 
-# Creates new index
-def create_index(index_path, data, model):
-    # Extract the theorems out of full data
-    theorems = [js["docString"] for js in data]  
-    # Encode all theorems into vectors
-    embeddings = model.encode(theorems)
-    # Get the dimension of the embeddings
-    d = embeddings.shape[1]
-    # Build the FAISS index
-    index = faiss.IndexFlatL2(d)
-    # Add the theorem vectors to the index
-    index.add(embeddings)
-    # Save the index to INDEX_PATHS[descField]
-    faiss.write_index(index, index_path)
-    return index
-
-def similarity_search(query, model, index, data, num):
+def similarity_search(query, model, index, descField, num):
     # Encode the query theorem into a vector
     query_vector = model.encode([query])
     # Search the FAISS index
     distances, indices = index.search(query_vector, num)
     output = []
     for i, idx in enumerate(indices[0]):
-        js = data[idx]
+        # Get the data on line (idx + 1)
+        js = get_data(descField, idx)
+        # Add distance field
         js["distance"] = float(distances[0][i])
+        # Rename FIELD_NAME[descField] to "docString"
+        temp = js[FIELD_NAME[descField]]
+        if "docString" in js: del js["docString"]
+        if FIELD_NAME[descField] in js: del js[FIELD_NAME[descField]]
+        js["docString"] = temp
         output.append(js)
     js_string = json.dumps(output)
     return js_string
@@ -69,13 +68,9 @@ def main(model, num, query = "mathematics", descField = "docString"):
     # Check if DESCFIELD_PATHS[descField] exists
     if not os.path.exists(DESCFIELD_PATHS[descField]):
         raise Exception(f"ERROR: docStrings NOT found at {DESCFIELD_PATHS[descField]}")
-    # Get the full data from DESCFIELD_PATHS[descField]
-    data = load_data(DESCFIELD_PATHS[descField])
-    # Read index; create it if it doesn't exist
-    if os.path.exists(INDEX_PATHS[descField]):
-        index = faiss.read_index(INDEX_PATHS[descField])
-    else:
-        index = create_index(INDEX_PATHS[descField], data, model)
+    # Read index (it should exist if the server was started, as create_indexes.py would be run)
+    try: index = faiss.read_index(INDEX_PATHS[descField])
+    except : raise Exception("Index not found! Please create the indexes (should be automatically created when the server starts).")
     # Run similarity search and print to standard output
-    output = similarity_search(query, model, index, data, num)
-    return output
+    js_string = similarity_search(query, model, index, descField, num)
+    return js_string
