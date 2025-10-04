@@ -1,43 +1,67 @@
 import os
 import json
 import faiss
+import numpy as np
 
+DIM = 768
+# Adjust the batch size according to your memory
+BATCH_SIZE = 4000
 DESCFIELD_PATHS = {
-    "docString" : "SimilaritySearch/docStrings/prompt_emb.json",
-    "concise-description" : "SimilaritySearch/docStrings/concise_desc_emb.json",
-    "description" : "SimilaritySearch/docStrings/desc_emb.json"
+    "docString" : "resources/mathlib4-prompts_new.jsonl",
+    "concise-description" : "resources/mathlib4-descs_new.jsonl",
+    "description" : "resources/mathlib4-descs_new.jsonl"
 }
 INDEX_PATHS = {
-    "docString" : "SimilaritySearch/Indexes/docString_all-MiniLM-L6-v2.index",
-    "concise-description" : "SimilaritySearch/Indexes/concise-description_all-MiniLM-L6-v2.index",
-    "description" : "SimilaritySearch/Indexes/description_all-MiniLM-L6-v2.index"
+    "docString" : "SimilaritySearch/Indexes/docString_embeddinggemma-300m-768dim.index",
+    "concise-description" : "SimilaritySearch/Indexes/concise-description_embeddinggemma-300m-768dim.index",
+    "description" : "SimilaritySearch/Indexes/description_embeddinggemma-300m-768dim.index"
+}
+FIELD_NAME = {
+    "docString" : "doc",
+    "concise-description" : "concise-description",
+    "description" : "description"
 }
 
-def load_data(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-    return data
+def batch_generator(descField, batch_size):
+    batch, ids = [], []
+    with open(DESCFIELD_PATHS[descField], "r", encoding="utf-8") as file:
+        for line_num, line in enumerate(file):
+            data = json.loads(line)
+            text = data[FIELD_NAME[descField]]
+            batch.append(text)
+            ids.append(np.int64(line_num))
+            if len(batch) == batch_size:
+                yield (batch, np.array(ids))
+                batch, ids = [], []
+    # For the last remaining sentences that didn't form a complete batch 
+    if batch: yield (batch, np.array(ids))
 
-def create_index(index_path, data, model):
-    # Extract the theorems out of full data
-    theorems = [js["docString"] for js in data]  
-    # Encode all theorems into vectors
-    embeddings = model.encode(theorems, show_progress_bar=True)
-    # Get the dimension of the embeddings
-    d = embeddings.shape[1]
-    # Build the FAISS index
-    index = faiss.IndexFlatL2(d)
-    # Add the theorem vectors to the index
-    index.add(embeddings)
+def create_index(descField, model):
+    # Create an empty FAISS index with dimension DIM
+    base_index = faiss.IndexFlatL2(DIM)
+    # Make it an IDMap index
+    index = faiss.IndexIDMap(base_index)
+    # Get the batch generator
+    data_batches = batch_generator(descField, BATCH_SIZE)
+    num = 1
+    # Loop over the batches and ids
+    for batch, ids in data_batches:
+        print(f"ids : {ids}")
+        # Embed the batch
+        embeddings = model.encode(batch, show_progress_bar = True, convert_to_numpy = True)
+        # Add it to the index
+        index.add_with_ids(embeddings, ids)
+        # Print progress
+        print(f"- Batch {num}. {num * BATCH_SIZE} docstrings encoded")
+        num += 1
     # Save the index to INDEX_PATHS[descField]
-    faiss.write_index(index, index_path)
+    faiss.write_index(index, INDEX_PATHS[descField])
 
 def main(model):
-    for descField in ["docString", "concise-description", "description"]:
+    for descField in ["concise-description", "description", "docString"]:
         if not os.path.exists(INDEX_PATHS[descField]):
             print(f"Creating index for {descField}...")
-            data = load_data(DESCFIELD_PATHS[descField])
-            create_index(INDEX_PATHS[descField], data, model)
+            create_index(descField, model)
             print(f"Index created and saved at {INDEX_PATHS[descField]}")
         else:
             print(f"Found index for {descField}")
