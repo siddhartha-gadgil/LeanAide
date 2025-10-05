@@ -1,3 +1,5 @@
+# DEPRECATED: MOVED OVER TO `similarity_search.py`
+
 import os
 import json
 import faiss
