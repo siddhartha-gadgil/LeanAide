@@ -111,7 +111,7 @@ def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Stri
   return fmt.pretty
 
 
-def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr := do
+def elabFrontTheoremExprMStrict (type: String) : MetaM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem
   let s := s!"set_option autoImplicit false in\ntheorem {n} : {type} := by sorry"
   let (env, logs) ←  runFrontendM s
@@ -124,6 +124,21 @@ def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr :=
     | some seek => return Except.ok seek.type
   else
     return Except.error errorStrings
+
+def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr := do
+  let n := `my_shiny_new_theorem
+  let s := s!"set_option autoImplicit false in\nnoncomputable def {n} : {type} := by sorry"
+  let (env, logs) ←  runFrontendM s
+  let errors := logs.toList.filter (·.severity == MessageSeverity.error)
+  let errorStrings ←  errors.mapM (·.data.toString)
+  if errors.isEmpty then
+    let seek? : Option ConstantInfo :=  env.find? n
+    match seek? with
+    | none => return Except.error ["Could not find theorem after elaboration"]
+    | some seek => return Except.ok seek.type
+  else
+    return Except.error errorStrings
+
 
 -- #eval elabFrontTheoremExprM "∀ n: Nat, n ≤ n + 1"
 

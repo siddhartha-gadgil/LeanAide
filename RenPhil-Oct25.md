@@ -83,6 +83,12 @@ The first step is the following:
 * Figure out the best way to store and share caches.
 * A good option when we have a hosted server may be to let it add to the cache.
 
+### Translation: multiple rounds, clean-up
+
+* [ ] Allow multiple rounds using the `ReTranslate` framework already implemented.
+* [ ] Rationalize the methods used, based on target and choices like greedy vs majority voting.
+* [ ] Completely separate out the prompt building.
+
 ### Monads
 
 * Currently, these are just stacked, with `TranslateM` on top.
