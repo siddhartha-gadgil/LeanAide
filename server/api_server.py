@@ -10,7 +10,6 @@ from sentence_transformers import SentenceTransformer
 import torch
 sys.path.insert(0, "SimilaritySearch/")
 import similarity_search
-import create_indexes
 
 # from huggingface_hub import login
 
@@ -24,15 +23,18 @@ COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     COMMAND = " " + arg
 
-device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-print(f"Using device: {device}...")
+# Config model
 MODEL_NAME = "google/embeddinggemma-300m"
-print("Loading model...")
+
+# Load model
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+print(f"Using device: {device}")
+print(f"Loading model {MODEL_NAME}...")
 MODEL = SentenceTransformer(MODEL_NAME, device=device, model_kwargs={"dtype": torch.bfloat16})
 print("Model loaded!")
 
-print("Checking indexes...")
-create_indexes.main(MODEL)
+# Check and create indexes
+similarity_search.run_create_indexes(MODEL)
 
 def get_env_args():
     """Get environment variables for the server, mainly LLM details"""
@@ -108,6 +110,8 @@ class ThreadingHTTPServer(ThreadingMixIn, http.server.HTTPServer):
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
+
+        # PATH TO SIMILARITY SEARCH
         if self.path == '/run-sim-search':
             try:
                 content_length = int(self.headers['Content-Length'])
@@ -124,7 +128,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     return # Exit after handling
 
                 # Call the main function from similarity_search
-                result = similarity_search.main(MODEL, data['num'], data['query'], data['descField'])
+                result = similarity_search.run_similarity_search(MODEL, data['num'], data['query'], data['descField'])
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -142,6 +146,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
             return
 
+        # NORMAL SERVER CODE BELOW
         global process, process_lock
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length).decode('utf-8')
