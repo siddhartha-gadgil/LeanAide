@@ -12,7 +12,7 @@ set_option compiler.extract_closed false
 def main (args: List String) : IO Unit := do
   let start? := (args.get? 0).flatMap (fun x => x.toNat?)
   let size? := (args.get? 1).flatMap (fun x => x.toNat?)
-  initSearchPath (← Lean.findSysroot) initFiles
+  initSearchPath (← Lean.findSysroot)
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
     {module := `LeanCodePrompts.Basic},

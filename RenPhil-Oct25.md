@@ -83,6 +83,12 @@ The first step is the following:
 * Figure out the best way to store and share caches.
 * A good option when we have a hosted server may be to let it add to the cache.
 
+### Translation: multiple rounds, clean-up
+
+* [ ] Allow multiple rounds using the `ReTranslate` framework already implemented.
+* [ ] Rationalize the methods used, based on target and choices like greedy vs majority voting.
+* [ ] Completely separate out the prompt building.
+
 ### Monads
 
 * Currently, these are just stacked, with `TranslateM` on top.
@@ -103,9 +109,23 @@ The first step is the following:
 ### Extensible JSON schema
 
 * [ ] We should allow the schema for a document to be extensible, specifically:
-  * [ ] Adding cases for `anyOf`
-  * [ ] Adding definitions in the definitions block.
-* [ ] We may want to implement a specialized structure *schema* rather than JSON in general, separating out `description`, `type` etc.
+  * [ ] Adding cases for `anyOf`, maybe in groups to be invoked as `anyOfGroup`.
+  * [ ] Adding definitions in the definitions block, associated to a group like "document", allowing default.
+  * [ ] Have functions/commands to add to group other than using attributes.
+* We may want to implement a specialized structure *schema* rather than JSON in general, separating out `description`, `type` etc.
+
+### Automation
+
+* [ ] Should have a clean way to try a series of tactics and get `TryThis` if they succeed.
+* [ ] Add `grind`.
+* [ ] Figure out parameters for `grind` such as definitions used.
+* [ ] Add also `canonical` and `reap` tactics.
+
+### Configuration
+
+* [ ] Have a uniform configuration structure for LeanAide.
+* [ ] Support TOML config properly, i.e., with a `DecodeTOML` (need to handle default).
+* [ ] Ensure that command-line, TOML and client configs are combined correctly, so if any one is explicit it should not be overridden by a default.
 
 ### Plausible
 

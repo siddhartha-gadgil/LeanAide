@@ -71,10 +71,6 @@ name = "leanaide_process"
 supportInterpreter = true
 
 [[lean_exe]]
-name = "chkelab"
-supportInterpreter = true
-
-[[lean_exe]]
 name = "promptsgen"
 supportInterpreter = true
 
@@ -168,7 +164,15 @@ name = "rewritedescs"
 supportInterpreter = true
 
 [[lean_exe]]
+name = "updatedescs"
+supportInterpreter = true
+
+[[lean_exe]]
 name = "descweb"
+supportInterpreter = true
+
+[[lean_exe]]
+name = "check_descs"
 supportInterpreter = true
 
 [[lean_exe]]

@@ -1,9 +1,10 @@
 import Lean.Meta
 import LeanCodePrompts
 import LeanAide.TheoremElab
+import LeanAide.TheoremElabCheck
 import LeanCodePrompts.Makecaps
 import LeanAide.Config
-open Lean
+open Lean LeanAide
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
@@ -31,15 +32,15 @@ The underlying code also supports `open` for namespaces but this demo version do
 "
 
 def main (args: List String) : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  initSearchPath (← Lean.findSysroot)
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
-    {module:= `LeanAide.TheoremElab},
+    {module:= `LeanAide.TheoremElab}, {module:= `LeanAide.TheoremElabCheck},
     {module := `Mathlib}] {}
   match args with
   | [] => IO.println chkDocs
   | s::[] => do
-    let core := elabThmCore <| mkCap s
+    let core := elabThm4  s |>.runToCore
     let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000} {env := env}
     match ← io?.toIO' with
@@ -50,7 +51,7 @@ def main (args: List String) : IO Unit := do
         IO.println expr
       | Except.error err =>
         IO.println "failure"
-        IO.println err
+        IO.println s!"{repr err}"
     | Except.error e =>
       IO.println "error"
       let m := e.toMessageData

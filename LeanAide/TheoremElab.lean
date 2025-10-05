@@ -74,12 +74,14 @@ def typeFromThmSyntax (stx : Syntax)
 def typeFromThm (s : String)
   : TermElabM  Syntax.Term := do
   let env ← getEnv
+  let s := s.replace "\\n" " "
   let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with
   | Except.ok stx  =>
       typeFromThmSyntax stx
   | Except.error e  => throwError e
 
+-- #eval typeFromThm "∀ {p : ℕ} [hp : Fact p.Prime] {k : Type u_1} [inst : Field k] [inst_1 : CharP k p] [inst_2 : PerfectRing k p],\\n  DiscreteValuationRing (WittVector p k)"
 -- #eval typeFromThm "Nat"
 
 /--

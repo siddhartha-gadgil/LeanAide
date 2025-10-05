@@ -9,7 +9,7 @@ set_option compiler.extract_closed false
 set_option pp.fullNames false
 
 def init : IO Unit := do
-  initSearchPath (← Lean.findSysroot) initFiles
+  initSearchPath (← Lean.findSysroot)
 
 def environment : IO Environment := do
   importModules (loadExts := true) #[{module := `Mathlib},

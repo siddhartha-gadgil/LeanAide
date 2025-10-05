@@ -476,7 +476,6 @@ partial def idents : Syntax → List String
 | Syntax.node _ _ ss => ss.toList.flatMap idents
 | _ => []
 
-
 def ppExprDetailed (e : Expr): MetaM String := do
   let fmtDetailed ← withOptions (fun o₁ =>
                     let o₂ := pp.motives.all.set o₁ true
@@ -490,6 +489,19 @@ def ppExprDetailed (e : Expr): MetaM String := do
                     pp.unicode.fun.set o₉ true) do
     ppExpr e
   return fmtDetailed.pretty
+
+def ppExprDetailed' (e : Expr): MetaM String := do
+  let fmtDetailed ← withOptions (fun o₁ =>
+                    let o₂ := pp.motives.pi.set o₁ true
+                    let o₅ := pp.deepTerms.set o₂ true
+                    let o₆ := pp.funBinderTypes.set o₅ true
+                    let o₇ := pp.piBinderTypes.set o₆ true
+                    let o₈ := pp.letVarTypes.set o₇ true
+                    let o₉ := pp.fullNames.set o₈ true
+                    pp.unicode.fun.set o₉ true) do
+    ppExpr e
+  return fmtDetailed.pretty
+
 
 instance : Repr Json where
   reprPrec js _ := js.pretty
@@ -519,10 +531,8 @@ def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
               PrettyPrinter.delab e
 
 def delabDetailed (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
-                    -- let o₂ := pp.motives.all.set o₁ true
-                    let o₃ := pp.fieldNotation.set o₁ false
-                    let o₄ := pp.proofs.set o₃ true
-                    let o₅ := pp.deepTerms.set o₄ true
+                    let o₂ := pp.motives.pi.set o₁ true
+                    let o₅ := pp.deepTerms.set o₂ true
                     let o₆ := pp.funBinderTypes.set o₅ true
                     let o₇ := pp.piBinderTypes.set o₆ true
                     let o₈ := pp.letVarTypes.set o₇ true
@@ -532,6 +542,15 @@ def delabDetailed (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
                     pp.unicode.fun.set o'' true) do
               PrettyPrinter.delab e
 
+def delabDetailed' (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
+                    let o₂ := pp.motives.pi.set o₁ true
+                    let o₅ := pp.deepTerms.set o₂ true
+                    let o₆ := pp.funBinderTypes.set o₅ true
+                    let o₇ := pp.piBinderTypes.set o₆ true
+                    let o₈ := pp.letVarTypes.set o₇ true
+                    let o₉ := pp.fullNames.set o₈ true
+                    pp.unicode.fun.set o₉ true) do
+              PrettyPrinter.delab e
 
 def freshDataHandle (fileNamePieces : List String)(clean: Bool := true) : IO IO.FS.Handle := do
     let path := System.mkFilePath <| [".", "rawdata"] ++ fileNamePieces
@@ -957,3 +976,25 @@ def proxyJson {α : Type} [inst: Proxy α] (a : α) : TermElabM Json := do
 def unproxyJson {β : Type} [FromJson β] [inst: InverseProxy β] (j: Json) : TermElabM inst.α := do
   let .ok (b : β) := fromJson? j | throwError s!"failed to parse {j}"
   unproxy b
+
+partial def readableJson (js: Json) : Json :=
+   match js with
+  | Json.obj m =>
+   match m.toArray with
+   | jsArr =>
+     let keyVals := jsArr.map (fun ⟨k, v⟩ => (k, v))
+     let purged := jsArr.filter (fun ⟨k, _⟩ => k != "type")
+     let purged := purged.map fun ⟨k, v⟩ => (k, v)
+     let typeVal? := keyVals.findSome? (fun (k, v) => if k == "type" then some v else none)
+     match typeVal? with
+     | some typeVal =>
+       let type? := typeVal.getStr?.toOption
+       match type? with
+       | some type =>
+          Json.mkObj [(type, readableJson (Json.mkObj purged.toList))]
+       | none => js
+     | none =>
+       let keyValsModified := keyVals.map (fun (k,v) => (k, readableJson v))
+       Json.mkObj keyValsModified.toList
+  | Json.arr m => (m.map (fun x => readableJson x)).toJson
+  | _ => js
