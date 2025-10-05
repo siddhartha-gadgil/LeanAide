@@ -4,13 +4,14 @@ import sys
 import os
 import json
 import faiss
+import numpy as np
 from sentence_transformers import SentenceTransformer
 
 # Config the file paths
 DESCFIELD_PATHS = {
-    "docString" : "resources/mathlib4-prompts_new.jsonl",
-    "concise-description" : "resources/mathlib4-descs_new.jsonl",
-    "description" : "resources/mathlib4-descs_new.jsonl"
+    "docString" : "resources/mathlib4-prompts.jsonl",
+    "concise-description" : "resources/mathlib4-descs.jsonl",
+    "description" : "resources/mathlib4-descs.jsonl"
 }
 INDEX_PATHS = {
     "docString" : "SimilaritySearch/Indexes/docString_embeddinggemma-300m-768dim.index",
@@ -23,7 +24,10 @@ FIELD_NAME = {
     "description" : "description"
 }
 
-DIM = 768 # If changed, add `truncate_dim = DIM` to model.encode function
+# Adjust the batch size according to your memory
+BATCH_SIZE = 4000
+
+DIM = 768 # If changed, add `truncate_dim = DIM` to all model.encode functions
 
 def check_GPU():
   try:
@@ -32,6 +36,55 @@ def check_GPU():
       print("FAISS GPU index created!")
   except Exception as e:
       print(f"Failed to create FAISS GPU index: {e}")
+
+# SECTION: CREATE INDEXES
+
+def batch_generator(descField, batch_size):
+    batch, ids = [], []
+    with open(DESCFIELD_PATHS[descField], "r", encoding="utf-8") as file:
+        for line_num, line in enumerate(file):
+            data = json.loads(line)
+            text = data[FIELD_NAME[descField]]
+            batch.append(text)
+            # The ids are the line numbers
+            ids.append(np.int64(line_num))
+            # Return a batch of batch_size with the ids
+            if len(batch) == batch_size:
+                yield (batch, np.array(ids))
+                # Reset the batch and ids
+                batch, ids = [], []
+    # For the last remaining sentences that didn't form a complete batch 
+    if batch: yield (batch, np.array(ids))
+
+def create_index(descField, model):
+    # Create an empty FAISS index with dimension DIM
+    base_index = faiss.IndexFlatL2(DIM)
+    # Make it an IDMap index
+    index = faiss.IndexIDMap(base_index)
+    # Get the batch generator
+    data_batches = batch_generator(descField, BATCH_SIZE)
+    # Loop over the batches and ids
+    for batch, ids in data_batches:
+        # Embed the batch
+        embeddings = model.encode(batch, show_progress_bar = True, convert_to_numpy = True)
+        # Add it to the index
+        index.add_with_ids(embeddings, ids)
+        # Print progress
+        print(f"- docstrings encoded: {ids[-1] + 1}")
+    # Save the index to INDEX_PATHS[descField]
+    faiss.write_index(index, INDEX_PATHS[descField])
+
+def run_create_indexes(model):
+    print("Checking indexes...")
+    for descField in ["concise-description", "description", "docString"]:
+        if not os.path.exists(INDEX_PATHS[descField]):
+            print(f"Creating index for {descField}...")
+            create_index(descField, model)
+            print(f"Index created and saved at {INDEX_PATHS[descField]}")
+        else:
+            print(f"Found index for {descField}")
+
+# SECTION: SIMILARITY_SEARCH
 
 def get_data(descField, idx):
     with open(DESCFIELD_PATHS[descField], "r", encoding="utf-8") as file:
@@ -69,7 +122,7 @@ def similarity_search(query, model, index, descField, num):
     js_string = json.dumps(output)
     return js_string
 
-def main(model, num, query = "mathematics", descField = "docString"):
+def run_similarity_search(model, num, query = "mathematics", descField = "docString"):
     try: num = int(num)
     except: num = 10 # default value for num
     if descField not in ["docString", "concise-description", "description"]:
