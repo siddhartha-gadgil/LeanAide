@@ -247,14 +247,14 @@ def getM (withoutDocs: Bool := false) : MetaM <| Array DefDataRepr := do
         let depth := type.approxDepth
         unless depth > 60 do
         try
-          let typeStr ← ppExprDetailed type
+          let typeStr ← ppExprDetailed' type
           let isProp ← isProof value
           let valueStr ←  do
             if isProp
               then pure none
               else
                 pure <| some <| (← ppExpr value).pretty
-          let typeStx ← PrettyPrinter.delab type
+          let typeStx ← delabDetailed' type
           let valueStx? ←
             if isProp then pure none
               else pure <| some (←  PrettyPrinter.delab value)
