@@ -11,6 +11,7 @@ open Lean.Parser.Category
 
 def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   let env ← getEnv
+  let s := s.replace "\\n" " "
   let s := s.replace "\n" " "
   let stx? := Lean.Parser.runParserCategory env `theorem_statement  s
   match stx? with

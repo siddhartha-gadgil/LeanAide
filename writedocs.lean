@@ -20,8 +20,12 @@ unsafe def main : IO Unit := do
     {module := `DataGenAide.ConstDeps}] {}
   let core := writeDocsCore
   let js ← core.run' coreContext {env := env} |>.runToIO'
-  IO.FS.writeFile ((← resourcesDir) / "mathlib4-prompts.json") js.pretty
+  IO.eprintln "Writing to resources/mathlib4-prompts.json and resources/mathlib4-prompts.jsonl"
+  -- IO.FS.writeFile ((← resourcesDir) / "mathlib4-prompts.json") js.pretty
   let h ← IO.FS.Handle.mk ((← resourcesDir) / "mathlib4-prompts.jsonl") IO.FS.Mode.write
   let .ok lines := js.getArr? | throw <| IO.userError "Expected array"
+  let mut count := 0
   for line in lines do
-    h.putStrLn line.pretty
+    count := count + 1
+    if count % 1000 == 0 then IO.eprintln s!"Wrote {count} lines"
+    h.putStrLn line.compress
