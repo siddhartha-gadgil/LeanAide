@@ -9,32 +9,48 @@ open Lean Json
 
 abbrev Description := String
 
-structure State where
+partial def getDefs (js: Json) : Array String :=
+  let head := "#/$defs/"
+  match js with
+  | Json.str s =>
+    if s.startsWith head then
+      #[(s.drop head.length)]
+    else
+      #[]
+  | Json.obj kvs =>
+    let values := kvs.toArray.map (·.2)
+    values.foldl (fun r v => r ++ getDefs v) #[] |>.eraseReps
+  | Json.arr js =>
+    js.foldl (fun r j => r ++ getDefs j) #[] |>.eraseReps
+  | _ => #[]
+
+
+structure SchemaData where
   schemaElements : Std.HashMap String Json := {}
   anyOfGroupDescs : Std.HashMap String Description := {}
   anyOfGroupMembers : Std.HashMap String (Array String) := {}
   deriving Inhabited, Repr
 
-inductive AddToState where
-  | schemaElement (label: String) (schema : Json) (groups: Array String) : AddToState
-  | anyOfGroup (groupId : String) (desc : Description) (members : Array String := #[]) : AddToState
-  | addToGroup (groupId : String) (members : Array String) : AddToState
+inductive AddToSchemaData where
+  | schemaElement (label: String) (schema : Json) (groups: Array String) : AddToSchemaData
+  | anyOfGroup (groupId : String) (desc : Description) (members : Array String := #[]) : AddToSchemaData
+  | addToGroup (groupId : String) (members : Array String) : AddToSchemaData
   deriving Inhabited
-open AddToState
+open AddToSchemaData
 
-namespace State
+namespace SchemaData
 
-def addMemberToGroup (st : State) (groupId : String) (member : String) : State :=
+def addMemberToGroup (st : SchemaData) (groupId : String) (member : String) : SchemaData :=
   let updatedMembers :=
     match st.anyOfGroupMembers.get? groupId with
     | some members => members.push member
     | none => #[member]
   { st with anyOfGroupMembers := st.anyOfGroupMembers.insert groupId updatedMembers }
 
-def addMemberToGroups (st : State) (groupIds : Array String) (member : String) : State :=
+def addMemberToGroups (st : SchemaData) (groupIds : Array String) (member : String) : SchemaData :=
   groupIds.foldl (init := st) fun st gid => st.addMemberToGroup gid member
 
-def add (st : State) (atst : AddToState) : State :=
+def add (st : SchemaData) (atst : AddToSchemaData) : SchemaData :=
   match atst with
   | schemaElement label schema groups =>
     { st with schemaElements := st.schemaElements.insert label schema } |>.addMemberToGroups groups label
@@ -49,15 +65,66 @@ def add (st : State) (atst : AddToState) : State :=
       | none => members
     { st with anyOfGroupMembers := st.anyOfGroupMembers.insert groupId updatedMembers }
 
+def groupJson? (data : SchemaData) (groupId : String) : Option Json :=
+  data.anyOfGroupMembers.get? groupId |>.map fun members =>
+  let desc := data.anyOfGroupDescs.getD groupId s!"a sequence of objects of type `{groupId}`"
+  let refs := members.map (fun m => mkObj [("$ref", s!"#/$defs/{m}")])
+  mkObj [("description", desc), ("anyOf", toJson refs)]
 
-end State
+def groupJsonDef? (data : SchemaData) (groupId : String) :
+Option Json :=
+  data.anyOfGroupMembers.get? groupId |>.map fun members =>
+  let desc := data.anyOfGroupDescs.getD groupId s!"a sequence of objects of type `{groupId}`"
+  let refs := members.map (fun m => mkObj [("$ref", s!"#/$defs/{m}")])
+  mkObj [ ("group", mkObj [("description", desc), ("anyOf", toJson refs)])  ]
+
+def elementJson? (data : SchemaData) (elem: String) : Option Json :=
+  data.schemaElements.get? elem
+
+def elementJsonDef? (data : SchemaData) (elem: String) : Option Json :=
+  data.schemaElements.get? elem |>.map fun schema =>
+  mkObj [(elem, schema)]
+
+def jsonDef? (data: SchemaData) (label: String) : Option Json :=
+  match data.elementJsonDef? label with
+  | some elemDef => some elemDef
+  | none => data.groupJsonDef? label
+
+def labelJson? (data: SchemaData) (label: String) : Option Json :=
+  match data.elementJson? label with
+  | some elem => some elem
+  | none => data.groupJson? label
+
+/--
+Getting definitions recursively, starting from the given names. Here
+* `upperNames` are names that should not be included in the result (e.g., because they are
+  already included in the schema being built);
+* `accum` are names that have already been found in the recursion;
+* `names` are names to be processed in this step of the recursion.
+-/
+partial def getAllDefsAux (data: SchemaData) (upperNames : Array String) (accum : Array String) (names: Array String) : Array String :=
+  let jsons := names.foldl (init := #[]) fun js n =>
+    match data.labelJson? n with
+    | some j => js.push j
+    | none => js
+  let newNames := jsons.foldl (init := #[]) fun ns j => ns ++ getDefs j |>.eraseReps
+  let newNames := newNames.filter (fun n => !(upperNames ++ accum ++ names).contains n)
+  if newNames.isEmpty then
+    accum ++ names
+  else
+    getAllDefsAux data upperNames (accum ++ names) newNames
+
+def getAllDefsFrom (data: SchemaData) (top: Json) (upperNames: Array String := #[]) : Array String :=
+  getAllDefsAux data upperNames #[] (getDefs top |>.eraseReps)
+
+end SchemaData
 
 initialize jsonSchemasExt :
-  SimpleScopedEnvExtension AddToState State ←
+  SimpleScopedEnvExtension AddToSchemaData SchemaData ←
   registerSimpleScopedEnvExtension {
-    initial := {}, addEntry := State.add }
+    initial := {}, addEntry := SchemaData.add }
 
-def State.get : MetaM State := do
+def SchemaData.get : MetaM SchemaData := do
   let env ← getEnv
   return jsonSchemasExt.getState env
 
