@@ -67,7 +67,7 @@ def liftToGeneral : (level: RetranslateLevel) →
 
 end RetranslateLevel
 
-initialize registerBuiltinAttribute {
+initialize registerAttribute {
   name := `retranslate
   descr := "Prompt for trying to retranslate a theorem or definition."
   add := fun decl stx kind => MetaM.run' do

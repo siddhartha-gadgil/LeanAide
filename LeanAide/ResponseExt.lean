@@ -28,7 +28,7 @@ initialize registerBuiltinAttribute {
     let declTy := (← getConstInfo decl).type
     let expectedType : Q(Type) := q(Json → Translator → TranslateM (Json))
     unless ← isDefEq declTy expectedType do
-      throwError -- replace with error
+      throwError
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
     let key ← responseKeyM stx
     -- logInfo m!"codegen: {decl}; keys: {keys}"
