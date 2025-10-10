@@ -160,6 +160,20 @@ elab "#schema_element" n:ident ":=" schema:term : command => Elab.Command.liftTe
   let schemaJson ← unsafe evalExpr Json (mkConst ``Json) schemaVal
   jsonSchemasExt.add (.schemaElement label schemaJson #[])
 
+elab "#schema_element" n:str  "in" "[" gs:ident,* "]" ":=" schema:term : command => Elab.Command.liftTermElabM do
+  let label := n.getString
+  let schemaVal ← Elab.Term.elabTerm schema (mkConst ``Json)
+  let schemaJson ← unsafe evalExpr Json (mkConst ``Json) schemaVal
+  let groupIds := gs.getElems.map (·.getId.toString)
+  jsonSchemasExt.add (.schemaElement label schemaJson groupIds)
+
+elab "#schema_element" n:str ":=" schema:term : command => Elab.Command.liftTermElabM do
+  let label := n.getString
+  let schemaVal ← Elab.Term.elabTerm schema (mkConst ``Json)
+  let schemaJson ← unsafe evalExpr Json (mkConst ``Json) schemaVal
+  jsonSchemasExt.add (.schemaElement label schemaJson #[])
+
+
 end JsonSchemas
 
 end LeanAide
