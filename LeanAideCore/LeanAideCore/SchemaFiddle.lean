@@ -2,6 +2,7 @@ import LeanAideCore.Resources
 import LeanAideCore.JsonSchemas
 open Lean Meta
 
+namespace LeanAide
 -- temporary exploration and code generation
 
 def defs := LeanAide.Resources.paperStructure.getObjVal?  "$defs" |>.toOption.get!
@@ -19,11 +20,23 @@ def purgeDefs : Json :=
   | none =>
     panic! "purgeDefs: not an object: {defs}"
 
+def anyOfDefs :=
+  defsList.filterMap (fun (k, v) => (v.getObjValAs? (Array Json) "anyOf").toOption.map (fun anyOfs =>
+    (k, anyOfs.filterMap fun js => js.getObjValAs? String "$ref" |>.toOption)))
+
+#eval anyOfDefs
+
 #eval defs.getObjVal? "Section"
 
 #eval defsList
 
-def mkElem (name: String) (json: Json) : String := s!"#schema_element \"{name}\" := json% {json.pretty}"
+def mkElem (name: String) (json: Json) : String :=
+  match json.getObjValAs? (Array Json) "anyOf" with
+  | .ok anyOfs =>
+    let defs := anyOfs.filterMap (fun js => js.getObjValAs? String "$ref" |>.toOption.map (fun ref => ref.drop 8))
+    let defsString := defs.foldl (fun s d => s ++ s!", \"{d}\"") "" |>.drop 2
+    s!"#schema_group \"{name}\" with [{defsString}]"
+  | _ => s!"#schema_element \"{name}\" := json% {json.pretty}"
 
 #eval mkElem "Section" <| (defs.getObjVal?  "Section").toOption.get!
 

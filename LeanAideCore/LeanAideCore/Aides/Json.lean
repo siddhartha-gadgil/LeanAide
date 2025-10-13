@@ -99,3 +99,9 @@ partial def readableJson (js: Json) : Json :=
 
 instance : Repr Json where
   reprPrec js n := reprPrec js.pretty n
+
+open Lean Elab Term
+def jsonToExpr (js : Json) : TermElabM Expr := do
+  let jsStr := js.pretty
+  let .ok stx := Lean.Parser.runParserCategory (← getEnv) `term jsStr | throwError "jsonToExpr: failed to parse {jsStr}"
+  elabTerm stx (mkConst ``Json)
