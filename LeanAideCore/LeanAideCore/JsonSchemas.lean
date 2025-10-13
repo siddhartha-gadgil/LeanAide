@@ -143,6 +143,24 @@ def schemaElementsList : MetaM (Array String) := do
   let data ← SchemaData.get
   return data.schemaElements.keys.toArray
 
+def groupList : MetaM (Array String) := do
+  let data ← SchemaData.get
+  return data.anyOfGroupMembers.keys.toArray
+
+def getAllDefLabelsFrom (top: Json) (upperNames: Array String := #[]) : MetaM (Array String) := do
+  let data ← SchemaData.get
+  return data.getAllDefsFrom top upperNames
+
+def getAllDefJsonsFrom (top: Json) (upperNames: Array String := #[]) : MetaM (Json) := do
+  let data ← SchemaData.get
+  let labels := data.getAllDefsFrom top upperNames |>.toList
+  return Json.mkObj <| labels.filterMap (fun l => data.labelJson? l |>.map (fun j => (l, j)))
+
+def withAllDefs (top: Json) (upperNames: Array String := #[]) : MetaM Json := do
+  let defList ← getAllDefJsonsFrom top upperNames
+  let defs := mkObj [("$defs", defList)]
+  return top.mergeObj defs
+
 elab "schema_element%" n:ident : term => do
   let label := n.getId.toString
   let data ← SchemaData.get

@@ -654,3 +654,14 @@ def docSchema : Json :=
  "description":
  "A statement introducing a new variable and saying that **some** value of this variable is as required (i.e., an existence statement). This is possibly with given type and/or property. This corresponds to statements like 'for some integer `n` ...' or 'There exists an integer `n` ....'. **NOTE:** It is better to use `assert_statement` instead if the variable is not being defined but rather asserted to exist.",
  "additionalProperties": false}
+
+open JsonSchemas
+-- test code
+-- #eval schemaElementsList
+-- #eval groupList
+
+-- def allDefsView : MetaM Unit := do
+--   let all ← withAllDefs docSchema #[]
+--   logInfo all.pretty
+
+-- #eval allDefsView
