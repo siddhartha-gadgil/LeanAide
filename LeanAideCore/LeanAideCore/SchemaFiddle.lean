@@ -60,7 +60,7 @@ elab h:"#schema_commands" : command =>
 
 elab h:"#schema_head" : command =>
   Command.liftTermElabM do
-    let s := "def schemaHead : Json := json% " ++ purgeDefs.pretty
+    let s := "def docSchema : Json := json% " ++ purgeDefs.pretty
     TryThis.addSuggestion h s
 
 #schema_head
