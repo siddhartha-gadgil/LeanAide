@@ -59,7 +59,7 @@ def add (st : SchemaData) (atst : AddToSchemaData) : SchemaData :=
       anyOfGroupDescs :=
         match desc? with
         | some desc => st.anyOfGroupDescs.insert groupId desc
-        | none => st.anyOfGroupDescs.insert groupId s!"a sequence of objects of type `{groupId}`"
+        | none => st.anyOfGroupDescs
       anyOfGroupMembers := st.anyOfGroupMembers.insert groupId members }
   | addToGroup groupId members =>
     let updatedMembers :=
@@ -70,16 +70,16 @@ def add (st : SchemaData) (atst : AddToSchemaData) : SchemaData :=
 
 def groupJson? (data : SchemaData) (groupId : String) : Option Json :=
   data.anyOfGroupMembers.get? groupId |>.map fun members =>
-  let desc := data.anyOfGroupDescs.getD groupId s!"a sequence of objects of type `{groupId}`"
   let refs := members.map (fun m => mkObj [("$ref", s!"#/$defs/{m}")])
-  mkObj [("description", desc), ("anyOf", toJson refs)]
+  let desc? := data.anyOfGroupDescs.get? groupId
+  match desc? with
+  | some desc =>  mkObj [("description", desc), ("anyOf", toJson refs)]
+  | none => mkObj [("anyOf", toJson refs)]
 
 def groupJsonDef? (data : SchemaData) (groupId : String) :
 Option Json :=
-  data.anyOfGroupMembers.get? groupId |>.map fun members =>
-  let desc := data.anyOfGroupDescs.getD groupId s!"a sequence of objects of type `{groupId}`"
-  let refs := members.map (fun m => mkObj [("$ref", s!"#/$defs/{m}")])
-  mkObj [ ("group", mkObj [("description", desc), ("anyOf", toJson refs)])  ]
+  groupJson? data groupId |>.map fun groupJson =>
+  mkObj [(groupId, groupJson)]
 
 def elementJson? (data : SchemaData) (elem: String) : Option Json :=
   data.schemaElements.get? elem
