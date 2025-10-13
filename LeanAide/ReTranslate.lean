@@ -89,8 +89,13 @@ initialize registerBuiltinAttribute {
     retranslateExt.add (decl, level)
 }
 
-def retranslateAttempts : MetaM (Array (ElabError → Translator → TranslateM (Except (Array ElabError) Expr))) := do
+def retranslators (useLLMs: Bool) : MetaM (Array (ElabError → Translator → TranslateM (Except (Array ElabError) Expr))) := do
   let names := retranslateExt.getState (← getEnv)
+  let names :=
+    if useLLMs then
+      names
+    else
+      names.filter fun (_, level) => level ≠ .general
   names.mapM fun (n, level) => do
     let f := Lean.mkConst n
     let f ← unsafe evalExpr (RetranslateLevel.defType level) (RetranslateLevel.defTypeExpr level) f
@@ -108,9 +113,22 @@ def retranslateFromErrorsAux (errors: Array ElabError) (attempts: Array (ElabErr
         errs := errs ++ err'
   return .error errs
 
-def retranslateFromErrors (errs: Array ElabError)  (translator: Translator := {}) (n: Nat := 3) :
+def retranslateFromErrors (errs: Array ElabError)  (translator: Translator := {}) (useLLMs : Bool) (n: Nat := 3) :
     TranslateM <| Except (Array ElabError) Expr := do
-  retranslateFromErrorsAux errs (← retranslateAttempts) {translator with params := {translator.params with n := n}}
+  retranslateFromErrorsAux errs (← retranslators useLLMs) {translator with params := {translator.params with n := n}}
+
+def iteratedRetranslateFromErrors (errs: Array ElabError)  (translator: Translator := {}) (n: Nat := 3) (withLLMs : Nat) (withoutLLMs : Nat) :
+    TranslateM <| Except (Array ElabError) Expr := do
+  match withLLMs, withoutLLMs with
+  | 0, 0 => return .error errs
+  | 0, k + 1 =>
+    match ← retranslateFromErrors errs translator false n with
+    | .ok e => return .ok e
+    | .error errs => iteratedRetranslateFromErrors errs translator n 0 k
+  | k + 1, l =>
+    match ← retranslateFromErrors errs translator true n with
+    | .ok e => return .ok e
+    | .error errs => iteratedRetranslateFromErrors errs translator n k l
 
 /-
 Test code only below. Purge after testing.
