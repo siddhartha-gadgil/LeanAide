@@ -1,5 +1,43 @@
 # A Framework for a Mathematical Reasoning Loop
 
+## List of Tasks
+
+A task has a prompt template and generally an output schema. These are grouped by the phases.
+
+* **Source Material Analysis**
+  * Listing theorems with structure
+  * Structural Mapping: Connecting Hypothesis to Conclusion
+  * Hypothesis Stress-Testing: The Art of Breaking Things
+  * Generalization & Boundary Probing: Pushing the Limits
+  * Core Idea Extraction: Finding the "Aha!" Moment
+
+* **Problem Deconstruction & Formalization**
+  * Structured Analysis
+  * Definition Expansion
+  * Rephrasing and Intuition
+
+* **Strategy & Plan Generation**
+  * Forward reasoning
+  * Backward reasoning
+  * Technique Brainstorming
+  * Simplification & Specialization
+  * Proof Sketch & Auxiliary Questions
+
+* **Step-by-step Execution**
+  * Single step execution
+  * Formal Justification
+  * Maintaining State (Summarization)
+
+* **Verification & Critical Analysis**
+  * The Skeptic's Hat
+  * Sanity Checks and Edge Cases
+
+* **Meta-cognition and loop control**
+  * Progress Analysis
+  * Identifying Bottlenecks
+  * Strategy Pivot
+  * Shifting the goalposts.
+
 ## Implementation
 
 * This is straightforward, using recursion to loop and to branch.
@@ -12,13 +50,13 @@
 
 The process of solving a hard math problem can be broken down into five (plus 1) key phases. Your loop should be able to invoke tasks from any phase based on the current state of the solution.
 
-**Phase 0: Source Material Analysis**.
+## Phase 0: Source Material Analysis
 
-### **Task: Deep Study of a Reference Proof or Paper**
+### Task: Deep Study of a Reference Proof or Paper
 
 This task is a powerful form of "reconnaissance" 🕵️. It's not about solving *your* problem directly, but about dissecting a related, solved problem to extract its core mechanics, assumptions, and tricks. This is best used when your problem is similar to a known theorem or you've found a relevant paper.
 
-#### **Guidelines & Prompts**
+#### Guidelines & Prompts
 
 **Goal:** To move beyond a surface-level understanding of a proof and grasp *why* it is constructed the way it is.
 
@@ -55,7 +93,8 @@ This task is a powerful form of "reconnaissance" 🕵️. It's not about solving
    * **Prompt Example:**
        > "After this deep analysis, what is the 'core idea' or 'key trick' of this proof? Summarize the central insight in 1-3 sentences, as if you were explaining it to a peer to give them the 'aha!' moment without repeating the whole proof."
 
-**Phase 1: Problem Deconstruction & Formalization**
+## Phase 1: Problem Deconstruction & Formalization
+
    **Goal:** Ensure the model has an unambiguous, deep, and structured understanding of the problem. This is the foundation for everything that follows.
 
 * **1.1. Structured Analysis (Your Prompt)**
@@ -77,7 +116,8 @@ This task is a powerful form of "reconnaissance" 🕵️. It's not about solving
   * **Rationale:** This is a powerful check for true understanding versus simple pattern-matching of the input text.
   * **Prompt Example:** "Rephrase the entire problem in simpler terms, as if you were explaining it to an undergraduate student. What is the core intuition behind the question being asked?"
 
-**Phase 2: Strategy & Plan Generation**
+## Phase 2: Strategy & Plan Generation
+
 **Goal:** Brainstorm potential paths to a solution without getting bogged down in the details of execution.
 
 * **2.1. Deductive & Abductive Reasoning (Your Prompt)**
