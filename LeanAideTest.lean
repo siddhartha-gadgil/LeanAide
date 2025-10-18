@@ -5,3 +5,5 @@ import LeanAideTest.TranslateDemo
 import LeanAideTest.TranslateExample
 
 import LeanAideTest.ExprStruct
+
+import LeanAideTest.JsonDiffTest

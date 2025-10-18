@@ -4,6 +4,10 @@
 
 A task has a prompt template and generally an output schema. These are grouped by the phases.
 
+* **Problem Inspection**
+  * Deciding whether to just prove.
+  * Deciding whether to first study sources.
+
 * **Source Material Analysis**
   * Listing theorems with structure
   * Structural Mapping: Connecting Hypothesis to Conclusion
