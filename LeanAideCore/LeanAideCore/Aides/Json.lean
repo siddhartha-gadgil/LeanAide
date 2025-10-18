@@ -1,6 +1,4 @@
 import Lean
-import Mathlib
-import Std
 
 open Lean Json
 
