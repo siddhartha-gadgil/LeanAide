@@ -10,11 +10,11 @@ silly_inpath = "data/silly-prompts.txt"
 false_inpath = "data/false-prompts.txt"
 thm_inpath = "data/thm-prompts.txt"
 
-silly_outpath = "SimilaritySearch/RunTests/TestResults/silly-prompts-768gemma.lean"
-false_outpath = "SimilaritySearch/RunTests/TestResults/false-prompts-768gemma.lean"
-thm_outpath = "SimilaritySearch/RunTests/TestResults/thm-prompts-768gemma.lean"
+silly_outpath = "SimilaritySearch/RunTests/TestResults/silly-3-768gemma.lean"
+false_outpath = "SimilaritySearch/RunTests/TestResults/false-3-768gemma.lean"
+thm_outpath = "SimilaritySearch/RunTests/TestResults/thm-3-768gemma.lean"
 
-def translate(n, thm, outfilepath):
+def mk_request(thm):
     # Set the payload for the request.
     payload = {
         "task": "translate_thm",
@@ -28,6 +28,24 @@ def translate(n, thm, outfilepath):
     s = time.time()
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     e = time.time()
+    return response, (e-s)
+
+def translate_and_print(thm):
+    response, t = mk_request(thm)
+    # Check response
+    if response.ok:
+        try:
+            print(f"TEXT: {response.text}")
+            resp = response.json()
+            print(f"JSON: {resp}")
+        except:
+            print(f"ERROR! Response text: {response.text}")
+    else:
+        print(f"Request failed with status code {response.status_code}")
+        print("Response text:", response.text)
+
+def translate_and_write(n, thm, outfilepath):
+    response, t = mk_request(thm)
     # Check response
     if response.ok:
         try:
@@ -40,7 +58,7 @@ def translate(n, thm, outfilepath):
                 except: thm_code = "None"
             with open(outfilepath, "a", encoding="utf-8") as file:
                 file.write(f"--Result: {result}\n")
-                file.write(f"--Time: {e - s:.2f} s\n")
+                file.write(f"--Time: {t:.2f} s\n")
                 file.write(f"/--{thm_text}-/\n")
                 file.write(f"theorem t{n} : {thm_code} :=\n")
                 file.write("  by sorry\n\n")
@@ -51,7 +69,7 @@ def translate(n, thm, outfilepath):
         print(f"Request failed with status code {response.status_code}")
         print("Response text:", response.text)
 
-def translate_multiple(infilepath, outfilepath):
+def translate_multiple_and_write(infilepath, outfilepath):
     # Extract all the theorems in the file
     thms = []
     with open(infilepath, "r", encoding="utf-8") as file:
@@ -62,7 +80,7 @@ def translate_multiple(infilepath, outfilepath):
     l = len(thms)
     start = time.time()
     for thm in thms:
-        translate(n, thm, outfilepath)
+        translate_and_write(n, thm, outfilepath)
         print(f"{n}/{l} translated")
         n += 1
     end = time.time()
@@ -71,5 +89,5 @@ def translate_multiple(infilepath, outfilepath):
 
 
 if __name__ == "__main__":
-    # translate(1, "infinite primes", thm_outpath)
-    translate_multiple(false_inpath, false_outpath)
+    translate_multiple_and_write(false_inpath, false_outpath)
+    # translate_and_print("Every field is a ring.")
