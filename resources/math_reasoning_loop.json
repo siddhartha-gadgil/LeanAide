@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mathematical Reasoning Loop Schema",
+  "description": "Schema and prompt bundle for an iterative mathematical reasoning loop (e.g., GPT-5-PRO driven).",
+  "version": "1.0",
+  "type": "object",
+
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "task_type": {
+            "type": "string",
+            "enum": [
+              "AnalyseProblem",
+              "GenerateIdeas",
+              "ProofSketch",
+              "AttemptLemma",
+              "EvaluateProgress",
+              "PlanNextStep",
+              "SummarizeState"
+            ]
+          },
+          "description": { "type": "string" },
+          "input_schema": { "type": "object" },
+          "output_schema": { "type": "object" },
+          "prompt_template": { "type": "string" }
+        },
+        "required": ["task_type", "prompt_template"]
+      }
+    }
+  },
+
+  "examples": [
+    {
+      "tasks": [
+        {
+          "task_type": "AnalyseProblem",
+          "description": "Decompose a math problem into hypotheses, goal, and type.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "problem_text": { "type": "string" }
+            },
+            "required": ["problem_text"]
+          },
+          "output_schema": {
+            "type": "object",
+            "properties": {
+              "domain": { "type": "string" },
+              "hypotheses": { "type": "array", "items": { "type": "string" } },
+              "goal": { "type": "string" },
+              "assumptions": { "type": "array", "items": { "type": "string" } },
+              "problem_type": { "type": "string" },
+              "analogous_results": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "prompt_template": "You are a mathematical reasoning assistant.\n\nTask: Analyse the following problem carefully.\n\nProblem:\n{{problem_text}}\n\nOutput in structured form:\n- Domain: (what kind of objects are we dealing with?)\n- Hypotheses / Given data:\n- Goal / Conclusion:\n- Implicit assumptions:\n- Type of problem:\n- Known results or patterns this resembles:"
+        },
+
+        {
+          "task_type": "GenerateIdeas",
+          "description": "List deductions, implications, techniques, and subproblems.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "problem_structured": { "type": "object" }
+            },
+            "required": ["problem_structured"]
+          },
+          "output_schema": {
+            "type": "object",
+            "properties": {
+              "forward_deductions": { "type": "array", "items": { "type": "string" } },
+              "implications_of_goal": { "type": "array", "items": { "type": "string" } },
+              "techniques": { "type": "array", "items": { "type": "string" } },
+              "auxiliary_lemmas": { "type": "array", "items": { "type": "string" } },
+              "special_cases": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "prompt_template": "Given the following structured problem data:\n\n{{problem_structured}}\n\nTask: Suggest possible approaches and key ideas.\n\nOutput:\n- Forward deductions from hypotheses\n- Statements that would imply the goal\n- Potential techniques or theorems that could apply\n- Relevant auxiliary lemmas or subproblems\n- Special or test cases worth analyzing"
+        },
+
+        {
+          "task_type": "ProofSketch",
+          "description": "Produce a high-level proof strategy.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "ideas": { "type": "object" }
+            },
+            "required": ["ideas"]
+          },
+          "output_schema": {
+            "type": "object",
+            "properties": {
+              "outline": { "type": "string" },
+              "lemmas": { "type": "array", "items": { "type": "string" } },
+              "dependencies": { "type": "array", "items": { "type": "string" } },
+              "obstacles": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "prompt_template": "Based on the following problem analysis and ideas:\n{{ideas}}\n\nTask: Produce a proof sketch or plan of attack.\n\nOutput:\n- Outline of major steps\n- Intermediate lemmas\n- Dependencies between lemmas\n- Main obstacles or uncertain points"
+        },
+
+        {
+          "task_type": "AttemptLemma",
+          "description": "Attempt to prove or partially prove a lemma.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "lemma_text": { "type": "string" },
+              "context": { "type": "string" }
+            },
+            "required": ["lemma_text"]
+          },
+          "output_schema": {
+            "type": "object",
+            "properties": {
+              "proof": { "type": "string" },
+              "partial_results": { "type": "array", "items": { "type": "string" } },
+              "obstacles": { "type": "array", "items": { "type": "string" } },
+              "next_steps": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "prompt_template": "Lemma to attempt:\n{{lemma_text}}\n\nContext:\n{{context}}\n\nTask: Attempt a detailed proof or derive consequences.\n\nIf incomplete, specify:\n- Partial progress made\n- Where reasoning gets stuck\n- What additional information might help"
+        },
+
+        {
+          "task_type": "EvaluateProgress",
+          "description": "Assess current reasoning and gaps.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "current_progress": { "type": "string" }
+            },
+            "required": ["current_progress"]
+          },
+          "output_schema": {
+            "type": "object",
+            "properties": {
+              "achieved": { "type": "array", "items": { "type": "string" } },
+              "remaining": { "type": "array", "items": { "type": "string" } },
+              "bottlenecks": { "type": "array", "items": { "type": "string" } },
+              "next_actions": { "type": "array", "items": { "type": "string" } },
+              "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+            }
+          },
+          "prompt_template": "Given the current proof attempt and prior results:\n{{current_progress}}\n\nTask: Evaluate progress toward the goal.\n\nOutput:\n- Achieved results\n- Remaining gaps\n- Bottlenecks\n- Candidate next actions\n- Confidence level"
+        },
+
+        {
+          "task_type": "PlanNextStep",
+          "description": "Choose the next reasoning task.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "summary": { "type": "string" }
+            },
+            "required": ["summary"]
+          },
+          "output_schema": {
+            "type": "object",
+            "properties": {
+              "next_task_type": {
+                "type": "string",
+                "enum": ["AttemptLemma", "GenerateIdeas", "ProofSketch", "EvaluateProgress", "SummarizeState"]
+              },
+              "next_input": { "type": "string" },
+              "rationale": { "type": "string" }
+            }
+          },
+          "prompt_template": "Current reasoning summary:\n{{summary}}\n\nTask: Propose the next reasoning action.\n\nOptions include proving a lemma, exploring a special case, reformulating the problem, or evaluating progress.\n\nOutput:\n- Next task type\n- Input for that task\n- Rationale"
+        },
+
+        {
+          "task_type": "SummarizeState",
+          "description": "Compress the reasoning history into a concise state summary.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "full_history": { "type": "string" }
+            },
+            "required": ["full_history"]
+          },
+          "output_schema": {
+            "type": "object",
+            "properties": {
+              "established_facts": { "type": "array", "items": { "type": "string" } },
+              "open_problems": { "type": "array", "items": { "type": "string" } },
+              "promising_directions": { "type": "array", "items": { "type": "string" } },
+              "summary_text": { "type": "string" }
+            }
+          },
+          "prompt_template": "Summarize the current reasoning session.\n\nInput:\n{{full_history}}\n\nOutput:\n- Key established facts\n- Open subproblems\n- Most promising direction\n- Concise narrative summary (≤400 words)"
+        }
+      ]
+    }
+  ]
+}

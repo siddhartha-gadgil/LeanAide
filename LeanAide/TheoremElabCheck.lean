@@ -82,3 +82,17 @@ def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensio
 -- #eval elabThm4 "theorem hi (x: Nat) : x =1"
 
 -- #eval lineBlocks egLines
+
+elab "#elab_thm4" s:str : command =>
+  Command.liftTermElabM do
+  let s := s.getString
+  let res ←  elabThm4 s |>.run' {}
+  match res with
+  | Except.ok e =>
+      logInfo m!"Obtained type: {e}"
+  | Except.error err =>
+      logInfo m!"Elaboration error: {err}"
+
+-- #elab_thm4 "theorem hello : (0: Nat) =1"
+
+end LeanAide

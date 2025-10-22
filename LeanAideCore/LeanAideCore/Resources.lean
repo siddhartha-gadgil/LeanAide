@@ -138,6 +138,19 @@ def paperStructure :=
       ],
       "additionalProperties": false
     },
+    "Hypothesis_statement": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/let_statement"
+              },
+              {
+                "$ref": "#/$defs/assume_statement"
+              },
+              {
+                "$ref": "#/$defs/some_statement"
+              }
+            ]
+          },
     "Theorem": {
       "type": "object",
       "description": "A mathematical theorem, lemma, proposition, corollary, or claim.",
@@ -151,18 +164,8 @@ def paperStructure :=
           "type": "array",
           "description": "(OPTIONAL) The hypothesis or assumptions of the theorem, consisting of statements like 'let', 'assume', etc.",
           "items": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/let_statement"
-              },
-              {
-                "$ref": "#/$defs/assume_statement"
-              },
-              {
-                "$ref": "#/$defs/some_statement"
-              }
-            ]
-          }
+          "$ref": "#/$defs/Hypothesis_statement"
+        }
         },
         "claim": {
           "type": "string",
@@ -265,72 +268,75 @@ def paperStructure :=
       ],
       "additionalProperties": false
     },
+    "LogicalStep": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Theorem"
+        },
+        {
+          "$ref": "#/$defs/Definition"
+        },
+        {
+          "$ref": "#/$defs/let_statement"
+        },
+        {
+          "$ref": "#/$defs/assert_statement"
+        },
+        {
+          "$ref": "#/$defs/assume_statement"
+        },
+        {
+          "$ref": "#/$defs/some_statement"
+        },
+        {
+          "$ref": "#/$defs/pattern_cases_proof"
+        },
+        {
+          "$ref": "#/$defs/bi-implication_cases_proof"
+        },
+        {
+          "$ref": "#/$defs/condition_cases_proof"
+        },
+        {
+          "$ref": "#/$defs/multi-condition_cases_proof"
+        },
+        {
+          "$ref": "#/$defs/induction_proof"
+        },
+        {
+          "$ref": "#/$defs/general_induction_proof"
+        },
+        {
+          "$ref": "#/$defs/calculation"
+        },
+        {
+          "$ref": "#/$defs/contradiction_statement"
+        },
+        {
+          "$ref": "#/$defs/conclude_statement"
+        },
+        {
+          "$ref": "#/$defs/Section"
+        },
+        {
+          "$ref": "#/$defs/Proof"
+        },
+        {
+          "$ref": "#/$defs/Paragraph"
+        },
+        {
+          "$ref": "#/$defs/Figure"
+        },
+        {
+          "$ref": "#/$defs/Table"
+        }
+      ]
+    },
     "LogicalStepSequence": {
       "type": "array",
       "description": "A sequence of structured logical steps, typically used within a proof or derivation, consisting of statements like 'let', 'assert', 'assume', etc.",
       "items": {
-        "anyOf": [
-          {
-            "$ref": "#/$defs/Theorem"
-          },
-          {
-            "$ref": "#/$defs/Definition"
-          },
-          {
-            "$ref": "#/$defs/let_statement"
-          },
-          {
-            "$ref": "#/$defs/assert_statement"
-          },
-          {
-            "$ref": "#/$defs/assume_statement"
-          },
-          {
-            "$ref": "#/$defs/some_statement"
-          },
-          {
-            "$ref": "#/$defs/pattern_cases_proof"
-          },
-          {
-            "$ref": "#/$defs/bi-implication_cases_proof"
-          },
-          {
-            "$ref": "#/$defs/condition_cases_proof"
-          },
-          {
-            "$ref": "#/$defs/multi-condition_cases_proof"
-          },
-          {
-            "$ref": "#/$defs/induction_proof"
-          },
-          {
-            "$ref": "#/$defs/general_induction_proof"
-          },
-          {
-            "$ref": "#/$defs/calculation"
-          },
-          {
-            "$ref": "#/$defs/contradiction_statement"
-          },
-          {
-            "$ref": "#/$defs/conclude_statement"
-          },
-          {
-            "$ref": "#/$defs/Section"
-          },
-          {
-            "$ref": "#/$defs/Proof"
-          },
-          {
-            "$ref": "#/$defs/Paragraph"
-          },
-          {
-            "$ref": "#/$defs/Figure"
-          },
-          {
-            "$ref": "#/$defs/Table"
-          }
-        ]
+        "$ref": "#/$defs/LogicalStep"
       }
     },
     "ProofDetails": {

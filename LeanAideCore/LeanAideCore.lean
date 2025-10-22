@@ -15,3 +15,5 @@ import LeanAideCore.Kernel
 import LeanAideCore.TaskStatus
 import LeanAideCore.Discussion
 import LeanAideCore.KernelGenerators
+import LeanAideCore.JsonSchemas
+import LeanAideCore.DocumentSchema

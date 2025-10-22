@@ -247,9 +247,7 @@ syntax (theorem_head)? (ident)? bracketedBinder*  ":" term : theorem_statement
 syntax (theorem_head)? (ident)? bracketedBinder*  ":" term  ":=" term: theorem_statement
 syntax term : theorem_statement
 
-
 syntax (name := codegenCmd) "#codegen" ppSpace term : command
-
 
 macro "#codegen" source:json : command =>
   `(command| #codegen json% $source)
