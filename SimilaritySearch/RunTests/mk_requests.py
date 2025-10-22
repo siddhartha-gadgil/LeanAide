@@ -10,9 +10,9 @@ silly_inpath = "data/silly-prompts.txt"
 false_inpath = "data/false-prompts.txt"
 thm_inpath = "data/thm-prompts.txt"
 
-silly_outpath = "SimilaritySearch/RunTests/TestResults/silly-3-768gemma.lean"
-false_outpath = "SimilaritySearch/RunTests/TestResults/false-3-768gemma.lean"
-thm_outpath = "SimilaritySearch/RunTests/TestResults/thm-3-768gemma.lean"
+silly_outpath = "SimilaritySearch/RunTests/TestResults/silly-2-bge.lean"
+false_outpath = "SimilaritySearch/RunTests/TestResults/false-2-bge.lean"
+thm_outpath = "SimilaritySearch/RunTests/TestResults/thm-2-bge.lean"
 
 def mk_request(thm):
     # Set the payload for the request.
@@ -87,7 +87,6 @@ def translate_multiple_and_write(infilepath, outfilepath):
     print(f"Time to translate {l} statements: {end - start:.2f} s")
     print(f"Avg time per statement: {(end - start)/l:.2f} s")
 
-
 if __name__ == "__main__":
     translate_multiple_and_write(false_inpath, false_outpath)
-    # translate_and_print("Every field is a ring.")
+    # translate_and_print("There are infinite prime numbers.")
