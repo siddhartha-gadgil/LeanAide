@@ -24,17 +24,20 @@ for arg in sys.argv[1:]:
     COMMAND = " " + arg
 
 # Config model
-MODEL_NAME = "google/embeddinggemma-300m"
+MODEL_NAME = "BAAI/bge-base-en-v1.5"
 
 # Load model
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print(f"Using device: {device}")
-print(f"Loading model {MODEL_NAME}...")
+print(f"Loading model: {MODEL_NAME}")
 MODEL = SentenceTransformer(MODEL_NAME, device=device, model_kwargs={"dtype": torch.bfloat16})
-print("Model loaded!")
+print("Model loaded!\n")
+
+# Replace `/` with `-` to avoid directory name issues 
+MODEL_NAME = MODEL_NAME.replace('/','-')
 
 # Check and create indexes
-similarity_search.run_create_indexes(MODEL)
+similarity_search.run_checks(MODEL, MODEL_NAME)
 
 def get_env_args():
     """Get environment variables for the server, mainly LLM details"""
@@ -128,7 +131,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     return # Exit after handling
 
                 # Call the main function from similarity_search
-                result = similarity_search.run_similarity_search(MODEL, data['num'], data['query'], data['descField'])
+                result = similarity_search.run_similarity_search(MODEL, MODEL_NAME, data['num'], data['query'], data['descField'])
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
