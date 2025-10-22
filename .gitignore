@@ -86,9 +86,5 @@ private/
 .env
 leanaide_st_temp/
 .leanaide_cache/*/*.json
-TestEmbeddings/
 SimilaritySearch/Indexes
-SimilaritySearch/Indexes256
-SimilaritySearch/docStrings
-resources/mathlib4-descs_new.jsonl
-resources/mathlib4-prompts_new.jsonl
+SimilaritySearch/Data
