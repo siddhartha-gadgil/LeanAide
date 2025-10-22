@@ -6,14 +6,16 @@ A task has a prompt template and generally an output schema. These are grouped b
 
 * **Problem Inspection**
   * Deciding whether to just prove.
-  * Deciding whether to first study sources.
+  * Deciding whether to first study sources
+    * **Branches** either "Source .." or "Problem .."
 
 * **Source Material Analysis**
   * Listing theorems with structure
-  * Structural Mapping: Connecting Hypothesis to Conclusion
-  * Hypothesis Stress-Testing: The Art of Breaking Things
-  * Generalization & Boundary Probing: Pushing the Limits
-  * Core Idea Extraction: Finding the "Aha!" Moment
+  * **Loop** through the following:
+    * Structural Mapping: Connecting Hypothesis to Conclusion
+    * Hypothesis Stress-Testing: The Art of Breaking Things
+    * Generalization & Boundary Probing: Pushing the Limits
+    * Core Idea Extraction: Finding the "Aha!" Moment
 
 * **Problem Deconstruction & Formalization**
   * Structured Analysis
@@ -25,22 +27,27 @@ A task has a prompt template and generally an output schema. These are grouped b
   * Backward reasoning
   * Technique Brainstorming
   * Simplification & Specialization
-  * Proof Sketch & Auxiliary Questions
+  * Proof Sketch & Auxiliary Questions, including labelling auxiliary problems as *easy*, *standard* or *hard*.
 
 * **Step-by-step Execution**
   * Single step execution
+    * For a *hard* problem, recursively calls problem solving (with appropriate resource limits).
   * Formal Justification
   * Maintaining State (Summarization)
 
 * **Verification & Critical Analysis**
   * The Skeptic's Hat
   * Sanity Checks and Edge Cases
+  * Formalization in Lean and feedback;
+    * Itself a many step process, can run in the background.
 
 * **Meta-cognition and loop control**
   * Progress Analysis
   * Identifying Bottlenecks
-  * Strategy Pivot
-  * Shifting the goalposts.
+  * Next Step: one of
+    * Refine plan and continue
+    * Strategy Pivot to a different plan
+    * Changing the main goals (at least for now).
 
 ## Implementation
 
