@@ -1,5 +1,7 @@
 import LeanAideCore.JsonSchemas
 import LeanAideCore.DocumentSchema
+import LeanAide.JsonDiff
+import LeanAideCore.Resources
 
 namespace LeanAide
 open JsonSchemas Lean Meta
@@ -17,6 +19,20 @@ info: #["case", "pattern_case", "assert_statement", "Citation", "Figure", "assum
 /-- info: #["LogicalStep", "Hypothesis_statement", "ProofDetails"] -/
 #guard_msgs in
 #eval groupList
+
+open Json in
+def diffWithResource : MetaM (List JsonDiff) := do
+  let schema ← withAllDefs docSchema #[]
+  return jsonDiff schema Resources.paperStructure
+
+/--
+info: [LeanAide.JsonDiff.atKey "$defs" (LeanAide.JsonDiff.existsKey2only "Author"),
+ LeanAide.JsonDiff.atKey "$defs" (LeanAide.JsonDiff.existsKey2only "Bibliography"),
+ LeanAide.JsonDiff.atKey "$defs" (LeanAide.JsonDiff.existsKey2only "BibliographyEntry"),
+ LeanAide.JsonDiff.atKey "$defs" (LeanAide.JsonDiff.existsKey2only "case")]
+-/
+#guard_msgs in
+#eval diffWithResource
 
 def allDefsView : MetaM Unit := do
   let all ← withAllDefs docSchema #[]

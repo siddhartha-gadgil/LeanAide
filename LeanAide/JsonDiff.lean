@@ -1,9 +1,8 @@
 import Lean
 import Mathlib
 
-open Lean
-open Json
-namespace Json
+open Lean Json
+namespace LeanAide
 
 inductive JsonDiff where
   | message : String → JsonDiff
