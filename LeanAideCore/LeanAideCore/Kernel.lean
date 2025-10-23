@@ -417,6 +417,12 @@ def queryAsync [pipe: LeanAidePipe] [Monad m]
   let token ← queryAsyncAux encode input
   return .running (updateByToken decode token)
 
+/-!
+## Asynchronous versions of the core functions
+
+The following functions provide asynchronous versions of the core LeanAide commands. Each function returns a `Deferred` computation that can be polled to check if the result is ready. These functions use the same encode and decode functions as their synchronous counterparts, but send the query asynchronously to the server and return a `Deferred` result that can be checked later with the `Deferred.update` function.
+-/
+
 @[inherit_doc translateThm]
 def translateThmAsync [pipe: LeanAidePipe] (text: String) : TermElabM (Deferred (m := TermElabM) (Except (Array ElabError) Expr)) :=
   queryAsync translateThmEncode translateThmDecode text
