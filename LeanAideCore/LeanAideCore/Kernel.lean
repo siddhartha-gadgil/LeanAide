@@ -79,7 +79,7 @@ def proveWithCode [kernel: Kernel] (theorem_text: String) (theorem_code: Expr) (
 end Kernel
 
 /-- A deferred computation that may be running or done. -/
-inductive Deferred [Monad m][MonadLift MetaM m](α : Type)  where
+inductive Deferred [Monad m][MonadLiftT MetaM m](α : Type)  where
   /-- The computation is done, with the result. -/
   | done (result: α)
   /-- The computation is still running. The `update` function can be called to check if it is done, returning `none` if it is still running and `some result` if it is done. -/
@@ -88,7 +88,7 @@ inductive Deferred [Monad m][MonadLift MetaM m](α : Type)  where
 
 /--
 Update a `Deferred` computation, returning a new `Deferred` computation. -/
-def Deferred.update [Monad m][MonadLift MetaM m]
+def Deferred.update [Monad m][MonadLiftT MetaM m]
   {α} (d: Deferred (m := m) α) : m (Deferred (m := m) α) :=
   match d with
   | .done r => return .done r
@@ -100,7 +100,7 @@ def Deferred.update [Monad m][MonadLift MetaM m]
 
 /--
 Update a monadic `Deferred` computation, returning a new monadic `Deferred` computation. -/
-def Deferred.updateM [Monad m][MonadLift MetaM m]
+def Deferred.updateM [Monad m][MonadLiftT MetaM m]
   {α} (dm: m (Deferred (m := m) α)) :
     m (Deferred (m := m) α)  := do
   let d ← dm
@@ -382,7 +382,7 @@ def mathQuery [pipe: LeanAidePipe] (query: String) (history : List ChatPair := [
 Update a deferred computation by querying the server with a token.
 -/
 def updateByToken [pipe: LeanAidePipe] [Monad m]
-    [MonadLift MetaM m][MonadError m] {α}
+    [MonadLiftT MetaM m][MonadError m] {α}
     (decode: Json → m α) (token: UInt64) :
     Unit → m (Option α)  := fun _ => do
   let req := Json.mkObj [("mode", "lookup"), ("token", toJson token)]
@@ -409,7 +409,7 @@ def queryAsyncAux [pipe: LeanAidePipe]
 Function to build asynchrounous versions of the core functions of LeanAide.
 -/
 def queryAsync [pipe: LeanAidePipe] [Monad m]
-    [MonadLift MetaM m][MonadError m] {α β}
+    [MonadLiftT MetaM m][MonadError m] {α β}
     (encode: α → MetaM Json)
     (decode: Json → m β)
     (input : α) :
