@@ -86,7 +86,7 @@ def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensio
 elab "#elab_thm4" s:str : command =>
   Command.liftTermElabM do
   let s := s.getString
-  let res ←  elabThm4 s |>.run' {}
+  let res ←  elabThm4Aux s |>.run' {}
   match res with
   | Except.ok e =>
       logInfo m!"Obtained type: {e}"
