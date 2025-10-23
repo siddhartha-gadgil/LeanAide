@@ -240,6 +240,7 @@ syntax "def" : theorem_head
 syntax "lemma" : theorem_head
 syntax "instance" : theorem_head
 syntax "example" : theorem_head
+syntax "noncomputable" "def": theorem_head
 
 declare_syntax_cat theorem_statement
 syntax bracketedBinder* docComment (theorem_head)?  bracketedBinder*  ":" term : theorem_statement
