@@ -93,7 +93,7 @@ elab "#elab_thm4" s:str : command =>
   | Except.error err =>
       logInfo m!"Elaboration error: {err}"
 
-#elab_thm4 "theorem hello : (0: Nat) =1"
+-- #elab_thm4 "theorem hello : (0: Nat) =1"
 
 elab "#elab_thm4_compare" s:str "equals" t:term : command =>
   Command.liftTermElabM do
