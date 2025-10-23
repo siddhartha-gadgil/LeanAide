@@ -406,7 +406,7 @@ def queryAsyncAux [pipe: LeanAidePipe]
   return token
 
 /--
-Function to build asynchrounous versions of the core functions of LeanAide.
+Function to build asynchronous versions of the core functions of LeanAide.
 -/
 def queryAsync [pipe: LeanAidePipe] [Monad m]
     [MonadLift MetaM m][MonadError m] {α β}
