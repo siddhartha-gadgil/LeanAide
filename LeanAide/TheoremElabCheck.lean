@@ -93,6 +93,19 @@ elab "#elab_thm4" s:str : command =>
   | Except.error err =>
       logInfo m!"Elaboration error: {err}"
 
--- #elab_thm4 "theorem hello : (0: Nat) =1"
+#elab_thm4 "theorem hello : (0: Nat) =1"
+
+elab "#elab_thm4_compare" s:str "equals" t:term : command =>
+  Command.liftTermElabM do
+  let s := s.getString
+  let res ←  elabThm4Aux s |>.run' {}
+  match res with
+  | Except.ok e =>
+      let tExpr ← elabType t
+      logInfo m!"Obtained type: {e}; matches target: {← isDefEq e tExpr}"
+  | Except.error err =>
+      logInfo m!"Elaboration error: {err}"
+
+-- #elab_thm4_compare "theorem hello : 0 = 1" equals 0 = 1
 
 end LeanAide
