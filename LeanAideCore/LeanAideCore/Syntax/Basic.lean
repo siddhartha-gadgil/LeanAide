@@ -243,10 +243,13 @@ syntax "example" : theorem_head
 syntax "noncomputable" "def": theorem_head
 
 declare_syntax_cat theorem_statement
-syntax bracketedBinder* docComment (theorem_head)?  bracketedBinder*  ":" term : theorem_statement
+--syntax bracketedBinder* docComment (theorem_head)?  bracketedBinder*  ":" term : theorem_statement
 syntax (theorem_head)? (ident)? bracketedBinder*  ":" term : theorem_statement
+syntax (docComment) (theorem_head)? (ident)? bracketedBinder*  ":" term : theorem_statement
 syntax (theorem_head)? (ident)? bracketedBinder*  ":" term  ":=" term: theorem_statement
+syntax (docComment) (theorem_head)? (ident)? bracketedBinder*  ":" term  ":=" term: theorem_statement
 syntax term : theorem_statement
+syntax (docComment) term : theorem_statement
 
 syntax (name := codegenCmd) "#codegen" ppSpace term : command
 
