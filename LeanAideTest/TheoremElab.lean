@@ -4,6 +4,8 @@ import LeanAide.SimpleFrontend
 import LeanAide.TranslateM
 import LeanAide.TheoremElabCheck
 
+set_option linter.unusedVariables false
+
 universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u₁ u₂ u₃
 
 open Lean Meta Elab Term
@@ -18,17 +20,6 @@ elab "#elab_thm4" s:str : command =>
   match res with
   | Except.ok e =>
       logInfo m!"Obtained type: {e}"
-  | Except.error err =>
-      logInfo m!"Elaboration error: {err}"
-
-elab "#elab_thm4_compare" s:str "equals" t:term : command =>
-  Command.liftTermElabM do
-  let s := s.getString
-  let res ←  elabThm4Aux s |>.run' {}
-  match res with
-  | Except.ok e =>
-      let tExpr ← elabType t
-      logInfo m!"Obtained type: {e}; matches target: {← isDefEq e tExpr}"
   | Except.error err =>
       logInfo m!"Elaboration error: {err}"
 
@@ -403,11 +394,82 @@ info: Obtained type: ∀ {𝕜 : Type u_1} [inst : NontriviallyNormedField 𝕜]
 #elab_thm4 "{𝕜 : Type u_1} [NontriviallyNormedField 𝕜] {H : Type u_2} [TopologicalSpace H] {E : Type u_3} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type u_4} [TopologicalSpace G] [ChartedSpace H G] [Group G] {a : WithTop ℕ∞} [LieGroup I (↑⊤) G] [h : ENat.LEInfty a] :
 LieGroup I a G"
 
+elab "#elab_thm4_compare" s:str "equals" t:term : command =>
+  Command.liftTermElabM do
+  let s := s.getString
+  let res ←  elabThm4Aux s |>.run' {}
+  match res with
+  | Except.ok e =>
+      let tExpr ← elabType t
+      logInfo m!"Obtained type: {e}; matches target: {← isDefEq e tExpr}"
+  | Except.error err =>
+      logInfo m!"Elaboration error: {err}"
 
+/--
+info: Obtained type: ∀ {𝕜 : Type u_1} [inst : NontriviallyNormedField 𝕜] {H : Type u_2} [inst_1 : TopologicalSpace H]
+  {E : Type u_3} [inst_2 : NormedAddCommGroup E] [inst_3 : NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type u_4}
+  [inst_4 : TopologicalSpace G] [inst_5 : ChartedSpace H G] [inst_6 : Group G] {a : WithTop ℕ∞} [LieGroup I ⊤ G]
+  [h : ENat.LEInfty a], LieGroup I a G; matches target: true
+-/
+#guard_msgs in
 #elab_thm4_compare "instance {𝕜 : Type u_1} [NontriviallyNormedField 𝕜] {H : Type u_2} [TopologicalSpace H] {E : Type u_3} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type u_4} [TopologicalSpace G] [ChartedSpace H G] [Group G] {a : WithTop ℕ∞} [LieGroup I (↑⊤) G] [h : ENat.LEInfty a] :
 LieGroup I a G" equals  ∀ {𝕜 : Type u_1} [inst : NontriviallyNormedField 𝕜] {H : Type u_2} [inst_1 : TopologicalSpace H]
   {E : Type u_3} [inst_2 : NormedAddCommGroup E] [inst_3 : NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type u_4}
   [inst_4 : TopologicalSpace G] [inst_5 : ChartedSpace H G] [inst_6 : Group G] {a : WithTop ℕ∞} [LieGroup I ⊤ G]
   [h : ENat.LEInfty a], LieGroup I a G
 
-end LeanAide
+/--
+info: Obtained type: {R₁ : Type u_1} →
+  [inst : CommSemiring R₁] →
+    {n : Type u_5} → [Fintype n] → Matrix n n R₁ → LinearMap.BilinForm R₁ (n → R₁); matches target: true
+-/
+#guard_msgs in
+#elab_thm4_compare "/-- The map from `Matrix n n R` to bilinear forms on `n → R`.
+This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
+
+def {R₁ : Type u_1} [CommSemiring R₁] {n : Type u_5} [Fintype n] (M : Matrix n n R₁) : LinearMap.BilinForm R₁ (n → R₁)" equals {R₁ : Type u_1} →
+  [inst : CommSemiring R₁] → {n : Type u_5} → [Fintype n] → Matrix n n R₁ → LinearMap.BilinForm R₁ (n → R₁)
+
+/--
+info: Obtained type: ∀ {f : ℝ → ℝ} {s : Set ℝ},
+  LocallyBoundedVariationOn f s → ∀ᵐ (x : ℝ), x ∈ s → DifferentiableWithinAt ℝ f s x; matches target: true
+-/
+#guard_msgs in
+#elab_thm4_compare "/-- A bounded variation function into `ℝ` is differentiable almost everywhere. Superseded by`ae_differentiableWithinAt_of_mem`. -/
+theorem {f : ℝ → ℝ} {s : Set ℝ}
+    (h : LocallyBoundedVariationOn f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by sorry " equals ∀ {f : ℝ → ℝ} {s : Set ℝ},
+  LocallyBoundedVariationOn f s → ∀ᵐ (x : ℝ), x ∈ s → DifferentiableWithinAt ℝ f s x
+
+/--
+info: Obtained type: ∀ {f : ℝ → ℝ} {s : Set ℝ},
+  LocallyBoundedVariationOn f s → ∀ᵐ (x : ℝ), x ∈ s → DifferentiableWithinAt ℝ f s x; matches target: true
+-/
+#guard_msgs in
+#elab_thm4_compare "theorem ae_differentiableWithinAt_of_mem_real {f : ℝ → ℝ} {s : Set ℝ}
+    (h : LocallyBoundedVariationOn f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x := by
+  sorry " equals ∀ {f : ℝ → ℝ} {s : Set ℝ},
+  LocallyBoundedVariationOn f s → ∀ᵐ (x : ℝ), x ∈ s → DifferentiableWithinAt ℝ f s x
+
+
+/--
+info: Obtained type: ∀ (μ : MeasureTheory.Measure ℝ) (x : ℝ), 0 ≤ ↑(ProbabilityTheory.cdf μ) x; matches target: true
+-/
+#guard_msgs in
+#elab_thm4_compare "/--The cdf is non-negative. -/
+theorem ProbabilityTheory.cdf_nonneg(μ : MeasureTheory.Measure ℝ) (x : ℝ) :
+0 ≤ (ProbabilityTheory.cdf μ) x" equals ∀ (μ : MeasureTheory.Measure ℝ) (x : ℝ), 0 ≤ (ProbabilityTheory.cdf μ).toFun x
+
+
+/--
+info: Obtained type: ∀ (μ : MeasureTheory.Measure ℝ) (x : ℝ), 0 ≤ ↑(ProbabilityTheory.cdf μ) x; matches target: true
+-/
+#guard_msgs in
+#elab_thm4_compare "(μ : MeasureTheory.Measure ℝ) (x : ℝ) :
+0 ≤ (ProbabilityTheory.cdf μ) x" equals ∀ (μ : MeasureTheory.Measure ℝ) (x : ℝ), 0 ≤ (ProbabilityTheory.cdf μ).toFun x
+
+/--
+info: Obtained type: ∀ (μ : MeasureTheory.Measure ℝ) (x : ℝ), 0 ≤ ↑(ProbabilityTheory.cdf μ) x; matches target: true
+-/
+#guard_msgs in
+#elab_thm4_compare "(μ : MeasureTheory.Measure ℝ) (x : ℝ) :
+0 ≤ (ProbabilityTheory.cdf μ) x := by sorry" equals ∀ (μ : MeasureTheory.Measure ℝ) (x : ℝ), 0 ≤ (ProbabilityTheory.cdf μ).toFun x
