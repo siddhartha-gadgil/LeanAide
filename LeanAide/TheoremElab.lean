@@ -51,15 +51,17 @@ def levelNames :=
 def typeFromThmSyntax (stx : Syntax)
   : TermElabM  Syntax.Term := do
     match stx with
-    | `(theorem_statement| $_:docComment $[$_:theorem_head]? $args:bracketedBinder* : $type:term) =>
-      typeStx type args
     | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
+      typeStx type args
+    | `(theorem_statement|$_:docComment $[$_:theorem_head]? $[$_:ident]? $args:bracketedBinder* : $type:term) =>
       typeStx type args
     | `(theorem_statement|$[$_:theorem_head]? $[$_:ident]?   $args:bracketedBinder* : $type:term := $_:term) =>
       typeStx type args
-    | `(theorem_statement|$vars:bracketedBinder* $_:docComment  $[$_:theorem_head]? $args:bracketedBinder* : $type:term ) =>
-      typeStx type (vars ++ args)
+    | `(theorem_statement|$_:docComment $[$_:theorem_head]? $[$_:ident]?   $args:bracketedBinder* : $type:term := $_:term) =>
+      typeStx type args
     | `(theorem_statement|$type:term ) =>
+      return type
+    | `(theorem_statement|$_:docComment $type:term ) =>
       return type
     | _ => throwError s!"parsed to unmatched syntax {stx}"
   where typeStx (type: Term)
@@ -82,7 +84,6 @@ def typeFromThm (s : String)
   | Except.error e  => throwError e
 
 -- #eval typeFromThm "∀ {p : ℕ} [hp : Fact p.Prime] {k : Type u_1} [inst : Field k] [inst_1 : CharP k p] [inst_2 : PerfectRing k p],\\n  DiscreteValuationRing (WittVector p k)"
--- #eval typeFromThm "Nat"
 
 /--
 Elaborate the statement of a theorem, returning the elaborated expression. The syntax of the statement is liberal: it can be headed with `theorem`, `def`, `example` or nothing and may or may not have a name.
