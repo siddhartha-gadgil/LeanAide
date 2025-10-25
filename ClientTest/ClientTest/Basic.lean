@@ -1,5 +1,6 @@
 import LeanAideCore
 import Mathlib
+import LeanAide.PromptBuilder
 
 open LeanAide
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
@@ -35,3 +36,9 @@ def showDfEg : TermElabM Unit := do
 #llm_query "Prove that there are infinitely many even numbers."
 
 #def "A group is said to be sane if every proper normal subgroup is cyclic."
+
+def simSearch := PromptExampleBuilder.mkSimilarBuilder none 8 4 4
+
+#eval simSearch.getPromptPairs "There are infinitely many prime numbers."
+
+#eval callSimilaritySearch "There are infinitely many odd primes" "docString" 5

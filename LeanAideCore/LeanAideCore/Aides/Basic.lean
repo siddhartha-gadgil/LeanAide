@@ -618,3 +618,32 @@ def proxyJson {α : Type} [inst: Proxy α] (a : α) : TermElabM Json := do
 def unproxyJson {β : Type} [FromJson β] [inst: InverseProxy β] (j: Json) : TermElabM inst.α := do
   let .ok (b : β) := fromJson? j | throwError s!"failed to parse {j}"
   unproxy b
+
+def pythonPath : IO String := do
+  let topFiles ←  ("." : FilePath).readDir
+  let mut secondDirs : List FilePath := []
+  for f in topFiles do -- includes venv
+    if ← f.path.isDir then
+      let subFiles ← f.path.readDir -- includes venv/bin
+      for sf in subFiles do
+        if ← sf.path.isDir then
+          secondDirs := sf.path :: secondDirs
+  let bins := secondDirs.filterMap fun f =>
+    if f.fileName = some "bin" then
+      pure f
+    else
+      none
+  for bin in bins do
+    let pyPath := bin / "python3"
+    if (← pyPath.pathExists) then
+      return pyPath.toString
+    let files ← bin.readDir
+    for f in files do
+      if let some fname := f.path.fileName then
+        if fname.startsWith "python" then
+          return f.path.toString
+  return "python3"
+
+-- #eval pythonPath
+
+end LeanAide

@@ -190,7 +190,7 @@ LEANAIDE_PROCESS_FLAGS (passed to `lake exe leanaide_process`):
         if missing_packages := check_dependencies():
             print(f"\033[1;31mMissing required packages:\033[0m {', '.join(missing_packages)}")
             print("Check out \033[1;34mserver/README.md \033[0m for installation instructions and running the web streamlit server.")
-            print("Skipping Streamlit UI...")
+            print("Running Streamlit UI anyway, may lead to errors.")
         else:
             missing_st = False
             print("\033[1;32mDependencies satisfied. Streamlit UI can be run.\033[0m")
@@ -208,7 +208,7 @@ LEANAIDE_PROCESS_FLAGS (passed to `lake exe leanaide_process`):
     else:
         print("\033[1;34mRunning without API server\033[0m\n")
 
-    if run_ui and not missing_st:
+    if run_ui: # test for missing packages skipped
         if run_server:
             time.sleep(0.5)  # Brief delay to ensure server starts first
         streamlit_process = multiprocessing.Process(target=run_streamlit)

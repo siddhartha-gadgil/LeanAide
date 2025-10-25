@@ -189,3 +189,25 @@ def run_similarity_search(model, model_name, num, query = "mathematics", descFie
     # Run similarity search and print to standard output
     js_string = similarity_search(query, model, index, descField, num)
     return js_string
+
+MODEL_NAME = "BAAI/bge-base-en-v1.5"
+import torch
+# Load model
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+print(f"Using device: {device}", file=sys.stderr)
+print(f"Loading model: {MODEL_NAME}", file=sys.stderr)
+MODEL = SentenceTransformer(MODEL_NAME, device=device, model_kwargs={"dtype": torch.bfloat16})
+print("Model loaded!\n", file=sys.stderr)
+
+# Replace `/` with `-` to avoid directory name issues
+MODEL_NAME = MODEL_NAME.replace('/', '-')
+
+
+def main():
+    data = json.loads(sys.argv[1])
+    result = run_similarity_search(MODEL, MODEL_NAME, data['num'], data['query'], data['descField'])
+    print(result)
+    return result
+
+if __name__ == "__main__":
+    main()

@@ -29,7 +29,7 @@ def Translator.ofCli (p: Parsed) : IO Translator :=
     | some pb => pb
     | none =>
       let pb₁ :=
-        PromptExampleBuilder.mkEmbedBuilder embedUrl? numSim numConcise numDesc
+        PromptExampleBuilder.mkSimilarBuilder embedUrl? numSim numConcise numDesc
       let pb₂ := PromptExampleBuilder.searchBuilder numLeanSeach numMoogle |>.simplify
       if numLeanSeach + numMoogle > 0 then
         pb₁ ++ pb₂
@@ -104,7 +104,7 @@ def Translator.configure (translator: Translator) (config: Json) : Translator :=
       let numDesc := js.getObjValAs? Nat "descriptions"
         |>.toOption.getD 2
       let embedUrl? := js.getObjValAs? String "examples_url" |>.toOption
-      let pb₁ := PromptExampleBuilder.mkEmbedBuilder embedUrl? numSim numConcise numDesc
+      let pb₁ := PromptExampleBuilder.mkSimilarBuilder embedUrl? numSim numConcise numDesc
       let pb₂ := PromptExampleBuilder.searchBuilder 0 0 |>.simplify
       let pb := pb₁ ++ pb₂
       let pb := pb.simplify
