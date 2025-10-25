@@ -1,6 +1,7 @@
 import Lean
 import LeanAide.Aides
 import LeanAide.TranslateM
+import LeanCodePrompts.SimilaritySearch
 import LeanCodePrompts.SpawnNearestEmbeddings
 import LeanCodePrompts.ChatClient
 import LeanAide.PromptExampleBuilder
@@ -158,6 +159,7 @@ local instance : Hashable Float where
 namespace PromptExampleBuilder
 
 partial def num : PromptExampleBuilder →  Nat
+| similarSearch _ n => n
 | embedSearch _ n _ => n
 | leansearch _ _ n => n
 | moogle _ _ n => n
@@ -191,7 +193,16 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
   (query: String) : TranslateM ((Array (String × Json))) := do
   let dataMap ← getEmbedMap
   match pb with
+  | similarSearch descField n =>
+      IO.eprintln s!"similarSearch on {descField} with query: {query}"
+      let outJs ← callSimilaritySearch descField query n
+      match ← pairsFromEmbeddingJson outJs with
+      | Except.ok jsArr => return jsArr
+      | Except.error e =>
+        IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
+        throwError e
   | embedSearch descField n p =>
+      IO.eprintln s!"embedSearch on {descField} with query: {query}"
       let outJs ←
         getNearestEmbeddingsFull query (← embedQueryCached query) n p (descField := descField) (dataMap := dataMap)
       match ← pairsFromEmbeddingJson outJs with
@@ -284,6 +295,7 @@ def getPromptPairs (pb: PromptExampleBuilder)
   return pairs.reverse
 
 partial def usedEmbeddings : PromptExampleBuilder → List String
+| .similarSearch d _ => [d]
 | .embedSearch d _ _ => [d]
 | .blend pbs => pbs.map usedEmbeddings |>.flatten
 | .sequence pbs => pbs.map usedEmbeddings |>.flatten
@@ -291,6 +303,7 @@ partial def usedEmbeddings : PromptExampleBuilder → List String
 
 partial def simplify? (pb : PromptExampleBuilder): Option (PromptExampleBuilder) :=
 match pb with
+| .similarSearch _ n => if n > 0 then some pb else none
 | .embedSearch _ _ n => if n > 0 then some pb else none
 | .leansearch _ _ n => if n > 0 then some pb else none
 | .moogle _ _ n => if n > 0 then some pb else none
@@ -314,6 +327,7 @@ def simplify (pb : PromptExampleBuilder): PromptExampleBuilder :=
 -- #eval toJson (searchBuilder 3 4) |>.compress
 
 partial def signature (pb: PromptExampleBuilder) : String := match pb with
+| .similarSearch descField n => s!"{descField}${n}"
 | .embedSearch descField n _ => s!"{descField}${n}"
 | .leansearch _ _  n => s!"leansearch${n}"
 | .moogle _ _ n => s!"moogle${n}"

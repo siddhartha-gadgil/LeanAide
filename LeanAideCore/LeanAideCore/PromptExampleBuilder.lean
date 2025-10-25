@@ -9,12 +9,14 @@ local instance : Hashable Float where
 /--
   A `PromptExampleBuilder` is a way to specify how to generate a prompt
   for a given example. It can be a sequence of different builders, or a blend
-  of different builders. The `embedSearch` builders use embeddings
+  of different builders. The `similarSearch` builders use FAISS similarity search
+  to search for a given field in the Lean 4 documentation. The `embedSearch` builders use embeddings
   to search for a given field in the Lean 4 documentation. The `leansearch` and `moogle`
   builders use the `leansearch` and `moogle` endpoints respectively to search for a given
   field in the Lean 4 documentation. The `fixed` builder uses a fixed set of prompts.
 -/
 inductive PromptExampleBuilder where
+| similarSearch (descField : String) (n : Nat) : PromptExampleBuilder
 | embedSearch (descField : String) (n: Nat) (penalty: Float := 1.0) : PromptExampleBuilder
 | leansearch (descFields : List String)
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
@@ -43,6 +45,15 @@ deriving Repr, FromJson, ToJson
 namespace PromptExampleBuilder
 
 /--
+  A `PromptExampleBuilder` that uses FAISS similarity search to search for a given field in the Lean 4 documentation.
+-/
+def similarBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
+  .blend [
+    .similarSearch "docString" numSim,
+    .similarSearch "concise-description" numConcise,
+    .similarSearch "description" numDesc]
+
+/--
   A `PromptExampleBuilder` that uses embeddings to search for a given field in the Lean 4 documentation.
 -/
 def embedBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
@@ -64,6 +75,11 @@ def genericEmbedBuilder (url: String) (numSim numConcise numDesc: Nat)  (headers
     .generic url (Json.mkObj [("prompt_type", "concise-description")]) headers numConcise,
     .generic url (Json.mkObj [("prompt_type", "description")]) headers numDesc,
   ]
+
+def mkSimilarBuilder (url?: Option String) (numSim numConcise numDesc: Nat) (headers : Array String := #[]) : PromptExampleBuilder :=
+  match url? with
+  | some url => genericEmbedBuilder url numSim numConcise numDesc headers
+  | none => similarBuilder numSim numConcise numDesc
 
 def mkEmbedBuilder (url?: Option String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
   match url? with
@@ -105,6 +121,7 @@ partial def purge? (pb: PromptExampleBuilder) : Option PromptExampleBuilder :=
   | .sequence [] => none
   | .blend [] => none
   | .embedSearch _ 0 _ => none
+  | .similarSearch _ 0 => none
   | .leansearch _ _ 0 => none
   | .moogle _ _ 0 => none
   | .sequence ps => some <| .sequence <| ps.filterMap purge?

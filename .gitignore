@@ -86,3 +86,5 @@ private/
 .env
 leanaide_st_temp/
 .leanaide_cache/*/*.json
+SimilaritySearch/Indexes
+SimilaritySearch/Data
