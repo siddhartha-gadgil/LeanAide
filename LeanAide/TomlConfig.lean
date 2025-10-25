@@ -61,7 +61,7 @@ def decodeConfigToml (table : Table) (translator : Translator) : DecodeM Transla
               let numConcise ←  table'.tryDecodeD `concise_descriptions 2
               let numDesc ←  table'.tryDecodeD `descriptions 2
               let embedUrl? ←  table'.tryDecode? `examples_url
-              let pb₁ := PromptExampleBuilder.mkEmbedBuilder embedUrl? numSim numConcise numDesc
+              let pb₁ := PromptExampleBuilder.mkSimilarBuilder embedUrl? numSim numConcise numDesc
               let pb₂ := PromptExampleBuilder.searchBuilder 0 0 |>.simplify
               let pb := pb₁ ++ pb₂
               let pb := pb.simplify

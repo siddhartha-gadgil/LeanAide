@@ -280,7 +280,7 @@ def chatServer : CoreM ChatServer := do
       return ChatServer.generic model url none (← hasSysPrompt)
 
 def Translator.defaultM : CoreM Translator := do
-  return {server := ← chatServer, pb := PromptExampleBuilder.embedBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams, toChat := .doc}
+  return {server := ← chatServer, pb := PromptExampleBuilder.similarBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams, toChat := .doc}
 
 def Translator.defaultDefM : CoreM Translator := do
   let t ← defaultM
