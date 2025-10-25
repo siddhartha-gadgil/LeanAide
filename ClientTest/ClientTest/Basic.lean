@@ -40,3 +40,5 @@ def showDfEg : TermElabM Unit := do
 def simSearch := PromptExampleBuilder.mkSimilarBuilder none 8 4 4
 
 #eval simSearch.getPromptPairs "There are infinitely many prime numbers."
+
+#eval callSimilaritySearch "There are infinitely many odd primes" "docString" 5

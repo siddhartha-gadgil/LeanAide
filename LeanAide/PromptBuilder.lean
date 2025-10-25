@@ -195,7 +195,7 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
   match pb with
   | similarSearch descField n =>
       IO.eprintln s!"similarSearch on {descField} with query: {query}"
-      let outJs ← callSimilaritySearch descField query n
+      let outJs ← callSimilaritySearch query descField n
       match ← pairsFromEmbeddingJson outJs with
       | Except.ok jsArr => return jsArr
       | Except.error e =>
