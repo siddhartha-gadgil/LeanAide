@@ -406,7 +406,7 @@ def queryAsyncAux [pipe: LeanAidePipe]
   return token
 
 /--
-Function to build asynchrounous versions of the core functions of LeanAide.
+Function to build asynchronous versions of the core functions of LeanAide.
 -/
 def queryAsync [pipe: LeanAidePipe] [Monad m]
     [MonadLiftT MetaM m][MonadError m] {α β}
@@ -417,9 +417,57 @@ def queryAsync [pipe: LeanAidePipe] [Monad m]
   let token ← queryAsyncAux encode input
   return .running (updateByToken decode token)
 
-end LeanAidePipe
+/-!
+## Asynchronous versions of the core functions
 
--- TODO: Implement asynchronous versions of the core functions.
+The following functions provide asynchronous versions of the core LeanAide commands. Each function returns a `Deferred` computation that can be polled to check if the result is ready. These functions use the same encode and decode functions as their synchronous counterparts, but send the query asynchronously to the server and return a `Deferred` result that can be checked later with the `Deferred.update` function.
+-/
+
+@[inherit_doc translateThm]
+def translateThmAsync [pipe: LeanAidePipe] (text: String) : TermElabM (Deferred (m := TermElabM) (Except (Array ElabError) Expr)) :=
+  queryAsync translateThmEncode translateThmDecode text
+
+@[inherit_doc translateThmDetailed]
+def translateThmDetailedAsync [pipe: LeanAidePipe] (text: String) (name? : Option Name) : TermElabM (Deferred (m := TermElabM) (Name × Expr × Syntax.Command)) :=
+  queryAsync (fun x => translateThmDetailedEncode x.1 x.2) translateThmDetailedDecode (text, name?)
+
+@[inherit_doc translateDef]
+def translateDefAsync [pipe: LeanAidePipe] (text: String) : TermElabM (Deferred (m := TermElabM) (Except (Array CmdElabError) Syntax.Command)) :=
+  queryAsync translateDefEncode translateDefDecode text
+
+@[inherit_doc theoremDoc]
+def theoremDocAsync [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM (Deferred (m := TermElabM) String) :=
+  queryAsync (fun x => theoremDocEncode x.1 x.2) theoremDocDecode (name, stx)
+
+@[inherit_doc defDoc]
+def defDocAsync [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM (Deferred (m := TermElabM) String) :=
+  queryAsync (fun x => defDocEncode x.1 x.2) defDocDecode (name, stx)
+
+@[inherit_doc theoremName]
+def theoremNameAsync [pipe: LeanAidePipe] (text: String) : MetaM (Deferred (m := MetaM) Name) :=
+  queryAsync theoremNameEncode theoremNameDecode text
+
+@[inherit_doc proveForFormalization]
+def proveForFormalizationAsync [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) (theoremStatement : Syntax.Command) : TermElabM (Deferred (m := TermElabM) String) :=
+  queryAsync (fun x => proveForFormalizationEncode x.1 x.2.1 x.2.2) proveForFormalizationDecode (theoremText, (theoremCode, theoremStatement))
+
+@[inherit_doc jsonStructured]
+def jsonStructuredAsync [pipe: LeanAidePipe] (document: String) : MetaM (Deferred (m := MetaM) Json) :=
+  queryAsync jsonStructuredEncode jsonStructuredDecode document
+
+@[inherit_doc codeFromJson]
+def codeFromJsonAsync [pipe: LeanAidePipe] (json: Json) : TermElabM (Deferred (m := TermElabM) (TSyntax ``commandSeq)) :=
+  queryAsync codeFromJsonEncode codeFromJsonDecode json
+
+@[inherit_doc elabCode]
+def elabCodeAsync [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM (Deferred (m := TermElabM) CodeElabResult) :=
+  queryAsync elabCodeEncode elabCodeDecode stx
+
+@[inherit_doc mathQuery]
+def mathQueryAsync [pipe: LeanAidePipe] (query: String) (history : List ChatPair := []) (n: Nat := 3) : MetaM (Deferred (m := MetaM) (List String)) :=
+  queryAsync (fun x => mathQueryEncode x.1 x.2.1 x.2.2) mathQueryDecode (query, (history, n))
+
+end LeanAidePipe
 
 /--
 An instance of `Kernel` using a `LeanAidePipe` to connect to a LeanAide server.
