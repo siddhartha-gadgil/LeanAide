@@ -4,6 +4,7 @@ import sys
 import os
 import json
 import faiss
+import torch
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
