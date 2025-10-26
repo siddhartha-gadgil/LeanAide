@@ -9,3 +9,6 @@ pymupdf>=1.26.1
 # streamlit-tags>=1.2.8
 faiss_cpu==1.12.0
 sentence_transformers==5.1.1
+numpy==2.3.4
+Requests==2.32.5
+torch==2.5.1
