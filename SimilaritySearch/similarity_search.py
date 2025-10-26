@@ -55,9 +55,9 @@ def check_GPU():
   try:
       res = faiss.StandardGpuResources()
       index = faiss.GpuIndexFlatL2(res, 10)
-      print("FAISS GPU index created!")
+      print("FAISS GPU index created!", file=sys.stderr)
   except Exception as e:
-      print(f"Failed to create FAISS GPU index: {e}")
+      print(f"Failed to create FAISS GPU index: {e}", file=sys.stderr)
 
 # SECTION: CREATE INDEXES
 
@@ -75,21 +75,21 @@ def download_file(url, filename):
                 with open(filename, 'wb') as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
-                print(f"File downloaded and saved at {filename}\n")
+                print(f"File downloaded and saved at {filename}\n", file=sys.stderr)
                 return 0
             else:
                 # Print an error message if the download failed
-                print(f"Error: Failed to download file. HTTP Status Code: {response.status_code}\n")
+                print(f"Error: Failed to download file. HTTP Status Code: {response.status_code}\n", file=sys.stderr)
                 return 1
 
     except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}\n")
+        print(f"An error occurred: {e}\n", file=sys.stderr)
     except IOError as e:
-        print(f"Error writing to file: {e}\n")
+        print(f"Error writing to file: {e}\n", file=sys.stderr)
 
 def check_data(docString_url, path):
     if not os.path.exists(path):
-        print(f"Fetching docStrings from {docString_url}...")
+        print(f"Fetching docStrings from {docString_url}...", file=sys.stderr)
         download_file(docString_url, path)
 
 def batch_generator(descField, batch_size):
@@ -112,7 +112,7 @@ def batch_generator(descField, batch_size):
 def download_index(model_name, descField):
     url = model_index_url(model_name, descField)
     index_path = INDEX_PATHS(descField, model_name)
-    print(f"Downloading index from {url} to {index_path}...")
+    print(f"Downloading index from {url} to {index_path}...", file=sys.stderr)
     return download_file(url, index_path)
 
 def create_index(descField, model, model_name):
@@ -129,7 +129,7 @@ def create_index(descField, model, model_name):
         # Add it to the index
         index.add_with_ids(embeddings, ids)
         # Print progress
-        print(f"- docstrings encoded: {ids[-1] + 1}")
+        print(f"- docstrings encoded: {ids[-1] + 1}", file=sys.stderr)
     # Save the index to INDEX_PATHS(descField, model_name)
     faiss.write_index(index, INDEX_PATHS(descField, model_name))
 
@@ -138,12 +138,12 @@ def check_and_create_indexes(model, model_name):
         if not os.path.exists(INDEX_PATHS(descField, model_name)):
             d = download_index(model_name, descField)
             if d == 1:
-                print(f"Creating index for {descField} with {model_name}...")
+                print(f"Creating index for {descField} with {model_name}...", file=sys.stderr)
                 create_index(descField, model, model_name)
-                print(f"Index created and saved at {INDEX_PATHS(descField, model_name)}\n")
+                print(f"Index created and saved at {INDEX_PATHS(descField, model_name)}\n", file=sys.stderr)
         else:
-            print(f"Found index for {descField} from {model_name}")
-    print("\n")
+            print(f"Found index for {descField} from {model_name}", file=sys.stderr)
+    print("\n", file=sys.stderr)
 
 def run_checks(model, model_name):
     check_paths(model_name)
@@ -218,6 +218,7 @@ MODEL_NAME = MODEL_NAME.replace('/', '-')
 
 def main():
     data = json.loads(sys.argv[1])
+    run_checks(MODEL, MODEL_NAME)
     result = run_similarity_search(MODEL, MODEL_NAME, data['num'], data['query'], data['descField'])
     print(result)
     return result

@@ -66,13 +66,19 @@ Adding `LeanAide` as a dependency to your project is brittle and slow. In partic
 
 We provide a server-client setup that is more robust and faster, based on the **zero-dependency** sub-project `LeanAideCore`, which is the corresponding folder in this repository (and a dependency of `LeanAide`). This can act as a client to the server in this repository.
 
-The simplest (and we expect the most common) way to set up LeanAide to use in your project is to run a server locally. To do this, first set up LeanAide as described above. Then run the following command from the root of the repository:
+The simplest (and we expect the most common) way to set up LeanAide to use in your project is to run a server locally. To do this, first set up LeanAide as described above. We also need a Python server. Create a virtual environment, activate it and run:
+
+```bash
+pip install -r server/requirements.txt
+```
+
+Then run the following command from the root of the repository:
 
 ```bash
 python3 leanaide_server.py
 ```
 
-We assume you have Python 3 installed but we only use builtin packages. There is a nicer interactive version of the server. To use this, install the packages in `server/requirements.txt` and start the server with the "--ui" parameter.
+There is a nicer interactive version of the server. To use this start the server with the "--ui" parameter.
 
 ```bash
 python3 leanaide_server.py --ui
