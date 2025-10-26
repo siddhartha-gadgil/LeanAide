@@ -14,6 +14,9 @@ INDEX_FOLDER = "SimilaritySearch/Indexes"
 
 docString_url = "https://storage.googleapis.com/leanaide_data/mathlib4-prompts.jsonl"
 
+def model_index_url(model_name, descField):
+    return f"https://storage.googleapis.com/leanaide_data/{model_name}/{descField}.index"
+
 def MODEL_INDEXES_FOLDER(model_name):
     return f"{INDEX_FOLDER}/{model_name}"
 
@@ -73,19 +76,21 @@ def download_file(url, filename):
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
                 print(f"File downloaded and saved at {filename}\n")
+                return 0
             else:
                 # Print an error message if the download failed
                 print(f"Error: Failed to download file. HTTP Status Code: {response.status_code}\n")
+                return 1
 
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}\n")
     except IOError as e:
         print(f"Error writing to file: {e}\n")
 
-def check_data():
-    if not os.path.exists(DESCFIELD_PATHS("docString")):
+def check_data(docString_url, path):
+    if not os.path.exists(path):
         print(f"Fetching docStrings from {docString_url}...")
-        download_file(docString_url, DESCFIELD_PATHS("docString"))
+        download_file(docString_url, path)
 
 def batch_generator(descField, batch_size):
     batch, ids = [], []
@@ -103,6 +108,12 @@ def batch_generator(descField, batch_size):
                 batch, ids = [], []
     # For the last remaining sentences that didn't form a complete batch 
     if batch: yield (batch, np.array(ids))
+
+def download_index(model_name, descField):
+    url = model_index_url(model_name, descField)
+    index_path = INDEX_PATHS(descField, model_name)
+    print(f"Downloading index from {url} to {index_path}...")
+    return download_file(url, index_path)
 
 def create_index(descField, model, model_name):
     # Create an empty FAISS index with dimension DIM
@@ -125,16 +136,18 @@ def create_index(descField, model, model_name):
 def check_and_create_indexes(model, model_name):
     for descField in ["concise-description", "description", "docString"]:
         if not os.path.exists(INDEX_PATHS(descField, model_name)):
-            print(f"Creating index for {descField} with {model_name}...")
-            create_index(descField, model, model_name)
-            print(f"Index created and saved at {INDEX_PATHS(descField, model_name)}\n")
+            d = download_index(model_name, descField)
+            if d == 1:
+                print(f"Creating index for {descField} with {model_name}...")
+                create_index(descField, model, model_name)
+                print(f"Index created and saved at {INDEX_PATHS(descField, model_name)}\n")
         else:
             print(f"Found index for {descField} from {model_name}")
     print("\n")
 
 def run_checks(model, model_name):
     check_paths(model_name)
-    check_data()
+    check_data(docString_url, DESCFIELD_PATHS("docString"))
     check_and_create_indexes(model, model_name)
 
 # SECTION: SIMILARITY_SEARCH

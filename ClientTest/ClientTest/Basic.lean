@@ -1,6 +1,5 @@
 import LeanAideCore
 import Mathlib
-import LeanAide.PromptBuilder
 
 open LeanAide
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
@@ -40,5 +39,3 @@ def showDfEg : TermElabM Unit := do
 def simSearch := PromptExampleBuilder.mkSimilarBuilder none 8 4 4
 
 #eval simSearch.getPromptPairs "There are infinitely many prime numbers."
-
-#eval callSimilaritySearch "There are infinitely many odd primes" "docString" 5
