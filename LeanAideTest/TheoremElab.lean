@@ -481,3 +481,9 @@ info: Obtained type: ∀ (μ : MeasureTheory.Measure ℝ) (x : ℝ), 0 ≤ ↑(P
 /-- info: Obtained type: ∀ {p : ℕ}, Nat.Prime p ↔ 2 ≤ p ∧ ∀ (m : ℕ), m ∣ p → m = 1 ∨ m = p -/
 #guard_msgs in
 #elab_thm4 "theorem  {p : ℕ} : Nat.Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p"
+
+open scoped Nat
+
+/-- info: Obtained type: ∀ (n : ℕ), n ∣ n ! -/
+#guard_msgs in
+#elab_thm4 "∀ n: ℕ, n ∣ n !"
