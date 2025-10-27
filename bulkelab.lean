@@ -10,7 +10,7 @@ set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
+def runBulkElab (p : Parsed) : IO UInt32 := do
   initSearchPath (← Lean.findSysroot)
   let input_file :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
@@ -90,19 +90,19 @@ unsafe def runBulkElab (p : Parsed) : IO UInt32 := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module := `Mathlib}] {}
-  withUnpickle (← picklePath "docString")
-    <|fun (docStringData : EmbedData) => do
-  withUnpickle (← picklePath "description")
-    <|fun (descData : EmbedData) =>  do
-  withUnpickle (← picklePath "concise-description")
-    <|fun (concDescData : EmbedData) => do
+  -- withUnpickle (← picklePath "docString")
+  --   <|fun (docStringData : EmbedData) => do
+  -- withUnpickle (← picklePath "description")
+  --   <|fun (descData : EmbedData) =>  do
+  -- withUnpickle (← picklePath "concise-description")
+  --   <|fun (concDescData : EmbedData) => do
   IO.eprintln "Loading hashmap"
-  let dataMap :
-    EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
+  -- let dataMap :
+  --   EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   IO.eprintln "Loaded hashmap"
   let core :=
     translator.checkTranslatedThmsM input_file  delay repeats
-    queryData? tag |>.runWithEmbeddings dataMap
+    queryData? tag |>.runToCore
   let io? :=
     core.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000}
     {env := env}

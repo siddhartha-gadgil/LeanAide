@@ -12,17 +12,17 @@ set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-unsafe def process_loop (env: Environment)(getLine : IO String) (putStrLn : String → IO Unit)
-    (translator : Translator) (dataMap : EmbedMap) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
+partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : String → IO Unit)
+    (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
   IO.eprintln "Server ready. Waiting for input..."
   let inp ← getLine
   if inp.trim.isEmpty then
-    process_loop env getLine putStrLn translator dataMap states chains
+    process_loop env getLine putStrLn translator states chains
   else
   match Json.parse inp with
   | Except.error e =>
      IO.eprintln s!"Error parsing input: {e}"
-     process_loop env getLine putStrLn translator dataMap states chains
+     process_loop env getLine putStrLn translator states chains
   | Except.ok js =>
     let mode? := js.getObjValAs? String "mode" |>.toOption
     let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
@@ -38,7 +38,7 @@ unsafe def process_loop (env: Environment)(getLine : IO String) (putStrLn : Stri
       let prios :=
         (js.getObjValAs? Task.Priority "priority").toOption |>.getD Task.Priority.default
       TranslateM.runBackgroundChainIO js
-        (Actor.response translator) dataMap ctx env
+        (Actor.response translator) none ctx env
         callback chains prios
       IO.eprintln "Background process launched"
       IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
@@ -53,15 +53,15 @@ unsafe def process_loop (env: Environment)(getLine : IO String) (putStrLn : Stri
       return 0
     | _ =>
       IO.eprintln "Running in foreground"
-      let core := Actor.response translator js |>.runWithEmbeddings dataMap
+      let core := Actor.response translator js |>.runToCore
       let result ←
         core.run' ctx {env := env} |>.runToIO'
       IO.eprintln "Ran successfully"
       putStrLn <| result.compress
       IO.eprintln "Output sent."
-    process_loop env getLine putStrLn translator dataMap states chains
+    process_loop env getLine putStrLn translator states chains
 
-unsafe def launchProcess (p : Parsed) : IO UInt32 := do
+def launchProcess (p : Parsed) : IO UInt32 := do
   initSearchPath (← findSysroot)
   let translator : Translator ←  Translator.ofCli p
   -- IO.eprintln <| toJson translator
@@ -73,14 +73,14 @@ unsafe def launchProcess (p : Parsed) : IO UInt32 := do
     {module:= `LeanAide.PaperCodes},
     {module:= `LeanAide.Responses},
     {module := `LeanAideCore}] {}
-  withUnpickle (← picklePath "docString")
-    <|fun (docStringData : EmbedData) => do
-  withUnpickle (← picklePath "description")
-    <|fun (descData : EmbedData) =>  do
-  withUnpickle (← picklePath "concise-description")
-    <|fun (concDescData : EmbedData) => do
-  let dataMap :
-    EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
+  -- withUnpickle (← picklePath "docString")
+  --   <|fun (docStringData : EmbedData) => do
+  -- withUnpickle (← picklePath "description")
+  --   <|fun (descData : EmbedData) =>  do
+  -- withUnpickle (← picklePath "concise-description")
+  --   <|fun (concDescData : EmbedData) => do
+  -- let dataMap :
+  --   EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let stdin ←  IO.getStdin
   let stdout ← IO.getStdout
   let getLine : IO String := stdin.getLine
@@ -89,10 +89,10 @@ unsafe def launchProcess (p : Parsed) : IO UInt32 := do
     stdout.flush
   let states : TasksState ←
     Std.Mutex.new <| Std.HashMap.emptyWithCapacity 100
-  process_loop env getLine putStrLn translator dataMap states (fun _ _ => #[])
+  process_loop env getLine putStrLn translator states (fun _ _ => #[])
 
 
-unsafe def leanAideProcess : Cmd := `[Cli|
+def leanAideProcess : Cmd := `[Cli|
   leanaide_process VIA launchProcess;
   "Elaborate a set of inputs and report whether successful and the result if successful."
 

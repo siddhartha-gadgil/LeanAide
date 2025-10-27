@@ -10,8 +10,8 @@ set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-unsafe def runTranslate (p : Parsed) : IO UInt32 := do
-  searchPathRef.set compile_time_search_path%
+def runTranslate (p : Parsed) : IO UInt32 := do
+  initSearchPath (← findSysroot)
   let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
     |>.getD 20
   let numConcise := p.flag? "concise_descriptions" |>.map (fun s => s.as! Nat)
@@ -51,14 +51,14 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanCodePrompts.Translate},
     {module:= `LeanAide.Descriptions}] {}
-  withUnpickle (← picklePath "docString")
-    <|fun (docStringData : EmbedData) => do
-  withUnpickle (← picklePath "description")
-    <|fun (descData : EmbedData) =>  do
-  withUnpickle (← picklePath "concise-description")
-    <|fun (concDescData : EmbedData) => do
-  let dataMap :
-    EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
+  -- withUnpickle (← picklePath "docString")
+  --   <|fun (docStringData : EmbedData) => do
+  -- withUnpickle (← picklePath "description")
+  --   <|fun (descData : EmbedData) =>  do
+  -- withUnpickle (← picklePath "concise-description")
+  --   <|fun (concDescData : EmbedData) => do
+  -- let dataMap :
+  --   EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let names := p.variableArgsAs! String
   -- let name :=
   --   p.positionalArg? "input" |>.map (fun s => s.as! String)
@@ -87,7 +87,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
       IO.eprintln desc
       let translator' := {translator with pb :=  (PromptExampleBuilder.embedBuilder numSim numConcise numDesc)}
       let coreTranslate :=
-        translator'.translateViewVerboseM desc  |>.runWithEmbeddings dataMap
+        translator'.translateViewVerboseM desc  |>.runToCore
       let io? :=
         coreTranslate.run' {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
         {env := env}

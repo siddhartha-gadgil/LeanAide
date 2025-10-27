@@ -28,14 +28,11 @@ def showDfEg : TermElabM Unit := do
 
 
 
-#theorem silly "If a vector space has dimension `2`, then it is finite dimensional."
+#theorem silly : "If a vector space has dimension `2`, then it is finite dimensional." >>
+  translate_theorem
 
-#theorem "There are infinitely many odd numbers."
+#theorem : "There are infinitely many odd numbers." >> translate_theorem
 
 #llm_query "Prove that there are infinitely many even numbers."
 
 #def "A group is said to be sane if every proper normal subgroup is cyclic."
-
-def simSearch := PromptExampleBuilder.mkSimilarBuilder none 8 4 4
-
-#eval simSearch.getPromptPairs "There are infinitely many prime numbers."

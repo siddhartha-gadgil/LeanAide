@@ -10,7 +10,7 @@ set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-unsafe def main (args: List String) : IO UInt32 := do
+def main (args: List String) : IO UInt32 := do
   initSearchPath (← findSysroot)
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
@@ -19,18 +19,16 @@ unsafe def main (args: List String) : IO UInt32 := do
     {module:= `LeanAide.AutoTactic},
     {module:= `LeanAide.StructToLean},
     {module:= `LeanAide.Syntax}] {}
-  withUnpickle (← picklePath "docString")
-    <|fun (docStringData : EmbedData) => do
-  withUnpickle (← picklePath "description")
-    <|fun (descData : EmbedData) =>  do
-  withUnpickle (← picklePath "concise-description")
-    <|fun (concDescData : EmbedData) => do
-  let dataMap :
-    EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
+  -- withUnpickle (← picklePath "docString")
+  --   <|fun (docStringData : EmbedData) => do
+  -- withUnpickle (← picklePath "description")
+  --   <|fun (descData : EmbedData) =>  do
+  -- withUnpickle (← picklePath "concise-description")
+  --   <|fun (concDescData : EmbedData) => do
   let codeGen : CodeGenerator := {}
   let statement := args[0]!
   let core :=
-    codeGen.statementToCode statement  |>.runWithEmbeddings dataMap
+    codeGen.statementToCode statement  |>.runToCore
   let io? :=
     core.run {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     {env := env}
