@@ -1,8 +1,12 @@
 import Mathlib
 
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
+@[default_instance]
+instance : Add ℤ := inferInstance
+@[default_instance]
+instance : Semiring ℤ := inferInstance
 
-open Nat
+open scoped Nat
 
 /-
   Translation of 40 statements from `data/silly-prompts.txt`
@@ -53,7 +57,7 @@ theorem t5 : ∀ {K : Type u} {V : Type v} [inst : DivisionRing K] [inst_1 : Add
 --Result: success
 --Time: 7.32 s
 /--Every field is a division ring.-/
-theorem t6 : (K : Type u) → [inst : Field K] → DivisionRing K :=
+noncomputable def t6 : (K : Type u) → [inst : Field K] → DivisionRing K :=
   by sorry
 
 --Result: success
@@ -83,6 +87,8 @@ theorem t10 : ∀ {α : Type u_1} [inst : MeasurableSpace α] [self : Measurable
 
 --Result: fallback
 --Time: 7.98 s
+/-- error: unknown identifier 'MeasureTheory.BorelSpace' -/
+#guard_msgs in
 /--Every set of Borel measure zero is Lebesgue measurable.-/
 theorem t11 : ∀ {α : Type u_1} [inst : MeasurableSpace α] [MeasureTheory.BorelSpace α] (μ : MeasureTheory.Measure α)
   [MeasureTheory.IsComplete μ] {s : Set α}, μ s = 0 → MeasurableSet s :=
@@ -142,7 +148,7 @@ theorem t19 : ∀ {R : Type u} [inst : Ring R], IsUnit 1 :=
 --Result: success
 --Time: 8.02 s
 /--Every subgroup of a group is a group.-/
-theorem t20 : {G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group ↥H :=
+noncomputable def t20 : {G : Type u_1} → [inst : Group G] → (H : Subgroup G) → Group ↥H :=
   by sorry
 
 --Result: success
@@ -184,7 +190,7 @@ theorem t26 : ∀ {α : Type u} {s : Set α}, s.Infinite → ∃ t, t.Finite ∧
 --Result: success
 --Time: 6.15 s
 /--Every commutative ring is a monoid.-/
-theorem t27 : {R : Type u} → [inst : CommRing R] → Monoid R :=
+noncomputable def t27 : {R : Type u} → [inst : CommRing R] → Monoid R :=
   by sorry
 
 --Result: fallback
@@ -247,10 +253,16 @@ theorem t36 : ∀ {G : Type u_1} [inst : Group G], Nonempty G :=
 theorem t37 : ∀ {α : Type u} [inst : TopologicalSpace α] (x : α), IsConnected (connectedComponent x) :=
   by sorry
 
+/--
+error: Invalid field notation: Type of
+  M
+is not known; cannot resolve field `IsMaximal`
+-/
+#guard_msgs in
 --Result: success
 --Time: 4.93 s
 /--The ring of integers has a maximal ideal.-/
-theorem t38 : ∃ M, M.IsMaximal :=
+noncomputable def t38 : ∃ M, M.IsMaximal :=
   by sorry
 
 --Result: success
@@ -261,6 +273,21 @@ theorem t39 : PythagoreanTriple 3 4 5 :=
 
 --Result: fallback
 --Time: 9.51 s
+/--
+error: failed to synthesize
+  Bot (Type v)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+---
+error: Function expected at
+  Basis
+but this term has type
+  ?m.30000
+
+Note: Expected a function because this term is being applied to the argument
+  Empty
+-/
+#guard_msgs in
 /--A vector space with the empty set as basis is trivial.-/
 theorem t40 : ∀ {K : Type u} {V : Type v} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : Module K V],
   (∀ (b : Basis Empty K V), False) → V = ⊥ :=
