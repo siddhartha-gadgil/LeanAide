@@ -61,6 +61,1007 @@ A task has a prompt template and generally an output schema. These are grouped b
 
 The process of solving a hard math problem can be broken down into five (plus 1) key phases. Your loop should be able to invoke tasks from any phase based on the current state of the solution.
 
+## Implementation details from Gemini
+
+This is a comprehensive and well-structured plan. Here are the prompt templates and corresponding JSON schemas for each step in your defined reasoning loop.
+
+Placeholders like `{{problem}}`, `{{context}}`, or `{{source_material}}` are intended to be filled in by your controlling application.
+
+-----
+
+## 1\. Problem Inspection
+
+### 1.1. Deciding whether to just prove / first study sources
+
+This is a single triage step that determines the next phase.
+
+**Prompt Template:**
+
+```md
+Analyze the following problem statement:
+---
+{{problem}}
+---
+Based on its complexity, terminology, and similarity to known theorems, decide the best initial strategy.
+
+1.  **Direct Proof:** Do we have enough information to proceed directly to deconstruction and proof?
+2.  **Source Study:** Must we first consult external sources to understand the terminology, context, or relevant existing proofs?
+
+Provide your recommendation and a brief justification. If you recommend studying sources, suggest specific keywords, theorems, or papers to investigate.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProblemTriageDecision",
+  "description": "Initial decision on whether to proceed directly or study sources.",
+  "type": "object",
+  "properties": {
+    "next_action": {
+      "description": "The recommended next phase to enter.",
+      "type": "string",
+      "enum": ["ProblemDeconstruction", "SourceMaterialAnalysis"]
+    },
+    "justification": {
+      "description": "Reasoning for the chosen next action.",
+      "type": "string"
+    },
+    "suggested_sources": {
+      "description": "If 'SourceMaterialAnalysis' is chosen, list potential keywords, theorems, or papers to study.",
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": ["next_action", "justification"]
+}
+```
+
+-----
+
+## 2\. Source Material Analysis
+
+This phase involves a loop. First, a step to find the theorems, then a loop over each one.
+
+### 2.1. Listing theorems with structure (Entry Step)
+
+**Prompt Template:**
+
+```md
+You have been given the following source material to study:
+---
+Source Summary: {{source_material_summary}}
+Full Text Access: [Path or context to full text]
+---
+The goal is to solve: {{main_problem_goal}}
+
+Identify the key theorems, proofs, or sections in this material that are most relevant to our goal. For each, provide its name and location.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TheoremLocator",
+  "description": "Identifies and lists key theorems from a source.",
+  "type": "object",
+  "properties": {
+    "theorems_found": {
+      "description": "A list of theorems to be analyzed.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "The name of the theorem or section." },
+          "location": { "type": "string", "description": "Page, section, or chapter." },
+          "relevance_score": {
+            "type": "number",
+            "description": "1-10 scale of relevance to the main problem.",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "relevance_justification": {
+            "type": "string"
+          }
+        },
+        "required": ["name", "location", "relevance_score", "relevance_justification"]
+      }
+    }
+  },
+  "required": ["theorems_found"]
+}
+```
+
+### 2.2. Structural Mapping (Loop Step)
+
+**Prompt Template:**
+
+```md
+Analyze the proof of '{{theorem_name}}' found at '{{location}}' in the provided source.
+---
+Proof Text: {{proof_text_snippet}}
+---
+Deconstruct the argument into its key logical steps. For each step, create a dependency list specifying which of the theorem's original hypotheses and which previously proven steps are used.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProofStructuralMap",
+  "description": "Maps the logical flow of a single proof.",
+  "type": "object",
+  "properties": {
+    "theorem_name": { "type": "string" },
+    "original_hypotheses": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of all initial hypotheses of the theorem."
+    },
+    "proof_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": { "type": "string", "description": "A unique ID, e.g., 'Step 1', 'Lemma A'." },
+          "claim": { "type": "string", "description": "The statement being proven at this step." },
+          "dependencies": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of original hypotheses or 'step_id's used."
+          }
+        },
+        "required": ["step_id", "claim", "dependencies"]
+      }
+    }
+  },
+  "required": ["theorem_name", "original_hypotheses", "proof_steps"]
+}
+```
+
+### 2.3. Hypothesis Stress-Testing (Loop Step)
+
+**Prompt Template:**
+
+```md
+Let's stress-test the hypotheses for '{{theorem_name}}'.
+Original hypotheses: {{hypotheses_list}}
+Proof structure: {{proof_structural_map}}
+
+For each hypothesis, analyze its necessity:
+1.  Construct a simple counterexample that violates *only* this hypothesis.
+2.  Trace this counterexample through the proof and identify the *exact* proof step (by step_id) that fails.
+3.  Explain *why* it fails.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HypothesisStressTest",
+  "description": "Analyzes the necessity of each hypothesis.",
+  "type": "object",
+  "properties": {
+    "stress_tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hypothesis_tested": { "type": "string" },
+          "counterexample_sketch": { "type": "string" },
+          "failed_proof_step_id": { "type": "string" },
+          "explanation_of_failure": { "type": "string" }
+        },
+        "required": ["hypothesis_tested", "counterexample_sketch", "failed_proof_step_id", "explanation_of_failure"]
+      }
+    }
+  },
+  "required": ["stress_tests"]
+}
+```
+
+### 2.4. Generalization & Boundary Probing (Loop Step)
+
+**Prompt Template:**
+
+```md
+Analyze the boundaries of '{{theorem_name}}'.
+Original hypotheses: {{hypotheses_list}}
+
+For each hypothesis, propose a potential weakening (e.g., 'continuous' -> 'bounded', 'n=3' -> 'n'). Then, analyze if the proof's logic (from {{proof_structural_map}}) could be adapted or if it breaks.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GeneralizationProbe",
+  "description": "Proposes and analyzes weaker hypotheses.",
+  "type": "object",
+  "properties": {
+    "probes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "original_hypothesis": { "type": "string" },
+          "proposed_weakening": { "type": "string" },
+          "analysis": { "type": "string", "description": "Would the theorem still hold? What modifications are needed?" },
+          "new_conclusion": { "type": "string", "description": "A weaker conclusion that might hold if the theorem fails." }
+        },
+        "required": ["original_hypothesis", "proposed_weakening", "analysis"]
+      }
+    }
+  },
+  "required": ["probes"]
+}
+```
+
+### 2.5. Core Idea Extraction (Loop Step)
+
+**Prompt Template:**
+
+```md
+After this deep analysis of '{{theorem_name}}' (summarized in {{analysis_so_far}}), what is its single 'core idea' or 'key trick'?
+
+Summarize the central insight in 1-3 sentences. What is the one thing to remember from this proof that could be applied to our main problem?
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CoreIdeaExtraction",
+  "description": "Summarizes the key insight of a proof.",
+  "type": "object",
+  "properties": {
+    "core_idea_summary": {
+      "description": "A concise (1-3 sentence) explanation of the 'aha!' moment.",
+      "type": "string"
+    },
+    "key_techniques": {
+      "description": "List of the main techniques used (e.g., 'diagonalization', 'pigeonhole principle').",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "relevance_to_main_problem": {
+      "description": "How this core idea might be applied to our main goal.",
+      "type": "string"
+    }
+  },
+  "required": ["core_idea_summary", "key_techniques", "relevance_to_main_problem"]
+}
+```
+
+-----
+
+## 3\. Problem Deconstruction & Formalization
+
+### 3.1. Structured Analysis
+
+**Prompt Template:**
+
+```md
+Analyze the following problem statement:
+---
+{{problem}}
+---
+Identify and list the following formal components:
+1.  **Givens/Data:** All explicit data, variables, and their domains.
+2.  **Hypotheses/Premises:** The assumptions or conditions stated to be true.
+3.  **Goal/Conclusion:** The precise statement to be proven or the quantity/object to be found.
+4.  **Problem Type:** Classify the problem (e.g., Proof, Calculation, Optimization).
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProblemStructuredAnalysis",
+  "description": "Decomposes the problem into formal components.",
+  "type": "object",
+  "properties": {
+    "givens": {
+      "description": "Explicit data, variables, and their domains.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "hypotheses": {
+      "description": "The assumptions or conditions stated to be true.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "goal": {
+      "description": "The precise statement to be proven or the object/value to be found.",
+      "type": "string"
+    },
+    "problem_type": {
+      "description": "Classification of the problem.",
+      "type": "string",
+      "enum": ["Proof", "Calculation", "Optimization", "Existence", "Construction", "Other"]
+    }
+  },
+  "required": ["givens", "hypotheses", "goal", "problem_type"]
+}
+```
+
+### 3.2. Definition Expansion
+
+**Prompt Template:**
+
+```md
+From the structured analysis:
+{{structured_analysis_output}}
+
+List every mathematical term, symbol, and piece of notation. Provide its precise, formal definition *in the context of this problem*. Identify any potential ambiguities (e.g., does 'log' mean ln or log10?).
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DefinitionExpansion",
+  "description": "Unpacks and defines all terminology.",
+  "type": "object",
+  "properties": {
+    "definitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": { "type": "string", "description": "The term, symbol, or notation." },
+          "definition": { "type": "string", "description": "The precise, formal definition in context." },
+          "ambiguities": { "type": "string", "description": "Any potential ambiguities." }
+        },
+        "required": ["term", "definition"]
+      }
+    }
+  },
+  "required": ["definitions"]
+}
+```
+
+### 3.3. Rephrasing and Intuition
+
+**Prompt Template:**
+
+```md
+Given the formal deconstruction of the problem:
+{{structured_analysis_output}}
+{{definition_expansion_output}}
+
+Rephrase the entire problem in simpler, more intuitive terms, as if explaining it to an undergraduate. What is the core question being asked? Provide an analogy if helpful.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProblemIntuition",
+  "description": "Provides an intuitive rephrasing of the problem.",
+  "type": "object",
+  "properties": {
+    "simple_rephrasing": {
+      "description": "The problem explained in simple terms.",
+      "type": "string"
+    },
+    "core_question": {
+      "description": "The central intuitive question.",
+      "type": "string"
+    },
+    "analogy": {
+      "description": "A helpful analogy, if applicable.",
+      "type": "string"
+    }
+  },
+  "required": ["simple_rephrasing", "core_question"]
+}
+```
+
+-----
+
+## 4\. Strategy & Plan Generation
+
+### 4.1. Forward Reasoning
+
+**Prompt Template:**
+
+```md
+Let's begin exploring strategies.
+Start *only* from the problem's hypotheses:
+{{hypotheses_list}}
+
+What are 5-10 immediate, non-trivial deductions or consequences we can derive? For each, state the justification (e.g., "by definition of compactness", "by Mean Value Theorem").
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ForwardReasoning",
+  "description": "Immediate deductions from the hypotheses.",
+  "type": "object",
+  "properties": {
+    "deductions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "deduction": { "type": "string", "description": "The new fact or statement." },
+          "justification": { "type": "string", "description": "The theorem, definition, or axiom used." }
+        },
+        "required": ["deduction", "justification"]
+      }
+    }
+  },
+  "required": ["deductions"]
+}
+```
+
+### 4.2. Backward Reasoning
+
+**Prompt Template:**
+
+```md
+Now, let's work backward.
+Consider the main goal:
+{{goal_statement}}
+
+What are 3-5 statements or conditions that, if proven true, would *directly* imply this goal? For each, explain *how* it implies the goal.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BackwardReasoning",
+  "description": "Statements that would directly imply the conclusion.",
+  "type": "object",
+  "properties": {
+    "penultimate_steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "statement": { "type": "string", "description": "The statement to be proven." },
+          "justification": { "type": "string", "description": "How this statement implies the main goal." }
+        },
+        "required": ["statement", "justification"]
+      }
+    }
+  },
+  "required": ["penultimate_steps"]
+}
+```
+
+### 4.3. Technique Brainstorming
+
+**Prompt Template:**
+
+```md
+Based on the problem deconstruction:
+{{structured_analysis_output}}
+And our initial reasoning:
+{{forward_reasoning_output}}
+{{backward_reasoning_output}}
+And any insights from source study:
+{{source_analysis_summary_if_any}}
+
+List the top 5 most likely mathematical fields or techniques that could be applicable. For each, provide a one-sentence justification.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TechniqueBrainstorm",
+  "description": "Lists relevant mathematical techniques.",
+  "type": "object",
+  "properties": {
+    "techniques": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "technique_name": { "type": "string", "description": "e.g., 'Proof by Induction', 'Diagonalization'." },
+          "justification": { "type": "string", "description": "Why this technique is relevant." }
+        },
+        "required": ["technique_name", "justification"]
+      }
+    }
+  },
+  "required": ["techniques"]
+}
+```
+
+### 4.4. Simplification & Specialization
+
+**Prompt Template:**
+
+```md
+Let's simplify the main problem:
+{{problem}}
+
+Propose three special, concrete cases to analyze. For each, describe the case, provide a quick solution or analysis, and state the potential insight for the general problem.
+(Examples: n=1, a finite set, a linear function, an extreme value).
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProblemSimplification",
+  "description": "Defines and analyzes simpler versions of the problem.",
+  "type": "object",
+  "properties": {
+    "special_cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "case_description": { "type": "string", "description": "The simplified version (e.g., 'n=1 case')." },
+          "analysis": { "type": "string", "description": "A quick analysis or solution for this case." },
+          "potential_insight": { "type": "string", "description": "What this case might teach us for the general problem." }
+        },
+        "required": ["case_description", "analysis", "potential_insight"]
+      }
+    }
+  },
+  "required": ["special_cases"]
+}
+```
+
+### 4.5. Proof Sketch & Auxiliary Questions
+
+**Prompt Template:**
+
+```md
+Synthesize all analysis so far. Generate two distinct proof sketches (Plan A, Plan B) to solve the problem.
+
+For each sketch:
+1.  State the overall strategy.
+2.  List the major steps as auxiliary problems.
+3.  For each step, classify its difficulty as 'easy', 'standard', or 'hard'. A 'hard' problem is a significant lemma that will require a new recursive problem-solving loop.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProofSketch",
+  "description": "Generates high-level proof plans with classified steps.",
+  "type": "object",
+  "properties": {
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "plan_name": { "type": "string", "description": "e.g., 'Plan A: Proof by Contradiction'." },
+          "strategy_summary": { "type": "string" },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "step_goal": { "type": "string", "description": "The sub-goal or lemma to prove for this step." },
+                "difficulty": {
+                  "type": "string",
+                  "enum": ["easy", "standard", "hard"],
+                  "description": "'hard' spawns a recursive loop."
+                }
+              },
+              "required": ["step_goal", "difficulty"]
+            }
+          }
+        },
+        "required": ["plan_name", "strategy_summary", "steps"]
+      }
+    }
+  },
+  "required": ["plans"]
+}
+```
+
+-----
+
+## 5\. Step-by-step Execution
+
+### 5.1. Single step execution
+
+**Prompt Template:**
+
+```md
+We are executing '{{plan_name}}'.
+Our current state is: {{state_summary}}
+The current sub-goal is: '{{step_goal}}' (Difficulty: '{{step_difficulty}}')
+
+Execute this single step. Provide the new fact derived and a brief justification. If this step fails or is blocked, state that clearly.
+(Note: 'hard' problems are handled by a recursive call, so this prompt is for 'easy' or 'standard' steps).
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SingleStepExecution",
+  "description": "Executes one step of a proof plan.",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "failure", "blocked"],
+      "description": "Status of this step execution."
+    },
+    "new_fact": {
+      "description": "The new statement/conclusion from this step (if success).",
+      "type": "string"
+    },
+    "brief_justification": {
+      "description": "A brief explanation of how this was derived (if success).",
+      "type": "string"
+    },
+    "failure_reason": {
+      "type": "string",
+      "description": "If status is 'failure' or 'blocked', explain why."
+    }
+  },
+  "required": ["status"]
+}
+```
+
+### 5.2. Formal Justification
+
+**Prompt Template:**
+
+```md
+You just executed a step, resulting in:
+'{{new_fact}}'
+You claimed this followed from:
+'{{previous_facts_list}}'
+
+Provide a detailed, formal justification for this specific deduction. Cite the specific axioms, definitions, theorems, or lemmas used.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FormalJustification",
+  "description": "Provides a rigorous justification for a single step.",
+  "type": "object",
+  "properties": {
+    "formal_proof_step": {
+      "description": "The detailed, line-by-line justification for this single deduction.",
+      "type": "string"
+    },
+    "citations": {
+      "description": "The specific theorems, axioms, or definitions cited.",
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": ["formal_proof_step", "citations"]
+}
+```
+
+### 5.3. Maintaining State (Summarization)
+
+**Prompt Template:**
+
+```md
+Let's pause and summarize our progress on '{{plan_name}}'.
+Please provide a structured summary of the current proof state, based on all steps executed so far.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StateSummary",
+  "description": "Summarizes the current state of the proof.",
+  "type": "object",
+  "properties": {
+    "original_hypotheses": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "main_goal": {
+      "type": "string"
+    },
+    "established_facts": {
+      "description": "All proven intermediate steps and lemmas.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fact_id": { "type": "string" },
+          "statement": { "type": "string" }
+        },
+        "required": ["fact_id", "statement"]
+      }
+    },
+    "current_sub_goal": {
+      "description": "The immediate next goal from the plan.",
+      "type": "string"
+    }
+  },
+  "required": ["original_hypotheses", "main_goal", "established_facts", "current_sub_goal"]
+}
+```
+
+-----
+
+## 6\. Verification & Critical Analysis
+
+### 6.1. The Skeptic's Hat
+
+**Prompt Template:**
+
+```md
+Act as a skeptical mathematician reviewing our work.
+Critically analyze the logical argument from '{{fact_A}}' to '{{fact_B}}', which was justified by:
+---
+{{formal_justification_text}}
+---
+Are there any gaps? Ambiguities? Unstated assumptions? Actively try to find a flaw or a counterexample to this specific step.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SkepticalReview",
+  "description": "Adversarially checks a proof step for flaws.",
+  "type": "object",
+  "properties": {
+    "is_sound": {
+      "type": "boolean",
+      "description": "True if no flaws were found in this step."
+    },
+    "flaws_found": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "potential_flaw": { "type": "string", "description": "The logical gap or unstated assumption." },
+          "severity": { "type": "string", "enum": ["minor", "major", "fatal"] },
+          "recommendation": { "type": "string", "description": "How to fix this flaw." }
+        },
+        "required": ["potential_flaw", "severity"]
+      }
+    }
+  },
+  "required": ["is_sound", "flaws_found"]
+}
+```
+
+### 6.2. Sanity Checks and Edge Cases
+
+**Prompt Template:**
+
+```md
+We just established the intermediate result:
+'{{intermediate_result}}'
+
+Let's do a sanity check. Test this result against the simple/edge cases we identified earlier:
+{{special_cases_list}}
+
+Does the intermediate result hold for all of them? For each case, state 'Holds' or 'Fails' and explain why.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SanityCheck",
+  "description": "Tests an intermediate result against special cases.",
+  "type": "object",
+  "properties": {
+    "all_passed": {
+      "type": "boolean"
+    },
+    "test_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "case": { "type": "string", "description": "The special case being tested." },
+          "holds": { "type": "boolean", "description": "Does the result hold for this case?" },
+          "explanation": { "type": "string", "description": "Explanation, especially if it fails." }
+        },
+        "required": ["case", "holds"]
+      }
+    }
+  },
+  "required": ["all_passed", "test_results"]
+}
+```
+
+### 6.3. Formalization in Lean and feedback
+
+**Prompt Template:**
+
+```md
+Translate the following mathematical argument into Lean 4 code.
+---
+Definitions/Imports:
+{{lean_definitions_and_imports}}
+---
+Goal Statement:
+{{lean_goal_statement}}
+---
+Proof Argument:
+{{proof_argument_text}}
+---
+Generate the Lean 4 code for this proof.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LeanFormalizationAttempt",
+  "description": "Generates Lean 4 code for a proof argument.",
+  "type": "object",
+  "properties": {
+    "lean_code": {
+      "description": "The generated Lean 4 proof.",
+      "type": "string"
+    }
+  }
+}
+```
+
+*(Note: The feedback loop from Lean would then be a new prompt, as described in our previous discussion.)*
+
+-----
+
+## 7\. Meta-cognition and loop control
+
+### 7.1. Progress Analysis
+
+**Prompt Template:**
+
+```md
+Let's assess our progress on '{{plan_name}}'.
+-   Resources used: {{resource_metric}}
+-   Steps completed: {{steps_completed_count}}
+-   Current state: {{state_summary}}
+-   Known blocks: {{blocks_list}}
+
+On a scale of 1 (dead end) to 10 (highly promising), how viable is this strategy? Justify your score. Is it becoming overly complex or is it on track?
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProgressAnalysis",
+  "description": "Assesses the viability of the current plan.",
+  "type": "object",
+  "properties": {
+    "promising_score": {
+      "description": "Confidence in this plan (1-10).",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "analysis": {
+      "description": "Justification for the score. Is it getting too complex or is it on track?",
+      "type": "string"
+    }
+  },
+  "required": ["promising_score", "analysis"]
+}
+```
+
+### 7.2. Identifying Bottlenecks
+
+**Prompt Template:**
+
+```md
+We are stuck.
+-   Current Plan: '{{plan_name}}'
+-   Failed Step: '{{failed_step}}'
+-   Failure Reason: '{{failure_reason}}'
+
+Analyze this impasse. What is the *single biggest obstacle* preventing progress? Frame this obstacle as a precise, self-contained mathematical question.
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BottleneckIdentification",
+  "description": "Frames the current obstacle as a precise question.",
+  "type": "object",
+  "properties": {
+    "bottleneck_question": {
+      "description": "The core problem that needs to be solved.",
+      "type": "string"
+    },
+    "obstacle_type": {
+      "type": "string",
+      "enum": ["missing_lemma", "flawed_strategy", "complex_calculation", "knowledge_gap", "ambiguous_definition"]
+    }
+  },
+  "required": ["bottleneck_question", "obstacle_type"]
+}
+```
+
+### 7.3. Next Step
+
+**Prompt Template:**
+
+```md
+Given the meta-analysis:
+-   Progress Score: {{progress_score}}
+-   Bottleneck: '{{bottleneck_question}}'
+-   Alternative plans available: {{alternative_plans_list}}
+
+What is the best executive decision for the next step?
+-   **Refine plan:** Continue '{{plan_name}}' but modify it to address the bottleneck.
+-   **Strategy Pivot:** Abandon '{{plan_name}}' and switch to a different plan.
+-   **Change goal:** Modify the main goal (e.g., prove a weaker result).
+```
+
+**JSON Schema:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NextStepDecision",
+  "description": "Decides the next action for the loop controller.",
+  "type": "object",
+  "properties": {
+    "decision": {
+      "type": "string",
+      "enum": ["refine_plan", "pivot_to_new_plan", "change_main_goal", "abandon"]
+    },
+    "justification": {
+      "description": "The reasoning for this decision.",
+      "type": "string"
+    },
+    "selected_plan_name": {
+      "description": "If pivoting, the name of the new plan to try.",
+      "type": "string"
+    },
+    "new_goal": {
+      "description": "If changing goal, the new goal statement.",
+      "type": "string"
+    },
+    "refinement_details": {
+      "description": "If refining, the specific changes to make to the plan.",
+      "type": "string"
+    }
+  },
+  "required": ["decision", "justification"]
+}
+```
+
 ## Phase 0: Source Material Analysis
 
 ### Task: Deep Study of a Reference Proof or Paper
