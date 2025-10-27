@@ -473,3 +473,11 @@ info: Obtained type: ∀ (μ : MeasureTheory.Measure ℝ) (x : ℝ), 0 ≤ ↑(P
 #guard_msgs in
 #elab_thm4_compare "(μ : MeasureTheory.Measure ℝ) (x : ℝ) :
 0 ≤ (ProbabilityTheory.cdf μ) x := by sorry" equals ∀ (μ : MeasureTheory.Measure ℝ) (x : ℝ), 0 ≤ (ProbabilityTheory.cdf μ).toFun x
+
+/-- info: Obtained type: ∀ {p : ℕ}, Prime p ↔ 2 ≤ p ∧ ∀ (m : ℕ), m ∣ p → m = 1 ∨ m = p -/
+#guard_msgs in
+#elab_thm4 "theorem  {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p"
+
+/-- info: Obtained type: ∀ {p : ℕ}, Nat.Prime p ↔ 2 ≤ p ∧ ∀ (m : ℕ), m ∣ p → m = 1 ∨ m = p -/
+#guard_msgs in
+#elab_thm4 "theorem  {p : ℕ} : Nat.Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p"

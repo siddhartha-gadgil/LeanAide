@@ -1,7 +1,9 @@
 import LeanAide.SimpleFrontend
 import Mathlib
 
-open Nat LeanAide Lean Meta Elab
+open LeanAide Lean Meta Elab
+
+open scoped Nat
 
 universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
