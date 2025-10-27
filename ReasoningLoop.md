@@ -4,6 +4,11 @@
 
 A task has a prompt template and generally an output schema. These are grouped by the phases.
 
+* **Problem Deconstruction & Formalization**
+  * Structured Analysis
+  * Definition Expansion
+  * Rephrasing and Intuition
+
 * **Problem Inspection**
   * Deciding whether to just prove.
   * Deciding whether to first study sources
@@ -16,11 +21,6 @@ A task has a prompt template and generally an output schema. These are grouped b
     * Hypothesis Stress-Testing: The Art of Breaking Things
     * Generalization & Boundary Probing: Pushing the Limits
     * Core Idea Extraction: Finding the "Aha!" Moment
-
-* **Problem Deconstruction & Formalization**
-  * Structured Analysis
-  * Definition Expansion
-  * Rephrasing and Intuition
 
 * **Strategy & Plan Generation**
   * Forward reasoning
@@ -129,23 +129,27 @@ This phase involves a loop. First, a step to find the theorems, then a loop over
 **Prompt Template:**
 
 ```md
-You have been given the following source material to study:
+You have been given the following source material to study in relation to our main goal: '{{goal}}'.
 ---
-Source Summary: {{source_material_summary}}
-Full Text Access: [Path or context to full text]
+Source Full Text:
+{{source_material_full_text}}
 ---
-The goal is to solve: {{main_problem_goal}}
+Identify the key theorems, proofs, or sections in this material that are most relevant to our goal.
 
-Identify the key theorems, proofs, or sections in this material that are most relevant to our goal. For each, provide its name and location.
+For each relevant item, provide:
+1.  Its name (e.g., "Theorem 4.1").
+2.  Its location (e.g., "Page 5, Section 4").
+3.  A score (1-10) for its relevance.
+4.  The **full, extracted text snippet** of its proof.
 ```
 
-**JSON Schema:**
+**JSON Schema (Revised):**
 
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "TheoremLocator",
-  "description": "Identifies and lists key theorems from a source.",
+  "title": "TheoremExtractor",
+  "description": "Identifies, lists, and extracts key theorems and their proofs.",
   "type": "object",
   "properties": {
     "theorems_found": {
@@ -162,11 +166,19 @@ Identify the key theorems, proofs, or sections in this material that are most re
             "minimum": 1,
             "maximum": 10
           },
-          "relevance_justification": {
-            "type": "string"
+          "relevance_justification": { "type": "string" },
+          "proof_snippet": {
+            "type": "string",
+            "description": "The full, extracted text of the proof."
           }
         },
-        "required": ["name", "location", "relevance_score", "relevance_justification"]
+        "required": [
+          "name",
+          "location",
+          "relevance_score",
+          "relevance_justification",
+          "proof_snippet"
+        ]
       }
     }
   },
@@ -174,14 +186,16 @@ Identify the key theorems, proofs, or sections in this material that are most re
 }
 ```
 
+-----
+
 ### 2.2. Structural Mapping (Loop Step)
 
 **Prompt Template:**
 
 ```md
-Analyze the proof of '{{theorem_name}}' found at '{{location}}' in the provided source.
+Analyze the following proof of '{{theorem_name}}' (from '{{location}}'):
 ---
-Proof Text: {{proof_text_snippet}}
+{{proof_snippet}}
 ---
 Deconstruct the argument into its key logical steps. For each step, create a dependency list specifying which of the theorem's original hypotheses and which previously proven steps are used.
 ```
@@ -228,7 +242,7 @@ Deconstruct the argument into its key logical steps. For each step, create a dep
 
 ```md
 Let's stress-test the hypotheses for '{{theorem_name}}'.
-Original hypotheses: {{hypotheses_list}}
+Original hypotheses: {{original_hypotheses}}
 Proof structure: {{proof_structural_map}}
 
 For each hypothesis, analyze its necessity:
@@ -270,7 +284,7 @@ For each hypothesis, analyze its necessity:
 
 ```md
 Analyze the boundaries of '{{theorem_name}}'.
-Original hypotheses: {{hypotheses_list}}
+Original hypotheses: {{original_hypotheses}}
 
 For each hypothesis, propose a potential weakening (e.g., 'continuous' -> 'bounded', 'n=3' -> 'n'). Then, analyze if the proof's logic (from {{proof_structural_map}}) could be adapted or if it breaks.
 ```
@@ -478,7 +492,7 @@ Rephrase the entire problem in simpler, more intuitive terms, as if explaining i
 ```md
 Let's begin exploring strategies.
 Start *only* from the problem's hypotheses:
-{{hypotheses_list}}
+{{hypotheses}}
 
 What are 5-10 immediate, non-trivial deductions or consequences we can derive? For each, state the justification (e.g., "by definition of compactness", "by Mean Value Theorem").
 ```
@@ -515,7 +529,7 @@ What are 5-10 immediate, non-trivial deductions or consequences we can derive? F
 ```md
 Now, let's work backward.
 Consider the main goal:
-{{goal_statement}}
+{{goal}}
 
 What are 3-5 statements or conditions that, if proven true, would *directly* imply this goal? For each, explain *how* it implies the goal.
 ```
@@ -733,7 +747,7 @@ Execute this single step. Provide the new fact derived and a brief justification
 You just executed a step, resulting in:
 '{{new_fact}}'
 You claimed this followed from:
-'{{previous_facts_list}}'
+'{{established_facts}}'
 
 Provide a detailed, formal justification for this specific deduction. Cite the specific axioms, definitions, theorems, or lemmas used.
 ```
@@ -817,9 +831,9 @@ Please provide a structured summary of the current proof state, based on all ste
 
 ```md
 Act as a skeptical mathematician reviewing our work.
-Critically analyze the logical argument from '{{fact_A}}' to '{{fact_B}}', which was justified by:
+Critically analyze the logical argument from '{{previous_facts}}' to '{{new_facts}}', which was justified by:
 ---
-{{formal_justification_text}}
+{{formal_proof_step}}
 ---
 Are there any gaps? Ambiguities? Unstated assumptions? Actively try to find a flaw or a counterexample to this specific step.
 ```
@@ -863,7 +877,7 @@ We just established the intermediate result:
 '{{intermediate_result}}'
 
 Let's do a sanity check. Test this result against the simple/edge cases we identified earlier:
-{{special_cases_list}}
+{{special_cases}}
 
 Does the intermediate result hold for all of them? For each case, state 'Holds' or 'Fails' and explain why.
 ```
