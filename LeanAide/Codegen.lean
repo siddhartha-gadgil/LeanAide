@@ -183,14 +183,14 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   IO.eprintln "Tring assumptions"
   try
     goal.assumption
-    return (← appendTactics accum (← `(tacticSeq| assumption)), none)
+    return (← appendTacticSeqSeq accum (← `(tacticSeq| assumption)), none)
   catch _ =>
   IO.eprintln "Trying exact tactics or automation"
   match ← getSimpOrExactTactics? (← goal.getType) with
   | some code => do
     IO.eprintln s!"codegen: exact tactics found for goal: {← ppExpr <| ← goal.getType}"
     -- IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-    return (← appendTactics accum code, none)
+    return (← appendTacticSeqSeq accum code, none)
   | none => do
   -- IO.eprintln "Trying automation tactics"
   -- match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
@@ -228,7 +228,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           IO.eprintln s!"codegen: goal still open after tactics, but tactics end with 'done' so no further tactics generated."
           IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
           IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-          return (← appendTactics accum code, none)
+          return (← appendTacticSeqSeq accum code, none)
         else
             -- continue with the next source
         let goal? ← runForSingleGoal goal code
@@ -237,9 +237,9 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           IO.eprintln s!"codegen: goal closed by tactics"
           IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
           IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-          return (← appendTactics accum code, none)
+          return (← appendTacticSeqSeq accum code, none)
         | some newGoal => do
-          let newAccum ← appendTactics accum code
+          let newAccum ← appendTacticSeqSeq accum code
           getCodeTacticsAux translator newGoal sources newAccum
 
 /--
@@ -249,11 +249,11 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) := goal.withContext do
   IO.eprintln "Trying automation tactics"
-  match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| first | (simp? ; done) | hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
+  match ← runTacticsAndFindTryThis? (← goal.getType) [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
   | some autoTacs => do
     let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
     let autoTacs :=
-      #[← `(tactic| trace $traceText)] ++ autoTacs
+      #[← `(tactic| trace $traceText)] ++ (getTactics autoTacs)
     let autoTac ← `(tacticSeq| $autoTacs*)
     IO.eprintln s!"codegen: automation closes the goal"
     return autoTac
@@ -274,11 +274,11 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     for decl in lctx do
       IO.eprintln s!"{decl.userName} : {← ppExpr <| decl.type}"
     let autoTacs ←
-      runTacticsAndGetTryThisI (← goal.getType) #[← `(tactic| first | (simp? ; done) | hammer {aesopPremises := 5, autoPremises := 0})]
+      runTacticsAndFindTryThisI (← goal.getType) [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})]
     IO.eprintln s!"codegen: auto tactics:"
     for tac in autoTacs do
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
-    appendTactics tacs (← `(tacticSeq| $autoTacs*))
+    appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
 
 
 /--
@@ -312,7 +312,7 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
     let empty : Array <| TSyntax `command := #[]
     `(commandSeq| $empty*)
   else
-    let res ← flattenCommands accum
+    let res ← flattenCommandSeq accum
     Translate.addCommands res
     return res
 

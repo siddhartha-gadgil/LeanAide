@@ -38,7 +38,11 @@ def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
 
-def appendTactics (s t : TSyntax ``tacticSeq) :
+def mkTacticSeq (ts : Array (TSyntax `tactic)) :
+  MetaM (TSyntax ``tacticSeq) := do
+  `(tacticSeq| $[$ts]*)
+
+def appendTacticSeqSeq (s t : TSyntax ``tacticSeq) :
   MetaM (TSyntax ``tacticSeq) := do
   let ts := getTactics t
   match s with
@@ -50,7 +54,7 @@ def appendTactics (s t : TSyntax ``tacticSeq) :
       `(tacticSeq| $[$ts']*)
   | _ => pure t
 
-def appendTactics' (ts : Array (TSyntax `tactic))
+def appendTacticArrSeq (ts : Array (TSyntax `tactic))
     (s : TSyntax ``tacticSeq) :
   MetaM (TSyntax ``tacticSeq) := do
   match s with
@@ -62,7 +66,7 @@ def appendTactics' (ts : Array (TSyntax `tactic))
       `(tacticSeq| $[$ts']*)
   | _ => `(tacticSeq| $[$ts]*)
 
-def consTactics (h: TSyntax `tactic)(s : TSyntax ``tacticSeq):
+def consTacticSeq (h: TSyntax `tactic)(s : TSyntax ``tacticSeq):
   MetaM (TSyntax ``tacticSeq) := do
   match s with
   | `(tacticSeq| { $[$t]* }) =>
@@ -83,18 +87,18 @@ def endsWithDone (t: TSyntax ``tacticSeq) : MetaM Bool := do
 
 syntax commandSeq := sepBy1IndentSemicolon(command)
 
-def commands : TSyntax `commandSeq → Array (TSyntax `command)
+def getCommands : TSyntax `commandSeq → Array (TSyntax `command)
   | `(commandSeq| $cs*) => cs
   | _ => #[]
 
-def toCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
+def mkCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
   | cs => `(commandSeq| $cs*)
 
-def flattenCommands (cs: Array <| TSyntax `commandSeq) :
+def flattenCommandSeq (cs: Array <| TSyntax `commandSeq) :
   CoreM (TSyntax `commandSeq) :=
-  toCommandSeq (cs.map commands |>.flatten)
+  mkCommandSeq (cs.map getCommands |>.flatten)
 
-def flattenTactics (tacs: Array <| TSyntax ``tacticSeq) :
+def flattenTacticSeq (tacs: Array <| TSyntax ``tacticSeq) :
   CoreM (TSyntax ``tacticSeq) := do
   let tacs := tacs.map getTactics |>.flatten
   `(tacticSeq| $tacs*)
@@ -135,7 +139,7 @@ def getNamesFromCode (s: String) : MetaM (Array Name) := do
       | `(commandSeqWrap| $cs:commandSeq) => cs
       | _ => panic! "Expected commandSeqWrap syntax"
     let stx' : TSyntax `commandSeq := ⟨ stx'' ⟩
-    let cmds := commands stx'
+    let cmds := getCommands stx'
     logInfo m!"Parsed commandSeq: {stx}"
     logInfo m!"Commands: {cmds}"
     return cmds.filterMap getCommandName
@@ -143,7 +147,7 @@ def getNamesFromCode (s: String) : MetaM (Array Name) := do
     logError m!"Error parsing commandSeq: {err}"
     return #[]
 
-def parseCommands (s: String) : CoreM (TSyntax ``commandSeq) := do
+def parseCommandSeq (s: String) : CoreM (TSyntax ``commandSeq) := do
   let env ← getEnv
   let res := Parser.runParserCategory env `commandSeqWrap s
   match res with
@@ -154,15 +158,15 @@ def parseCommands (s: String) : CoreM (TSyntax ``commandSeq) := do
   | .error err =>
     throwError m!"Error parsing commandSeq: {err}"
 
-def printCommands (cs: TSyntax `commandSeq) : CoreM String := do
-  let cmds := commands cs
+def showCommandSeq (cs: TSyntax `commandSeq) : CoreM String := do
+  let cmds := getCommands cs
   let fmtCmds ← cmds.mapM fun c => PrettyPrinter.ppCommand c
   return fmtCmds.foldl (fun acc f => acc ++ f.pretty ++ "\n\n") ""
 
 declare_syntax_cat tacticSeqWrap
 syntax tacticSeq : tacticSeqWrap
 
-def parseTactics (s: String) : CoreM <| TSyntax ``tacticSeq := do
+def parseTacticSeq (s: String) : CoreM <| TSyntax ``tacticSeq := do
   let env ← getEnv
   let res := Parser.runParserCategory env `tacticSeqWrap s
   match res with

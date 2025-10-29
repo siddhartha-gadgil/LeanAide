@@ -105,3 +105,5 @@ def writeToErr (s : String) : IO Unit := do
 #eval getHomeDir
 
 #eval getEnv "OPENAI_API_KEY"
+
+#check φ

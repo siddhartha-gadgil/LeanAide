@@ -319,7 +319,7 @@ def codeFromJsonDecode (response: Json) : TermElabM (TSyntax ``commandSeq) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok code := response.getObjValAs? String "document_code" | throwError "response has no 'document_code' field"
-    parseCommands code
+    parseCommandSeq code
   | .ok "error" =>
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while getting code from JSON: {error}"
@@ -340,7 +340,7 @@ structure CodeElabResult where
   sorriesAfterPurge : List (Name × Expr)
 -/
 def elabCodeEncode (stx: TSyntax ``commandSeq) : MetaM Json := do
-  let code ← printCommands stx
+  let code ← showCommandSeq stx
   return Json.mkObj [("task", "elaborate"), ("document_code", code)]
 
 def elabCodeDecode (response: Json) : TermElabM CodeElabResult := do
@@ -610,7 +610,7 @@ open Tactic in
 instance termCommands {α} [r : TermCommands α] : ReplaceCommand α where
   replace stx x := do
     let cmds ← r.commandArray x
-    let s ←  printCommands <| ←  `(commandSeq| $cmds*)
+    let s ←  showCommandSeq <| ←  `(commandSeq| $cmds*)
     TryThis.addSuggestion stx s
 
 class RelativeDefinitionCommand (α : Type) where

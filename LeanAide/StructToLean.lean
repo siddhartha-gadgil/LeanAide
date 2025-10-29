@@ -279,7 +279,7 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   | _ => `(tactic| sorry)
 
 def commandSeqToTacticSeq (cmdSeq: TSyntax ``commandSeq) : TermElabM <| TSyntax ``tacticSeq := do
-  let cmds := commands cmdSeq
+  let cmds := getCommands cmdSeq
   let tactics ← cmds.mapM commandToTactic
   `(tacticSeq| $tactics:tactic*)
 
