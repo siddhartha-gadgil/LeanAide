@@ -27,6 +27,9 @@ def Translator.translateToPropStrictAux
     withoutErrToSorry do
       let prop ← elabType stx
       let prop ← instantiateMVars prop
+      Term.synthesizeSyntheticMVarsNoPostponing
+      if prop.hasSorry || (← prop.hasUnassignedExprMVar) then
+        IO.eprintln s!"codegen: failed to infer type {prop} has sorry or mvar when translating assertion '{claim}'"
       if prop.hasSorry || (← prop.hasUnassignedExprMVar) then
         throwError s!"codegen: failed to infer type {prop} has sorry or mvar when translating assertion '{claim}'"
       return prop
