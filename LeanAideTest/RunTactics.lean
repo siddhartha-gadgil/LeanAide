@@ -39,3 +39,7 @@ example : ∀ (n m : ℕ),
 /-- info: #findTryThis? found no applicable tactics -/
 #guard_msgs in
 #findTryThis? ∀ (n m : Nat), n + m = m + n + 1 using simp?, grind?, exact?
+
+universe u_11 u_12
+#findTryThis? ∀ {G : Type u_11} {H : Type u_12} [Group G] [Group H] (ϕ : G ≃* H),
+        Function.Bijective (⇑ϕ.toMonoidHom : G → H) using simp?; exact?

@@ -161,8 +161,39 @@ def egIsomorphicToAbelian' := json% {
 }
 
 -- set_option maxHeartbeats 1000000 in
--- #codegen egIsomorphicToAbelian'
+  theorem assert_544864271016651174 :
+      ∀ {G : Type u_11} {H : Type u_12} [inst : Group G] [inst_1 : Group H] (ϕ : G ≃* H),
+        Function.Bijective (⇑ϕ.toMonoidHom : G → H) :=
+    by
+    trace
+      "Automation Tactics   simp?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_11} {H : Type u_12} [inst : Group G] [inst_1 : Group H] (ϕ : G ≃* H), Function.Bijective ⇑ϕ.toMonoidHom"
+    intro G H inst₁ inst₂ ϕ
+    apply?
+    -- repeat (sorry)
+    trace
+      "Finished Automation Tactics   simp?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_11} {H : Type u_12} [inst : Group G] [inst_1 : Group H] (ϕ : G ≃* H), Function.Bijective ⇑ϕ.toMonoidHom"
+  theorem assert_8296791892335815794 :
+      ∀ {G : Type u_11} {H : Type u_12} [inst : Group G] [inst_1 : Group H] (ϕ : G →* H)
+        (g1 g2 : G), (ϕ : G → H) g1 * (ϕ : G → H) g2 = (ϕ : G → H) (g1 * g2) :=
+    by
+    trace
+      "Automation Tactics   simp?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_11} {H : Type u_12} [inst : Group G] [inst_1 : Group H] (ϕ : G →* H) (g1 g2 : G),\n  ϕ g1 * ϕ g2 = ϕ (g1 * g2)"
+    simp only [map_mul, implies_true]
+    trace
+      "Finished Automation Tactics   simp?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_11} {H : Type u_12} [inst : Group G] [inst_1 : Group H] (ϕ : G →* H) (g1 g2 : G),\n  ϕ g1 * ϕ g2 = ϕ (g1 * g2)"
+  #check "Obtained definition"
+  def phiHomDefinition {G H : Type u} [Group G] [Group H] (ϕ : G ≃* H) : Prop :=
+    let ϕ_hom : G →* H := ϕ.toMonoidHom;
+    let ϕ_inv := ϕ.symm;
+    ∀ h : H, ϕ_hom (ϕ_inv h) = h ∧ ∀ g : G, ϕ_inv (ϕ_hom g) = g
+  theorem abelian_group.mul_comm_of_codomain_comm :
+      ∀ {G H : Type} [inst : Group G] [inst_1 : CommGroup H] (ϕ : G →* H) (x y : H),
+        x * y = y * x :=
+    by
+    intro G H inst_14157295161945824867 inst_11808676542318678544 ϕ x y
+    exact CommGroup.mul_comm x y
 
+namespace ManualFix
 /-!
 Code from server:
 * First proof completed using `hammer` tactic.

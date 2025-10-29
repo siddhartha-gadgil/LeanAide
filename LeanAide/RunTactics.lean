@@ -233,7 +233,10 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
           return none
   let trys ← msgs'.filterMapM
     fun msg => do getTacticsFromMessageData? msg.text
-  return trys.getLast?
+  if trys.isEmpty then
+    return none
+  else
+    return some <| trys.foldl (fun acc tacs => acc ++ tacs) #[]
 
 def runTacticsAndFindTryThis? (goal : Expr) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := true): TermElabM <| Option (TSyntax ``tacticSeq) := do
   tacticSeqs.findSomeM?
