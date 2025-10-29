@@ -235,7 +235,7 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
     fun msg => do getTacticsFromMessageData? msg.text
   return trys.getLast?
 
-def runTacticsAndFindTryThis? (goal : Expr) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := false): TermElabM <| Option (TSyntax ``tacticSeq) := do
+def runTacticsAndFindTryThis? (goal : Expr) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := true): TermElabM <| Option (TSyntax ``tacticSeq) := do
   tacticSeqs.findSomeM?
     fun tacticSeq => do
       let tacs := getTactics tacticSeq
