@@ -120,7 +120,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 content_length = int(self.headers['Content-Length'])
                 post_data = self.rfile.read(content_length).decode('utf-8')
                 data = json.loads(post_data)
-
+                print(f"Received similarity search request: {data}", file=sys.stderr)
                 if not all(k in data for k in ['num', 'query', 'descField']):
                     self.send_response(400)
                     self.send_header('Content-type', 'application/json')

@@ -691,7 +691,7 @@ where
             translator.translateToPropStrict claim
           let typeStx ← delabDetailed type
           let proof ←
-            runTacticsAndGetTryThisI type #[(← `(tactic| first | (simp? ; done) | hammer {aesopPremises := 5, autoPremises := 0}))]
+            runTacticsAndFindTryThisI type [← `(tacticSeq| simp?), ← `(tacticSeq| hammer  {aesopPremises := 0, autoPremises := 0} )]
           let proofStx ←
             `(tacticSeq| $proof*)
           let thm ← withPreludes claim
@@ -1244,8 +1244,8 @@ where typeStx (js: Json) :
   let type ← translator.translateToPropStrict claim
   let resultsUsed ←
     getResultsUsed translator.toTranslator js
-  let tac ← `(tactic| first | (simp? ; done) | hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )
-  let tacs ← runTacticsAndGetTryThisI (type) #[tac]
+  let tacs := [← `(tacticSeq| simp?), ← `(tacticSeq| hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )]
+  let tacs ← runTacticsAndFindTryThisI (type) tacs
   addPrelude <| "Assume: " ++ claim
   return (← delabDetailed type, ← `(tacticSeq| $tacs*))
 
@@ -1833,8 +1833,8 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
   let stx ← delabDetailed type
   let resultsUsed ←
     getResultsUsed translator.toTranslator js
-  let tac ← `(tactic| first | (simp? ; done) | hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )
-  let pf ← runTacticsAndGetTryThisI type #[tac]
+  let tacs := [← `(tacticSeq| simp?), ← `(tacticSeq| hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )]
+  let pf ← runTacticsAndFindTryThisI type tacs
   `(tacticSeq| have : $stx := by $pf*)
 | none, ``tacticSeq, _ => do return none
 | _, kind, _ => throwError
@@ -1846,8 +1846,8 @@ Generate code for a `general_induction_proof`. This is used to perform a proof b
 def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json × (Array String))) (inductionNames: Array Name)  : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
     let inductionIds := inductionNames.map Lean.mkIdent
-    let pf ← runTacticsAndGetTryThisI
-      (← goal.getType) #[← `(tactic| first | (simp? ; done) | hammer [$inductionIds,*] {aesopPremises := 0, autoPremises := 0} )]
+    let pf ← runTacticsAndFindTryThisI
+      (← goal.getType) [← `(tacticSeq| simp?), ← `(tacticSeq| hammer [ $inductionIds,* ] {aesopPremises := 0, autoPremises := 0} )]
     `(tacticSeq| $pf*)
   | (conditionType, trueCaseProof, inductionHyps) :: tail => goal.withContext do
     IO.eprintln s!"number of cases (remaining): {tail.length + 1}"
