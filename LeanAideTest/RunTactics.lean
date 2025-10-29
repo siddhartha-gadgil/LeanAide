@@ -41,5 +41,11 @@ example : ∀ (n m : ℕ),
 #findTryThis? ∀ (n m : Nat), n + m = m + n + 1 using simp?, grind?, exact?
 
 universe u_11 u_12
+/--
+info: #findTryThis? found tactics: ⏎
+  simp only [MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe]
+  exact fun {G} {H} [Group G] [Group H] ϕ => MulEquiv.bijective ϕ
+-/
+#guard_msgs in
 #findTryThis? ∀ {G : Type u_11} {H : Type u_12} [Group G] [Group H] (ϕ : G ≃* H),
         Function.Bijective (⇑ϕ.toMonoidHom : G → H) using simp?; exact?
