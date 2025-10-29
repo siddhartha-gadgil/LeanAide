@@ -38,6 +38,10 @@ def getTactics (s : TSyntax ``tacticSeq) : Array (TSyntax `tactic) :=
   | `(tacticSeq| $[$t]*) => t
   | _ => #[]
 
+def mkTacticSeq (ts : Array (TSyntax `tactic)) :
+  MetaM (TSyntax ``tacticSeq) := do
+  `(tacticSeq| $[$ts]*)
+
 def appendTacticSeqSeq (s t : TSyntax ``tacticSeq) :
   MetaM (TSyntax ``tacticSeq) := do
   let ts := getTactics t

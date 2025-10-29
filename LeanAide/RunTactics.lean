@@ -235,6 +235,13 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
     fun msg => do getTacticsFromMessageData? msg.text
   return trys.getLast?
 
+def runTacticsAndFindTryThis? (goal : Expr) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := false): TermElabM <| Option (TSyntax ``tacticSeq) := do
+  tacticSeqs.findSomeM?
+    fun tacticSeq => do
+      let tacs := getTactics tacticSeq
+      let tacs? ← runTacticsAndGetTryThis? goal tacs strict
+      tacs?.mapM fun tacs => mkTacticSeq tacs
+
 def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
   let mvar ← mkFreshExprMVar goal
@@ -335,6 +342,19 @@ def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): Term
   let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
   let tail := Syntax.mkStrLit tailText
   return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
+
+def runTacticsAndFindTryThisI (goal : Expr) (tacticSeqs : List (TSyntax ``tacticSeq)): TermElabM <|  (Array Syntax.Tactic) := do
+  let tacs? ← runTacticsAndFindTryThis? goal tacticSeqs
+  let autoTacs ← ppCategory ``tacticSeq <|
+    ← flattenTacticSeq tacticSeqs.toArray
+  let headerText := s!"Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
+  let header := Syntax.mkStrLit headerText
+  let tacs? := tacs?.map getTactics
+  let res :=  tacs?.getD #[(←  `(tactic| repeat (sorry)))]
+  let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
+  let tail := Syntax.mkStrLit tailText
+  return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
+
 
 partial def extractInstanceIntros (goal: MVarId) (accum: List Name := []) :
     MetaM <| MVarId × List Name := goal.withContext do
