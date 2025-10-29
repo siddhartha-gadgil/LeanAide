@@ -449,7 +449,7 @@ def leanFromStructuredJsonTask (data: Json) (translator : Translator) : Translat
         let some codeStx ←  Codegen.getCode qp none ``commandSeq js |
           throwError "Did not obtain code"
         let declarations :=
-          CodeGenerator.namesFromCommands <| commands codeStx
+          CodeGenerator.namesFromCommands <| getCommands codeStx
         let code ←
           PrettyPrinter.ppCategory ``commandSeq codeStx
         return Json.mkObj
@@ -630,7 +630,7 @@ instance kernel : Kernel := {
       throwError "Did not obtain code"
     return codeStx
   elabCode := fun codeStx => do
-    let code ← printCommands codeStx
+    let code ← showCommandSeq codeStx
     let (exprs, logs) ←  elabFrontDefsNewExprM code
     let names := exprs.map (fun (n, _) => n)
     let logs ←  logs.toList.mapM (fun lg => lg.data.format)

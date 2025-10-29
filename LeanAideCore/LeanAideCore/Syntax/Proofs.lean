@@ -143,7 +143,7 @@ instance : DefinitionCommand TheoremText where
     return (← mkQuoteCmd t.text name, name)
 
 instance : TermCommands ProofCode where
-  commandArray pc := return commands pc.code
+  commandArray pc := return getCommands pc.code
 
 instance [inst: TermCommands α] : TermCommands (Discussion α) where
   commandArray dc := do
@@ -233,7 +233,7 @@ def definitionCommands (disc: Discussion α)  (chatName : Syntax.Term) (prevLeng
       return (prevcmds ++ cmds, mkIdent name)
   | .proofCode init d =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
-      let cmds := commands d.code
+      let cmds := getCommands d.code
       return (prevcmds ++ cmds.toList, prevname)
   | .rewrittenDocument init d _ =>
       let (prevcmds, prevname) ← definitionCommands init chatName prevLength
@@ -282,7 +282,7 @@ syntax (name:= proofGenCmd) "#prove" ppSpace term (">>" ppSpace term)? : command
       let cmdsMap ← cmdsMapM
       let cmds ← cmdsMap t
       let cmds := cmds.toArray
-      let s ← printCommands (← `(commandSeq | $cmds*))
+      let s ← showCommandSeq (← `(commandSeq | $cmds*))
       TryThis.addSuggestion stx s (header := "Generated commands:")
     else
       let SideEffect' ← mkAppM ``TermElabM #[mkConst ``Unit]
@@ -323,7 +323,7 @@ syntax (name:= askCommand) (docComment)? "#ask" (ppSpace str)? ppSpace "<<" ppSp
     let cmdsMap ← cmdsMapM
     let cmds ← cmdsMap t
     let cmds := cmds.toArray
-    let s ← printCommands (← `(commandSeq | $cmds*))
+    let s ← showCommandSeq (← `(commandSeq | $cmds*))
     TryThis.addSuggestion stx s (header := "Generated commands:")
 
 @[command_elab llmQueryCommand] def llmQueryCommandImpl : CommandElab :=
@@ -361,7 +361,7 @@ syntax (name:= askCommand) (docComment)? "#ask" (ppSpace str)? ppSpace "<<" ppSp
         let stxQ ← mkQueryCmd s name
         let name := s!"response_{hash res}".toName
         let stxR ←  mkResponseCmd res name
-        printCommands <| ←  toCommandSeq #[stxQ, stxR]
+        showCommandSeq <| ← mkCommandSeq #[stxQ, stxR]
       TryThis.addSuggestions stx <| stxs.toArray
 
 

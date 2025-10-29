@@ -212,6 +212,8 @@ def getTacticsFromMessageData? (s: String) :
     -- IO.eprintln s!"Message: {s} does not start with Try this:"
     return none
 
+-- #check List.findSome?
+
 def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
   let mvar ← mkFreshExprMVar goal

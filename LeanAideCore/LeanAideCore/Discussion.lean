@@ -432,7 +432,7 @@ def historyM {α : Type } (d : Discussion α ) :
   | proofCode init c =>
     let (h, sp?) ← init.historyM
     let q := "Write the proof in Lean code."
-    let response ← printCommands c.code
+    let response ← showCommandSeq c.code
     return addSyntheticPair h sp? q response
   | rewrittenDocument init _ _ => init.historyM
   | edit _ d => d.historyM

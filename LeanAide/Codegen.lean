@@ -183,14 +183,14 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   IO.eprintln "Tring assumptions"
   try
     goal.assumption
-    return (← appendTactics accum (← `(tacticSeq| assumption)), none)
+    return (← appendTacticSeqSeq accum (← `(tacticSeq| assumption)), none)
   catch _ =>
   IO.eprintln "Trying exact tactics or automation"
   match ← getSimpOrExactTactics? (← goal.getType) with
   | some code => do
     IO.eprintln s!"codegen: exact tactics found for goal: {← ppExpr <| ← goal.getType}"
     -- IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-    return (← appendTactics accum code, none)
+    return (← appendTacticSeqSeq accum code, none)
   | none => do
   -- IO.eprintln "Trying automation tactics"
   -- match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
@@ -228,7 +228,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           IO.eprintln s!"codegen: goal still open after tactics, but tactics end with 'done' so no further tactics generated."
           IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
           IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-          return (← appendTactics accum code, none)
+          return (← appendTacticSeqSeq accum code, none)
         else
             -- continue with the next source
         let goal? ← runForSingleGoal goal code
@@ -237,9 +237,9 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           IO.eprintln s!"codegen: goal closed by tactics"
           IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
           IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-          return (← appendTactics accum code, none)
+          return (← appendTacticSeqSeq accum code, none)
         | some newGoal => do
-          let newAccum ← appendTactics accum code
+          let newAccum ← appendTacticSeqSeq accum code
           getCodeTacticsAux translator newGoal sources newAccum
 
 /--
@@ -278,7 +278,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     IO.eprintln s!"codegen: auto tactics:"
     for tac in autoTacs do
       IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
-    appendTactics tacs (← `(tacticSeq| $autoTacs*))
+    appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
 
 
 /--
@@ -312,7 +312,7 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
     let empty : Array <| TSyntax `command := #[]
     `(commandSeq| $empty*)
   else
-    let res ← flattenCommands accum
+    let res ← flattenCommandSeq accum
     Translate.addCommands res
     return res
 

@@ -254,7 +254,7 @@ def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
 def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
-  let cmds := commands cmds
+  let cmds := getCommands cmds
   modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
 
 def addDefn (dfn: DefData) : TranslateM Unit := do
@@ -377,7 +377,7 @@ def withDeferredTheorems (x?: TranslateM (Option (TSyntax ``commandSeq))) : Tran
       runCommand cmd
     let res? ← x? -- side-effect: the commands are run
     res?.mapM fun res => do
-      let resCmds := commands res
+      let resCmds := getCommands res
       runCommand (← `(command| end))
       let fullCmds := cmds ++ resCmds.push (← `(command| end))
       `(commandSeq| $fullCmds*)

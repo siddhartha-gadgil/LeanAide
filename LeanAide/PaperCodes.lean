@@ -219,13 +219,13 @@ def leanCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKin
   let .ok code := js.getStr? | throwError "'lean' must have 'lean' field"
   let code := if code.startsWith "\"" then code.drop 1 else code
   let code := if code.endsWith "\"" then code.dropRight 1 else code
-  parseTactics code
+  parseTacticSeq code
 | _, ``commandSeq, js => do
   let .ok code := js.getStr? | throwError "'lean' must have 'lean' field"
   let code := if code.startsWith "\"" then code.drop 1 else code
   let code := if code.endsWith "\"" then code.dropRight 1 else code
-  let cmdSeq ← parseCommands code
-  let cmds := commands  cmdSeq
+  let cmdSeq ← parseCommandSeq code
+  let cmds := getCommands  cmdSeq
   for cmd in cmds do
     runCommand cmd
   return some cmdSeq
@@ -577,7 +577,7 @@ where
             let namesStx := namesStx.toArray
             let introTac ←
               `(tacticSeq| intro $namesStx*; $resTacs*)
-            appendTactics introTac pfStx
+            appendTacticSeqSeq introTac pfStx
         pure pfStx
       | none => throwError
         s!"codegen: no proof translation found for {pf}"
@@ -708,7 +708,7 @@ where
             `(command| theorem $name : $typeStx := by $proofStx)
           let resolvedCmds ←
             CodeGenerator.cmdResolveExistsHave typeStx
-          toCommandSeq <| #[head] ++ resolvedCmds
+          mkCommandSeq <| #[head] ++ resolvedCmds
         catch e =>
           let innerMsg ←  e.toMessageData.format
           let outputs := errs.map (·.text)
@@ -862,7 +862,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
       let namesStx := namesStx.toArray
       let introTac ←
         `(tacticSeq| intro $namesStx*; $resTacs*)
-      appendTactics introTac pfStx
+      appendTacticSeqSeq introTac pfStx
   IO.eprintln s!"Proof steps: {← PrettyPrinter.ppCategory ``tacticSeq pfStx}"
   let n := mkIdent labelledTheorem.name
   let typeStx ← delabDetailed goalType
@@ -1220,7 +1220,7 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   -- dfn.addDeclaration
   let resolvedCmds ←
     CodeGenerator.cmdResolveExistsHave stx
-  toCommandSeq <| #[head] ++ resolvedCmds
+  mkCommandSeq <| #[head] ++ resolvedCmds
 | _, ``tacticSeq, js => do
   let (stx, tac) ← typeStx js
   let hash₀ := hash stx.raw.reprint
@@ -1536,7 +1536,7 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
   let trueCaseProofStx ← if resolution.isEmpty then
     pure trueCaseProofStx
   else
-    appendTactics
+    appendTacticSeqSeq
       (← `(tacticSeq| $resolution*)) trueCaseProofStx
   let some falseCaseProofStx ← withoutModifyingState do getCode translator (some elseGoal) ``tacticSeq falseCaseProof | throwError
     s!"codegen: no translation found for false_case_proof {falseCaseProof}"
@@ -1582,7 +1582,7 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
     let trueCaseProofStx ← if resolution.isEmpty then
       pure trueCaseProofStx
     else
-      appendTactics
+      appendTacticSeqSeq
         (← `(tacticSeq| $resolution*)) trueCaseProofStx
     let falseCaseProofStx ←
       multiConditionCasesAux translator elseGoal tail exhaustiveness
@@ -1658,7 +1658,7 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
         `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
   IO.eprintln s!"number of cases (after exhaustiveness): {cases.length}"
   let tacs ← multiConditionCasesAux translator goal cases exhaustiveTac
-  appendTactics tacs <| ← `(tacticSeq| done)
+  appendTacticSeqSeq tacs <| ← `(tacticSeq| done)
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
@@ -1788,7 +1788,7 @@ def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind
     s!"codegen: no 'proof' found in 'contradiction_statement'"
   let some tacs ← withoutModifyingState do getCode translator (some goal) ``tacticSeq proof | throwError
     s!"codegen: no tactics found for proof {proof}"
-  let fullTacs ←  appendTactics (← `(tacticSeq| intro $contraId:term)) tacs
+  let fullTacs ←  appendTacticSeqSeq (← `(tacticSeq| intro $contraId:term)) tacs
   let stx ← delabDetailed assumptionType
   `(tacticSeq| have : $stx := by $fullTacs)
 | _, kind, _ => throwError
@@ -1874,7 +1874,7 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
     let trueCaseProofStx ← if resolution.isEmpty then
       pure trueCaseProofStx
     else
-      appendTactics
+      appendTacticSeqSeq
         (← `(tacticSeq| $resolution*)) trueCaseProofStx
     let falseCaseProofStx ←
       generalInductionAux translator elseGoal tail inductionNames
@@ -1937,7 +1937,7 @@ def generalInductionCode (translator : CodeGenerator := {}) : Option MVarId → 
       let inductionHyps := c.getObjValAs? (Array String) "induction_hyps" |>.toOption |>.getD #[]
       pure (conditionType, proof, inductionHyps)
   let tacs ← generalInductionAux translator goal cases inductionPrincipleNames.toArray
-  appendTactics tacs <| ← `(tacticSeq| done)
+  appendTacticSeqSeq tacs <| ← `(tacticSeq| done)
 | goal?, kind ,_ => throwError
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
