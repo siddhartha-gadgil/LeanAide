@@ -10,6 +10,217 @@ universe u v w u_1 u_2 u_3 u₁ u₂ u₃
 
 namespace LeanAideTest
 
+/-- info: fun {K} [DivisionSemiring K] {a b} h => Eq.symm (div_add_same h) -/
+#guard_msgs in
+#eval ppExprM <| elabFrontDefExprM "theorem div_add_one{K : Type u_1} [DivisionSemiring K] {a b : K} (h : b ≠ 0) :
+a / b + 1 = (a + b) / b := (div_add_same h).symm" `div_add_one
+
+/--
+info: fun R [CommSemiring R] M [AddCommMonoid M] [_root_.Module R M] => LinearMap.BilinMap R M R
+-/
+#guard_msgs in
+#eval ppExprM <| elabFrontDefExprM "{R₁ : Type u_1} →
+  [inst : CommSemiring R₁] → {n : Type u_5} → [Fintype n] → Matrix n n R₁ → LinearMap.BilinForm R₁ (n → R₁)" `LinearMap.BilinForm
+
+/--
+info: fun V [CategoryTheory.Category.{v, u} V] [CategoryTheory.Limits.HasZeroMorphisms V] α [AddRightCancelSemigroup α]
+    [One α] =>
+  HomologicalComplex V (ComplexShape.down α)
+-/
+#guard_msgs in
+#eval ppExprM <| elabFrontDefExprM "(C : Type u) →
+  [inst : CategoryTheory.Category.{v, u} C] →
+    [inst_1 : CategoryTheory.Limits.HasCoproducts C] →
+      [inst_2 : CategoryTheory.Preadditive C] →
+        (R : C) →
+          (X : TopCat) →
+            [TotallyDisconnectedSpace ↑X] →
+              ((AlgebraicTopology.singularChainComplexFunctor C).obj R).obj X ≅
+                ChainComplex.alternatingConst.obj (∐ fun x => R)" `ChainComplex
+
+def elabFrontDefTypeValViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM <| String × String := do
+  let (type, val) ← elabFrontDefTypeValExprM s n modifyEnv
+  let typefmt ←  ppExpr type
+  let typeval ←  ppExpr val
+  return (typefmt.pretty, typeval.pretty)
+
+/--
+info: ("(R : Type u_1) →\n  [inst : CommSemiring R] → (M : Type u_6) → [inst_1 : AddCommMonoid M] → [_root_.Module R M] → Type (max u_1 u_6)",
+  "fun R [CommSemiring R] M [AddCommMonoid M] [_root_.Module R M] => LinearMap.BilinMap R M R")
+-/
+#guard_msgs in
+#eval elabFrontDefTypeValViewM "{R₁ : Type u_1} →
+  [inst : CommSemiring R₁] → {n : Type u_5} → [Fintype n] → Matrix n n R₁ → LinearMap.BilinForm R₁ (n → R₁)" `LinearMap.BilinForm
+
+/--
+info: ("∀ {K : Type u_1} [inst : DivisionSemiring K] {a b : K}, b ≠ 0 → a / b + 1 = (a + b) / b",
+  "fun {K} [DivisionSemiring K] {a b} h => Eq.symm (div_add_same h)")
+-/
+#guard_msgs in
+#eval elabFrontDefTypeValViewM "theorem div_add_one{K : Type u_1} [DivisionSemiring K] {a b : K} (h : b ≠ 0) :
+a / b + 1 = (a + b) / b := (div_add_same h).symm" `div_add_one
+
+
+/--
+info: Messages
+---
+info: (R : Type u_1) →
+  [inst : CommSemiring R] → (M : Type u_6) → [inst_1 : AddCommMonoid M] → [_root_.Module R M] → Type (max u_1 u_6)
+-/
+#guard_msgs in
+#eval ppExprM <| elabFrontThmExprM "theorem commutativity (p q : Prop) : p ∧ q → q ∧ p := by
+intro h
+cases h with
+| intro hp hq =>
+  constructor
+  · exact hq
+  · exact hp
+"  `LinearMap.BilinForm
+
+/--
+info: Messages
+---
+info: ∀ {K : Type u_1} [inst : DivisionSemiring K] {a b : K}, b ≠ 0 → a / b + 1 = (a + b) / b
+-/
+#guard_msgs in
+#eval ppExprM <| elabFrontThmExprM "theorem div_add_1{K : Type u_1} [DivisionSemiring K] {a b : K} (h : b ≠ 0) :
+a / b + 1 = (a + b) / b := (div_add_same h).symm" `div_add_1
+
+
+elab "#defs" s:str t:ident* : command => Command.liftTermElabM do
+  let s := s.getString
+  let names := t.map (fun stx => stx.getId)
+  let (nameDefs, msgs) ← elabFrontDefsExprM s names.toList
+  for (n, v) in nameDefs do
+    logInfo s!"Definition: {n} with value {← ppExpr v}"
+  for msg in msgs.toList do
+    logInfo msg.data
+
+/--
+info: Definition: div_add_1 with value fun {K} [DivisionSemiring K] {a b} h => Eq.symm (div_add_same h)
+-/
+#guard_msgs in
+#defs "theorem div_add_1{K : Type u_1} [DivisionSemiring K] {a b : K} (h : b ≠ 0) :
+a / b + 1 = (a + b) / b := (div_add_same h).symm" div_add_1 DivisionSemiRing Field
+
+/--
+info: Definition: newDef with value fun {𝕜} [NontriviallyNormedField 𝕜] {H} [TopologicalSpace H] {E} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I} {G}
+    [TopologicalSpace G] [ChartedSpace H G] [Group G] {a} [LieGroup I ⊤ G] [ENat.LEInfty a] =>
+  sorry
+---
+info: declaration uses 'sorry'
+-/
+#guard_msgs in
+#defs "instance newDef{𝕜 : Type u_1} [NontriviallyNormedField 𝕜] {H : Type u_2} [TopologicalSpace H] {E : Type u_3} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type u_4} [TopologicalSpace G] [ChartedSpace H G] [Group G] {a : WithTop ℕ∞} [LieGroup I (↑⊤) G] [h : ENat.LEInfty a] :
+LieGroup I a G := by sorry" ModelWithCorners newDef LieGroup withTop
+
+/--
+info: Definition: ChainComplex with value fun V [CategoryTheory.Category.{v, u} V] [CategoryTheory.Limits.HasZeroMorphisms V] α [AddRightCancelSemigroup α]
+    [One α] =>
+  HomologicalComplex V (ComplexShape.down α)
+---
+info: Definition: newDef2 with value sorry
+---
+info: declaration uses 'sorry'
+-/
+#guard_msgs in
+#defs "def newDef2 : ∀ (C : Type u)
+  [inst : CategoryTheory.Category.{v, u} C]
+    [inst_1 : CategoryTheory.Limits.HasCoproducts C]
+      [inst_2 : CategoryTheory.Preadditive C]
+        (R : C)
+          (X : TopCat)
+            [TotallyDisconnectedSpace ↑X],
+              ((AlgebraicTopology.singularChainComplexFunctor C).obj R).obj X ≅
+                ChainComplex.alternatingConst.obj (∐ fun (_ : X) => R):= by sorry" ChainComplex newDef2
+
+elab "#defs_with_prefix" s:str t:ident : command => Command.liftTermElabM do
+  let s := s.getString
+  let (nameDefs, msgs) ← elabFrontDefsExprAtM s t.getId
+  for (n, v) in nameDefs do
+    logInfo s!"Definition: {n} with value {← ppExpr v}"
+  for msg in msgs.toList do
+    logInfo msg.data
+
+/-- info: ok: ∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m, n = m * orderOf a -/
+#guard_msgs in
+#eval ppExprM? <| elabFrontTheoremExprMStrict "∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m, n = m * orderOf a"
+
+/-- info: ok: ∀ (n : ℕ), n ≤ n + 1 -/
+#guard_msgs in
+#eval ppExprM? <| elabFrontTheoremExprMStrict "∀ n: Nat, n ≤ n + 1"
+
+/-- info: ok: ∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m, n = m * orderOf a -/
+#guard_msgs in
+#eval ppExprM? <| elabFrontTheoremExprM "∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m, n = m * orderOf a"
+
+
+/--
+info: ok: (C : Type u) →
+  [inst : CategoryTheory.Category.{v, u} C] →
+    [inst_1 : CategoryTheory.Limits.HasCoproducts C] →
+      [inst_2 : CategoryTheory.Preadditive C] →
+        (R : C) →
+          (X : TopCat) →
+            [TotallyDisconnectedSpace ↑X] →
+              ((AlgebraicTopology.singularChainComplexFunctor C).obj R).obj X ≅
+                ChainComplex.alternatingConst.obj (∐ fun x => R)
+-/
+#guard_msgs in
+#eval ppExprM? <| elabFrontTheoremExprM "∀ (C : Type u)
+  [inst : CategoryTheory.Category.{v, u} C]
+    [inst_1 : CategoryTheory.Limits.HasCoproducts C]
+      [inst_2 : CategoryTheory.Preadditive C]
+        (R : C)
+          (X : TopCat)
+            [TotallyDisconnectedSpace ↑X],
+              ((AlgebraicTopology.singularChainComplexFunctor C).obj R).obj X ≅
+                ChainComplex.alternatingConst.obj (∐ fun (_ : X) => R)"
+
+/-- info: ok: ℕ → ℕ -/
+#guard_msgs in
+#eval ppExprM? <| elabFrontTypeExprM "Nat → Nat"
+
+/--
+info: ok: (C : Type u) →
+  [inst : CategoryTheory.Category.{v, u} C] →
+    [inst_1 : CategoryTheory.Limits.HasCoproducts C] →
+      [inst_2 : CategoryTheory.Preadditive C] →
+        (R : C) →
+          (X : TopCat) →
+            [TotallyDisconnectedSpace ↑X] →
+              ((AlgebraicTopology.singularChainComplexFunctor C).obj R).obj X ≅
+                ChainComplex.alternatingConst.obj (∐ fun x => R)
+-/
+#guard_msgs in
+#eval ppExprM? <| elabFrontTypeExprM "∀ (C : Type u)
+  [inst : CategoryTheory.Category.{v, u} C]
+    [inst_1 : CategoryTheory.Limits.HasCoproducts C]
+      [inst_2 : CategoryTheory.Preadditive C]
+        (R : C)
+          (X : TopCat)
+            [TotallyDisconnectedSpace ↑X],
+              ((AlgebraicTopology.singularChainComplexFunctor C).obj R).obj X ≅
+                ChainComplex.alternatingConst.obj (∐ fun (_ : X) => R)"
+
+/-- info: [] -/
+#guard_msgs in
+#eval checkTermElabFrontM "(R : Type u_1) →
+  [inst : CommSemiring R] → (M : Type u_6) → [inst_1 : AddCommMonoid M] → [_root_.Module R M] → Type (max u_1 u_6)"
+
+/-- info: [] -/
+#guard_msgs in
+#eval checkTypeElabFrontM "(R : Type u_1) →
+  [inst : CommSemiring R] → (M : Type u_6) → [inst_1 : AddCommMonoid M] → [_root_.Module R M] → Type (max u_1 u_6)"
+
+/-- info: [] -/
+#guard_msgs in
+#eval checkTermElabFrontM "∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m, n = m * orderOf a"
+
+/-- info: [] -/
+#guard_msgs in
+#eval checkTypeElabFrontM "∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m, n = m * orderOf a"
+
 /-- info: #[`x] -/
 #guard_msgs in
 #eval newDeclarations "def x : Nat := 0"
@@ -112,210 +323,6 @@ info: New definition: CTFC with value fun {C} [CategoryTheory.Category.{v₁, u�
 F.map f = F.map g := by
  rw[h]
 theorem CMap {C : Type u₁} [Category.{v₁, u₁} C] {D : Type u₂} [Category.{v₂, u₂} D] {E : Type u₃} [Category.{v₃, u₃} E](F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
-    (F ⋙ G).map f = G.map (F.map f) := rfl
- "
-/--
-info: New definition: CMap with value fun {C} [CategoryTheory.Category.{v₁, u₁} C] {D} [CategoryTheory.Category.{v₂, u₂} D] {E}
-    [CategoryTheory.Category.{v₃, u₃} E] F G {X Y} f =>
-  rfl
----
-info: New definition: CTFC with value fun {C} [CategoryTheory.Category.{v₁, u₁} C] {D} [CategoryTheory.Category.{v₂, u₂} D] F {X Y} {f g} h =>
-  Eq.mpr (id (congrArg (fun _a => F.map _a = F.map g) h)) (Eq.refl (F.map g))
--/
-#guard_msgs in
-#new_defs "open CategoryTheory theorem CTFC {C : Type u₁} [CategoryTheory.Category.{v₁ ,u₁} C] {D : Type u₂} [Category.{v₂, u₂} D] (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y} (h : f = g) :
-F.map f = F.map g := by
- rw[h]
-theorem CMap {C : Type u₁} [Category.{v₁, u₁} C] {D : Type u₂} [Category.{v₂, u₂} D] {E : Type u₃} [Category.{v₃, u₃} E](F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
-    (F ⋙ G).map f = G.map (F.map f) := rfl
- "
-
-/-- info: ok: ∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m, n = m * orderOf a -/
-#guard_msgs in
-#eval ppExprM? <| elabFrontTheoremExprM "∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m : ℕ, n = m * orderOf a"
-
-/--
-info: Expr.lam `R (Expr.sort (Level.param `u_1).succ)
-  (Expr.lam `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19322
-    ((Expr.const `CommSemiring [Level.param `u_1]).app (Expr.bvar 0))
-    (Expr.lam `M (Expr.sort (Level.param `u_6).succ)
-      (Expr.lam `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19348
-        ((Expr.const `AddCommMonoid [Level.param `u_6]).app (Expr.bvar 0))
-        (Expr.lam `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19375
-          (((((Expr.const `Module [Level.param `u_1, Level.param `u_6]).app (Expr.bvar 3)).app (Expr.bvar 1)).app
-                (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 3)).app (Expr.bvar 2))).app
-            (Expr.bvar 0))
-          (((((((((Expr.const `LinearMap.BilinMap [Level.param `u_1, Level.param `u_6, Level.param `u_1]).app
-                                        (Expr.bvar 4)).app
-                                    (Expr.bvar 3)).app
-                                (Expr.bvar 2)).app
-                            (Expr.bvar 4)).app
-                        (Expr.bvar 1)).app
-                    (((Expr.const `NonUnitalNonAssocSemiring.toAddCommMonoid [Level.param `u_1]).app (Expr.bvar 4)).app
-                      (((Expr.const `NonAssocSemiring.toNonUnitalNonAssocSemiring [Level.param `u_1]).app
-                            (Expr.bvar 4)).app
-                        (((Expr.const `Semiring.toNonAssocSemiring [Level.param `u_1]).app (Expr.bvar 4)).app
-                          (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 4)).app
-                            (Expr.bvar 3)))))).app
-                (Expr.bvar 0)).app
-            (((Expr.const `Semiring.toModule [Level.param `u_1]).app (Expr.bvar 4)).app
-              (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 4)).app (Expr.bvar 3))))
-          BinderInfo.instImplicit)
-        BinderInfo.instImplicit)
-      BinderInfo.default)
-    BinderInfo.instImplicit)
-  BinderInfo.default
--/
-#guard_msgs in
-#eval elabFrontDefExprM "{R₁ : Type u_1} →
-  [inst : CommSemiring R₁] → {n : Type u_5} → [Fintype n] → Matrix n n R₁ → LinearMap.BilinForm R₁ (n → R₁)" `LinearMap.BilinForm
-
-/--
-info: (Expr.forallE `R (Expr.sort (Level.param `u_1).succ)
-    (Expr.forallE `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19322
-      ((Expr.const `CommSemiring [Level.param `u_1]).app (Expr.bvar 0))
-      (Expr.forallE `M (Expr.sort (Level.param `u_6).succ)
-        (Expr.forallE `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19348
-          ((Expr.const `AddCommMonoid [Level.param `u_6]).app (Expr.bvar 0))
-          (Expr.forallE `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19375
-            (((((Expr.const `Module [Level.param `u_1, Level.param `u_6]).app (Expr.bvar 3)).app (Expr.bvar 1)).app
-                  (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 3)).app (Expr.bvar 2))).app
-              (Expr.bvar 0))
-            (Expr.sort ((Level.param `u_1).max (Level.param `u_6)).succ) BinderInfo.instImplicit)
-          BinderInfo.instImplicit)
-        BinderInfo.default)
-      BinderInfo.instImplicit)
-    BinderInfo.default,
-  Expr.lam `R (Expr.sort (Level.param `u_1).succ)
-    (Expr.lam `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19322
-      ((Expr.const `CommSemiring [Level.param `u_1]).app (Expr.bvar 0))
-      (Expr.lam `M (Expr.sort (Level.param `u_6).succ)
-        (Expr.lam `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19348
-          ((Expr.const `AddCommMonoid [Level.param `u_6]).app (Expr.bvar 0))
-          (Expr.lam `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19375
-            (((((Expr.const `Module [Level.param `u_1, Level.param `u_6]).app (Expr.bvar 3)).app (Expr.bvar 1)).app
-                  (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 3)).app (Expr.bvar 2))).app
-              (Expr.bvar 0))
-            (((((((((Expr.const `LinearMap.BilinMap [Level.param `u_1, Level.param `u_6, Level.param `u_1]).app
-                                          (Expr.bvar 4)).app
-                                      (Expr.bvar 3)).app
-                                  (Expr.bvar 2)).app
-                              (Expr.bvar 4)).app
-                          (Expr.bvar 1)).app
-                      (((Expr.const `NonUnitalNonAssocSemiring.toAddCommMonoid [Level.param `u_1]).app
-                            (Expr.bvar 4)).app
-                        (((Expr.const `NonAssocSemiring.toNonUnitalNonAssocSemiring [Level.param `u_1]).app
-                              (Expr.bvar 4)).app
-                          (((Expr.const `Semiring.toNonAssocSemiring [Level.param `u_1]).app (Expr.bvar 4)).app
-                            (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 4)).app
-                              (Expr.bvar 3)))))).app
-                  (Expr.bvar 0)).app
-              (((Expr.const `Semiring.toModule [Level.param `u_1]).app (Expr.bvar 4)).app
-                (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 4)).app (Expr.bvar 3))))
-            BinderInfo.instImplicit)
-          BinderInfo.instImplicit)
-        BinderInfo.default)
-      BinderInfo.instImplicit)
-    BinderInfo.default)
--/
-#guard_msgs in
-#eval elabFrontDefTypeValExprM "{R₁ : Type u_1} →
-  [inst : CommSemiring R₁] → {n : Type u_5} → [Fintype n] → Matrix n n R₁ → LinearMap.BilinForm R₁ (n → R₁)" `LinearMap.BilinForm
-
-
-def elabFrontDefTypeValViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM <| String × String := do
-  let (type, val) ← elabFrontDefTypeValExprM s n modifyEnv
-  let typefmt ←  ppExpr type
-  let typeval ←  ppExpr val
-  return (typefmt.pretty, typeval.pretty)
-
-/--
-info: (Expr.forallE `R (Expr.sort (Level.param `u_1).succ)
-    (Expr.forallE `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19322
-      ((Expr.const `CommSemiring [Level.param `u_1]).app (Expr.bvar 0))
-      (Expr.forallE `M (Expr.sort (Level.param `u_6).succ)
-        (Expr.forallE `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19348
-          ((Expr.const `AddCommMonoid [Level.param `u_6]).app (Expr.bvar 0))
-          (Expr.forallE `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19375
-            (((((Expr.const `Module [Level.param `u_1, Level.param `u_6]).app (Expr.bvar 3)).app (Expr.bvar 1)).app
-                  (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 3)).app (Expr.bvar 2))).app
-              (Expr.bvar 0))
-            (Expr.sort ((Level.param `u_1).max (Level.param `u_6)).succ) BinderInfo.instImplicit)
-          BinderInfo.instImplicit)
-        BinderInfo.default)
-      BinderInfo.instImplicit)
-    BinderInfo.default,
-  Expr.lam `R (Expr.sort (Level.param `u_1).succ)
-    (Expr.lam `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19322
-      ((Expr.const `CommSemiring [Level.param `u_1]).app (Expr.bvar 0))
-      (Expr.lam `M (Expr.sort (Level.param `u_6).succ)
-        (Expr.lam `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19348
-          ((Expr.const `AddCommMonoid [Level.param `u_6]).app (Expr.bvar 0))
-          (Expr.lam `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19375
-            (((((Expr.const `Module [Level.param `u_1, Level.param `u_6]).app (Expr.bvar 3)).app (Expr.bvar 1)).app
-                  (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 3)).app (Expr.bvar 2))).app
-              (Expr.bvar 0))
-            (((((((((Expr.const `LinearMap.BilinMap [Level.param `u_1, Level.param `u_6, Level.param `u_1]).app
-                                          (Expr.bvar 4)).app
-                                      (Expr.bvar 3)).app
-                                  (Expr.bvar 2)).app
-                              (Expr.bvar 4)).app
-                          (Expr.bvar 1)).app
-                      (((Expr.const `NonUnitalNonAssocSemiring.toAddCommMonoid [Level.param `u_1]).app
-                            (Expr.bvar 4)).app
-                        (((Expr.const `NonAssocSemiring.toNonUnitalNonAssocSemiring [Level.param `u_1]).app
-                              (Expr.bvar 4)).app
-                          (((Expr.const `Semiring.toNonAssocSemiring [Level.param `u_1]).app (Expr.bvar 4)).app
-                            (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 4)).app
-                              (Expr.bvar 3)))))).app
-                  (Expr.bvar 0)).app
-              (((Expr.const `Semiring.toModule [Level.param `u_1]).app (Expr.bvar 4)).app
-                (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 4)).app (Expr.bvar 3))))
-            BinderInfo.instImplicit)
-          BinderInfo.instImplicit)
-        BinderInfo.default)
-      BinderInfo.instImplicit)
-    BinderInfo.default)
--/
-#guard_msgs in
-#eval elabFrontDefTypeValExprM "{R₁ : Type u_1} →
-  [inst : CommSemiring R₁] → {n : Type u_5} → [Fintype n] → Matrix n n R₁ → LinearMap.BilinForm R₁ (n → R₁)" `LinearMap.BilinForm
-
-/--
-info: ("(R : Type u_1) →\n  [inst : CommSemiring R] → (M : Type u_6) → [inst_1 : AddCommMonoid M] → [_root_.Module R M] → Type (max u_1 u_6)",
-  "fun R [CommSemiring R] M [AddCommMonoid M] [_root_.Module R M] => LinearMap.BilinMap R M R")
--/
-#guard_msgs in
-#eval elabFrontDefTypeValViewM "{R₁ : Type u_1} →
-  [inst : CommSemiring R₁] → {n : Type u_5} → [Fintype n] → Matrix n n R₁ → LinearMap.BilinForm R₁ (n → R₁)" `LinearMap.BilinForm
-
-/--
-info: Messages
----
-info: Expr.forallE `R (Expr.sort (Level.param `u_1).succ)
-  (Expr.forallE `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19322
-    ((Expr.const `CommSemiring [Level.param `u_1]).app (Expr.bvar 0))
-    (Expr.forallE `M (Expr.sort (Level.param `u_6).succ)
-      (Expr.forallE `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19348
-        ((Expr.const `AddCommMonoid [Level.param `u_6]).app (Expr.bvar 0))
-        (Expr.forallE `inst._@.Mathlib.LinearAlgebra.BilinearMap._hyg.19375
-          (((((Expr.const `Module [Level.param `u_1, Level.param `u_6]).app (Expr.bvar 3)).app (Expr.bvar 1)).app
-                (((Expr.const `CommSemiring.toSemiring [Level.param `u_1]).app (Expr.bvar 3)).app (Expr.bvar 2))).app
-            (Expr.bvar 0))
-          (Expr.sort ((Level.param `u_1).max (Level.param `u_6)).succ) BinderInfo.instImplicit)
-        BinderInfo.instImplicit)
-      BinderInfo.default)
-    BinderInfo.instImplicit)
-  BinderInfo.default
--/
-#guard_msgs in
-#eval elabFrontThmExprM "theorem commutativity (p q : Prop) : p ∧ q → q ∧ p := by
-intro h
-cases h with
-| intro hp hq =>
-  constructor
-  · exact hq
-  · exact hp
-"  `LinearMap.BilinForm
+    (F ⋙ G).map f = G.map (F.map f) := rfl"
 
 end LeanAideTest
