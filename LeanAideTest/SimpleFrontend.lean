@@ -1,4 +1,5 @@
 import LeanAide.SimpleFrontend
+import LeanAideCore.Aides
 import Mathlib
 
 open LeanAide Lean Meta Elab
@@ -114,119 +115,9 @@ theorem CMap {C : Type u₁} [Category.{v₁, u₁} C] {D : Type u₂} [Category
     (F ⋙ G).map f = G.map (F.map f) := rfl
  "
 
-/--
-info: Except.ok (Lean.Expr.forallE
-  `G
-  (Lean.Expr.sort (Lean.Level.succ (Lean.Level.param `u)))
-  (Lean.Expr.forallE
-    `inst
-    (Lean.Expr.app (Lean.Expr.const `Group [Lean.Level.param `u]) (Lean.Expr.bvar 0))
-    (Lean.Expr.forallE
-      `a
-      (Lean.Expr.bvar 1)
-      (Lean.Expr.forallE
-        `n
-        (Lean.Expr.const `Nat [])
-        (Lean.Expr.forallE
-          (Lean.Name.mkNum `a._@.LeanAideTest.SimpleFrontend._hyg 21)
-          (Lean.Expr.app
-            (Lean.Expr.app
-              (Lean.Expr.app (Lean.Expr.const `Eq [Lean.Level.succ (Lean.Level.param `u)]) (Lean.Expr.bvar 3))
-              (Lean.Expr.app
-                (Lean.Expr.app
-                  (Lean.Expr.app
-                    (Lean.Expr.app
-                      (Lean.Expr.app
-                        (Lean.Expr.app
-                          (Lean.Expr.const `HPow.hPow [Lean.Level.param `u, Lean.Level.zero, Lean.Level.param `u])
-                          (Lean.Expr.bvar 3))
-                        (Lean.Expr.const `Nat []))
-                      (Lean.Expr.bvar 3))
-                    (Lean.Expr.app
-                      (Lean.Expr.app
-                        (Lean.Expr.app
-                          (Lean.Expr.const `instHPow [Lean.Level.param `u, Lean.Level.zero])
-                          (Lean.Expr.bvar 3))
-                        (Lean.Expr.const `Nat []))
-                      (Lean.Expr.app
-                        (Lean.Expr.app (Lean.Expr.const `Monoid.toNatPow [Lean.Level.param `u]) (Lean.Expr.bvar 3))
-                        (Lean.Expr.app
-                          (Lean.Expr.app
-                            (Lean.Expr.const `DivInvMonoid.toMonoid [Lean.Level.param `u])
-                            (Lean.Expr.bvar 3))
-                          (Lean.Expr.app
-                            (Lean.Expr.app
-                              (Lean.Expr.const `Group.toDivInvMonoid [Lean.Level.param `u])
-                              (Lean.Expr.bvar 3))
-                            (Lean.Expr.bvar 2))))))
-                  (Lean.Expr.bvar 1))
-                (Lean.Expr.bvar 0)))
-            (Lean.Expr.app
-              (Lean.Expr.app
-                (Lean.Expr.app (Lean.Expr.const `OfNat.ofNat [Lean.Level.param `u]) (Lean.Expr.bvar 3))
-                (Lean.Expr.lit (Lean.Literal.natVal 1)))
-              (Lean.Expr.app
-                (Lean.Expr.app (Lean.Expr.const `One.toOfNat1 [Lean.Level.param `u]) (Lean.Expr.bvar 3))
-                (Lean.Expr.app
-                  (Lean.Expr.app (Lean.Expr.const `InvOneClass.toOne [Lean.Level.param `u]) (Lean.Expr.bvar 3))
-                  (Lean.Expr.app
-                    (Lean.Expr.app
-                      (Lean.Expr.const `DivInvOneMonoid.toInvOneClass [Lean.Level.param `u])
-                      (Lean.Expr.bvar 3))
-                    (Lean.Expr.app
-                      (Lean.Expr.app
-                        (Lean.Expr.const `DivisionMonoid.toDivInvOneMonoid [Lean.Level.param `u])
-                        (Lean.Expr.bvar 3))
-                      (Lean.Expr.app
-                        (Lean.Expr.app
-                          (Lean.Expr.const `Group.toDivisionMonoid [Lean.Level.param `u])
-                          (Lean.Expr.bvar 3))
-                        (Lean.Expr.bvar 2))))))))
-          (Lean.Expr.app
-            (Lean.Expr.app (Lean.Expr.const `Exists [Lean.Level.succ (Lean.Level.zero)]) (Lean.Expr.const `Nat []))
-            (Lean.Expr.lam
-              `m
-              (Lean.Expr.const `Nat [])
-              (Lean.Expr.app
-                (Lean.Expr.app
-                  (Lean.Expr.app (Lean.Expr.const `Eq [Lean.Level.succ (Lean.Level.zero)]) (Lean.Expr.const `Nat []))
-                  (Lean.Expr.bvar 2))
-                (Lean.Expr.app
-                  (Lean.Expr.app
-                    (Lean.Expr.app
-                      (Lean.Expr.app
-                        (Lean.Expr.app
-                          (Lean.Expr.app
-                            (Lean.Expr.const `HMul.hMul [Lean.Level.zero, Lean.Level.zero, Lean.Level.zero])
-                            (Lean.Expr.const `Nat []))
-                          (Lean.Expr.const `Nat []))
-                        (Lean.Expr.const `Nat []))
-                      (Lean.Expr.app
-                        (Lean.Expr.app (Lean.Expr.const `instHMul [Lean.Level.zero]) (Lean.Expr.const `Nat []))
-                        (Lean.Expr.const `instMulNat [])))
-                    (Lean.Expr.bvar 0))
-                  (Lean.Expr.app
-                    (Lean.Expr.app
-                      (Lean.Expr.app (Lean.Expr.const `orderOf [Lean.Level.param `u]) (Lean.Expr.bvar 5))
-                      (Lean.Expr.app
-                        (Lean.Expr.app
-                          (Lean.Expr.const `DivInvMonoid.toMonoid [Lean.Level.param `u])
-                          (Lean.Expr.bvar 5))
-                        (Lean.Expr.app
-                          (Lean.Expr.app
-                            (Lean.Expr.const `Group.toDivInvMonoid [Lean.Level.param `u])
-                            (Lean.Expr.bvar 5))
-                          (Lean.Expr.bvar 4))))
-                    (Lean.Expr.bvar 3))))
-              (Lean.BinderInfo.default)))
-          (Lean.BinderInfo.default))
-        (Lean.BinderInfo.default))
-      (Lean.BinderInfo.default))
-    (Lean.BinderInfo.instImplicit))
-  (Lean.BinderInfo.implicit))
--/
+/-- info: ok: ∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m, n = m * orderOf a -/
 #guard_msgs in
-#eval elabFrontTheoremExprM "∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m : ℕ, n = m * orderOf a"
+#eval ppExprM? <| elabFrontTheoremExprM "∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m : ℕ, n = m * orderOf a"
 
 /--
 info: Expr.lam `R (Expr.sort (Level.param `u_1).succ)

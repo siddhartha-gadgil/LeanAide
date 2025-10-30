@@ -233,7 +233,10 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
           return none
   let trys ← msgs'.filterMapM
     fun msg => do getTacticsFromMessageData? msg.text
-  return trys.getLast?
+  if trys.isEmpty then
+    return none
+  else
+    return some <| trys.foldl (fun acc tacs => acc ++ tacs) #[]
 
 def runTacticsAndFindTryThis? (goal : Expr) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := true): TermElabM <| Option (TSyntax ``tacticSeq) := do
   tacticSeqs.findSomeM?
@@ -263,7 +266,7 @@ def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (str
     fun msg => do getTacticsFromMessageData? (← msg.data.toString)
 
 def getSimpOrExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| exact?)] (strict := true)
+  let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| simp?; exact?)] (strict := true)
   match tactics? with
   | none => return none
   | some tacs =>

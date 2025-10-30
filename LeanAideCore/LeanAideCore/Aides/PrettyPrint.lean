@@ -3,6 +3,15 @@ open Lean Meta Elab Term Parser Tactic
 
 namespace LeanAide
 
+def ppExprM (e: MetaM Expr) : MetaM Format := do
+  let expr ← e
+  ppExpr expr
+
+def ppExprM? [ToString A](e?: MetaM (Except A Expr)) : MetaM (Except String Format) := do
+  match ← e? with
+  | Except.error a => return Except.error (toString a)
+  | Except.ok expr => return Except.ok (← ppExpr expr)
+
 def ppExprDetailed (e : Expr): MetaM String := do
   let fmtDetailed ← withOptions (fun o₁ =>
                     let o₂ := pp.motives.all.set o₁ true
