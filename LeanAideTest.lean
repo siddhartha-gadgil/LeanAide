@@ -11,3 +11,7 @@ import LeanAideTest.JsonDiffTest
 import LeanAideTest.InductionCodegen
 
 import LeanAideTest.JsonSchemas
+
+import LeanAideTest.SimpleFrontend
+
+import LeanAideTest.TheoremElab
