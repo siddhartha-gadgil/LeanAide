@@ -466,7 +466,7 @@ Should perhaps try to use automation if there is no proof.
 @[codegen "theorem"]
 def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  let (stx, name, pf?) ← thmStxParts js
+  let (stx, name, pf?, _) ← thmStxParts js
   match pf? with
   | some pf =>
     let n := mkIdent name
@@ -477,7 +477,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     let propIdent ← delabDetailed propExpr
     `(command| abbrev $n : $propIdent:term := $stx)
 | _, `commandSeq, js => do
-  let (stx, name, pf?) ← thmStxParts js
+  let (stx, name, pf?, isProp) ← thmStxParts js
   match pf? with
   | some pf =>
     let n := mkIdent name
@@ -485,8 +485,8 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
       name := n.getId,
       type := stx,
       value := ← `(by $pf),
-      isProp := false,
-      isNoncomputable := false,
+      isProp := isProp,
+      isNoncomputable := true,
       doc? := none
     }
     addDefn defn
@@ -508,7 +508,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
       runCommand cmd
     `(commandSeq| $cmds*)
 | some _, ``tacticSeq, js => do
-  let (stx, name, pf?) ← thmStxParts js
+  let (stx, name, pf?, isProp) ← thmStxParts js
   match pf? with
   | some pf =>
     let n := mkIdent name
@@ -519,7 +519,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     let propIdent ← delabDetailed propExpr
     `(tacticSeq| have $n : $propIdent := $stx)
 | some _, `tactic, js => do
-  let (stx, name, pf?) ← thmStxParts js
+  let (stx, name, pf?, _) ← thmStxParts js
   match pf? with
   | some pf =>
     let n := mkIdent name
@@ -533,7 +533,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
 where
   thmStxParts (js: Json)  :
-    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq)  := withoutModifyingState do
+    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq) × Bool  := withoutModifyingState do
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
       | Except.error _ => pure ()
@@ -601,7 +601,7 @@ where
     let label := js.getObjString? "label" |>.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
-    return (typeStx, name, proofStx?)
+    return (typeStx, name, proofStx?, ← isProp type)
 
 -- #check commandToTactic
 
@@ -1210,22 +1210,22 @@ If the assertion involves existential quantification, additional handling is don
 @[codegen "assert_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  let (stx, tac) ← typeStx js
+  let (stx, tac, _) ← typeStx js
   `(command| example : $stx := by $tac)
 | _, `commandSeq, js => do
-  let (stx, tac) ← typeStx js
+  let (stx, tac, isProp) ← typeStx js
   let hash₀ := hash stx.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let head ← `(command| theorem $name : $stx := by $tac)
   let dfn: DefData :=
-    { name := "assert_{hash₀}".toName, type := stx, value := stx, isProp := true, isNoncomputable := false, doc? := none}
+    { name := "assert_{hash₀}".toName, type := stx, value := stx, isProp := isProp, isNoncomputable := true, doc? := none}
   addDefn dfn
   -- dfn.addDeclaration
   let resolvedCmds ←
     CodeGenerator.cmdResolveExistsHave stx
   mkCommandSeq <| #[head] ++ resolvedCmds
 | _, ``tacticSeq, js => do
-  let (stx, tac) ← typeStx js
+  let (stx, tac, _) ← typeStx js
   let hash₀ := hash stx.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let headTac ← `(tactic| have $name : $stx := by $tac)
@@ -1235,12 +1235,12 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let tacSeq := #[headTac] ++ resTacs
   `(tacticSeq| $tacSeq*)
 | _, `tactic, js => do
-  let (stx, tac) ← typeStx js
+  let (stx, tac, _) ← typeStx js
   `(tactic| have : $stx := by $tac)
 | _, kind, _ => throwError
     s!"codegen: test does not work for kind {kind}"
 where typeStx (js: Json) :
-    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) :=
+    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) × Bool :=
       withoutModifyingState do
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in 'assertion_statement'"
@@ -1250,7 +1250,7 @@ where typeStx (js: Json) :
   let tacs := [← `(tacticSeq| simp?), ← `(tacticSeq| simp?; exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )]
   let tacs ← runTacticsAndFindTryThisI (type) tacs
   addPrelude <| "Assume: " ++ claim
-  return (← delabDetailed type, ← `(tacticSeq| $tacs*))
+  return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type)
 
 /- calculation
 {

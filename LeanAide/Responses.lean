@@ -272,7 +272,7 @@ def statementFromNameTask (data: Json) (_ : Translator) : TranslateM Json := do
           let valueStx? ←  value?.mapM fun value =>
              delabDetailed value
           let p ← Meta.isProp type
-          let stx ← mkStatement name typeStx valueStx? p
+          let stx ← mkStatement name typeStx valueStx? p (isNoncomputable := Lean.isNoncomputable (← getEnv) name)
           let typeView ← PrettyPrinter.ppExpr type
           let valueView? ← value?.mapM
             fun value => PrettyPrinter.ppExpr value
