@@ -106,13 +106,13 @@ instance : Append PromptExampleBuilder :=
 The new default PromptExampleBuilder.
 -/
 def default :=
-  PromptExampleBuilder.embedBuilder 8 4 4 ++ .searchBuilder 4 4
+  PromptExampleBuilder.similarBuilder 8 4 4 ++ .searchBuilder 4 4
 
 /--
 The classic default PromptExampleBuilder (which seems to work better).
 -/
 def classicDefault :=
-  PromptExampleBuilder.embedBuilder 20 2 2
+  PromptExampleBuilder.similarBuilder 20 2 2
 
 instance : Inhabited PromptExampleBuilder := ⟨default⟩
 
