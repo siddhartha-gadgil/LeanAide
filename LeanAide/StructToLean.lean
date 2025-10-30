@@ -275,6 +275,18 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
         let arg' ← `(letIdBinder| $arg:bracketedBinder)
         letArgs := letArgs.push arg'
       `(tactic| let $name $letArgs*  := $value)
+  | `(command| noncomputable def $name:ident $args:bracketedBinder* : $type := $value) =>
+      let mut letArgs := #[]
+      for arg in args do
+        let arg' ← `(letIdBinder| $arg:bracketedBinder)
+        letArgs := letArgs.push arg'
+      `(tactic| let $name $letArgs* : $type := $value)
+  | `(command| noncomputable def $name:ident $args:bracketedBinder* := $value) =>
+      let mut letArgs := #[]
+      for arg in args do
+        let arg' ← `(letIdBinder| $arg:bracketedBinder)
+        letArgs := letArgs.push arg'
+      `(tactic| let $name $letArgs*  := $value)
   | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
   | _ => `(tactic| sorry)
 
@@ -861,7 +873,7 @@ mutual
                 let name ← match name? with
                   | some n => pure n
                   | none => qp.server.theoremName (← PrettyPrinter.ppExpr thm).pretty
-                mkStatementStx name (← delabDetailed thm) pfTerm true
+                mkStatementStx name (← delabDetailed thm) pfTerm true (isNoncomputable := Lean.isNoncomputable (← getEnv) name)
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"
@@ -1075,6 +1087,10 @@ mutual
         -- logInfo s!"Found theorem"
         let name? := v.getObjString? "name" |>.map String.toName
         let name? := name?.filter (· ≠ Name.anonymous)
+        let isNonComputable? ← name?.mapM fun n => do
+          pure <| Lean.isNoncomputable (← getEnv) n
+        let isNonComputable :=
+          isNonComputable?.getD false
         let hypothesis :=
           v.getObjValAs? (Array Json) "hypothesis"
             |>.toOption.getD #[]
@@ -1097,7 +1113,7 @@ mutual
                 let pf := #[introTacs] ++  pf
                 let pfTerm ← `(by $pf*)
                 -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
-                mkStatementStx name? (← delabDetailed thm) pfTerm true
+                mkStatementStx name? (← delabDetailed thm) pfTerm true (isNoncomputable := isNonComputable)
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
           mkNoteCmd "No theorem conclusion or proof found"

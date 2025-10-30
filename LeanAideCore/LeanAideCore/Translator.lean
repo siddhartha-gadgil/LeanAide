@@ -79,7 +79,7 @@ partial def RelevantDefs.blob (nbd: RelevantDefs)(s: String) (pairs : Array (Str
         mkStatementWithDoc n
           (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
       | none =>
-        mkStatement n (← PrettyPrinter.delab info.type) none false
+        mkStatement n (← PrettyPrinter.delab info.type) none false (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
   | RelevantDefs.env => do
     defsBlob
   | .data d => return d.map (·.2)

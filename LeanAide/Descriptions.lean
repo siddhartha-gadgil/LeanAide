@@ -16,7 +16,7 @@ def theoremAndDefs (name: Name) (depth: Nat := 2) : MetaM <|
         let typeStx ← PrettyPrinter.delab type
         let valueStx? := none
         let statement ←
-          mkStatement (some name) typeStx valueStx? true
+          mkStatement (some name) typeStx valueStx? true (isNoncomputable := Lean.isNoncomputable (← getEnv) name)
         let doc? ← findDocString? env name
         let statement := match doc? with
           | some doc => s!"/-- {doc} -/\n" ++ statement
@@ -39,7 +39,7 @@ def theoremStatement (name: Name) : MetaM <|
         let typeStx ← PrettyPrinter.delab type
         let valueStx? := none
         let statement ←
-          mkStatement (some name) typeStx valueStx? true
+          mkStatement (some name) typeStx valueStx? true (isNoncomputable := Lean.isNoncomputable (← getEnv) name)
         let doc? ← findDocString? env name
         let statement := match doc? with
           | some doc => s!"/-- {doc} -/\n" ++ statement
@@ -67,7 +67,7 @@ def theoremAndLemmas (name: Name)
         let typeStx ← PrettyPrinter.delab type
         let valueStx? := none
         let statement ←
-          mkStatement (some name) typeStx valueStx? true
+          mkStatement (some name) typeStx valueStx? true (isNoncomputable := Lean.isNoncomputable (← getEnv) name)
         let doc? ← findDocString? env name
         let statement := match doc? with
           | some doc => s!"/-- {doc} -/\n" ++ statement
@@ -130,7 +130,7 @@ def describeDefPrompt (type val: Expr) (name: Name) :
         pure <| some <| ←  mkStatementWithDoc n
           (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
       | none =>
-        mkStatement n (← PrettyPrinter.delab info.type) none false
+        mkStatement n (← PrettyPrinter.delab info.type) none false (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
     let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
     return some (← fromTemplate "state_def_with_defs" [("defn", statement), ("definitions", defsBlob.trim)],
     statement, some defsBlob)
@@ -155,7 +155,7 @@ def proveAnonymousTheoremPrompt (type: Expr) :
         pure <| some <| ←  mkStatementWithDoc n
           (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
       | none =>
-        mkStatement n (← PrettyPrinter.delab info.type) none false
+        mkStatement n (← PrettyPrinter.delab info.type) none false (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
     let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
     return some (← fromTemplate "prove_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
     statement, some defsBlob)
@@ -170,7 +170,7 @@ def needsInd (name: Name) : MetaM <| Option (List Name) := do
         let typeStx ← PrettyPrinter.delab type
         let valueStx? := none
         let _ ←
-          mkStatement (some name) typeStx valueStx? true
+          mkStatement (some name) typeStx valueStx? true (isNoncomputable := Lean.isNoncomputable (← getEnv) name)
         let defNames := idents typeStx |>.eraseDups
         let defs ←  defNames.filterMapM <| fun n =>
           DefDataRepr.defFromName? n.toName

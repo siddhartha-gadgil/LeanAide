@@ -114,5 +114,5 @@ def defsBlob? (type: Expr) : MetaM <| Option String := do
         pure <| some <| ←  mkStatementWithDoc n
           (← PrettyPrinter.delab info.type) value? false (doc := doc) (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
       | none =>
-        mkStatement n (← PrettyPrinter.delab info.type) none false
+        mkStatement n (← PrettyPrinter.delab info.type) none false (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
     return some <| defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
