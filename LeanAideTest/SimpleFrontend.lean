@@ -114,6 +114,21 @@ F.map f = F.map g := by
 theorem CMap {C : Type u₁} [Category.{v₁, u₁} C] {D : Type u₂} [Category.{v₂, u₂} D] {E : Type u₃} [Category.{v₃, u₃} E](F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (F ⋙ G).map f = G.map (F.map f) := rfl
  "
+/--
+info: New definition: CMap with value fun {C} [CategoryTheory.Category.{v₁, u₁} C] {D} [CategoryTheory.Category.{v₂, u₂} D] {E}
+    [CategoryTheory.Category.{v₃, u₃} E] F G {X Y} f =>
+  rfl
+---
+info: New definition: CTFC with value fun {C} [CategoryTheory.Category.{v₁, u₁} C] {D} [CategoryTheory.Category.{v₂, u₂} D] F {X Y} {f g} h =>
+  Eq.mpr (id (congrArg (fun _a => F.map _a = F.map g) h)) (Eq.refl (F.map g))
+-/
+#guard_msgs in
+#new_defs "open CategoryTheory theorem CTFC {C : Type u₁} [CategoryTheory.Category.{v₁ ,u₁} C] {D : Type u₂} [Category.{v₂, u₂} D] (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y} (h : f = g) :
+F.map f = F.map g := by
+ rw[h]
+theorem CMap {C : Type u₁} [Category.{v₁, u₁} C] {D : Type u₂} [Category.{v₂, u₂} D] {E : Type u₃} [Category.{v₃, u₃} E](F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
+    (F ⋙ G).map f = G.map (F.map f) := rfl
+ "
 
 /-- info: ok: ∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m, n = m * orderOf a -/
 #guard_msgs in
@@ -302,14 +317,5 @@ cases h with
   · exact hq
   · exact hp
 "  `LinearMap.BilinForm
-
-
-#new_defs "open CategoryTheory theorem CTFC {C : Type u₁} [CategoryTheory.Category.{v₁ ,u₁} C] {D : Type u₂} [Category.{v₂, u₂} D] (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y} (h : f = g) :
-F.map f = F.map g := by
- rw[h]
-theorem CMap {C : Type u₁} [Category.{v₁, u₁} C] {D : Type u₂} [Category.{v₂, u₂} D] {E : Type u₃} [Category.{v₃, u₃} E](F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
-    (F ⋙ G).map f = G.map (F.map f) := rfl
- "
-
 
 end LeanAideTest
