@@ -94,7 +94,7 @@ def Translator.getMessages (s: String) (translator : Translator)
   let promptPairs := translatePromptPairs docPairs
   trace[Translate.info] m!"prompt pairs: \n{promptPairs}"
   let messages ←
-    translateMessages s promptPairs header dfns translator.toChat translator.server.hasSysPrompt
+    translateMessages s promptPairs header dfns translator.toChat translator.server.messageBuilder
   trace[Translate.info] m!"prompt: \n{messages.pretty}"
   return (messages, docPairs)
 

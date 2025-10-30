@@ -429,15 +429,39 @@ def syslessMessages (sys: String)(egs : List <| ChatPair)
 
 def sysPrompt' := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
+inductive MessageBuilder where
+  | syslessBuilder
+  | sysBuilder (developerHead := "system")
+  | userBuilder (headMessage : String) (userHead := "user")
+deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
+
+def MessageBuilder.buildMessages (mb: MessageBuilder)
+  (sysPrompt: String)(examples: Array ChatPair)
+  (query: String) : IO Json := do
+  match mb with
+  | .syslessBuilder =>
+    return syslessMessages sysPrompt examples.toList query
+  | .sysBuilder _ =>
+    return sysMessages sysPrompt examples.toList query
+  | .userBuilder headMessage userHead =>
+    let mut text : String := headMessage ++ "\n\n"
+    for ex in examples do
+      text := text ++ s!"{userHead}: {ex.user}\nassistant: {ex.assistant}\n\n"
+    text := text ++ query
+    return Json.arr <| #[.mkObj [("role", userHead), ("content", text)]]
+
+def ChatServer.messageBuilder (server: ChatServer) : MessageBuilder :=
+  if server.hasSysPrompt then
+    .sysBuilder
+  else
+    .syslessBuilder
+
 /--
 Given a query and a list of examples, build messages for a prompt for OpenAI
 -/
 def mkMessages(query : String)(examples: Array ChatPair)
-  (sysPrompt: String)(sysLess: Bool := false) : IO Json:= do
-  if sysLess then
-    return syslessMessages sysPrompt examples.toList query
-  else
-    return sysMessages sysPrompt examples.toList query
+  (sysPrompt: String)(msg: MessageBuilder := .sysBuilder) : IO Json:= do
+  msg.buildMessages sysPrompt examples query
 
 
 
@@ -455,7 +479,7 @@ def completions (server: ChatServer)
   (queryString: String)(sysPrompt: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (history: Array ChatPair := #[]): CoreM (Array String) := do
-  let messages ←  mkMessages queryString history sysPrompt !(server.hasSysPrompt)
+  let messages ←  mkMessages queryString history sysPrompt server.messageBuilder
   let data ← ChatServer.query server messages params
   match data.getObjVal? "choices" with
   | Except.error _ =>

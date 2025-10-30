@@ -508,7 +508,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
       runCommand cmd
     `(commandSeq| $cmds*)
 | some _, ``tacticSeq, js => do
-  let (stx, name, pf?, isProp) ← thmStxParts js
+  let (stx, name, pf?, _) ← thmStxParts js
   match pf? with
   | some pf =>
     let n := mkIdent name

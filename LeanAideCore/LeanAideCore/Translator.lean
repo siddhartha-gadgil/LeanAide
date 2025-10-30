@@ -98,7 +98,7 @@ def translatePromptPairs (docPairs: Array (String × Json))
 
 def translateMessages (s: String)(promptPairs: Array (String × Json))
       (header: String) (dfns: Array String) (toChat : ChatExampleType)
-      (sysPrompt: Bool) : TranslateM Json := do
+      (msg: MessageBuilder) : TranslateM Json := do
   let examples ←  promptPairs.filterMapM fun pair =>
     toChat.map? pair
   let preludeCode :=
@@ -109,7 +109,7 @@ def translateMessages (s: String)(promptPairs: Array (String × Json))
 
   trace[Translate.info] m!"examples: \n{(examples).size}"
   let s' := preludeCode ++ s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
-  mkMessages s' examples (← transPrompt) !sysPrompt
+  mkMessages s' examples (← transPrompt) msg
 
 /--
 Structure collecting together parameters used in translation.
