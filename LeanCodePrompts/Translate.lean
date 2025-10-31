@@ -87,7 +87,7 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 
 
 def Translator.getMessages (s: String) (translator : Translator)
-    (header: String := "Theorem") (useInstructions := translator.messageBuilder.useInstructions) :
+    (header: String := "Theorem") (useInstructions := translator.useInstructions) :
       TranslateM <| Json × Array (String × Json):= do
   let docPairs ← translator.pb.getPromptPairs s
   let dfns ← translator.relDefs.blob s docPairs
