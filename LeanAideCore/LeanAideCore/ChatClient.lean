@@ -303,10 +303,6 @@ def detailedType (js: Json) : MetaM <| Option String := do
     catch _ => pure none
   return type?' |>.orElse fun _ => type?
 
-def simpleDetailedChatExample : ToChatExample
-  | (docString, data) => do
-    let type? ← detailedType data
-    return type?.map fun type => {user := docString, assistant:= type}
 
 def fullStatement? (js: Json) : Option String := do
   let type ← js.getObjValAs? String "type" |>.toOption
@@ -356,6 +352,7 @@ def docChatExample
     return some {user := user, assistant := assistant}
     | _,_,_ => return none
 
+
 def docDetailedChatExample (fullThm: Bool := true)(fullDoc : Bool := true) : ToChatExample
   | (docString, data) => do
     let thm? ← detailedType data
@@ -376,6 +373,11 @@ def docDetailedChatExample (fullThm: Bool := true)(fullDoc : Bool := true) : ToC
       if fullThm then s!"{head} {name} : {thm} := {value}" else thm
     return some {user := user, assistant := assistant}
     | _,_,_ => return none
+
+def simpleDetailedChatExample : ToChatExample
+  | (docString, data) => do
+    docDetailedChatExample true false (docString, data)
+
 
 /-- Chat examples, i.e., the dialogues of `user` and `assistant`, from the examples. -/
 inductive ChatExampleType
@@ -434,7 +436,7 @@ def sysPrompt' := "You are a coding assistant who translates from natural langua
 inductive MessageBuilder where
   | syslessBuilder
   | sysBuilder (developerId := "system")
-  | directBuilder (headMessage egsHead egQueryHead egResponseHead : String) (userHead := "user")
+  | directBuilder (headMessage := sysPrompt') (egsHead := "The following are some examples of statements and their translations:") (egQueryHead := "## Natural language statement\n\n") (egResponseHead := "## Lean Code\n\n") (userHead := "user")
 deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
 
 def MessageBuilder.buildMessages (mb: MessageBuilder)
