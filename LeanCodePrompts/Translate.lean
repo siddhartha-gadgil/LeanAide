@@ -87,14 +87,14 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
 
 
 def Translator.getMessages (s: String) (translator : Translator)
-    (header: String := "Theorem") :
+    (header: String := "Theorem") (useInstructions := translator.messageBuilder.useInstructions) :
       TranslateM <| Json × Array (String × Json):= do
   let docPairs ← translator.pb.getPromptPairs s
   let dfns ← translator.relDefs.blob s docPairs
-  let promptPairs := translatePromptPairs docPairs
+  let promptPairs := if useInstructions then translatePromptPairs docPairs else docPairs
   trace[Translate.info] m!"prompt pairs: \n{promptPairs}"
   let messages ←
-    translateMessages s promptPairs header dfns translator.toChat translator.server.messageBuilder
+    translateMessages s promptPairs header dfns translator.toChat translator.messageBuilder
   trace[Translate.info] m!"prompt: \n{messages.pretty}"
   return (messages, docPairs)
 

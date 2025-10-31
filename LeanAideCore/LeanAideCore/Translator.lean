@@ -124,6 +124,7 @@ structure Translator where
   /-- Chat examples, i.e., the dialogues of `user` and `assistant`, from the examples. -/
   toChat : ChatExampleType := .simple
   /-- Relevant definitions to include in the prompt -/
+  messageBuilder : MessageBuilder := server.messageBuilder
   relDefs : RelevantDefs := .empty
   /-- Whether to do a roundtrip test -/
   roundTrip : Bool := false

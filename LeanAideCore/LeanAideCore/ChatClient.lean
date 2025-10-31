@@ -396,6 +396,8 @@ def ChatExampleType.map? (t: ChatExampleType) : ToChatExample :=
   | ChatExampleType.detailed => simpleDetailedChatExample
   | ChatExampleType.detailedDoc => docDetailedChatExample
 
+
+
 /--
 A Json object representing a chat message
 -/
@@ -432,7 +434,7 @@ def sysPrompt' := "You are a coding assistant who translates from natural langua
 inductive MessageBuilder where
   | syslessBuilder
   | sysBuilder (developerId := "system")
-  | userBuilder (headMessage egQueryHead egResponseHead : String) (userHead := "user")
+  | directBuilder (headMessage egsHead egQueryHead egResponseHead : String) (userHead := "user")
 deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
 
 def MessageBuilder.buildMessages (mb: MessageBuilder)
@@ -443,11 +445,14 @@ def MessageBuilder.buildMessages (mb: MessageBuilder)
     return syslessMessages sysPrompt examples.toList query
   | .sysBuilder developerId =>
     return sysMessages sysPrompt examples.toList query developerId
-  | .userBuilder headMessage egQueryHead egResponseHead userId =>
+  | directBuilder headMessage egsHead egQueryHead egResponseHead userId =>
     let mut text : String := headMessage ++ "\n\n"
-    for ex in examples do
-      text := text ++ s!"{egQueryHead}{ex.user}\n\n{egResponseHead}{ex.assistant}\n\n"
-    text := text ++ "---\n\n" ++ query
+    if !examples.isEmpty then
+      text := text ++ egsHead ++ "\n\n"
+      for eg in examples do
+        text := text ++ s!"{egQueryHead}{eg.user}\n\n{egResponseHead}{eg.assistant}\n\n"
+      text := text ++ "---\n\n"
+    text := text ++ query
     return Json.arr <| #[.mkObj [("role", userId), ("content", text)]]
 
 def ChatServer.messageBuilder (server: ChatServer) : MessageBuilder :=
@@ -455,6 +460,10 @@ def ChatServer.messageBuilder (server: ChatServer) : MessageBuilder :=
     .sysBuilder
   else
     .syslessBuilder
+
+def MessageBuilder.useInstructions : MessageBuilder → Bool
+  | .directBuilder .. => false
+  | _ => true
 
 /--
 Given a query and a list of examples, build messages for a prompt for OpenAI
