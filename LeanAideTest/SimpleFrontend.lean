@@ -60,6 +60,17 @@ info: ("∀ {K : Type u_1} [inst : DivisionSemiring K] {a b : K}, b ≠ 0 → a 
 #eval elabFrontDefTypeValViewM "theorem div_add_one{K : Type u_1} [DivisionSemiring K] {a b : K} (h : b ≠ 0) :
 a / b + 1 = (a + b) / b := (div_add_same h).symm" `div_add_one
 
+/--
+info: ("∀ {K : Type u_1} [inst : DivisionSemiring K] {a b : K}, b ≠ 0 → a / b + 1 = (a + b) / b",
+  "fun {K} [DivisionSemiring K] {a b} h => Eq.symm (div_add_same h)")
+-/
+#guard_msgs in
+#eval elabFrontDefTypeValViewM "variable {K : Type u_1}
+variable [DivisionSemiring K] {a b : K}
+theorem div_add_one' (h : b ≠ 0) :
+a / b + 1 = (a + b) / b := (div_add_same h).symm" `div_add_one'
+
+
 
 /--
 info: Messages
