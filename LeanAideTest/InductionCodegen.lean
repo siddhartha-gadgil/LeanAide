@@ -167,10 +167,11 @@ info: Try this: theorem nat_eq_one_or_eq_two_imp_lt_three : ∀ (n : ℕ), n = 1
         trace "Automation tactics found for n < 3, closing goal"
         grind only
       else
-        trace "Automation Tactics   simp?\n  grind?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
+        trace
+          "Automation Tactics   simp?\n  simp?\n  exact?\n  grind?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
         grind only
         trace
-          "Finished Automation Tactics   simp?\n  grind?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
+          "Finished Automation Tactics   simp?\n  simp?\n  exact?\n  grind?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
     done
 -/
 #guard_msgs in
