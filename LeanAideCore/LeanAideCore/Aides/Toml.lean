@@ -8,7 +8,8 @@ open Lean Lake Toml Parser
 namespace LeanAide
 
 partial def decodeJson (v: Value) : EDecodeM Json := match v with
-    | .string _ s => pure (Json.str s)
+    | .string _ s => do
+      pure (Json.str s)
     | .integer _ n => pure (Json.num n.toNat)
     | .float _ f => match JsonNumber.fromFloat? f with
       | .inr num => pure (Json.num num)
@@ -61,5 +62,18 @@ def decodeTable [FromJson α] (table: Table) : EDecodeM α := do
   match fromJson? j with
   | .ok a => pure a
   | .error err => throwDecodeErrorAt .missing s!"JSON decoding error: {err}"
+
+def decodeJson? (v: Value) : Option Json :=
+  EStateM.run' (s := (#[] : Array DecodeError)) (decodeJson v)
+
+def loadTomlAsJson? (file: System.FilePath := "leanaide.toml") :
+    IO <| Option Json := do
+  let table? ← loadTableIO? file
+  match table? with
+  | some table =>
+    let j? := decodeJson? (Value.table .missing table)
+    return j?
+  | none =>
+    return none
 
 end LeanAide
