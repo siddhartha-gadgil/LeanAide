@@ -1,8 +1,11 @@
 import Lean
 import Lake.Toml
 import Lake.Toml.Decode
+import Lake.Load.Toml
 
-open Lean Lake Toml
+open Lean Lake Toml Parser
+
+namespace LeanAide
 
 partial def decodeJson (v: Value) : EDecodeM Json := match v with
     | .string _ s => pure (Json.str s)
@@ -34,3 +37,29 @@ instance [FromJson α] : DecodeToml α where
     match fromJson? j with
     | .ok a => pure a
     | .error err => throwDecodeErrorAt v.ref s!"JSON decoding error: {err}"
+
+def loadTableL (inp : IO String) : LogIO Table := do
+  let ictx := mkInputContext (← inp) ("leanaide.toml")
+  match ← loadToml ictx |>.toBaseIO with
+  | Except.ok table => return table
+  | .error log =>
+    errorWithLog <| log.forM fun msg => do logError (← msg.toString)
+
+def loadTableIO? (file: System.FilePath := "leanaide.toml") :
+    IO <| Option Table := do
+  if ← file.pathExists then
+    let inp ← IO.FS.readFile file
+    loadTableL (pure inp) |>.run?'
+  else
+    return none
+
+def tableToJson (table: Table) : EDecodeM Json := do
+  decodeJson (Value.table .missing table)
+
+def decodeTable [FromJson α] (table: Table) : EDecodeM α := do
+  let j ← tableToJson table
+  match fromJson? j with
+  | .ok a => pure a
+  | .error err => throwDecodeErrorAt .missing s!"JSON decoding error: {err}"
+
+end LeanAide
