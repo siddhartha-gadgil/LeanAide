@@ -303,10 +303,6 @@ def detailedType (js: Json) : MetaM <| Option String := do
     catch _ => pure none
   return type?' |>.orElse fun _ => type?
 
-def simpleDetailedChatExample : ToChatExample
-  | (docString, data) => do
-    let type? ← detailedType data
-    return type?.map fun type => {user := docString, assistant:= type}
 
 def fullStatement? (js: Json) : Option String := do
   let type ← js.getObjValAs? String "type" |>.toOption
@@ -356,6 +352,7 @@ def docChatExample
     return some {user := user, assistant := assistant}
     | _,_,_ => return none
 
+
 def docDetailedChatExample (fullThm: Bool := true)(fullDoc : Bool := true) : ToChatExample
   | (docString, data) => do
     let thm? ← detailedType data
@@ -377,6 +374,11 @@ def docDetailedChatExample (fullThm: Bool := true)(fullDoc : Bool := true) : ToC
     return some {user := user, assistant := assistant}
     | _,_,_ => return none
 
+def simpleDetailedChatExample : ToChatExample
+  | (docString, data) => do
+    docDetailedChatExample true false (docString, data)
+
+
 /-- Chat examples, i.e., the dialogues of `user` and `assistant`, from the examples. -/
 inductive ChatExampleType
   /-- *user* just gives documentation string, *assistant* responds with only type -/
@@ -396,6 +398,8 @@ def ChatExampleType.map? (t: ChatExampleType) : ToChatExample :=
   | ChatExampleType.detailed => simpleDetailedChatExample
   | ChatExampleType.detailedDoc => docDetailedChatExample
 
+
+
 /--
 A Json object representing a chat message
 -/
@@ -406,9 +410,9 @@ def message (role content : String) : Json :=
 JSON object for the messages field in a chat prompt,
 assuming that there is a system message at the beginning.
 -/
-def sysMessages (sys: String) (egs : List <| ChatPair)
-  (query : String) : Json :=
-  let head := message "system" sys
+def sysMessages (sys: String) (egs : List ChatPair)
+  (query : String) (developerId : String := "system") : Json :=
+  let head := message developerId sys
   let egArr :=
     egs.flatMap (fun eg  => eg.messages)
   Json.arr <| head :: egArr ++ [message "user" query] |>.toArray
@@ -431,8 +435,8 @@ def sysPrompt' := "You are a coding assistant who translates from natural langua
 
 inductive MessageBuilder where
   | syslessBuilder
-  | sysBuilder (developerHead := "system")
-  | userBuilder (headMessage : String) (userHead := "user")
+  | sysBuilder (developerId := "system")
+  | directBuilder (headMessage := sysPrompt') (egsHead := "The following are some examples of statements and their translations:") (egQueryHead := "## Natural language statement\n\n") (egResponseHead := "## Lean Code\n\n") (userHead := "user")
 deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
 
 def MessageBuilder.buildMessages (mb: MessageBuilder)
@@ -441,20 +445,27 @@ def MessageBuilder.buildMessages (mb: MessageBuilder)
   match mb with
   | .syslessBuilder =>
     return syslessMessages sysPrompt examples.toList query
-  | .sysBuilder _ =>
-    return sysMessages sysPrompt examples.toList query
-  | .userBuilder headMessage userHead =>
+  | .sysBuilder developerId =>
+    return sysMessages sysPrompt examples.toList query developerId
+  | directBuilder headMessage egsHead egQueryHead egResponseHead userId =>
     let mut text : String := headMessage ++ "\n\n"
-    for ex in examples do
-      text := text ++ s!"{userHead}: {ex.user}\nassistant: {ex.assistant}\n\n"
+    if !examples.isEmpty then
+      text := text ++ egsHead ++ "\n\n"
+      for eg in examples do
+        text := text ++ s!"{egQueryHead}{eg.user}\n\n{egResponseHead}{eg.assistant}\n\n"
+      text := text ++ "---\n\n"
     text := text ++ query
-    return Json.arr <| #[.mkObj [("role", userHead), ("content", text)]]
+    return Json.arr <| #[.mkObj [("role", userId), ("content", text)]]
 
 def ChatServer.messageBuilder (server: ChatServer) : MessageBuilder :=
   if server.hasSysPrompt then
     .sysBuilder
   else
     .syslessBuilder
+
+def MessageBuilder.useInstructions : MessageBuilder → Bool
+  | .directBuilder .. => false
+  | _ => true
 
 /--
 Given a query and a list of examples, build messages for a prompt for OpenAI
