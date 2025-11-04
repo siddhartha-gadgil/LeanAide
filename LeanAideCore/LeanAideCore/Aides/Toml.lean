@@ -55,7 +55,11 @@ def loadTableIO? (file: System.FilePath := "leanaide.toml") :
     return none
 
 def tableToJson (table: Table) : EDecodeM Json := do
-  decodeJson (Value.table .missing table)
+  let mut accum : EDecodeM (Array (String × Json)) := pure #[]
+  for (k, v) in table.items do
+    accum := mergeErrors accum (decodeJson v) fun arr j =>
+      arr.push (k.toString, j)
+  return Json.mkObj (← accum).toList
 
 def decodeTable [FromJson α] (table: Table) : EDecodeM α := do
   let j ← tableToJson table
