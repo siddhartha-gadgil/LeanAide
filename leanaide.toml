@@ -7,8 +7,8 @@ roundTrip = false
 [translator.server.openAI]
 model = "gpt-4o"
 
-  [translator.relDefs]
-  seq = [ ]
+[translator.relDefs]
+seq = [ ]
 
 [translator.reasoningServer.openAI]
 model = "o3-mini"
@@ -40,11 +40,11 @@ preferDocs = true
 n = 4
 descFields = [ "concise-description", "description" ]
 
-  [translator.params]
-  temp = 1
-  stopTokens = [ ]
-  n = 8
-  maxTokens = 1_600
+[translator.params]
+temp = 1
+stopTokens = [ ]
+n = 8
+maxTokens = 1_600
 
 [translator.messageBuilder.sysBuilder]
 developerId = "system"
