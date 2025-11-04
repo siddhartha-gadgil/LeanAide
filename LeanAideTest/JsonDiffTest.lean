@@ -11,7 +11,7 @@ def j_empty_obj_1b := json% {}
 -- One object is empty, the other is not
 def j_empty_obj_2a := json% {}
 def j_empty_obj_2b := json% {"a": 1}
-/-- info: [LeanAide.JsonDiff.existsKey2only "a"] -/
+/-- info: [LeanAide.JsonDiff.existsKey2only "a" "1"] -/
 #guard_msgs in
 #eval jsonDiff j_empty_obj_2a j_empty_obj_2b
 -- Both arrays are empty
@@ -51,25 +51,29 @@ def j_null_2b := json% {"a": null}
 -- Key exists in the first object only
 def j_key_first_only_a := json% {"a": 1, "b": 2}
 def j_key_first_only_b := json% {"a": 1}
-/-- info: [LeanAide.JsonDiff.existsKey1only "b"] -/
+/-- info: [LeanAide.JsonDiff.existsKey1only "b" "2"] -/
 #guard_msgs in
 #eval jsonDiff j_key_first_only_a j_key_first_only_b
 -- Key exists in the second object only
 def j_key_second_only_a := json% {"a": 1}
 def j_key_second_only_b := json% {"a": 1, "c": 3}
-/-- info: [LeanAide.JsonDiff.existsKey2only "c"] -/
+/-- info: [LeanAide.JsonDiff.existsKey2only "c" "3"] -/
 #guard_msgs in
 #eval jsonDiff j_key_second_only_a j_key_second_only_b
 -- Different key casing (treated as different keys)
 def j_key_casing_a := json% {"key": "value"}
 def j_key_casing_b := json% {"Key": "value"}
-/-- info: [LeanAide.JsonDiff.existsKey1only "key", LeanAide.JsonDiff.existsKey2only "Key"] -/
+/--
+info: [LeanAide.JsonDiff.existsKey1only "key" "\"value\"", LeanAide.JsonDiff.existsKey2only "Key" "\"value\""]
+-/
 #guard_msgs in
 #eval jsonDiff j_key_casing_a j_key_casing_b
 -- Keys are a mix of present in one, both, or the other
 def j_key_mix_a := json% {"common": 1, "only_a": 2}
 def j_key_mix_b := json% {"common": 1, "only_b": 3}
-/-- info: [LeanAide.JsonDiff.existsKey1only "only_a", LeanAide.JsonDiff.existsKey2only "only_b"] -/
+/--
+info: [LeanAide.JsonDiff.existsKey1only "only_a" "2", LeanAide.JsonDiff.existsKey2only "only_b" "3"]
+-/
 #guard_msgs in
 #eval jsonDiff j_key_mix_a j_key_mix_b
 
@@ -204,7 +208,7 @@ info: [LeanAide.JsonDiff.atKey
    (LeanAide.JsonDiff.atIndex
      1
      (LeanAide.JsonDiff.atKey "reading" (LeanAide.JsonDiff.message "one has number 45 and another has number 48"))),
- LeanAide.JsonDiff.atKey "payload" (LeanAide.JsonDiff.atIndex 1 (LeanAide.JsonDiff.existsKey2only "unit"))]
+ LeanAide.JsonDiff.atKey "payload" (LeanAide.JsonDiff.atIndex 1 (LeanAide.JsonDiff.existsKey2only "unit" "\"%\""))]
 -/
 #guard_msgs in
 #eval jsonDiff j_complex_a j_complex_b

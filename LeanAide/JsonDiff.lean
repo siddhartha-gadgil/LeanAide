@@ -6,8 +6,8 @@ namespace LeanAide
 
 inductive JsonDiff where
   | message : String → JsonDiff
-  | existsKey1only : String → JsonDiff
-  | existsKey2only : String → JsonDiff
+  | existsKey1only : String → String → JsonDiff
+  | existsKey2only : String → String → JsonDiff
   | atKey : String → JsonDiff  → JsonDiff
   | atIndex : Nat → JsonDiff → JsonDiff
   deriving Repr
@@ -34,12 +34,12 @@ partial def jsonDiff : Json → Json → List JsonDiff
   for ⟨k,v⟩ in oa do
       let val? := b.find compare k
       match val? with
-      | none => error := error.append [JsonDiff.existsKey1only k]
+      | none => error := error.append [JsonDiff.existsKey1only k v.compress]
       | some val => error := error.append ((jsonDiff v val).map (fun d ↦ JsonDiff.atKey k d))
-  for ⟨k,_⟩ in ob do
+  for ⟨k,v⟩ in ob do
     let val? := a.find compare k
     match val? with
-    | none => error := error.append [JsonDiff.existsKey2only k]
+    | none => error := error.append [JsonDiff.existsKey2only k v.compress]
     | some _ => continue
   error
 | num a, num b => if a == b then [] else [.message s!"one has number {a} and another has number {b}"]
