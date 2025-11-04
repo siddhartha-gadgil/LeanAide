@@ -107,3 +107,20 @@ def writeToErr (s : String) : IO Unit := do
 #eval getEnv "OPENAI_API_KEY"
 
 #check φ
+
+#check Lake.Toml.ppInlineTable
+
+#print Lean.Json
+
+#check Lake.Toml.DecodeM
+
+#check Lean.fromJson?
+
+#print Lake.Toml.Value /-
+Lake.Toml.Value.string : Lean.Syntax → String → Lake.Toml.Value
+Lake.Toml.Value.integer : Lean.Syntax → ℤ → Lake.Toml.Value
+Lake.Toml.Value.float : Lean.Syntax → Float → Lake.Toml.Value
+Lake.Toml.Value.boolean : Lean.Syntax → Bool → Lake.Toml.Value
+Lake.Toml.Value.dateTime : Lean.Syntax → Lake.Toml.DateTime → Lake.Toml.Value
+Lake.Toml.Value.array : Lean.Syntax → Array Lake.Toml.Value → Lake.Toml.Value
+-/

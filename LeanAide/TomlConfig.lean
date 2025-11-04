@@ -8,21 +8,6 @@ open Toml
 
 namespace LeanAide
 
-def loadTableL (inp : IO String) : LogIO Table := do
-  let ictx := mkInputContext (← inp) ("leanaide.toml")
-  match ← loadToml ictx |>.toBaseIO with
-  | Except.ok table => return table
-  | .error log =>
-    errorWithLog <| log.forM fun msg => do logError (← msg.toString)
-
-def loadTableIO? (file: System.FilePath := "leanaide.toml") :
-    IO <| Option Table := do
-  if ← file.pathExists then
-    let inp ← IO.FS.readFile file
-    loadTableL (pure inp) |>.run?'
-  else
-    return none
-
 def decodeConfigToml (table : Table) (translator : Translator) : DecodeM Translator := do
   let n ← table.tryDecodeD  `n translator.params.n
   let tempFloat ← table.tryDecodeD  `temperature (translator.params.temp.toFloat)
