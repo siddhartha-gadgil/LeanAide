@@ -11,9 +11,17 @@ def callSimilaritySearch (query : String) (descField : String := "docString") (n
   match err_code with
   | 0 =>
     match Json.parse stdout with
-    | Except.error e => return Except.error e
+    | Except.error e => return Except.error <| "Could not parse JSON from sim-search curl response:\n" ++ e
     | Except.ok response =>
-      return response.getObjVal? "output"
+      match response.getObjValAs? String "output" with
+      | Except.error e => return Except.error <| "Error in extracting key `output` as String from sim-search curl response:\n" ++ e
+      | Except.ok val =>
+        match Json.parse val with
+        | Except.error e => return Except.error <| "Could not parse JSON from key `output` in sim-search curl response:\n" ++ e
+        | Except.ok ar =>
+          match ar with
+          | Json.arr a => return Except.ok a.toJson
+          | _ => return Except.error "Could not parse JSON as Array Json from key `output` in sim-search curl response"
   | _ =>
     let cmd ← LeanAide.pythonPath
     let ss := ("." : FilePath) / "SimilaritySearch" / "similarity_search.py"
