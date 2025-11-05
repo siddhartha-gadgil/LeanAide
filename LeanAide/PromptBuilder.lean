@@ -184,6 +184,19 @@ def pairsFromEmbeddingJson (js: String) :
             pairs := pairs.push (doc, js)
         return Except.ok pairs
 
+def pairsFromSimSearchJson (js : Json) :
+  CoreM <| Except String (Array (String × Json)) := do
+    match js.getArr? with
+    | Except.error e => return Except.error e
+    | Except.ok jsArr  =>
+      let mut pairs : Array <| String × Json := #[]
+      for js in jsArr do
+        match js.getObjValAs? String "docString" with
+        | Except.error e => return Except.error e
+        | Except.ok doc =>
+          pairs := pairs.push (doc, js)
+      return Except.ok pairs
+
 def pairsFromSearchResults (srs: Array SearchResult)(descFields: List String)
     (preferDocs : Bool) : TranslateM <| (Array (String × Json)) := do
     srs.filterMapM fun sr =>
@@ -199,7 +212,7 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
       let out ← callSimilaritySearch query descField n
       match out with
       | Except.ok outJs =>
-        match ← pairsFromEmbeddingJson (outJs.compress) with
+        match ← pairsFromSimSearchJson outJs with
         | Except.ok jsArr => return jsArr
         | Except.error e =>
           IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
