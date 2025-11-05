@@ -102,6 +102,18 @@ def model : ChatServer → String
   | generic model .. => model
   | gemini model _ => model
 
+def setModel (modelName: String) : ChatServer → ChatServer
+  | openAI _ h? => .openAI modelName h?
+  | azure deployment _ h? => .azure deployment modelName h?
+  | generic _ url h? p => .generic modelName url h? p
+  | gemini _ h? => .gemini modelName h?
+
+def setUrl (url: String) : ChatServer → ChatServer
+  | generic model _ h? p => .generic model url h? p
+  | openAI model h? => .generic model url h? false
+  | azure _ model h? => .generic model url h? false
+  | gemini model h? => .generic model url h? false
+
 def hasSysPrompt : ChatServer → Bool
   | openAI model _ => !(model.startsWith "o")
   | azure _ _ _ => true

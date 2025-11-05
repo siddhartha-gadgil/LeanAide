@@ -124,3 +124,13 @@ Lake.Toml.Value.boolean : Lean.Syntax → Bool → Lake.Toml.Value
 Lake.Toml.Value.dateTime : Lean.Syntax → Lake.Toml.DateTime → Lake.Toml.Value
 Lake.Toml.Value.array : Lean.Syntax → Array Lake.Toml.Value → Lake.Toml.Value
 -/
+
+open Lean
+structure S where
+  a : Nat
+  b : String
+deriving ToJson, FromJson, Repr
+
+#eval toJson ({ a := 10, b := "hello" } : S)
+
+#eval fromJson? (α := S) <| (toJson ({ a := 10, b := "hello" } : S)).mergeObj (Json.mkObj [("a", Json.num 20), ("d", Json.str "extra")])
