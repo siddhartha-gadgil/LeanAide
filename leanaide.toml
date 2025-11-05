@@ -1,8 +1,50 @@
-n = 15
-
-# LeanAide configuration file
-
 [translator]
-
-[translator.messageBuilder]
 useInstructions = true
+toChat = "simple"
+roundTripSelect = false
+roundTrip = false
+
+[translator.server.openAI]
+model = "gpt-4o"
+
+[translator.relDefs]
+seq = [ ]
+
+[translator.reasoningServer.openAI]
+model = "o3-mini"
+
+[[translator.pb.blend]]
+[translator.pb.blend.similarSearch]
+n = 8
+descField = "docString"
+
+[[translator.pb.blend]]
+[translator.pb.blend.similarSearch]
+n = 4
+descField = "concise-description"
+
+[[translator.pb.blend]]
+[translator.pb.blend.similarSearch]
+n = 4
+descField = "description"
+
+[[translator.pb.blend]]
+[translator.pb.blend.leansearch]
+preferDocs = true
+n = 4
+descFields = [ "concise-description", "description" ]
+
+[[translator.pb.blend]]
+[translator.pb.blend.moogle]
+preferDocs = true
+n = 4
+descFields = [ "concise-description", "description" ]
+
+[translator.params]
+temp = 1
+stopTokens = [ ]
+n = 8
+maxTokens = 1_600
+
+[translator.messageBuilder.sysBuilder]
+developerId = "system"

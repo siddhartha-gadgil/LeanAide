@@ -80,4 +80,22 @@ def loadTomlAsJson? (file: System.FilePath := "leanaide.toml") :
   | none =>
     return none
 
+partial def Toml.ofJson (j: Json) : Value :=
+  match j with
+  | Json.str s => Value.string .missing s
+  | Json.num n =>
+    match n with
+    | ⟨n, 0⟩ => Value.integer .missing n
+    | _      => Value.float .missing n.toFloat
+  | Json.bool b => Value.boolean .missing b
+  | Json.arr js =>
+    let vs := js.map Toml.ofJson
+    Value.array .missing vs
+  | Json.obj kvs =>
+    let items := kvs.toArray.map fun ⟨k, v⟩  => (k.toName, Toml.ofJson v)
+    let tm : Table := items.foldl (init := {}) fun t (k, v) => t.insert k v
+    Value.table .missing tm
+  | Json.null => Value.string .missing "null"
+
+
 end LeanAide

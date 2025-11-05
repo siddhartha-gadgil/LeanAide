@@ -6,6 +6,8 @@ namespace LeanAide
 
 open Cli Translator Lean
 
+#check Parsed.variableArgs
+
 def Translator.ofCli (p: Parsed) : IO Translator :=
   let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
     |>.getD 20
@@ -62,6 +64,14 @@ def Translator.ofCli (p: Parsed) : IO Translator :=
   let translator : Translator := {pb := pb, server := chatServer, params := chatParams}
   return translator
 
+def Translator.patch (translator: Translator) (data: Json) : Translator :=
+  match data.getObjVal? "translator" with
+  | Except.ok config =>
+    let json := (toJson translator).mergeObj config
+    fromJson? (α := Translator) json |>.toOption.getD translator
+  | _ => translator
+
+@[deprecated Translator.patch (since := "2025-11-04")]
 def Translator.configure (translator: Translator) (config: Json) : Translator :=
   let n := config.getObjValAs? Nat "n" |>.toOption.getD translator.params.n
   let translator := {translator with params := {translator.params with n := n}}

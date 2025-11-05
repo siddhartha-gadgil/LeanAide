@@ -124,3 +124,37 @@ Lake.Toml.Value.boolean : Lean.Syntax → Bool → Lake.Toml.Value
 Lake.Toml.Value.dateTime : Lean.Syntax → Lake.Toml.DateTime → Lake.Toml.Value
 Lake.Toml.Value.array : Lean.Syntax → Array Lake.Toml.Value → Lake.Toml.Value
 -/
+
+open Lean
+structure S where
+  a : Nat
+  b : String
+deriving ToJson, FromJson, Repr
+
+#eval toJson ({ a := 10, b := "hello" } : S)
+
+#eval fromJson? (α := S) <| (toJson ({ a := 10, b := "hello" } : S)).mergeObj (Json.mkObj [("a", Json.num 20), ("d", Json.str "extra")])
+
+def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
+  Lean.trace tag (fun _ => msg)
+  let traceToIO := tag = `Translate.info -- dummy condition for testing
+  if traceToIO then
+    IO.eprintln s!"[IO] {msg}"
+
+#check trace
+
+def egTrace : CoreM Nat := do
+  polyTrace `Translate.info "This is an info trace message."
+  return 42
+
+#eval egTrace
+
+set_option trace.Translate.info true
+#eval egTrace
+
+def egTrace' : CoreM Nat := do
+  polyTrace `Translate.debug "This is a debug trace message."
+  return 42
+
+set_option trace.Translate.debug true
+#eval egTrace'

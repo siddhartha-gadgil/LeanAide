@@ -13,6 +13,14 @@ import Scratch.Fiddle4
 
 #eval mnVal
 
+macro "#set_mn" n:term : command =>
+  let nStx := n
+  `(command| #eval $nStx)
+
+#set_mn 42
+
+#eval mnVal
+
 /--
 # Markdown in DocStrings
 
