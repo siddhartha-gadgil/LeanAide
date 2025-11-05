@@ -694,7 +694,7 @@ where
             translator.translateToPropStrict claim
           let typeStx ← delabDetailed type
           let proof ←
-            runTacticsAndFindTryThisI type [← `(tacticSeq| simp?), ← `(tacticSeq| simp?; exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer  {aesopPremises := 0, autoPremises := 0} )]
+            runTacticsAndFindTryThisI type [← `(tacticSeq| simp?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer  {aesopPremises := 0, autoPremises := 0} )]
           let proofStx ←
             `(tacticSeq| $proof*)
           let thm ← withPreludes claim
@@ -1247,7 +1247,7 @@ where typeStx (js: Json) :
   let type ← translator.translateToPropStrict claim
   let resultsUsed ←
     getResultsUsed translator.toTranslator js
-  let tacs := [← `(tacticSeq| simp?), ← `(tacticSeq| simp?; exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )]
+  let tacs := [← `(tacticSeq| simp?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )]
   let tacs ← runTacticsAndFindTryThisI (type) tacs
   addPrelude <| "Assume: " ++ claim
   return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type)
@@ -1557,7 +1557,7 @@ Generate code for a multi-condition cases statement. This is used to handle proo
 -/
 def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json)) (exhaustiveness: Option <| Syntax.Tactic) : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
-    let pf ← runTacticsAndFindTryThisI (← goal.getType) [← `(tacticSeq| simp?), ← `(tacticSeq| simp?; exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})]
+    let pf ← runTacticsAndFindTryThisI (← goal.getType) [← `(tacticSeq| simp?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})]
     let pf := match exhaustiveness with
       | some e => #[e] ++ pf
       | none => pf
@@ -1836,7 +1836,7 @@ def concludeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
   let stx ← delabDetailed type
   let resultsUsed ←
     getResultsUsed translator.toTranslator js
-  let tacs := [← `(tacticSeq| simp?), ← `(tacticSeq| simp?; exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )]
+  let tacs := [← `(tacticSeq| simp?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer [ $resultsUsed,* ] {aesopPremises := 0, autoPremises := 0} )]
   let pf ← runTacticsAndFindTryThisI type tacs
   `(tacticSeq| have : $stx := by $pf*)
 | none, ``tacticSeq, _ => do return none
@@ -1850,7 +1850,7 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
   | [] => goal.withContext do
     let inductionIds := inductionNames.map Lean.mkIdent
     let pf ← runTacticsAndFindTryThisI
-      (← goal.getType) [← `(tacticSeq| simp?), ← `(tacticSeq| simp?; exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer [ $inductionIds,* ] {aesopPremises := 0, autoPremises := 0} )]
+      (← goal.getType) [← `(tacticSeq| simp?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer [ $inductionIds,* ] {aesopPremises := 0, autoPremises := 0} )]
     `(tacticSeq| $pf*)
   | (conditionType, trueCaseProof, inductionHyps) :: tail => goal.withContext do
     IO.eprintln s!"number of cases (remaining): {tail.length + 1}"

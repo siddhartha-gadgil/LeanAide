@@ -48,4 +48,15 @@ info: #findTryThis? found tactics: ⏎
 -/
 #guard_msgs in
 #findTryThis? ∀ {G : Type u_11} {H : Type u_12} [Group G] [Group H] (ϕ : G ≃* H),
-        Function.Bijective (⇑ϕ.toMonoidHom : G → H) using simp?; exact?
+        Function.Bijective (⇑ϕ.toMonoidHom : G → H) using try (try simp?); exact?
+
+opaque P : Prop
+
+axiom ax : P
+
+/-- info: #findTryThis? found tactics: simp only [ax] -/
+#guard_msgs in
+#findTryThis? P using (try simp?); simp? [ax]
+
+example : P := by
+  (try simp?); simp? [ax]
