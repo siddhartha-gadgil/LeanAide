@@ -21,6 +21,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
   let translator ←  Translator.ofCli p
+  IO.eprintln (toJson translator).pretty
   let model := translator.server.model
   let showPrompt := p.hasFlag "show_prompt"
   let tag := p.hasFlag "tag"

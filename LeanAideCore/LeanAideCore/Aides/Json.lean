@@ -65,6 +65,55 @@ def getKVorType? (js : Json) : Option (String × Json) :=
         none
   | _ => none
 
+partial def patch (js diff : Json) : Json :=
+  match js, diff with
+  | Json.obj kvs₁, Json.obj kvs₂ =>
+    match kvs₁.toArray, kvs₂.toArray with
+    | #[⟨k₁, v₁⟩], #[⟨k₂, v₂⟩] => -- single key-value pair; expected to be inductive type
+      if k₁ == k₂ then
+        let v := patch v₁ v₂
+        Json.mkObj [(k₁, v)]
+      else
+        diff
+    | _, _ =>
+      let keys₁ := kvs₁.toArray.map (fun ⟨k, _⟩ => k)
+      let updated := kvs₁.toArray.map fun ⟨k, v₁⟩ =>
+        match kvs₂.find compare k with
+        | some v₂ =>
+          let v := patch v₁ v₂
+          (k, v)
+        | none => (k, v₁)
+      let newPairs :=
+        kvs₂.toArray.filter (fun ⟨k, _⟩ => !keys₁.contains k) |>.map fun ⟨k, v⟩ => (k, v)
+      Json.mkObj (updated ++ newPairs).toList
+  | _, Json.obj kvs₂ =>
+    if kvs₂.toArray.isEmpty then
+      js
+    else
+      diff
+  | _, _ => diff
+
+partial def getPatch? (js₁ js₂ : Json) : Option Json :=
+  match js₁, js₂ with
+  | Json.obj kvs₁, Json.obj kvs₂ =>
+    let keys₁ := kvs₁.toArray.map (fun ⟨k, _⟩ => k)
+    let updated := kvs₁.toArray.foldl (init := #[]) fun acc ⟨k, v₁⟩ =>
+      match kvs₂.find compare k with
+      | some v₂ =>
+        let vDiff := getPatch? v₁ v₂
+        match vDiff with
+        | some vDiff => acc.push (k, vDiff)
+        | none => acc
+      | none => acc
+    let newPairs :=
+      kvs₂.toArray.filter (fun ⟨k, _⟩ => !keys₁.contains k) |>.map fun ⟨k, v⟩ => (k, v)
+    some <| Json.mkObj (updated ++ newPairs).toList
+  | _, _ =>
+    if js₁ != js₂ then
+      some js₂
+    else
+      none
+
 end Lean.Json
 
 

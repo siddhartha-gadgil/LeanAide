@@ -118,7 +118,7 @@ structure Translator where
   /-- The LLM server being used. -/
   server : ChatServer := .default
   /-- Parameters for the LLM server called. -/
-  params : ChatParams := {n := 8}
+  params : ChatParams := {n := 10}
   /-- Builder for prompt examples given sentence. -/
   pb : PromptExampleBuilder := .default
   /-- Chat examples, i.e., the dialogues of `user` and `assistant`, from the examples. -/
@@ -162,9 +162,9 @@ def CodeGenerator.default : CodeGenerator :=
 -- #eval (fromJson? (toJson <| ({} : CodeGenerator)) : Except _ Translator)
 
 register_option lean_aide.translate.prompt_size : Nat :=
-  { defValue := 10
+  { defValue := 8
     group := "lean_aide.translate"
-    descr := "Number of document strings in a prompt (default 10)" }
+    descr := "Number of document strings in a prompt (default 8)" }
 
 register_option lean_aide.translate.concise_desc_size : Nat :=
   { defValue := 0
@@ -180,7 +180,7 @@ register_option lean_aide.translate.desc_size : Nat :=
 register_option lean_aide.translate.choices : Nat :=
   { defValue := 10
     group := "lean_aide.translate"
-    descr := "Number of outputs to request in a query (default 5)." }
+    descr := "Number of outputs to request in a query (default 8)." }
 
 register_option lean_aide.translate.use_defintions : Bool :=
   { defValue := true
@@ -228,7 +228,7 @@ register_option lean_aide.translate.has_sysprompt : Bool :=
     descr := "Whether the server has a system prompt." }
 
 register_option lean_aide.translate.temperature10 : Int :=
-  { defValue := 8
+  { defValue := 10
     group := "lean_aide.translate"
     descr := "temperature * 10." }
 
@@ -282,7 +282,7 @@ def chatServer : CoreM ChatServer := do
       return ChatServer.generic model url none (← hasSysPrompt)
 
 def Translator.defaultM : CoreM Translator := do
-  return {server := ← chatServer, pb := PromptExampleBuilder.similarBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams, toChat := .doc}
+  return {server := ← chatServer, pb := PromptExampleBuilder.similarBuilder (← promptSize) (← conciseDescSize) 0, params := ← chatParams, toChat := .simple}
 
 def Translator.defaultDefM : CoreM Translator := do
   let t ← defaultM

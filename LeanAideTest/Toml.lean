@@ -1,6 +1,7 @@
 import LeanAideCore.Aides.Toml
 import LeanAideCore.Translator
 import LeanAide.JsonDiff
+import LeanAide.TranslatorParams
 
 open Lean
 
@@ -43,5 +44,24 @@ info: [LeanAide.JsonDiff.atKey
 #eval checkRoundtrip
 
 -- #eval writeTranslatorJson
+
+def compareDefaultM : CoreM (List JsonDiff) := do
+  let translator₁ : Translator := {}
+  let json₁ := Json.mkObj [("translator", toJson translator₁)]
+  let translator₂ ← Translator.defaultM
+  let json₂ := Json.mkObj [("translator", toJson translator₂)]
+  let diff := jsonDiff json₁ json₂
+  return diff
+
+#eval compareDefaultM
+
+def cliDiff : IO (List JsonDiff) := do
+  let translator₁ : Translator := {}
+  let json₁ := Json.mkObj [("translator", toJson translator₁)]
+  let json₂ := Json.mkObj [("translator", toJson Translator.CliDefaultJson)]
+  let diff := jsonDiff json₁ json₂
+  return diff
+
+#eval cliDiff
 
 end LeanAide
