@@ -7,6 +7,8 @@ initialize
   registerTraceClass `Translate.warning
   registerTraceClass `leanaide.proof.info
   registerTraceClass `leanaide.codegen.info
+  registerTraceClass `IO.info
+  registerTraceClass `File.info
 
 register_option leanaide.logging : Bool :=
   { defValue := false
@@ -54,3 +56,14 @@ def resourcesDir : IO System.FilePath := do
   return base / "resources"
 
 -- #eval resourcesDir
+
+def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
+  Lean.trace tag (fun _ => msg)
+  match tag.components.head! with
+  | `IO    => IO.eprintln s!"[IO] {msg}"
+  | `File  => do
+      let currentDir ← liftM <| IO.currentDir
+      IO.FS.writeFile
+        (currentDir.toString ++ "/" ++ "output.log")
+        (s!"[File] {msg}")
+  | _ => IO.eprintln s!"[Error] {tag.toString} doesn't exist"
