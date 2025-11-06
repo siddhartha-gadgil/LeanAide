@@ -185,6 +185,7 @@ def similarity_search(query, model, index, descField, num):
         # Modify js
         js = modify_js(js, descField, distances[0][i])
         output.append(js)
+    # Return as a list of dicts to parse as Array Json in Lean
     return output
 
 def run_similarity_search(model, model_name, num, query = "mathematics", descField = "docString"):
