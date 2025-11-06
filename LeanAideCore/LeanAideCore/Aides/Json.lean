@@ -117,7 +117,11 @@ partial def getPatch? (js₁ js₂ : Json) : Option Json :=
         | none => acc
       let newPairs :=
         kvs₂.toArray.filter (fun ⟨k, _⟩ => !keys₁.contains k) |>.map fun ⟨k, v⟩ => (k, v)
-      some <| Json.mkObj (updated ++ newPairs).toList
+      let changes := (updated ++ newPairs).toList
+      if changes.isEmpty then
+        none
+      else
+        some <| Json.mkObj changes
   | _, _ =>
     if js₁ != js₂ then
       some js₂
