@@ -64,4 +64,13 @@ def cliDiff : IO (List JsonDiff) := do
 
 #eval cliDiff
 
+def cliPatch : Option Json :=
+  let translator₁ : Translator := {}
+  let json₁ := Json.mkObj [("translator", toJson translator₁)]
+  let json₂ := Json.mkObj [("translator", toJson Translator.CliDefaultJson)]
+  let diff := json₁.getPatch? json₂
+  diff
+
+#eval cliPatch
+
 end LeanAide

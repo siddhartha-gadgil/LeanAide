@@ -96,18 +96,28 @@ partial def patch (js diff : Json) : Json :=
 partial def getPatch? (js₁ js₂ : Json) : Option Json :=
   match js₁, js₂ with
   | Json.obj kvs₁, Json.obj kvs₂ =>
-    let keys₁ := kvs₁.toArray.map (fun ⟨k, _⟩ => k)
-    let updated := kvs₁.toArray.foldl (init := #[]) fun acc ⟨k, v₁⟩ =>
-      match kvs₂.find compare k with
-      | some v₂ =>
+    match kvs₁.toArray, kvs₂.toArray with
+    | #[⟨k₁, v₁⟩], #[⟨k₂, v₂⟩] => -- single key-value pair; expected to be inductive type
+      if k₁ == k₂ then
         let vDiff := getPatch? v₁ v₂
         match vDiff with
-        | some vDiff => acc.push (k, vDiff)
+        | some vDiff => some <| Json.mkObj [(k₁, vDiff)]
+        | none => none
+      else
+        some js₂
+    | _, _ =>
+      let keys₁ := kvs₁.toArray.map (fun ⟨k, _⟩ => k)
+      let updated := kvs₁.toArray.foldl (init := #[]) fun acc ⟨k, v₁⟩ =>
+        match kvs₂.find compare k with
+        | some v₂ =>
+          let vDiff := getPatch? v₁ v₂
+          match vDiff with
+          | some vDiff => acc.push (k, vDiff)
+          | none => acc
         | none => acc
-      | none => acc
-    let newPairs :=
-      kvs₂.toArray.filter (fun ⟨k, _⟩ => !keys₁.contains k) |>.map fun ⟨k, v⟩ => (k, v)
-    some <| Json.mkObj (updated ++ newPairs).toList
+      let newPairs :=
+        kvs₂.toArray.filter (fun ⟨k, _⟩ => !keys₁.contains k) |>.map fun ⟨k, v⟩ => (k, v)
+      some <| Json.mkObj (updated ++ newPairs).toList
   | _, _ =>
     if js₁ != js₂ then
       some js₂
