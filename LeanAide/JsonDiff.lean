@@ -46,4 +46,4 @@ partial def jsonDiff : Json → Json → List JsonDiff
 | .bool a, .bool b => if a == b then [] else [.message s!"one has boolean {a} and another has boolean {b}"]
 | .str a, .str b => if a == b then [] else [.message s!"one has string {a} and another has string {b}"]
 | .null, .null => []
-| _,_ => [.message "terms have different types"]
+| js₁, js₂ => [.message s!"terms have different types: {js₁.compress} versus {js₂.compress}"]

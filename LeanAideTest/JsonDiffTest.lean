@@ -32,7 +32,7 @@ info: [LeanAide.JsonDiff.atIndex 0 (LeanAide.JsonDiff.message "first list does n
 -- Comparing an empty object and an empty array
 def j_empty_mix_a := json% {}
 def j_empty_mix_b := json% []
-/-- info: [LeanAide.JsonDiff.message "terms have different types"] -/
+/-- info: [LeanAide.JsonDiff.message "terms have different types: {} versus []"] -/
 #guard_msgs in
 #eval jsonDiff j_empty_mix_a j_empty_mix_b
 -- Comparing two null values
@@ -44,7 +44,7 @@ def j_null_1b := null
 -- Comparing null with a non-null value
 def j_null_2a := null
 def j_null_2b := json% {"a": null}
-/-- info: [LeanAide.JsonDiff.message "terms have different types"] -/
+/-- info: [LeanAide.JsonDiff.message "terms have different types: null versus {\"a\":null}"] -/
 #guard_msgs in
 #eval jsonDiff j_null_2a j_null_2b
 
@@ -104,7 +104,9 @@ info: [LeanAide.JsonDiff.atKey "isEnabled" (LeanAide.JsonDiff.message "one has b
 -- Same numeric value, but different JSON types (number vs string)
 def j_val_type_a := json% {"id": 123}
 def j_val_type_b := json% {"id": "123"}
-/-- info: [LeanAide.JsonDiff.atKey "id" (LeanAide.JsonDiff.message "terms have different types")] -/
+/--
+info: [LeanAide.JsonDiff.atKey "id" (LeanAide.JsonDiff.message "terms have different types: 123 versus \"123\"")]
+-/
 #guard_msgs in
 #eval jsonDiff j_val_type_a j_val_type_b
 -- Arrays of different lengths (first is shorter)
@@ -130,7 +132,9 @@ info: [LeanAide.JsonDiff.atIndex 1 (LeanAide.JsonDiff.message "one has number 2 
 -- Same length, different element types at an index
 def j_arr_type_a := json% [1, "ok", 3]
 def j_arr_type_b := json% [1, true, 3]
-/-- info: [LeanAide.JsonDiff.atIndex 1 (LeanAide.JsonDiff.message "terms have different types")] -/
+/--
+info: [LeanAide.JsonDiff.atIndex 1 (LeanAide.JsonDiff.message "terms have different types: \"ok\" versus true")]
+-/
 #guard_msgs in
 #eval jsonDiff j_arr_type_a j_arr_type_b
 -- Difference inside a nested object
@@ -146,7 +150,11 @@ info: [LeanAide.JsonDiff.atKey
 -- A key is an object in one and a primitive in another
 def j_nested_type_a := json% {"user": {"name": "Alex"}}
 def j_nested_type_b := json% {"user": "Alex"}
-/-- info: [LeanAide.JsonDiff.atKey "user" (LeanAide.JsonDiff.message "terms have different types")] -/
+/--
+info: [LeanAide.JsonDiff.atKey
+   "user"
+   (LeanAide.JsonDiff.message "terms have different types: {\"name\":\"Alex\"} versus \"Alex\"")]
+-/
 #guard_msgs in
 #eval jsonDiff j_nested_type_a j_nested_type_b
 -- Difference inside an array within an object

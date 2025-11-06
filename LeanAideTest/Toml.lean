@@ -66,8 +66,8 @@ def cliDiff : IO (List JsonDiff) := do
 
 def cliPatch : Option (Json × (List JsonDiff)) :=
   let translator₁ : Translator := {}
-  let json₁ := Json.mkObj [("translator", toJson translator₁)]
-  let json₂ := Json.mkObj [("translator", toJson Translator.CliDefaultJson)]
+  let json₁ := toJson translator₁
+  let json₂ := toJson Translator.CliDefaultJson
   let diff? := json₁.getPatch? json₂
   diff?.map fun diff =>
     (diff, jsonDiff (json₁.patch diff) json₂)
@@ -76,26 +76,41 @@ def cliPatch : Option (Json × (List JsonDiff)) :=
 
 def envPatch : CoreM <| Option (Json × (List JsonDiff)) := do
   let translator₁ : Translator := {}
-  let json₁ := Json.mkObj [("translator", toJson translator₁)]
+  let json₁ := toJson translator₁
   let translator₂ ← Translator.defaultM
-  let json₂ := Json.mkObj [("translator", toJson translator₂)]
+  let json₂ := toJson translator₂
   let diff? := json₁.getPatch? json₂
   return diff?.map fun diff =>
     (diff, jsonDiff (json₁.patch diff) json₂)
 
 #eval envPatch
 
-def authPatch : CoreM <| Option (Json × (List JsonDiff)) := do
+def authPatch : Option (Json × (List JsonDiff)) :=
   let translator₁ : Translator := {}
-  let json₁ := Json.mkObj [("translator", toJson translator₁)]
+  let json₁ := toJson translator₁
   let translator₂ : Translator :=
     {server := translator₁.server.addKey "magic"}
-  let json₂ := Json.mkObj [("translator", toJson translator₂)]
+  let json₂ := toJson translator₂
   let diff? := json₁.getPatch? json₂
-  return diff?.map fun diff =>
+  diff?.map fun diff =>
     (diff, jsonDiff (json₁.patch diff) json₂)
 
 #eval authPatch
+
+def authDiffPatch : CoreM <| Option (Json × (List JsonDiff) × List (JsonDiff)) := do
+  let translator₁ : Translator := {}
+  let json₁ := toJson translator₁
+  let translator₂ : Translator :=
+    {server := translator₁.server.addKey "magic"}
+  let json₂ := toJson translator₂
+  let translator₃ ← Translator.defaultM
+  let json₃ := toJson translator₃
+  let translator₄ := {translator₃ with server:= translator₃.server.addKey "magic"}
+  let diff? := json₁.getPatch? json₂
+  diff?.mapM fun diff => do
+    return (diff, jsonDiff (json₃.patch diff) json₃, jsonDiff (json₃.patch diff) (toJson translator₄))
+
+#eval authDiffPatch
 
 
 end LeanAide
