@@ -43,7 +43,7 @@ descFields = [ "concise-description", "description" ]
 [translator.params]
 temp = 1
 stopTokens = [ ]
-n = 8
+n = 10
 maxTokens = 1_600
 
 [translator.messageBuilder.sysBuilder]

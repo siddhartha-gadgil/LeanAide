@@ -40,7 +40,7 @@ def Translator.ofCli (p: Parsed) : IO Translator :=
   let queryNum := p.flag? "num_responses" |>.map (fun s => s.as! Nat)
     |>.getD 10
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
-    |>.getD 8
+    |>.getD 10
   let temp : JsonNumber := ⟨temp10, 1⟩
   let gemini := p.hasFlag "gemini"
   let model := p.flag? "model" |>.map (fun s => s.as! String)
@@ -70,6 +70,21 @@ def Translator.patch (translator: Translator) (data: Json) : Translator :=
     let json := (toJson translator).mergeObj config
     fromJson? (α := Translator) json |>.toOption.getD translator
   | _ => translator
+
+def Translator.CliDefaultJson := json% {"useInstructions": true,
+ "toChat": "simple",
+ "server": {"openAI": {"model": "gpt-4o", "authHeader?": null}},
+ "roundTripSelect": false,
+ "roundTrip": false,
+ "relDefs": {"seq": []},
+ "reasoningServer": {"openAI": {"model": "o3-mini", "authHeader?": null}},
+ "pb":
+ {"blend":
+  [{"similarSearch": {"n": 20, "descField": "docString"}},
+   {"similarSearch": {"n": 2, "descField": "concise-description"}},
+   {"similarSearch": {"n": 2, "descField": "description"}}]},
+ "params": {"temp": 1, "stopTokens": [], "n": 10, "maxTokens": 1600},
+ "messageBuilder": {"sysBuilder": {"developerId": "system"}}}
 
 @[deprecated Translator.patch (since := "2025-11-04")]
 def Translator.configure (translator: Translator) (config: Json) : Translator :=
