@@ -7,8 +7,8 @@ initialize
   registerTraceClass `Translate.warning
   registerTraceClass `leanaide.proof.info
   registerTraceClass `leanaide.codegen.info
-  registerTraceClass `IO.info
-  registerTraceClass `File.info
+  registerTraceClass `PaperCodes.info
+  registerTraceClass `PaperCodes.error
 
 register_option leanaide.logging : Bool :=
   { defValue := false
@@ -57,13 +57,53 @@ def resourcesDir : IO System.FilePath := do
 
 -- #eval resourcesDir
 
+initialize polyTraceIO : IO.Ref Bool ← IO.mkRef false
+initialize polyTraceFile : IO.Ref Bool ← IO.mkRef false
+
+namespace polyTraceIO
+  def on (_ : Unit) : IO Unit := do
+    let current ← polyTraceIO.get
+    if current then pure () else polyTraceIO.set true
+
+  def off (_ : Unit) : IO Unit := do
+    let current ← polyTraceIO.get
+    if current then polyTraceIO.set false else pure ()
+
+  def status (_ : Unit) : IO Bool := do
+    (← polyTraceIO.get)
+    |> pure
+
+end polyTraceIO
+
+namespace polyTraceFile
+  def on (_ : Unit) : IO Unit := do
+    let current ← polyTraceFile.get
+    if current then pure () else polyTraceFile.set true
+
+  def off (_ : Unit) : IO Unit := do
+    let current ← polyTraceFile.get
+    if current then polyTraceFile.set false
+
+  def status (_ : Unit) : IO Bool := do
+    (← polyTraceFile.get)
+    |> pure
+
+end polyTraceFile
+
 def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
+-- always print trace
   Lean.trace tag (fun _ => msg)
-  match tag.components.head! with
-  | `IO    => IO.eprintln s!"[IO] {msg}"
-  | `File  => do
-      let currentDir ← liftM <| IO.currentDir
-      IO.FS.writeFile
-        (currentDir.toString ++ "/" ++ "output.log")
-        (s!"[File] {msg}")
-  | _ => IO.eprintln s!"[Error] {tag.toString} doesn't exist"
+-- use mkRef to globally update this
+  let isIO ← liftM <| polyTraceIO.status ()
+  let isFile ← liftM <| polyTraceFile.status ()
+
+  match isIO, isFile with
+  | true, true | false, false =>
+      throwError "Invalid State : Both IO and File switches are turned on or both are turned off"
+  | true, false =>
+      IO.eprintln s!"[IO] {msg}"
+  | false, true =>
+      let currentDir ← IO.currentDir
+      let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
+      IO.eprintln s!"The output is logged to {logFilePath}"
+      IO.FS.writeFile logFilePath s!"[File] {msg}"
