@@ -10,15 +10,6 @@ Each function corresponds to a specific JSON schema element and generates the ap
 -/
 open Lean Meta Qq Elab Term
 
--- #eval polyTraceIO.on ()
--- #eval polyTrace `PaperCodes.info "This is an example"
--- #eval polyTraceIO.off ()
--- #eval polyTraceFile.on ()
--- #eval polyTraceFile.status ()
--- #eval polyTrace `PaperCodes.info "This is a file example"
--- #eval polyTraceFile.status ()
--- #eval polyTraceIO.status ()
-
 namespace LeanAide
 
 open Codegen Translate
