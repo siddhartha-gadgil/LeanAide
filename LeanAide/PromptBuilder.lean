@@ -168,21 +168,25 @@ partial def num : PromptExampleBuilder →  Nat
 | sequence ps => (ps.map num).sum
 | blend ps => (ps.map num).sum
 
-def pairsFromEmbeddingJson (js: String) :
+def pairsFromEmbeddingJson (js : Json) :
+  CoreM <| Except String (Array (String × Json)) := do
+    match js.getArr? with
+    | Except.error e => return Except.error e
+    | Except.ok jsArr  =>
+      let mut pairs : Array <| String × Json := #[]
+      for js in jsArr do
+        match js.getObjValAs? String "docString" with
+        | Except.error e => return Except.error e
+        | Except.ok doc =>
+          pairs := pairs.push (doc, js)
+      return Except.ok pairs
+
+def pairsFromEmbeddingJsonString (js: String) :
     CoreM <| Except String (Array (String × Json)) := do
   match Json.parse js with
   | Except.error e => return Except.error e
   | Except.ok js =>
-      match js.getArr? with
-      | Except.error e => return Except.error e
-      | Except.ok jsArr  =>
-        let mut pairs : Array <| String × Json := #[]
-        for js in jsArr do
-          match js.getObjValAs? String "docString" with
-          | Except.error e => return Except.error e
-          | Except.ok doc =>
-            pairs := pairs.push (doc, js)
-        return Except.ok pairs
+      pairsFromEmbeddingJson js
 
 def pairsFromSearchResults (srs: Array SearchResult)(descFields: List String)
     (preferDocs : Bool) : TranslateM <| (Array (String × Json)) := do
@@ -196,17 +200,22 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
   | similarSearch descField n =>
       IO.eprintln s!"similarSearch on {descField} with query: {query}"
       if n = 0 then return #[]
-      let outJs ← callSimilaritySearch query descField n
-      match ← pairsFromEmbeddingJson outJs with
-      | Except.ok jsArr => return jsArr
+      let out ← callSimilaritySearch query descField n
+      match out with
+      | Except.ok outJs =>
+        match ← pairsFromEmbeddingJson outJs with
+        | Except.ok jsArr => return jsArr
+        | Except.error e =>
+          IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
+          throwError e
       | Except.error e =>
-        IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
+        IO.eprintln s!"Error in callSimilaritySearch: {e}"
         throwError e
   | embedSearch descField n p =>
       IO.eprintln s!"embedSearch on {descField} with query: {query}"
       let outJs ←
         getNearestEmbeddingsFull query (← embedQueryCached query) n p (descField := descField) (dataMap := dataMap)
-      match ← pairsFromEmbeddingJson outJs with
+      match ← pairsFromEmbeddingJsonString outJs with
       | Except.ok jsArr => return jsArr
       | Except.error e =>
         IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
