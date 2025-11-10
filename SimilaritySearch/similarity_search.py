@@ -185,8 +185,8 @@ def similarity_search(query, model, index, descField, num):
         # Modify js
         js = modify_js(js, descField, distances[0][i])
         output.append(js)
-    js_string = json.dumps(output)
-    return js_string
+    # Return as a list of dicts to parse as Array Json in Lean
+    return output
 
 def run_similarity_search(model, model_name, num, query = "mathematics", descField = "docString"):
     try: num = int(num)
@@ -199,9 +199,9 @@ def run_similarity_search(model, model_name, num, query = "mathematics", descFie
     # Read index (it should exist if the server was started, as create_indexes.py would be run)
     try: index = faiss.read_index(INDEX_PATHS(descField, model_name))
     except : raise Exception("Index not found! Please create the indexes (should be automatically created when the server starts).")
-    # Run similarity search and print to standard output
-    js_string = similarity_search(query, model, index, descField, num)
-    return js_string
+    # Run similarity search and return output
+    output = similarity_search(query, model, index, descField, num)
+    return output
 
 MODEL_NAME = "BAAI/bge-base-en-v1.5"
 import torch
@@ -220,7 +220,7 @@ def main():
     data = json.loads(sys.argv[1])
     run_checks(MODEL, MODEL_NAME)
     result = run_similarity_search(MODEL, MODEL_NAME, data['num'], data['query'], data['descField'])
-    print(result)
+    print(json.dumps(result, ensure_ascii=False))
     return result
 
 if __name__ == "__main__":
