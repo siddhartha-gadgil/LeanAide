@@ -220,7 +220,7 @@ def main():
     data = json.loads(sys.argv[1])
     run_checks(MODEL, MODEL_NAME)
     result = run_similarity_search(MODEL, MODEL_NAME, data['num'], data['query'], data['descField'])
-    print(result)
+    print(json.dumps(result, ensure_ascii=False))
     return result
 
 if __name__ == "__main__":
