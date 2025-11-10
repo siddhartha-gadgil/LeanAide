@@ -98,11 +98,17 @@ def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
   let isFile ← liftM <| polyTraceFile.status ()
 
   match isIO, isFile with
-  | true, true | false, false =>
+  | false, false =>
       throwError "Invalid State : Both IO and File switches are turned on or both are turned off"
   | true, false =>
-      IO.eprintln s!"[IO] {msg}"
+      IO.eprintln s!"[{tag.toString}] [IO] {msg}"
   | false, true =>
+      let currentDir ← IO.currentDir
+      let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
+      IO.eprintln s!"The output is logged to {logFilePath}"
+      IO.FS.writeFile logFilePath s!"[File] {msg}"
+  | true, true =>
+      IO.eprintln s!"[{tag.toString}] [IO] {msg}"
       let currentDir ← IO.currentDir
       let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
       IO.eprintln s!"The output is logged to {logFilePath}"
