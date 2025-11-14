@@ -48,3 +48,14 @@ maxTokens = 1_600
 
 [translator.messageBuilder.sysBuilder]
 developerId = "system"
+
+[logging]
+
+[logging.translators]
+[logging.translators.info]
+io = true
+file= false
+
+[logging.translators.debug]
+io = false
+file = false
