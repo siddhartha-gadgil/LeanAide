@@ -17,6 +17,8 @@ open Codegen Translate
 /--
 Translating to a proposition in Lean, using the `translateToProp?` method of the `Translator`. Various checks are performed to ensure the type is valid and does not contain `sorry` or metavariables. An error is thrown if the translation fails or if the type is not valid.
 -/
+
+
 def Translator.translateToPropStrictAux
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
@@ -29,13 +31,13 @@ def Translator.translateToPropStrictAux
       let prop ← instantiateMVars prop
       Term.synthesizeSyntheticMVarsNoPostponing
       if prop.hasSorry || (← prop.hasUnassignedExprMVar) then
-        IO.eprintln s!"codegen: failed to infer type {prop} has sorry or mvar when translating assertion '{claim}'"
+        polyTrace `PaperCodes.error s!"codegen: failed to infer type {prop} has sorry or mvar when translating assertion '{claim}'"
       if prop.hasSorry || (← prop.hasUnassignedExprMVar) then
         throwError s!"codegen: failed to infer type {prop} has sorry or mvar when translating assertion '{claim}'"
       return prop
   catch _ =>
   let thm ← withPreludes claim
-  IO.eprintln s!"Translating to proposition: {claim}, full statement: {thm}"
+  polyTrace `PaperCodes.info s!"Translating to proposition: {claim}, full statement: {thm}"
   let (js, _, _) ← translator.getLeanCodeJson  thm
   let output ← getMessageContents js
   for out in output do
@@ -53,9 +55,9 @@ def Translator.translateToPropStrictAux
           Term.withoutErrToSorry do
             inferType type
         if univ.isSort then
-          IO.eprintln s!"Obtained type: {← ppExpr type}"
+          polyTrace `PaperCodes.info s!"Obtained type: {← ppExpr type}"
           let type ← dropLocalContext type
-          IO.eprintln s!"Obtained type in local context: {← ppExpr type}"
+          polyTrace `PaperCodes.info s!"Obtained type in local context: {← ppExpr type}"
           return type
       catch _ =>
         continue
@@ -207,7 +209,7 @@ Deals with an error where the full JSON is an `object` instead of a `document` o
 def objectBypassCode (translator : CodeGenerator := {})
     (goal? :Option MVarId) (kind: SyntaxNodeKinds) : Json → TranslateM (Option (TSyntax kind))
 | js => do
-  IO.eprintln s!"bypassing 'object"
+  polyTrace `PaperCodes.info s!"bypassing 'object"
   let .ok properties :=
     js.getObjVal? "properties" | throwError "'object' must have 'properties'"
   getCode translator goal? kind properties
@@ -539,21 +541,22 @@ where
       | Except.error _ => pure ()
     let .ok  claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no 'claim' found in 'theorem'"
-    IO.eprintln s!"Translating claim: {claim}"
+    polyTrace `PaperCodes.info s!"Translating claim: {claim}"
     let type ← translator.translateToPropStrict claim
-    IO.eprintln s!"Obtained type from translation: {← ppExpr type}"
+    polyTrace `PaperCodes.info s!"Obtained type from translation: {← ppExpr type}"
     let proof? :=
       js.getObjVal? "proof" |>.toOption
     let hypSize ←
       match js.getObjValAs? (Array Json)  "hypothesis" with
       | Except.ok h =>
-        IO.eprintln s!"hypothesis: {h} in proof"
+        polyTrace `PaperCodes.info s!"hypothesis: {h} in proof"
         contextRun translator none ``tacticSeq (.arr h)
         -- IO.eprintln "Preludes added:"
         -- IO.eprintln <| ← withPreludes ""
+        polyTrace `PaperCodes.info s!"Preludes added:\n {(← withPreludes "")}"
         pure h.size
       | Except.error _ => pure 0
-    IO.eprintln s!"hypothesis size: {hypSize} in proof"
+    polyTrace `PaperCodes.info s!"hypothesis size: {hypSize} in proof"
     let proofStx? ← proof?.mapM fun
       pf => withoutModifyingState do
       let pfGoal ← mkFreshExprMVar type
@@ -574,7 +577,7 @@ where
                 if n.isInaccessibleUserName || n.isInternal then
                   `(_)
                 else do
-                  IO.eprintln s!"Adding intro for {n}, not inaccessible"
+                  polyTrace `PaperCodes.info s!"Adding intro for {n}, not inaccessible"
                   let n' := mkIdent n
                   `($n':ident)
             let namesStx := namesStx.toArray
@@ -585,7 +588,7 @@ where
       | none => throwError
         s!"codegen: no proof translation found for {pf}"
       pure pfStx
-    IO.eprintln s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
+    polyTrace `PaperCodes.info s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
     let thm ← withPreludes claim
     let name := (js.getObjValAs? Name "name").toOption.getD <| ← translator.server.theoremName thm
     let name :=
@@ -596,7 +599,7 @@ where
         name.toName
       else
         name
-    IO.eprintln s!"codegen: Theorem name: {name} for {thm}"
+    polyTrace `PaperCodes.info s!"codegen: Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
     let label := js.getObjString? "label" |>.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
@@ -831,22 +834,24 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
   -- IO.eprintln s!"number of proof steps: {content.length}"
+  polyTrace `PaperCodes.info s!"number of proof steps: {content.length}"
   let hypSize ←
     match labelledTheorem.source.getObjValAs? (Array Json)  "hypothesis" with
       | Except.ok h =>
-        IO.eprintln s!"hypothesis: {h} in proof"
+        polyTrace `PaperCodes.info s!"hypothesis: {h} in proof"
         contextRun translator none ``tacticSeq (.arr h)
-        IO.eprintln s!"Ran hypothesis context"
+        polyTrace `PaperCodes.info s!"Ran hypothesis context"
         -- IO.eprintln "Preludes added:"
         -- IO.eprintln <| ← withPreludes ""
+        polyTrace `PaperCodes.info s!"Preludes added:\n {(← withPreludes "")}"
         pure h.size
       | Except.error _ => pure 0
-  IO.eprintln s!"hypothesis size: {hypSize} in proof"
+  polyTrace `PaperCodes.info s!"hypothesis size: {hypSize} in proof"
   let (goal', names') ← extractIntros goal hypSize
-  IO.eprintln s!"Extracted intros: {names'}"
+  polyTrace `PaperCodes.info s!"Extracted intros: {names'}"
   let (goal'', names) ← consumeIntros goal' 10 names'
   let (goal, resTacs) ← resolveIntros goal'' names
-  IO.eprintln s!"Consumed intros: {names}"
+  polyTrace `PaperCodes.info s!"Consumed intros: {names}"
   let pfStx ←
     withoutModifyingState do
     goal.withContext do
@@ -859,14 +864,14 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
           if n.isInaccessibleUserName || n.isInternal then
             `(_)
           else do
-            IO.eprintln s!"Adding intro for {n}, not inaccessible"
+            polyTrace `PaperCodes.info s!"Adding intro for {n}, not inaccessible"
             let n' := mkIdent n
             `($n':ident)
       let namesStx := namesStx.toArray
       let introTac ←
         `(tacticSeq| intro $namesStx*; $resTacs*)
       appendTacticSeqSeq introTac pfStx
-  IO.eprintln s!"Proof steps: {← PrettyPrinter.ppCategory ``tacticSeq pfStx}"
+  polyTrace `PaperCodes.info s!"Proof steps: {← PrettyPrinter.ppCategory ``tacticSeq pfStx}"
   let n := mkIdent labelledTheorem.name
   let typeStx ← delabDetailed goalType
   updateToProved labelledTheorem.label
@@ -925,7 +930,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
     match js.getObjString? "value" with
     | none =>
       -- If there is no value, we do not need to return a value
-      IO.eprintln s!"codegen: No value in 'let_statement' for {js.getObjString? "variable_name" |>.getD ""}"
+      polyTrace `PaperCodes.info s!"codegen: No value in 'let_statement' for {js.getObjString? "variable_name" |>.getD ""}"
       addPrelude statement
       return none
     | some value =>
@@ -933,9 +938,9 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
       | some goal =>
         match (← goal.getType).app2? ``Exists with
         | some (_, .lam name _ _ _) =>
-            IO.eprintln s!"goal is a there exists statement"
+            polyTrace `PaperCodes.info s!"goal is a there exists statement"
             if name.toString == (js.getObjString? "variable_name" |>.getD "") then
-              IO.eprintln s!"binderName {name.toString} same as variable_name"
+              polyTrace `PaperCodes.info s!"binderName {name.toString} same as variable_name"
               let useStx ← commandToUseTactic (← defStx translator js statement value)
               let usestxs := #[useStx]
               return some <| ← `(tacticSeq| $usestxs*)
@@ -952,7 +957,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
     match js.getObjString? "value" with
     | none =>
       -- If there is no value, we do not need to return a value
-      IO.eprintln s!"codegen: No value in 'let_statement' for {js.getObjString? "variable_name" |>.getD ""}"
+      polyTrace `PaperCodes.info s!"codegen: No value in 'let_statement' for {js.getObjString? "variable_name" |>.getD ""}"
       addPrelude statement
       return none
     | some value =>
@@ -966,7 +971,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
         addDefn data
         -- data.addDeclaration
       | none =>
-        IO.eprintln s!"codegen: No definition found for 'let_statement' {statement} with value {value}"
+        polyTrace `PaperCodes.info s!"codegen: No definition found for 'let_statement' {statement} with value {value}"
       addPrelude statement
       return some <| ← `(commandSeq| $stxs*)
 
@@ -1007,13 +1012,13 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
         let stx? ← translator.translateDefCmdM? statement'
         match stx? with
         | .ok stx =>
-          IO.eprintln s!"codegen: 'let_statement' {statement'} translated to command:\n{← PrettyPrinter.ppCommand stx}"
+          polyTrace `PaperCodes.info s!"codegen: 'let_statement' {statement'} translated to command:\n{← PrettyPrinter.ppCommand stx}"
           return stx
         | .error es =>
           let fallback ← try
             CmdElabError.fallback es
           catch _ =>
-            IO.eprintln s!"codegen: 'let_statement' {statement'} fallback failed"
+            polyTrace `PaperCodes.info s!"codegen: 'let_statement' {statement'} fallback failed"
             let output := es.map fun e => e.text
             throwError
               s!"codegen: no fallback for 'let_statement' {statement'}; output: {output} "
@@ -1022,10 +1027,10 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
             let stx: Syntax.Command := ⟨stx⟩
             return stx
           |.error er =>
-            IO.eprintln s!"codegen: 'let_statement' {statement'} translation failed with error:\n{er} and fallback:\n{fallback}"
-            IO.eprintln s!"codegen: 'let_statement' {statement'} translation attempts:\n"
+            polyTrace `PaperCodes.info s!"codegen: 'let_statement' {statement'} translation failed with error:\n{er} and fallback:\n{fallback}"
+            polyTrace `PaperCodes.info s!"codegen: 'let_statement' {statement'} translation attempts:\n"
             for e in es do
-              IO.eprintln s!"codegen: not a command:\n{e.text}"
+              polyTrace `PaperCodes.info s!"codegen: not a command:\n{e.text}"
             throwError
               s!"codegen: no definition translation found for {statement'}"
 
@@ -1229,9 +1234,9 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let hash₀ := hash stx.raw.reprint
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let headTac ← `(tactic| have $name : $stx := by $tac)
-  IO.eprintln s!"codegen: assertionCode: headTac: {← PrettyPrinter.ppTactic headTac}"
+  polyTrace `PaperCodes.info s!"codegen: assertionCode: headTac: {← PrettyPrinter.ppTactic headTac}"
   let resTacs ← CodeGenerator.resolveExistsHave stx
-  IO.eprintln s!"codegen: assertionCode: resolved exists have tactics (size {resTacs.size})"
+  polyTrace `PaperCodes.info s!"codegen: assertionCode: resolved exists have tactics (size {resTacs.size})"
   let tacSeq := #[headTac] ++ resTacs
   `(tacticSeq| $tacSeq*)
 | _, `tactic, js => do
@@ -1563,7 +1568,7 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
       | none => pf
     `(tacticSeq| $pf*)
   | (conditionType, trueCaseProof) :: tail => goal.withContext do
-    IO.eprintln s!"number of cases (remaining): {tail.length + 1}"
+    polyTrace `PaperCodes.info s!"number of cases (remaining): {tail.length + 1}"
     let conditionStx ← delabDetailed conditionType
     let hash₀ := hash conditionStx.raw.reprint
     let conditionId := mkIdent <| Name.mkSimple s!"condition_{hash₀}"
@@ -1659,7 +1664,7 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
         let some pfStx ← withoutModifyingState do getCode translator (some exhaustGoal) ``tacticSeq e | throwError
           s!"codegen: no translation found for exhaustiveness {e}"
         `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
-  IO.eprintln s!"number of cases (after exhaustiveness): {cases.length}"
+  polyTrace `PaperCodes.info s!"number of cases (after exhaustiveness): {cases.length}"
   let tacs ← multiConditionCasesAux translator goal cases exhaustiveTac
   appendTacticSeqSeq tacs <| ← `(tacticSeq| done)
 | goal?, kind ,_ => throwError
@@ -1853,7 +1858,7 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
       (← goal.getType) [← `(tacticSeq| simp?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| grind?), ← `(tacticSeq| hammer [ $inductionIds,* ] {aesopPremises := 0, autoPremises := 0} )]
     `(tacticSeq| $pf*)
   | (conditionType, trueCaseProof, inductionHyps) :: tail => goal.withContext do
-    IO.eprintln s!"number of cases (remaining): {tail.length + 1}"
+    polyTrace `PaperCodes.info s!"number of cases (remaining): {tail.length + 1}"
     for hyp in inductionHyps do
       addPrelude <| s!"Assume (inductively): {hyp}"
     let conditionStx ← delabDetailed conditionType
