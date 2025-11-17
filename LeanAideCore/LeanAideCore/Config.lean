@@ -57,7 +57,7 @@ def resourcesDir : IO System.FilePath := do
 
 -- #eval resourcesDir
 
-initialize polyTraceIO : IO.Ref Bool ← IO.mkRef false
+initialize polyTraceIO : IO.Ref Bool ← IO.mkRef true
 initialize polyTraceFile : IO.Ref Bool ← IO.mkRef false
 
 namespace polyTraceIO
@@ -99,7 +99,7 @@ def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
 
   match isIO, isFile with
   | false, false =>
-      throwError "Invalid State : Both IO and File switches are turned on or both are turned off"
+      return
   | true, false =>
       IO.eprintln s!"[{tag.toString}] [IO] {msg}"
   | false, true =>
