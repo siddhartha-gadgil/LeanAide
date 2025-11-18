@@ -55,6 +55,9 @@ def resourcesDir : IO System.FilePath := do
   let base ← baseDir
   return base / "resources"
 
+def searchData : IO System.FilePath := do
+  let base ← baseDir
+  return base / "SimilaritySearch" / "Data"
 --#eval resourcesDir
 
 initialize polyTraceIO : IO.Ref Bool ← IO.mkRef true
@@ -113,7 +116,3 @@ def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
       let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
       IO.eprintln s!"The output is logged to {logFilePath}"
       IO.FS.writeFile logFilePath s!"[File] {msg}"
-
-def searchData : IO System.FilePath := do
-  let base ← baseDir
-  return base / "SimilaritySearch" / "Data"
