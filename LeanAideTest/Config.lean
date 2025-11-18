@@ -24,7 +24,10 @@ def checkRoundtrip : IO (List JsonDiff) := do
   return diff
 
 /--
-info: [LeanAide.JsonDiff.atKey
+info: [LeanAide.JsonDiff.existsKey1only
+   "logging"
+   "{\"translators\":{\"info\":{\"io\":true,\"file\":false},\"debug\":{\"io\":false,\"file\":false}}}",
+ LeanAide.JsonDiff.atKey
    "translator"
    (LeanAide.JsonDiff.atKey
      "params"

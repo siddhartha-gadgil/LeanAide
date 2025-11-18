@@ -115,8 +115,8 @@ info: Try this: theorem iterate_add_one_apply_eq_self : ∀ (n : ℕ), (fun (x :
       simp only [Function.iterate_zero, id_eq]
     | n + 1 =>
       trace "Automation tactics found for (fun x => 1 + x)^[n + 1] 0 = n + 1, closing goal"
-      simp only [Function.iterate_succ, add_left_iterate, smul_eq_mul, mul_one, Function.comp_apply, add_zero,
-        Nat.add_left_cancel_iff]
+      simp only [Function.iterate_succ, add_left_iterate, Lake.FamilyOut.fam_eq, smul_eq_mul, mul_one,
+        Function.comp_apply, add_zero, Nat.add_left_cancel_iff]
 -/
 #guard_msgs in
 #codegen pattern_eg
@@ -168,10 +168,10 @@ info: Try this: theorem nat_eq_one_or_eq_two_imp_lt_three : ∀ (n : ℕ), n = 1
         grind only
       else
         trace
-          "Automation Tactics   simp?\n  simp?\n  exact?\n  grind?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
+          "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
         grind only
         trace
-          "Finished Automation Tactics   simp?\n  simp?\n  exact?\n  grind?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
+          "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: n < 3"
     done
 -/
 #guard_msgs in
