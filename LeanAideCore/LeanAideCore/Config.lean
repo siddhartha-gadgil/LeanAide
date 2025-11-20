@@ -74,17 +74,17 @@ abbrev traceSet := Std.HashSet (α := traceName)
 initialize polyTrace : IO.Ref traceSet ← IO.mkRef <| Std.HashSet.ofList []
 
 instance : ToString traceName where
-  toString (n : traceName) := s!"[{n.fst}] : [{n.snd}]"
+  toString (n : traceName) := s!"{n.fst} : {n.snd}"
 
 namespace polyTrace
-  private def isClassRegistered [MonadOptions IO] (n : Name) : IO Bool := do
-    (←getOptions).entries.filter (·.fst == n)
-    |> List.isEmpty
-    |> pure
+  -- private def isClassRegistered [MonadOptions IO] (n : Name) : IO Bool := do
+  --   (←getOptions).entries.filter (·.fst == n)
+  --   |> List.isEmpty
+  --   |> pure
 
-  def on [MonadOptions IO] (t : logType) (name : Name) : IO Unit := do
-      if (←isClassRegistered name) then pure ()
-      else
+  def on (t : logType) (name : Name) : IO Unit := do
+      -- if (←isClassRegistered name) then pure ()
+      -- else
         (←polyTrace.get)
         |>.insert ⟨t, name⟩
         |> polyTrace.set
@@ -101,7 +101,7 @@ namespace polyTrace
   def log (tag : Name) (message : String) : CoreM Unit := do
 
     let message (l : logType) :=
-      s!"[{tag}] [{l}] :: [{message}]"
+      s!"{tag} {l} :: {message}"
 
     let logFilePath ← do
       System.mkFilePath
