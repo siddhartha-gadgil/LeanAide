@@ -315,7 +315,7 @@ def egTacs : TermElabM <|  Format := do
 /--
 info: Try this:
   intro a
-  simp_all only [EuclideanDomain.mod_eq_zero]
+  simp_all only [EuclideanDomain.mod_eq_zero, Lake.FamilyOut.fam_eq]
   cases a with
   | inl h => sorry
   | inr h_1 => sorry

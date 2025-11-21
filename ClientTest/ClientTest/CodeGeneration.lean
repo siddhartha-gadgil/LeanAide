@@ -32,6 +32,22 @@ def egTheorem : Json :=
 --     }
 --   }
 
+/--
+info: Try this: ⏎
+  theorem group.inv_eq_one_of_eq_one : ∀ {G : Type u} [inst : Group G] (a : G), a = 1 → a⁻¹ = 1 :=
+    by
+    intro G inst_14157295161945824867 a a_5197011753719384802
+    trace "Automation tactics found for a⁻¹ = 1, closing goal"
+    simp only [inv_eq_one]
+    exact a_5197011753719384802
+  theorem inv_eq_of_eq_one : ∀ {G : Type u} [inst : Group G] {e : G}, e = 1 → e⁻¹ = e :=
+    by
+    intro G inst_14157295161945824867 e h₂
+    trace "Automation tactics found for e⁻¹ = e, closing goal"
+    subst h₂
+    simp_all only [inv_one]
+-/
+#guard_msgs in
 #codegen {
   "document": [
     {
