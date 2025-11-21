@@ -38,13 +38,13 @@ def Translator.ofCli (p: Parsed) : IO Translator :=
       else pb₁
   let pb := pb.simplify
   let queryNum := p.flag? "num_responses" |>.map (fun s => s.as! Nat)
-    |>.getD 10
+    |>.getD 8
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
     |>.getD 10
   let temp : JsonNumber := ⟨temp10, 1⟩
   let gemini := p.hasFlag "gemini"
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD (if gemini then "gemini-2.0-flash" else "gpt-4o")
+    |>.getD (if gemini then "gemini-2.0-flash" else "gpt-5")
   let azure := p.hasFlag "azure"
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
     |>.getD 1600
