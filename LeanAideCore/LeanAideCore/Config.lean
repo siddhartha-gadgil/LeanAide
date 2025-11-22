@@ -55,7 +55,10 @@ def resourcesDir : IO System.FilePath := do
   let base ← baseDir
   return base / "resources"
 
--- #eval resourcesDir
+def searchData : IO System.FilePath := do
+  let base ← baseDir
+  return base / "SimilaritySearch" / "Data"
+--#eval resourcesDir
 
 initialize polyTraceIO : IO.Ref Bool ← IO.mkRef true
 initialize polyTraceFile : IO.Ref Bool ← IO.mkRef false
