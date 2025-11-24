@@ -9,6 +9,7 @@ initialize
   registerTraceClass `leanaide.codegen.info
   registerTraceClass `PaperCodes.info
   registerTraceClass `PaperCodes.error
+  registerTraceClass `PolyTrace.Test
 
 register_option leanaide.logging : Bool :=
   { defValue := false
@@ -77,17 +78,10 @@ instance : ToString traceName where
   toString (n : traceName) := s!"{n.fst} : {n.snd}"
 
 namespace polyTrace
-  -- private def isClassRegistered [MonadOptions IO] (n : Name) : IO Bool := do
-  --   (←getOptions).entries.filter (·.fst == n)
-  --   |> List.isEmpty
-  --   |> pure
-
   def on (t : logType) (name : Name) : IO Unit := do
-      -- if (←isClassRegistered name) then pure ()
-      -- else
-        (←polyTrace.get)
-        |>.insert ⟨t, name⟩
-        |> polyTrace.set
+    (←polyTrace.get)
+    |>.insert ⟨t, name⟩
+    |> polyTrace.set
 
   def off (t : logType) (name : Name) : IO Unit := do
     (←polyTrace.get)

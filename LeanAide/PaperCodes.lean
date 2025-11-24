@@ -4,7 +4,6 @@ import Hammer
 
 #eval polyTrace.on logType.io `PaperCodes.info
 #eval polyTrace.on logType.io `PaperCodes.error
-#eval polyTrace.status ()
 
 /-!
 # Code generation for LeanAide "PaperStructure" schema
