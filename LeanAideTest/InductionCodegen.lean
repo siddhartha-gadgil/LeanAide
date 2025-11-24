@@ -81,6 +81,18 @@ info: Try this: theorem forall_nat_cast_succ_eq_add_one_then_eq_id :
 #guard_msgs in
 #codegen induction_eg
 
+theorem forall_nat_cast_succ_eq_add_one_then_eq_id :
+      ∀ (f : ℕ → ℕ), f 0 = 0 → (∀ (n : ℕ), f (n + 1) = f n + 1) → ∀ (n : ℕ), f n = n :=
+    by
+    intro f a_1676541840746925941 a_2213797161315613598 n
+    induction n with
+    | zero =>
+      trace "Automation tactics found for f 0 = 0, closing goal"
+      grind only
+    | succ n ih =>
+      trace "Automation tactics found for f (n + 1) = n + 1, closing goal"
+      grind only
+    done
 
 def pattern_eg := json% {
   "theorem" : {

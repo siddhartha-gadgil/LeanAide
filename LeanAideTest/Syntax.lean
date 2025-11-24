@@ -138,6 +138,71 @@ def infinitely_many_odd_numbers.struct_proof : LeanAide.StructuredProof :=
 
 end long_eg
 
+section product_consecutive_integers
 
+def nat.mul_succ_even_induction.struct_proof : LeanAide.StructuredProof :=
+  ⟨`nat.mul_succ_even_induction,
+    json%
+      {"document":
+        {"type": "document", "body":
+          [{"type": "assume_statement", "assumption": "n is a natural number, where n ∈ ℕ."},
+            {"type": "assert_statement", "label": "main-assertion", "claim": "Even(n × (n + 1))"},
+            {"type": "Definition", "name": "Even", "label": "def:even", "header": "Definition",
+              "definition":
+              "A number a is Even if there exists some element r such that a = r + r."},
+            {"variable_type": "natural number", "variable_name": "a", "type": "let_statement",
+              "statement": "Let a = n × (n + 1)."},
+            {"type": "condition_cases_proof", "true_case_proof":
+              {"type": "calculation", "calculation_sequence":
+                ["n × (n + 1) = n^2 + n", "n^2 + n = n^2 + n = n^2 + n/1"]},
+              "false_case_proof":
+              {"type": "conclude_statement", "claim":
+                "This case does not occur since it cannot be false that n × (n + 1) is not an even number."},
+              "condition": "n × (n + 1) is an even number"},
+            {"variable_type": "natural number", "variable_name": "r", "type": "let_statement",
+              "statement": "Define r = (n × (n + 1)) / 2.", "properties":
+              "Since n and n+1 are consecutive integers, one is even, ensuring n × (n + 1) is divisible by 2."},
+            {"type": "condition_case", "proof":
+              {"type": "calculation", "calculation_sequence":
+                ["n × (n + 1) = 2 × r", "2 × r = r + r"]},
+              "condition": "n × (n + 1) is a multiple of 2"},
+            {"type": "conclude_statement", "results_used":
+              [{"target_identifier": "def:even", "statement": "Definition of Even"},
+                {"target_identifier": "main-assertion", "statement":
+                  "Assertion that n × (n + 1) is even"}],
+              "claim": "n × (n + 1) is Even by definition. This completes the proof."}]}}⟩
+
+def pfJson := json% {"document" : [{
+          "Theorem" : {"claim": "The product of two consecutive natural numbers is even.",
+          "proof" : [{"type": "assume_statement", "assumption": "n is a natural number, where n ∈ ℕ."},
+            {"type": "assert_statement", "label": "main-assertion", "claim": "Even(n × (n + 1))"},
+            {"type": "Definition", "name": "Even", "label": "def:even", "header": "Definition",
+              "definition":
+              "A number a is Even if there exists some element r such that a = r + r."},
+            {"variable_type": "natural number", "variable_name": "a", "type": "let_statement",
+              "statement": "Let a = n × (n + 1)."},
+            {"type": "condition_cases_proof", "true_case_proof":
+              {"type": "calculation", "calculation_sequence":
+                ["n × (n + 1) = n^2 + n", "n^2 + n = n^2 + n = n^2 + n/1"]},
+              "false_case_proof":
+              {"type": "conclude_statement", "claim":
+                "This case does not occur since it cannot be false that n × (n + 1) is not an even number."},
+              "condition": "n × (n + 1) is an even number"},
+            {"variable_type": "natural number", "variable_name": "r", "type": "let_statement",
+              "statement": "Define r = (n × (n + 1)) / 2.", "properties":
+              "Since n and n+1 are consecutive integers, one is even, ensuring n × (n + 1) is divisible by 2."},
+            {"type": "condition_case", "proof":
+              {"type": "calculation", "calculation_sequence":
+                ["n × (n + 1) = 2 × r", "2 × r = r + r"]},
+              "condition": "n × (n + 1) is a multiple of 2"},
+            {"type": "conclude_statement", "results_used":
+              [{"target_identifier": "def:even", "statement": "Definition of Even"},
+                {"target_identifier": "main-assertion", "statement":
+                  "Assertion that n × (n + 1) is even"}],
+              "claim": "n × (n + 1) is Even by definition. This completes the proof."}]}}]}
+
+#codegen pfJson
+
+end product_consecutive_integers
 
 end LeanAide
