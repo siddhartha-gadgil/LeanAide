@@ -4,48 +4,49 @@ import Std
 
 open Lean
 
--- >>> polyTrace example #1
+-- 1. Init.file () // adds the trace class
 
--- example of how
--- #eval polyTraceIO.on ()
--- #eval polyTrace `PaperCodes.info "This is an example"
--- #eval polyTraceIO.off ()
--- #eval polyTraceFile.on ()
--- #eval polyTraceFile.status ()
--- #eval polyTrace `PaperCodes.info "This is a file example"
--- #eval polyTraceFile.status ()
--- #eval polyTraceIO.status ()
+namespace Init
 
-namespace Generate
+  def file
+    (_ : Unit)
+    : IO (Except String Unit)
+  := do
+    let _ ← polyTrace.on logType.file `PolyTrace.Test |> pure
+    .ok () |> pure
 
-  def polyTraceFile (fileStatus : IO Bool) : IO (Except String Unit) := do
-    if ←fileStatus then
-      let _ ← polyTrace `PaperCodes.info s!"[File] :: Test message" |> pure
-      .ok () |> pure
-    else
-      .error s!"invalid state"
+end Init
 
-end Generate
+-- 2. Test.file ()
+--// 2.1 log the string "Run the test" in the output.log file
+--// 2.2 check if file ${current_directory}/output.log exists
+--// 2.3 if exists [PASS] else [FAIL]
 
 namespace Test
 
-  private def fileStatus := polyTraceFile.status ()
-  private def ioStatus := polyTraceIO.status ()
-  private def defaultName := s!"output.log"
-  private def defaultPath := do
-    let currentDir ← (←IO.currentDir).toString |> pure
-    System.mkFilePath [
-      currentDir,
-      defaultName
-    ] |> pure
+  def file (_ : Unit) : IO Unit := do
 
-  def polyTraceFile (_ : Unit) : IO Unit := do
-    let response ←(Generate.polyTraceFile fileStatus)
-    match response with
-    | .error e => IO.eprintln s!"[FAILED] File Generated failed with error : {e}"
+    let defaultPath ←
+      System.mkFilePath
+        [
+          (←IO.currentDir).toString,
+          "output.log"
+        ] |> pure
+
+    -- init
+    match ←Init.file () with
     | .ok _ =>
-      let fileExists ←System.FilePath.pathExists (←defaultPath)
-      if fileExists then IO.eprintln s!"[PASSED] File Generated"
-      else IO.eprintln s!"[FAILED] File Generation failed at {←defaultPath}"
+        -- if init works call log
+        let _ ← polyTrace.log `PolyTrace.Test s!"Run the test" |> pure
 
+        -- if I logged something I should see the file generated
+        let fileExists ←
+          System.FilePath.pathExists defaultPath
+        if fileExists then
+          IO.eprintln s!"[PASSED] File Generated"
+        else
+          IO.eprintln s!"[FAILED] File Generation failed at {←defaultPath.toString |> pure}"
+        pure ()
+    | .error e =>
+        IO.eprintln s!"[FAILED] Test for file failed with error : {e}"
 end Test
