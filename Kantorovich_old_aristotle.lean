@@ -671,3 +671,25 @@ theorem newton_kantorovich_surjective_lt
         · rfl;
         · rename_i n ih; rw [ ← ih ] ; rfl;
       · simpa only [ dist_eq_norm ] using hx_star.1
+
+theorem newton_kantorovich_surjective_general
+  {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  (f : E → F) (x₀ : E) (T : F →L[ℝ] E) (L r : ℝ)
+  (h_diff : ∀ x ∈ Metric.closedBall x₀ r, HasFDerivAt f (fderiv ℝ f x) x)
+  (h_surj_inv : fderiv ℝ f x₀ ∘L T = ContinuousLinearMap.id ℝ F)
+  (h_lip : ∀ x ∈ Metric.closedBall x₀ r, ∀ y ∈ Metric.closedBall x₀ r, ‖fderiv ℝ f x - fderiv ℝ f y‖ ≤ L * ‖x - y‖)
+  (h_r_pos : 0 < r)
+  (h_L_nonneg : 0 ≤ L)
+  (M : ℝ) (h_M : M = ‖T‖)
+  (η : ℝ) (h_η : η = ‖T (f x₀)‖)
+  (h : ℝ) (h_h : h = M * L * η)
+  (h_h_lt : h < 1 / 2)
+  (h_ML_pos : 0 < M * L)
+  (ρ : ℝ) (h_ρ : ρ = (1 - Real.sqrt (1 - 2 * h)) / (M * L))
+  (h_ρ_le_r : ρ ≤ r) :
+  ∃ x_star ∈ Metric.closedBall x₀ ρ,
+    f x_star = 0 ∧
+    (∀ z ∈ Metric.closedBall x₀ ρ, f z = 0 → z = x_star)  ∧
+    ‖x_star - x₀‖ ≤ ρ := by
+      sorry
