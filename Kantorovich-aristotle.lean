@@ -850,3 +850,17 @@ by
     use x₀
     rw [tendsto_congr h_const]
     exact tendsto_const_nhds
+
+theorem exists_zero
+  (f : E → F) (T : F →L[ℝ] E) (x₀ : E) (r : ℝ) (L : ℝ)
+  (h_diff : ∀ x ∈ Metric.ball x₀ r, DifferentiableAt ℝ f x)
+  (h_surj : (fderiv ℝ f x₀).comp T = ContinuousLinearMap.id ℝ F)
+  (h_lip : ∀ x ∈ Metric.ball x₀ r, ∀ y ∈ Metric.ball x₀ r, ‖fderiv ℝ f x - fderiv ℝ f y‖ ≤ L * ‖x - y‖)
+  (M : ℝ) (hM : ‖T‖ = M)
+  (η : ℝ) (hη : ‖T (f x₀)‖ = η)
+  (h : ℝ) (hh : h = M * L * η)
+  (h_small : h < 1 / 2)
+  (h_ML_pos : 0 < M * L)
+  (ρ : ℝ) (hρ : ρ = (1 - Real.sqrt (1 - 2 * h)) / (M * L))
+  (h_r : ρ ≤ r) :
+  ∃ x_star : E, f x_star = 0 := by sorry
