@@ -278,7 +278,7 @@ def proveForFormalizationEncode (theoremText: String) (theoremCode: Expr) (theor
 def proveForFormalizationDecode (response: Json) : TermElabM String := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
-    let .ok proof := response.getObjValAs? String "document_text" | throwError "response has no 'document_text' field"
+    let .some proof := (response.getObjValAs? String "document_text").toOption |>.orElse (fun _ => response.getObjValAs? String "document" |>.toOption) | throwError "response has no 'document_text' field; {response}"
     return proof
   | .ok "error" =>
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
