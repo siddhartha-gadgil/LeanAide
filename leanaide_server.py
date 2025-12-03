@@ -50,7 +50,7 @@ def run_server_api():
     if process.stderr:
         for line in process.stderr:
             line = filter_logs(line.strip()) 
-            print(line)
+            print(line, file=sys.stderr)
             log_write("Server Stderr", line, True)
 
 def run_streamlit():
@@ -69,7 +69,7 @@ def run_streamlit():
     # Write stderr to a file that Streamlit can read
     for line in process.stderr:
         line = filter_logs(line.strip())
-        print("Streamlit Stderr", line)
+        print("Streamlit Stderr", line, file=sys.stderr)
         log_write("Streamlit Stderr", line, log_file=True)
 
     # Force Streamlit to use only port STREAMLIT_PORT
@@ -88,7 +88,7 @@ def run_streamlit():
 
 def signal_handler(sig, frame):
     """Handle Ctrl+C to terminate both processes"""
-    print("\nShutting down servers...")
+    print("\nShutting down servers...", file=sys.stderr)
     sys.exit(0)
 
 def check_dependencies():
@@ -105,7 +105,7 @@ def check_dependencies():
         ]
         required_packages = [pkg.replace('-', '_') for pkg in required_packages]
     except Exception as e:
-        print(f"Error reading requirements.txt: {e}")
+        print(f"Error reading requirements.txt: {e}", file=sys.stderr)
 
     missing_packages = []
     for package in required_packages:
@@ -178,35 +178,34 @@ LEANAIDE_PROCESS_FLAGS (passed to `lake exe leanaide_process`):
                     elif os.path.isdir(item_path):
                         shutil.rmtree(item_path)
 
-            print("Cache cleared successfully. Starting fresh.")
+            print("Cache cleared successfully. Starting fresh.", file=sys.stderr)
             for dirname in ["prompt", "chat"]:
                 os.makedirs(os.path.join(cache_dir, dirname), exist_ok=True)
         except Exception as e:
-            print(f"Error clearing cache: {e}")
-
+            print(f"Error clearing cache: {e}", file=sys.stderr)
     if run_ui:
-        print("\nRunning Streamlit UI.")
+        print("\nRunning Streamlit UI.", file=sys.stderr)
         # Check dependencies
         if missing_packages := check_dependencies():
-            print(f"\033[1;31mMissing required packages:\033[0m {', '.join(missing_packages)}")
-            print("Check out \033[1;34mserver/README.md \033[0m for installation instructions and running the web streamlit server.")
-            print("Running Streamlit UI anyway, may lead to errors.")
+            print(f"\033[1;31mMissing required packages:\033[0m {', '.join(missing_packages)}", file=sys.stderr)
+            print("Check out \033[1;34mserver/README.md \033[0m for installation instructions and running the web streamlit server.", file=sys.stderr)
+            print("Running Streamlit UI anyway, may lead to errors.", file=sys.stderr)
         else:
             missing_st = False
-            print("\033[1;32mDependencies satisfied. Streamlit UI can be run.\033[0m")
+            print("\033[1;32mDependencies satisfied. Streamlit UI can be run.\033[0m", file=sys.stderr)
 
-    print("\n\033[1;34mStarting servers:\033[0m")
+    print("\n\033[1;34mStarting servers:\033[0m", file=sys.stderr)
 
     # Start processes
     serv_process = None
     streamlit_process = None
 
     if run_server:
-        print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get('HOST', 'localhost')}:{LEANAIDE_PORT}\n")
+        print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get('HOST', 'localhost')}:{LEANAIDE_PORT}\n", file=sys.stderr)
         serv_process = multiprocessing.Process(target=run_server_api)
         serv_process.start()
     else:
-        print("\033[1;34mRunning without API server\033[0m\n")
+        print("\033[1;34mRunning without API server\033[0m\n", file=sys.stderr)
 
     if run_ui: # test for missing packages skipped
         if run_server:
@@ -214,7 +213,7 @@ LEANAIDE_PROCESS_FLAGS (passed to `lake exe leanaide_process`):
         streamlit_process = multiprocessing.Process(target=run_streamlit)
         streamlit_process.start()
     elif not run_server and not run_ui:
-        print("\033[1;33mWarning: No services specified. Use --ui and/or don't use --no-server\033[0m")
+        print("\033[1;33mWarning: No services specified. Use --ui and/or don't use --no-server\033[0m", file=sys.stderr)
         sys.exit(0)
 
     try:
