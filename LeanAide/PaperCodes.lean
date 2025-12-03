@@ -2,8 +2,8 @@ import LeanAide.Codegen
 import LeanAide.StructToLean
 import Hammer
 
-#eval polyTrace.on logType.io `PaperCodes.info
-#eval polyTrace.on logType.io `PaperCodes.error
+#eval polyTrace.on logType.file `PaperCodes.info
+#eval polyTrace.on logType.file `PaperCodes.error
 
 /-!
 # Code generation for LeanAide "PaperStructure" schema

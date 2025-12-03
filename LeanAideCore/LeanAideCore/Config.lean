@@ -80,12 +80,12 @@ instance : ToString traceName where
 namespace polyTrace
   def on (t : logType) (name : Name) : IO Unit := do
     (←polyTrace.get)
-    |>.insert ⟨t, name⟩
+    |>.insert (t, name)
     |> polyTrace.set
 
   def off (t : logType) (name : Name) : IO Unit := do
     (←polyTrace.get)
-    |>.erase ⟨t, name⟩
+    |>.erase (t, name)
     |> polyTrace.set
 
   def status (_ : Unit) : IO Unit := do
@@ -97,24 +97,23 @@ namespace polyTrace
     let message (l : logType) :=
       s!"{tag} {l} :: {message}"
 
-    let logFilePath ← do
+    let logFilePath ←
       System.mkFilePath
         [
           (←IO.currentDir).toString,
           "output.log"
         ] |> pure
 
-    let list ← (←polyTrace.get).toList |> pure
+    let list := (←polyTrace.get).toList
     match list.find? (·.snd == tag) with
     | .none =>
       if list.isEmpty then
         Lean.trace `Invalid (fun _ => "The current list is empty, please add trace class at the top the *.lean file")
       else
         Lean.trace `Invalid (fun _ => s!"The {tag} is not set to any logType")
-    | .some ⟨.io, _⟩ =>
+    | .some (logType.io, _) =>
         Lean.trace tag (fun _ => message .io)
         IO.eprintln <| message .io
-    | .some ⟨.file, _⟩ =>
+    | .some (logType.file, _) =>
         IO.FS.writeFile logFilePath <| message .file
-
 end polyTrace
