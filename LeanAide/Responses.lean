@@ -380,6 +380,7 @@ def proveForFormalizationTask (data: Json) (translator : Translator) : Translate
     match docs[0]? with
     | none => return Json.mkObj [("result", "error"), ("error", "no proof found")]
     | some doc => do
+      let doc := s!"# Theorem\n{thm}\n\n# Proof\n{doc}"
       return Json.mkObj [("result", "success"), ("document", toJson doc)]
   | _, _ => return Json.mkObj [("result", "error"), ("error", s!"no theorem found")]
 

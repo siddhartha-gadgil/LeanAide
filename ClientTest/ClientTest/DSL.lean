@@ -132,6 +132,8 @@ def infinitely_many_odd_numbers.struct_proof : LeanAide.StructuredProof :=
 def infinitely_many_odd_numbers.proof_doc.chat :=
   LeanAide.Discussion.append infinitely_many_odd_numbers.theorem_code.chat infinitely_many_odd_numbers.proof_doc
 
+-- #prove infinitely_many_odd_numbers.struct_proof >> LeanAide.ProofCode
+
 def infinitely_many_odd_numbers'.struct_proof : LeanAide.StructuredProof :=
   ⟨`infinitely_many_odd_numbers,
     json%
