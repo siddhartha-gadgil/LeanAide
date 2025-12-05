@@ -82,18 +82,8 @@ namespace Test
 end Test
 
 #eval polyTrace.on logType.file `PolyTrace.Test
-#eval polyTrace.status ()
-
-#eval
-  getOptions >>= fun r =>
-  r.entries
-  |> pure
 
 #eval do
-  let ioref ← polyTrace.get
-  ioref.toList |> pure
-
-#eval do
-  polyTrace.log `PolyTrace.Test "Hello Shubham"
+  polyTrace.log `PolyTrace.Test "This is a polytrace file test"
 
 #eval do Test.file ()
