@@ -233,16 +233,18 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
                     
-                    # Parse the output and wrap with logs
+                    # Parse the output and add logs field to it
                     try:
                         result_data = json.loads(output)
+                        # Add logs directly to the result JSON
+                        result_data["logs"] = "\n".join(request_logs)
+                        response = result_data
                     except json.JSONDecodeError:
-                        result_data = output
-                    
-                    response = {
-                        "result": result_data,
-                        "logs": "\n".join(request_logs)
-                    }
+                        # If output is not JSON, wrap it
+                        response = {
+                            "result": output,
+                            "logs": "\n".join(request_logs)
+                        }
                     
                     self.wfile.write(json.dumps(response).encode())
                 except queue.Empty:
