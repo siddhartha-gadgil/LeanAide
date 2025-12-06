@@ -89,3 +89,4 @@ leanaide_st_temp/
 SimilaritySearch/Indexes
 SimilaritySearch/Data
 tmp/
+.envrc
