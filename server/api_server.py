@@ -30,18 +30,31 @@ for arg in sys.argv[1:]:
 # Config model
 MODEL_NAME = "BAAI/bge-base-en-v1.5"
 
-# Load model
-device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-print(f"Using device: {device}")
-print(f"Loading model: {MODEL_NAME}")
-MODEL = SentenceTransformer(MODEL_NAME, device=device, model_kwargs={"dtype": torch.bfloat16})
-print("Model loaded!\n")
+# Lazy load model - will be loaded in background after server starts
+MODEL = None
+MODEL_LOAD_LOCK = threading.Lock()
 
-# Replace `/` with `-` to avoid directory name issues 
-MODEL_NAME = MODEL_NAME.replace('/','-')
+def lazy_load_model():
+    """Lazy load the model on first use"""
+    global MODEL
+    if MODEL is None:
+        with MODEL_LOAD_LOCK:
+            if MODEL is None:  # Double-check locking
+                device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+                print(f"Loading model: {MODEL_NAME} on {device}")
+                MODEL = SentenceTransformer(MODEL_NAME, device=device, model_kwargs={"dtype": torch.bfloat16})
+                print("Model loaded!")
+                # Check and create indexes after model loads
+                model_name_safe = MODEL_NAME.replace('/', '-')
+                similarity_search.run_checks(MODEL, model_name_safe)
+    return MODEL
 
-# Check and create indexes
-similarity_search.run_checks(MODEL, MODEL_NAME)
+def init_model_bg():
+    """Start loading model in background thread"""
+    def load():
+        lazy_load_model()
+    threading.Thread(target=load, daemon=True).start()
+    print(f"Model {MODEL_NAME} will load in background...")
 
 def get_env_args():
     """Get environment variables for the server, mainly LLM details"""
@@ -149,8 +162,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     print(f"ERROR: 400 Bad Request - {error_msg}", file=sys.stderr)
                     return # Exit after handling
 
+                # Load model if not already loaded
+                model = lazy_load_model()
+                model_name_safe = MODEL_NAME.replace('/', '-')
+                
                 # Call the main function from similarity_search
-                result = similarity_search.run_similarity_search(MODEL, MODEL_NAME, data['num'], data['query'], data['descField'])
+                result = similarity_search.run_similarity_search(model, model_name_safe, data['num'], data['query'], data['descField'])
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -283,6 +300,11 @@ def run(server_class=http.server.HTTPServer, handler_class=Handler, port=PORT, h
     ThreadingHTTPServer.allow_reuse_address = True
     httpd = ThreadingHTTPServer(server_address, handler_class)
     print(f"Starting httpd on port {port}, command: {hide_sensitive_command()}")
+    
+    # Start loading model in background after server is ready
+    init_model_bg()
+    print("\nServer is ready...\n")
+    
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
