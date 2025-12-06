@@ -18,7 +18,7 @@ import similarity_search
 from logging_utils import log_write, filter_logs, get_env, post_env, delete_env_file
 
 PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
-HOST = os.environ.get("HOST", "localhost")
+HOST = os.environ.get("HOST", "0.0.0.0")
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     COMMAND = " " + arg
