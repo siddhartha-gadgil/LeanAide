@@ -201,7 +201,10 @@ LEANAIDE_PROCESS_FLAGS (passed to `lake exe leanaide_process`):
     streamlit_process = None
 
     if run_server:
-        print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get('HOST', 'localhost')}:{LEANAIDE_PORT}\n", file=sys.stderr)
+        host_display = os.environ.get('HOST', '0.0.0.0')
+        if host_display == '0.0.0.0':
+            host_display = socket.gethostname()  # Show actual hostname instead of 0.0.0.0
+        print(f"\033[1;34mAPI Server:\033[0m http://{host_display}:{LEANAIDE_PORT}\n", file=sys.stderr)
         serv_process = multiprocessing.Process(target=run_server_api)
         serv_process.start()
     else:
