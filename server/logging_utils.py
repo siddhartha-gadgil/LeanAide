@@ -9,7 +9,7 @@ from pathlib import Path
 # In-memory log storage with max size (1000 lines by default)
 LOG_BUFFER_LINES = 10000
 LOG_BUFFER = deque(maxlen=LOG_BUFFER_LINES)
-LEANAIDE_LOG_FILE = tempfile.gettempdir() + "/leanaide.log"
+LEANAIDE_LOG_FILE = "tmp/leanaide.log"
 MAX_FILE_LINES = 10000
 
 ## Environment File
