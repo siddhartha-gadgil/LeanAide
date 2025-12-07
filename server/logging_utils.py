@@ -172,6 +172,7 @@ class LogBufferHandler(logging.Handler):
 def create_env_file(fresh: bool = False):
     """
     Create the env_vars.json file if it does not exist.
+    If fresh=True, resets the file but preserves API keys from shell environment.
     """
     # Create the directory if it doesn't exist
     os.makedirs(os.path.dirname(ENV_FILE), exist_ok=True)
@@ -179,6 +180,14 @@ def create_env_file(fresh: bool = False):
         "LEANAIDE_COMMAND": "lake exe leanaide_process",
         "LEANAIDE_PORT": "7654",
     }
+    
+    # Preserve API keys from shell environment
+    api_key_names = ["OPENAI_API_KEY", "GEMINI_API_KEY", "DEEPINFRA_API_KEY", 
+                     "OPENROUTER_API_KEY", "HUGGING_FACE_TOKEN"]
+    for key_name in api_key_names:
+        if key_name in os.environ and os.environ[key_name]:
+            initial_data[key_name] = os.environ[key_name]
+    
     if fresh:
         with open(ENV_FILE, 'w') as f:
             json.dump(initial_data, f, indent=4)

@@ -198,13 +198,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 if process is None or process.poll() is not None:
                     try:
                         request_logs.append("[info] Starting new process")
+                        # Ensure child process inherits the current environment
                         process = subprocess.Popen(
                             updated_leanaide_command().split(),
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             text=True,
-                            bufsize=1 # Line buffering
+                            bufsize=1, # Line buffering
+                            env=os.environ.copy(),
                         )
                         threading.Thread(target=process_reader, args=(process, output_queue, request_logs), daemon=True).start()
                         threading.Thread(target=process_error_reader, args=(process, request_logs), daemon=True).start()
