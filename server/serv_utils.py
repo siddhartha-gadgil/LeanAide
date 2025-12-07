@@ -198,6 +198,15 @@ def action_copy_download(key: str, filename: str, copy_text: str = "", usage: st
     text = sts[key]
     if copy_text:
         text = copy_text
+    
+    # Decode unicode escape sequences (e.g., \u2208 -> ∈, \u03a8 -> Ψ)
+    if isinstance(text, str):
+        try:
+            text = text.encode('utf-8').decode('unicode_escape')
+        except (UnicodeDecodeError, AttributeError):
+            # If decoding fails, keep original text
+            pass
+    
     with col1:
         copy_to_clipboard(text)
     with col2:
@@ -211,10 +220,19 @@ def preview_text(key: str, default_text: str = "", caption = "", usage: str = ""
         caption = key
     with st.expander(f"Preview Text {caption.capitalize()}", expanded=False):
         lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}_{usage}").lower()
+        
+        # Decode unicode escape sequences for display
+        display_text = sts[key] if sts[key] else default_text
+        if isinstance(display_text, str):
+            try:
+                display_text = display_text.encode('utf-8').decode('unicode_escape')
+            except (UnicodeDecodeError, AttributeError):
+                pass
+        
         if lang == "markdown":
-            st.markdown(sts[key] if sts[key] else default_text)
+            st.markdown(display_text)
         else:
-            st.code(sts[key] if sts[key] else default_text, wrap_lines = True)
+            st.code(display_text, wrap_lines = True)
             
 def lean_code_cleanup(lean_code: str, elaborate: bool = False) -> str:
     """
@@ -292,6 +310,22 @@ def request_server(request_payload: dict, task_header: str, success_key: str, re
         # Get the result
         st.success("Response sent and received successfully!")
         sts[result_key] = response.json()
+        
+        # Decode unicode escape sequences in the response
+        def decode_unicode_in_dict(obj):
+            """Recursively decode unicode escape sequences in dict/list/str"""
+            if isinstance(obj, dict):
+                return {k: decode_unicode_in_dict(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [decode_unicode_in_dict(item) for item in obj]
+            elif isinstance(obj, str):
+                try:
+                    return obj.encode('utf-8').decode('unicode_escape')
+                except (UnicodeDecodeError, AttributeError):
+                    return obj
+            return obj
+        
+        sts[result_key] = decode_unicode_in_dict(sts[result_key])
         log_write(task_header, f"Response: {sts[result_key]}")
 
         try:
