@@ -180,7 +180,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 process.stdin.flush()
 
                 try:
-                    output = output_queue.get(timeout=600)  # Timeout after 600 seconds
+                    output = output_queue.get(timeout=6000)  # Timeout after 6000 seconds
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
