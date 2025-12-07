@@ -149,7 +149,7 @@ def translateThmDecode (response: Json) : TermElabM (Except (Array ElabError) Ex
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while translating theorem: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.translateThm]
 def translateThm [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array ElabError) Expr) := do
@@ -180,7 +180,7 @@ def translateThmDetailedDecode (response: Json) : TermElabM (Name × Expr × Syn
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while translating theorem: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.translateThmDetailed]
 def translateThmDetailed [pipe: LeanAidePipe] (text: String) (name? : Option Name) : TermElabM (Name × Expr × Syntax.Command) := do
@@ -205,7 +205,7 @@ def translateDefDecode (response: Json) : TermElabM (Except (Array CmdElabError)
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while translating definition: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.translateDef]
 def translateDef [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
@@ -224,7 +224,7 @@ def theoremDocDecode (response: Json) : TermElabM String := do
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while getting theorem doc: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.theoremDoc]
 def theoremDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM String := do
@@ -244,7 +244,7 @@ def defDocDecode (response: Json) : TermElabM String := do
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while getting definition doc: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.defDoc]
 def defDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM String := do
@@ -264,7 +264,7 @@ def theoremNameDecode (response: Json) : MetaM Name := do
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while getting theorem name: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.theoremName]
 def theoremName [pipe: LeanAidePipe] (text: String) : MetaM Name := do
@@ -284,7 +284,7 @@ def proveForFormalizationDecode (response: Json) : TermElabM String := do
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while proving for formalization: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.proveForFormalization]
 def proveForFormalization [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) (theoremStatement : Syntax.Command) : TermElabM String := do
@@ -304,7 +304,7 @@ def jsonStructuredDecode (response: Json) : MetaM Json := do
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while getting structured JSON: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.jsonStructured]
 def jsonStructured [pipe: LeanAidePipe] (document: String) : MetaM Json := do
@@ -324,7 +324,7 @@ def codeFromJsonDecode (response: Json) : TermElabM (TSyntax ``commandSeq) := do
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while getting code from JSON: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.codeFromJson]
 def codeFromJson [pipe: LeanAidePipe] (json: Json) : TermElabM (TSyntax ``commandSeq) := do
@@ -370,7 +370,7 @@ def mathQueryDecode (response: Json) : MetaM (List String) := do
       let .ok error := response.getObjValAs? String "error" | throwError "response has no 'error' field"
       throwError s!"Error while performing math query: {error}"
   | _ =>
-    throwError "Invalid response"
+    throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.mathQuery]
 def mathQuery [pipe: LeanAidePipe] (query: String) (history : List ChatPair := []) (n: Nat := 3) : MetaM (List String) := do
