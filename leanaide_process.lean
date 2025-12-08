@@ -34,6 +34,8 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
       let callback (js res : Json) : IO Unit := do
         IO.eprintln s!"Background process completed for token: {hash}\ninput: {js.pretty}"
         IO.eprintln s!"Output: {res.pretty}"
+        let outfile : System.FilePath := ".leanaide_cache" / "tasks" / ("response_" ++ toString hash ++ ".json")
+        IO.FS.writeFile outfile (res.pretty)
         -- Can POST to a URL or send a notification here
         states.addResult hash res
       let prios :=
