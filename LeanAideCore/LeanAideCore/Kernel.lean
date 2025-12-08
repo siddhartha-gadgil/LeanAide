@@ -111,7 +111,6 @@ A connection to a LeanAide server, which can be used to query for responses.
 -/
 class LeanAidePipe where
   queryResponse : Json → MetaM Json
-
 namespace LeanAidePipe
 
 /-- Create a `LeanAidePipe` from a URL, using `curl` to send requests. -/
@@ -126,6 +125,13 @@ def fromURL (url: String) : LeanAidePipe := {
 /-- Response from a LeanAide pipe -/
 def response [pipe: LeanAidePipe] (req: Json) : MetaM Json :=
   pipe.queryResponse req
+
+def ping [pipe: LeanAidePipe] : MetaM Bool := do
+  let req := Json.mkObj [("task", "echo")]
+  let response ← response req
+  match response.getObjValAs? String "result" with
+  | .ok "success" => return true
+  | _ => return false
 
 /-!
 The various core functions of LeanAide, implemented via querying the LeanAide server. These are implemented using an encoding function that converts the input to JSON, a decoding function that converts the JSON response to the output, and a function that combines these two with a query to the server. This is done to allow for asynchronous queries later.
@@ -485,13 +491,28 @@ instance [LeanAidePipe] : Kernel where
   elabCode := LeanAidePipe.elabCode
   mathQuery := fun s h n => LeanAidePipe.mathQuery s h n
 
+
+
 /--
 A command to create a `LeanAidePipe` instance from a URL, defaulting to `localhost:7654` if no URL is provided.
 -/
-macro "#leanaide_connect" url?:(str)? : command =>
-match url? with
-| some url => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL $url)
-| none => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL "localhost:7654")
+elab "#leanaide_connect" url?:(str)? : command =>
+do
+  let cmd ← match url? with
+  | some url => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL $url)
+  | none => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL "localhost:7654")
+  Command.elabCommand cmd
+  Command.liftTermElabM do
+  let inst ← synthInstance (mkConst ``LeanAidePipe)
+  try
+    let pingM ← unsafe evalExpr (MetaM Bool) (← mkAppM ``MetaM #[mkConst ``Bool]) (mkApp (mkConst ``LeanAidePipe.ping) inst)
+    let ping ← pingM
+    if ping then
+      logInfo m!"Connected to LeanAide server successfully."
+    else
+      logError m!"Failed to connect to LeanAide server."
+  catch _ =>
+    logError m!"Error while connecting to LeanAide server at {url?.map (·.getString) |>.getD "localhost:7654"}. Is the server running?"
 
 def getKernel [k: Kernel] : Kernel := k
 

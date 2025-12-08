@@ -34,6 +34,7 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
       let callback (js res : Json) : IO Unit := do
         IO.eprintln s!"Background process completed for token: {hash}\ninput: {js.pretty}"
         IO.eprintln s!"Output: {res.pretty}"
+        -- Can POST to a URL or send a notification here
         states.addResult hash res
       let prios :=
         (js.getObjValAs? Task.Priority "priority").toOption |>.getD Task.Priority.default
