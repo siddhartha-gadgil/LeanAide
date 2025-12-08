@@ -445,10 +445,12 @@ def syslessMessages (sys: String)(egs : List <| ChatPair)
 
 def sysPrompt' := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
+def MessageBuilder.header := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. The translated code is preceded by `import Mathlib._`, so do not include import statements. Suppress proofs for brevity. Follow EXACTLY the examples given."
+
 inductive MessageBuilder where
   | syslessBuilder
   | sysBuilder (developerId := "system")
-  | directBuilder (headMessage := sysPrompt') (egsHead := "The following are some examples of statements and their translations:") (egQueryHead := "## Natural language statement\n\n") (egResponseHead := "## Lean Code\n\n") (userHead := "user")
+  | directBuilder (headMessage := MessageBuilder.header) (egsHead := "The following are some examples of statements and their translations (proofs are suppressed for brevity):") (egQueryHead := "## Natural language statement\n\n") (egResponseHead := "## Lean Code\n\n") (userHead := "user")
 deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
 
 def MessageBuilder.buildMessages (mb: MessageBuilder)
