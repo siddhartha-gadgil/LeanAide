@@ -28,23 +28,29 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
     let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     match mode? with
     | some "async" =>
-      IO.eprintln "Running in background"
       let hash := hash js
-      states.addStart hash js
-      let callback (js res : Json) : IO Unit := do
-        IO.eprintln s!"Background process completed for token: {hash}\ninput: {js.pretty}"
-        IO.eprintln s!"Output: {res.pretty}"
-        let outfile : System.FilePath := ".leanaide_cache" / "tasks" / ("response_" ++ toString hash ++ ".json")
-        IO.FS.writeFile outfile (res.pretty)
-        -- Can POST to a URL or send a notification here
-        states.addResult hash res
-      let prios :=
-        (js.getObjValAs? Task.Priority "priority").toOption |>.getD Task.Priority.default
-      TranslateM.runBackgroundChainIO js
-        (Actor.response translator) none ctx env
-        callback chains prios
-      IO.eprintln "Background process launched"
-      IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
+      let check? ← states.lookup hash
+      match check? with
+      | none =>
+        IO.eprintln "Running in background"
+        states.addStart hash js
+        let callback (js res : Json) : IO Unit := do
+          IO.eprintln s!"Background process completed for token: {hash}\ninput: {js.pretty}"
+          IO.eprintln s!"Output: {res.pretty}"
+          let outfile : System.FilePath := ".leanaide_cache" / "tasks" / ("response_" ++ toString hash ++ ".json")
+          IO.FS.writeFile outfile (res.pretty)
+          -- Can POST to a URL or send a notification here
+          states.addResult hash res
+        let prios :=
+          (js.getObjValAs? Task.Priority "priority").toOption |>.getD Task.Priority.default
+        TranslateM.runBackgroundChainIO js
+          (Actor.response translator) none ctx env
+          callback chains prios
+        IO.eprintln "Background process launched"
+        IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
+      | some ts =>
+        IO.println (Json.mkObj [("status", (toJson ts).compress), ("token", toJson hash)])
+        IO.eprintln s!"Task with token {hash} is already running."
     | some "lookup" =>
       IO.eprintln "Running in lookup mode"
       let .ok hash :=
