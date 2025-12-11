@@ -471,11 +471,11 @@ def MessageBuilder.buildMessages (mb: MessageBuilder)
     text := text ++ query
     return Json.arr <| #[.mkObj [("role", userId), ("content", text)]]
 
-def ChatServer.messageBuilder (server: ChatServer) : MessageBuilder :=
-  if server.hasSysPrompt then
-    .sysBuilder
-  else
-    .syslessBuilder
+def ChatServer.messageBuilder (_server: ChatServer) : MessageBuilder := .directBuilder
+  -- if server.hasSysPrompt then
+  --   .sysBuilder
+  -- else
+  --   .syslessBuilder
 
 def MessageBuilder.useInstructions : MessageBuilder → Bool
   | .directBuilder .. => false
@@ -485,7 +485,7 @@ def MessageBuilder.useInstructions : MessageBuilder → Bool
 Given a query and a list of examples, build messages for a prompt for OpenAI
 -/
 def mkMessages(query : String)(examples: Array ChatPair)
-  (sysPrompt: String)(msg: MessageBuilder := .sysBuilder) : IO Json:= do
+  (sysPrompt: String)(msg: MessageBuilder := .directBuilder) : IO Json:= do
   msg.buildMessages sysPrompt examples query
 
 

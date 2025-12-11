@@ -20,7 +20,7 @@ abbrev TasksState := Std.Mutex <| Std.HashMap UInt64 TaskStatus
 
 
 -- #eval toJson (TaskStatus.running <| json% {})
-
+-- #eval toJson (TaskStatus.completed (json% {"a": 1}) (json% {"b": 2}))
 namespace TasksState
 
 

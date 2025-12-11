@@ -84,7 +84,18 @@ def Translator.CliDefaultJson := json% {"useInstructions": true,
    {"similarSearch": {"n": 2, "descField": "concise-description"}},
    {"similarSearch": {"n": 2, "descField": "description"}}]},
  "params": {"temp": 1, "stopTokens": [], "n": 10, "maxTokens": 1600},
- "messageBuilder": {"sysBuilder": {"developerId": "system"}}}
+ "messageBuilder": {"directBuilder":
+  {"userHead": "user",
+  "headMessage":
+  "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. The translated code is preceded by `import Mathlib._`, so do not include import statements. Suppress proofs for brevity. Follow EXACTLY the examples given.",
+  "egsHead":
+  "The following are some examples of statements and their translations (proofs are suppressed for brevity):",
+  "egResponseHead": "## Lean Code\
+\
+",
+  "egQueryHead": "## Natural language statement\
+\
+"}}}
 
 @[deprecated Translator.patch (since := "2025-11-04")]
 def Translator.configure (translator: Translator) (config: Json) : Translator :=
