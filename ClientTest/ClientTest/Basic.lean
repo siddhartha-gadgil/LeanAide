@@ -8,8 +8,10 @@ instance : Add ℤ := inferInstance
 @[default_instance]
 instance : Semiring ℤ := inferInstance
 
--- #leanaide_connect
-#leanaide_connect "http://10.134.13.103:7654"
+#leanaide_connect
+-- #leanaide_connect "http://10.134.13.103:7654"
+
+set_option trace.Translate.debug true
 
 #eval LeanAidePipe.response <| json% {"task": "echo"}
 
@@ -37,3 +39,5 @@ def showDfEg : TermElabM Unit := do
 #llm_query "Prove that there are infinitely many even numbers."
 
 #def "A group is said to be sane if every proper normal subgroup is cyclic."
+
+#theorem : "There is a unique even prime" >> translate_theorem
