@@ -1,5 +1,5 @@
 import Lean
-open Lean Meta
+open Lean Meta Std.HashMap
 
 initialize
   registerTraceClass `Translate.info
@@ -9,6 +9,7 @@ initialize
   registerTraceClass `leanaide.codegen.info
   registerTraceClass `PaperCodes.info
   registerTraceClass `PaperCodes.error
+  registerTraceClass `PolyTrace.Test
 
 register_option leanaide.logging : Bool :=
   { defValue := false
@@ -57,59 +58,62 @@ def resourcesDir : IO System.FilePath := do
 
 -- #eval resourcesDir
 
-initialize polyTraceIO : IO.Ref Bool ← IO.mkRef true
-initialize polyTraceFile : IO.Ref Bool ← IO.mkRef false
+inductive logType where
+  | io : logType
+  | file : logType
+deriving Inhabited, BEq, Hashable
 
-namespace polyTraceIO
-  def on (_ : Unit) : IO Unit := do
-    let current ← polyTraceIO.get
-    if current then pure () else polyTraceIO.set true
+instance : ToString logType where
+  toString x :=
+    match x with
+    | .io => "[IO]"
+    | .file => "[FILE]"
 
-  def off (_ : Unit) : IO Unit := do
-    let current ← polyTraceIO.get
-    if current then polyTraceIO.set false else pure ()
+abbrev traceName := logType × Name
+abbrev traceSet := Std.HashSet (α := traceName)
 
-  def status (_ : Unit) : IO Bool := do
-    (← polyTraceIO.get)
-    |> pure
+initialize polyTrace : IO.Ref traceSet ← IO.mkRef <| Std.HashSet.ofList []
 
-end polyTraceIO
+instance : ToString traceName where
+  toString (n : traceName) := s!"{n.fst} : {n.snd}"
 
-namespace polyTraceFile
-  def on (_ : Unit) : IO Unit := do
-    let current ← polyTraceFile.get
-    if current then pure () else polyTraceFile.set true
+namespace polyTrace
+  def on (t : logType) (name : Name) : IO Unit := do
+    (←polyTrace.get)
+    |>.insert (t, name)
+    |> polyTrace.set
 
-  def off (_ : Unit) : IO Unit := do
-    let current ← polyTraceFile.get
-    if current then polyTraceFile.set false
+  def off (t : logType) (name : Name) : IO Unit := do
+    (←polyTrace.get)
+    |>.erase (t, name)
+    |> polyTrace.set
 
-  def status (_ : Unit) : IO Bool := do
-    (← polyTraceFile.get)
-    |> pure
+  def status (_ : Unit) : IO Unit := do
+    let list ← (←polyTrace.get).toList |> pure
+    IO.eprintln s!"{list}"
 
-end polyTraceFile
+  def log (tag : Name) (message : String) : CoreM Unit := do
 
-def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
--- always print trace
-  Lean.trace tag (fun _ => msg)
--- use mkRef to globally update this
-  let isIO ← liftM <| polyTraceIO.status ()
-  let isFile ← liftM <| polyTraceFile.status ()
+    let message (l : logType) :=
+      s!"{tag} {l} :: {message}"
 
-  match isIO, isFile with
-  | false, false =>
-      return
-  | true, false =>
-      IO.eprintln s!"[{tag.toString}] [IO] {msg}"
-  | false, true =>
-      let currentDir ← IO.currentDir
-      let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
-      IO.eprintln s!"The output is logged to {logFilePath}"
-      IO.FS.writeFile logFilePath s!"[File] {msg}"
-  | true, true =>
-      IO.eprintln s!"[{tag.toString}] [IO] {msg}"
-      let currentDir ← IO.currentDir
-      let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
-      IO.eprintln s!"The output is logged to {logFilePath}"
-      IO.FS.writeFile logFilePath s!"[File] {msg}"
+    let logFilePath ←
+      System.mkFilePath
+        [
+          (←IO.currentDir).toString,
+          "output.log"
+        ] |> pure
+
+    let list := (←polyTrace.get).toList
+    match list.find? (·.snd == tag) with
+    | .none =>
+      if list.isEmpty then
+        Lean.trace `Invalid (fun _ => "The current list is empty, please add trace class at the top the *.lean file")
+      else
+        Lean.trace `Invalid (fun _ => s!"The {tag} is not set to any logType")
+    | .some (logType.io, _) =>
+        Lean.trace tag (fun _ => message .io)
+        IO.eprintln <| message .io
+    | .some (logType.file, _) =>
+        IO.FS.writeFile logFilePath <| message .file
+end polyTrace
