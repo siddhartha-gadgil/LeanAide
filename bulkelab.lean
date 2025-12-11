@@ -38,7 +38,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
     |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD "gpt-4o"
+    |>.getD "gpt-5.1"
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
     |>.getD 1600
   let chatParams : ChatParams :=
@@ -137,7 +137,7 @@ unsafe def bulkElab : Cmd := `[Cli|
     n, num_responses : Nat;    "Number of responses to ask for (default 5)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
     roundtrip; "Translate back to natural language and compare."
-    m, model : String ; "Model to be used (default `gpt-4o`)"
+    m, model : String ; "Model to be used (default `gpt-5.1`)"
     d, delay : Nat; "Delay between requests in seconds (default 20)."
     query_data : String; "Query data jsonlines file if cached queries are to be used; should have the result of the 'choices' field of the output and a 'docString' field for the query."
     repeats : Nat; "Number of times to repeat the request (default 0)."

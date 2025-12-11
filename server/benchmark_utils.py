@@ -250,8 +250,8 @@ if __name__ == "__main__":
         "theorem": "The determinant of a 2x2 Identity Matrix is 1",
         "proof": "To prove that the determinant of a 2x2 identity matrix is 1, let's first define the 2 × 2 identity matrix:\n\nI_2 = [[1, 0], [0, 1]]\n\nThe determinant of a 2 × 2 matrix A = [[a, b], [c, d]] is given by the formula:\n\ndet(A) = ad - bc\n\nApplying this formula to the identity matrix I_2, we have:\n\ndet(I_2) = (1)(1) - (0)(0) = 1 - 0 = 1\n\nTherefore, the determinant of the 2 × 2 identity matrix is indeed 1."
     }
-    evaluator = BenchmarkEvaluator(llm_provider="openai", model="gpt-4o")
-    result = evaluator.leanaide_io(input_data, llm_provider="openai", model="gpt-4o")
+    evaluator = BenchmarkEvaluator(llm_provider="openai", model="gpt-5.1")
+    result = evaluator.leanaide_io(input_data, llm_provider="openai", model="gpt-5.1")
     print("Result:", result)
 
     print("LEAN CODE:\n", result.get("lean_code", "No Lean code generated"))

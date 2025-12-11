@@ -7,7 +7,7 @@ open LeanAide Translate Translator
 
 -/
 
-set_option lean_aide.translate.model "gpt-4o" -- remove to use "gpt-3.5-turbo"
+set_option lean_aide.translate.model "gpt-5.1" -- remove to use "gpt-3.5-turbo"
 -- set_option trace.Translate.info true
 
 -- Testing local server at the given url

@@ -18,7 +18,7 @@ provider_info = {
     "OpenAI": {
         "name": "OpenAI",
         "default_model": "o4-mini",
-        "default_leanaide_model": "gpt-4o",
+        "default_leanaide_model": "gpt-5.1",
         "api_key": os.getenv("OPENAI_API_KEY", "Key Not Found"),
         "models_url":"https://platform.openai.com/docs/models"
     },
@@ -31,8 +31,8 @@ provider_info = {
     },
     "OpenRouter": {
         "name": "OpenRouter",
-        "default_model": "openai/gpt-4o",
-        "default_leanaide_model": "openai/gpt-4o",
+        "default_model": "openai/gpt-5.1",
+        "default_leanaide_model": "openai/gpt-5.1",
         "api_key": os.getenv("OPENROUTER_API_KEY", "Key Not Found"),
         "models_url": "https://openrouter.ai/models"
     },
@@ -96,7 +96,7 @@ def encode_image(image_path):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
 
-def image_solution(image_path: str, provider = "openai", model: str = "gpt-4o"):
+def image_solution(image_path: str, provider = "openai", model: str = "gpt-5.1"):
     image_encoded = encode_image(image_path) 
     prompt = "Extract text using LaTeX from the given mathematics as images. DO NOT include any other text in the response. Do not write extra proofs or explanations."
 
@@ -131,7 +131,7 @@ def image_solution(image_path: str, provider = "openai", model: str = "gpt-4o"):
         response_txt = response_txt.strip("```latex").strip("```")
     return response_txt
 
-def solution_from_images(image_paths, provider = "openai", model: str = "gpt-4o"):
+def solution_from_images(image_paths, provider = "openai", model: str = "gpt-5.1"):
     combined_text = ""
     for image_path in image_paths:
         response = image_solution(image_path)
@@ -146,7 +146,7 @@ def extract_text_from_pdf(path: str) -> str:
         text = chr(12).join([page.get_text() for page in doc])
     return text
 
-def model_response_gen(prompt:str, task:str = "", provider = "openai", model:str ="gpt-4o", json_output: bool = False, json_schema = SCHEMA_JSON, pdf_val = None, paper_input: bool = False):
+def model_response_gen(prompt:str, task:str = "", provider = "openai", model:str ="gpt-5.1", json_output: bool = False, json_schema = SCHEMA_JSON, pdf_val = None, paper_input: bool = False):
     """
     GPT response generator function.
     Args:
@@ -218,7 +218,7 @@ def model_response_gen(prompt:str, task:str = "", provider = "openai", model:str
     return response.choices[0].message.content
 
     
-def gen_thmpf_json(thm: str, pf: str, provider = "openai", model: str = "gpt-4o"):
+def gen_thmpf_json(thm: str, pf: str, provider = "openai", model: str = "gpt-5.1"):
     response = model_response_gen(
         thmpf_prompt(thm, pf),
         json_output = True, 
@@ -237,7 +237,7 @@ def gen_thmpf_json(thm: str, pf: str, provider = "openai", model: str = "gpt-4o"
 
     return output
 
-def check_reprompt(thm: str, pf: str, output: str, provider = "openai", model: str = "gpt-4o"):
+def check_reprompt(thm: str, pf: str, output: str, provider = "openai", model: str = "gpt-5.1"):
     # total_tries is how many times it should re-prompt if JSON does NOT validate
     tries, total_tries = 0, 6
 
@@ -275,7 +275,7 @@ def check_reprompt(thm: str, pf: str, output: str, provider = "openai", model: s
 
     return output
 
-def reprompt_gen_thmpf_json(thm: str, pf: str, output: str, error_msg: str, provider = "openai", model: str = "gpt-4o"):
+def reprompt_gen_thmpf_json(thm: str, pf: str, output: str, error_msg: str, provider = "openai", model: str = "gpt-5.1"):
     # re-prompt
     response = model_response_gen(
         thmpf_reprompt(thm, pf, output, error_msg),
@@ -291,7 +291,7 @@ def reprompt_gen_thmpf_json(thm: str, pf: str, output: str, error_msg: str, prov
     output = json.dumps(json.loads(response_cleaned), indent=2)
     return output
 
-def gen_paper_json(paper_text, pdf_input:bool = False, provider = "openai", model: str = "gpt-4o"):
+def gen_paper_json(paper_text, pdf_input:bool = False, provider = "openai", model: str = "gpt-5.1"):
     # st.toast(f"Paper text: {paper_text}, PDF input: {pdf_input}")
     response = model_response_gen(
         prompt = mathpaper_prompt(paper_text, pdf_input)["prompt"],
@@ -311,7 +311,7 @@ def gen_paper_json(paper_text, pdf_input:bool = False, provider = "openai", mode
     return json.dumps(json.loads(response_cleaned), indent=2)
 
 if __name__ == "__main__":
-    model = "gpt-4o"
+    model = "gpt-5.1"
     thm= "The sum of the interior angles of any triangle is 180 degrees."
     pf ="Consider a triangle with vertices $A$, $B$, and $C$. Draw a line parallel to side $BC$ through vertex $A$. By the alternate interior angle theorem, the angles at $B$ and $C$ of the triangle are equal to the corresponding alternate angles formed by the parallel line and the transversal lines $AB$ and $AC$. Since the angles on a straight line sum to $180^\\circ$, the sum of the interior angles of the triangle, $\\angle A + \\angle B + \\angle C$, is $180^\\circ$."
     print(gen_thmpf_json(thm, pf, model=model))

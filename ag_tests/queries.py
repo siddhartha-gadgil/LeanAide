@@ -154,7 +154,7 @@ class ChatClient:
     def set_verbose(self, verbose = True):
         self.verbose = verbose
 
-    def __init__(self, client = client_gpt , model="gpt-4o"):
+    def __init__(self, client = client_gpt , model="gpt-5.1"):
         self.client = client
         self.model = model
         self.data_path = os.path.join(llm_dir, model)

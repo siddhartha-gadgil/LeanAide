@@ -121,7 +121,7 @@ unsafe def translateCmd : Cmd := `[Cli|
     moogle_prompts: Nat; "Number of examples from Moogle"
     n, num_responses : Nat;    "Number of responses to ask for (default 10)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
-    m, model : String ; "Model to be used (default `gpt-4o`)"
+    m, model : String ; "Model to be used (default `gpt-5.1`)"
     roundtrip; "Roundtrip the translation."
     azure; "Use Azure instead of OpenAI."
     gemini; "Use Gemini instead of OpenAI."

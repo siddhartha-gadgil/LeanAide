@@ -145,7 +145,7 @@ LEANAIDE_PROCESS_FLAGS (passed to `lake exe leanaide_process`):
     -n, --num_responses : Nat     Number of responses to ask for (default 10).
     -t, --temperature : Nat       Scaled temperature `t*10` for temperature `t`
                     (default 8).
-    -m, --model : String          Model to be used (default `gpt-4o`)
+    -m, --model : String          Model to be used (default `gpt-5.1`)
     --azure                       Use Azure instead of OpenAI.
     --gemini                      Use Gemini with OpenAI API.
     --url : String                URL to query (for a local server).

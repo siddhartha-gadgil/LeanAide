@@ -19,7 +19,7 @@ def decodeConfigToml (table : Table) (translator : Translator) : DecodeM Transla
   let server ←  match server? with
     | none => pure <| translator.server
     | some server =>
-      let model ←  server.tryDecodeD `model "gpt-4o"
+      let model ←  server.tryDecodeD `model "gpt-5.1"
       let url? : Option String :=  (server.tryDecode? `url).run' #[] |>.join
       let gemini ←
         server.tryDecodeD `gemini (model.startsWith "gemini")

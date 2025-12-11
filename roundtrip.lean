@@ -25,7 +25,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD "gpt-4o"
+    |>.getD "gpt-5.1"
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
@@ -152,7 +152,7 @@ unsafe def roundtrip : Cmd := `[Cli|
     concise_descriptions : Nat; "Number of example concise descriptions (default 2)."
     n, num_responses : Nat;    "Number of responses to ask for (default 10)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 8)."
-    m, model : String ; "Model to be used (default `gpt-4o`)"
+    m, model : String ; "Model to be used (default `gpt-5.1`)"
     azure; "Use Azure instead of OpenAI."
     url : String; "URL to query (for a local server)."
     show_prompt; "Output the prompt to the LLM."

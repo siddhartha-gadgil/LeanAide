@@ -73,7 +73,7 @@ def Translator.patch (translator: Translator) (data: Json) : Translator :=
 
 def Translator.CliDefaultJson := json% {"useInstructions": true,
  "toChat": "simple",
- "server": {"openAI": {"model": "gpt-4o", "authHeader?": null}},
+ "server": {"openAI": {"model": "gpt-5.1", "authHeader?": null}},
  "roundTripSelect": false,
  "roundTrip": false,
  "relDefs": {"seq": []},

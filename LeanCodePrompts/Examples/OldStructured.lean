@@ -243,7 +243,7 @@ def prime_thm := "There are infinitely many prime numbers ending in 7."
 def writeSoln : CoreM String := do
   let resArr ← client.prove prime_thm 1
   let res := resArr[0]!
-  IO.FS.writeFile "llm_data/gpt-4o/prime_thm.md" res
+  IO.FS.writeFile "llm_data/gpt-5.1/prime_thm.md" res
   return res
 
 /-
@@ -298,7 +298,7 @@ def writeSoln : CoreM String := do
 -- #eval client.structuredProof proofExample
 
 def cubeJson : IO Json := do
-  let src ← IO.FS.readFile "llm_data/gpt-4o/cube.json"
+  let src ← IO.FS.readFile "llm_data/gpt-5.1/cube.json"
   return Json.parse src |>.toOption.get!
 
 #eval cubeJson

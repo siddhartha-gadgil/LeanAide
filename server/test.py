@@ -629,7 +629,7 @@ file = client.files.create(
 
 print("hi")
 completion = client.chat.completions.create(
-    model="o4-mini",  # or "gpt-4o" when available
+    model="o4-mini",  # or "gpt-5.1" when available
     messages=[
         {
             "role": "system",
