@@ -25,7 +25,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     |>.getD 8
   let temp : JsonNumber := ⟨temp10, 1⟩
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD "gpt-5.1"
+    |>.getD "gpt-5"
   let azure := p.hasFlag "azure"
   let tag := p.hasFlag "tag"
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)

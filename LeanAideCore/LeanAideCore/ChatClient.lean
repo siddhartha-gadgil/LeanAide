@@ -65,7 +65,7 @@ end ChatParams
 
 
 inductive ChatServer where
-  | openAI (model: String := "gpt-5.1") (authHeader? : Option String := none)
+  | openAI (model: String := "gpt-5") (authHeader? : Option String := none)
   | azure (deployment: String := "GPT4TestDeployment")
       (model: String := "GPT-4") (authHeader? : Option String := none)
   | gemini (model: String := "gemini-1.5-pro-001")  (key? : Option String := none)
@@ -74,7 +74,7 @@ inductive ChatServer where
 
 namespace ChatServer
 
-def default : ChatServer := .openAI "gpt-5.1"
+def default : ChatServer := .openAI "gpt-5"
 
 instance : Inhabited ChatServer := ⟨default⟩
 
