@@ -10,18 +10,19 @@ Usage:
     python health_check.py [--start-if-down] [--verbose]
 """
 
+import argparse
+import json
+import os
 import socket
 import subprocess
 import sys
 import time
-import json
-import argparse
-import urllib.request
 import urllib.error
+import urllib.request
 from pathlib import Path
 
-LEANAIDE_ADDR = "10.134.13.103"
-LEANAIDE_PORT = 7654
+LEANAIDE_ADDR = os.getenv("LEANAIDE_ADDR", "10.134.13.103")
+LEANAIDE_PORT = os.getenv("LEANAIDE_PORT", "7654")
 LEANAIDE_ROOT = Path(__file__).parent.parent
 SERVER_ARGS = "--ui"
 SERVER_SCRIPT = LEANAIDE_ROOT / "leanaide_server.py"

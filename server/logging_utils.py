@@ -14,7 +14,7 @@ HOMEDIR = str(Path.home()) # OS's homedir(~)
 LEANAIDE_HOMEDIR = str(Path(__file__).resolve().parent.parent)  # LeanAide root
 LOG_DIR = os.path.join(HOMEDIR, ".leanaide")
 os.makedirs(LOG_DIR, exist_ok=True)  # Ensure directory exists
-LEANAIDE_LOG_FILE = os.path.join(LOG_DIR, "leanaide.log")
+LEANAIDE_LOG_FILE = os.getenv("LEANAIDE_LOG_FILE", os.path.join(LOG_DIR, "leanaide.log"))
 MAX_FILE_LINES = 10000
 
 ## Environment File
@@ -105,6 +105,10 @@ class LogBufferHandler(logging.Handler):
         msg = self.filter_logs(msg)
         logger = self.setup_logger(proc_name)
         if log_file:
+            # make the log_file if it doesn't exist
+            if not os.path.exists(LEANAIDE_LOG_FILE):
+                with open(LEANAIDE_LOG_FILE, 'w') as f:
+                    f.write("")
             # Directly write to file when file=True is specified
             with open(LEANAIDE_LOG_FILE, 'a') as f:
                 timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
@@ -177,8 +181,8 @@ def create_env_file(fresh: bool = False):
     # Create the directory if it doesn't exist
     os.makedirs(os.path.dirname(ENV_FILE), exist_ok=True)
     initial_data = {
-        "LEANAIDE_COMMAND": "lake exe leanaide_process",
-        "LEANAIDE_PORT": "7654",
+        "LEANAIDE_COMMAND": str(os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")),
+        "LEANAIDE_PORT": str(os.environ.get("LEANAIDE_PORT", "7654")),
     }
     
     # Preserve API keys from shell environment

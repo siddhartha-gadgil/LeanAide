@@ -8,9 +8,11 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from server.logging_utils import log_write, filter_logs, create_env_file, delete_env_file
 
-STREAMLIT_PORT = 8501
+from server.logging_utils import (create_env_file, delete_env_file,
+                                  filter_logs, log_write)
+
+STREAMLIT_PORT = int(os.environ.get("LEANAIDE_STREAMLIT_PORT", 8501))
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
 
 home_dir = str(Path(__file__).resolve().parent)

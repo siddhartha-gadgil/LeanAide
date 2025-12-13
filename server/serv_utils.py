@@ -1,25 +1,28 @@
 import ast
 import json
 import os
+import re
+import socket
 import sys
+import urllib.parse
 from pathlib import Path
 from typing import Any, Tuple, Type
-import urllib.parse
 
-import socket
-import streamlit as st
-from streamlit import session_state as sts
-from st_copy import copy_button
-from logging_utils import log_write
 import requests
+import streamlit as st
+from st_copy import copy_button
+from streamlit import session_state as sts
 
-from logging_utils import log_server, log_buffer_clean
 from api_server import HOST
+from logging_utils import (LEANAIDE_HOMEDIR, log_buffer_clean, log_server,
+                           log_write)
 
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
 sys.path.append(HOMEDIR)
 schema_path = os.path.join(str(HOMEDIR), "resources", "PaperStructure.json")
 SCHEMA_JSON = json.load(open(schema_path, "r", encoding="utf-8"))
+
+TOKEN_JSON_FILE = f"{LEANAIDE_HOMEDIR}/.leanaide_cache/tasks/token_status.json"
 
 # Lean Checker Tasks
 TASKS = {
@@ -206,6 +209,19 @@ def action_copy_download(key: str, filename: str, copy_text: str = "", usage: st
         except (UnicodeDecodeError, AttributeError):
             # If decoding fails, keep original text
             pass
+            # Handle LaTeX syntax: ensure even number of backslashes before commands
+            if isinstance(text, str):
+                def fix_latex_backslashes(text: str) -> str:
+                    def repl(m):
+                        slashes = m.group(1)
+                        cmd = m.group(2)
+                        # if odd number of backslashes → make it even
+                        if len(slashes) % 2 == 1:
+                            slashes += "\\"
+                        return slashes + cmd
+
+                    return re.sub(r'(\\+)([a-zA-Z]+)', repl, text)
+                text = fix_latex_backslashes(text)
     
     with col1:
         copy_to_clipboard(text)
@@ -372,3 +388,120 @@ def host_information():
         help="Specify the port number where the proof server is running. Default is 7654.",
     )
     sts.api_port = api_port
+
+def get_async_response(token):
+    """
+    Get and manage the asynchronous response from the server or cache.
+    """
+    cached_response_file = f"{LEANAIDE_HOMEDIR}/.leanaide_cache/tasks/response_{token}.json"
+    if os.path.exists(cached_response_file):
+        with open(cached_response_file, "r", encoding="utf-8") as f:
+            response_data = json.load(f)
+        return 0, response_data
+    else:
+        # request server in lookup mode
+        request_payload = {
+            "mode": "lookup",
+            "token": token
+        }
+        try:
+            response = requests.post(
+                f"http://{sts.api_host}:{sts.api_port}", json=request_payload
+            )
+            if response.status_code == 200:
+                err_code, response_data = process_lookup_response(response.json())
+                return err_code, response_data
+            else:
+                return 2, {"result": "error", "error": f"Error: {response.status_code}, {response.text}"}
+        except Exception as e:
+            return 2, {"result": "error", "error": str(e)}
+
+
+
+def process_lookup_response(lookup_response):
+    """
+    Process the lookup response from the server.
+    0 : Job is completed by the server(what the response is, success or error, is independent)
+    1 : Job is still running
+    2 : Error in lookup
+    """
+    lookup_status = lookup_response.get("status", {})
+    lookup_result = lookup_response.get("result", "error")
+
+    if lookup_result != "success":
+        # wrong token or similar
+        return 2, lookup_response
+
+    # This is for when job was successfully submitted
+    if "completed" in lookup_status.keys():
+        return 0, lookup_status["completed"]
+    elif "running" in lookup_status:
+        return 1, lookup_status["running"]
+    else:
+        return 3, lookup_response
+
+def store_token_responses(token: str, status: str):
+    """
+    Store the token responses in session state.
+    """
+    if not int(token) and int(token)> 0:
+        return
+     # Ensure the directory exists
+    if os.path.exists(TOKEN_JSON_FILE):
+        with open(TOKEN_JSON_FILE, "r", encoding="utf-8") as f:
+            token_data = json.load(f)
+
+        token_data[token] = status
+        with open(TOKEN_JSON_FILE, "w", encoding="utf-8") as f:
+            json.dump(token_data, f, indent=4)
+    else:
+        token_data = {token: status}
+        with open(TOKEN_JSON_FILE, "w", encoding="utf-8") as f:
+            json.dump(token_data, f, indent=4)
+
+
+def show_response(show_input: bool = False, async_response: bool = False):  
+    def show_util(val_type, key, input_data, task):
+        if "json" in val_type.lower().split():
+            st.write(f"{key.capitalize()} ({val_type}):")
+            json_in = input_data.get(key) or {}
+            st.json(json_in)
+            copy_to_clipboard(str(json_in))
+        else:
+            st.write(f"{key.capitalize()} ({val_type}):")
+            st.code(
+                input_data.get(key) or "No data available.", language="plaintext", wrap_lines = True
+            )
+            if "lean_code" in key.lower():
+                lean_code_button("input", key, task)
+
+    if async_response:
+        st.subheader("Job Token Response", divider =True)
+        if show_input:
+            if sts.result.get("status", "") == "background":
+                st.sucess("The task is sent to background processing. Use the below token to check for the response.")
+                st.code(st.result.get("token", "No token available."), language="plaintext", wrap_lines = True)
+            else:
+                st.error("Error occurred while sending task to background processing.")
+                st.error(f"Error: {st.result.get('error', 'No error details available.')}")
+
+    else:
+        for task in sts.selected_tasks:
+            st.subheader(task + " Output", divider =True)
+            if "elaborate" in task.lower().strip():
+                if sts.result["result"] == "success":
+                    st.success("Successful Elaboration => Lean Code is **Correct**.")
+                else:
+                    st.error("Elaboration failed. The Lean code produced may be **incorrect**.")
+
+            for key, val_type in TASKS[task]["output"].items():
+                show_util(val_type, key, sts.result, task)
+
+            st.divider()
+            if show_input:
+                st.subheader(task + " Input", divider =True)
+                input_data = {key: sts.val_input.get(key, "No data available.") for key in TASKS[task].get("input", {}).keys()}
+
+                for key, val_type in TASKS[task].get("input", {}).items():
+                    show_util(val_type, key, input_data, task)
+
