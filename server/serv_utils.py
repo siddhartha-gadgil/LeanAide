@@ -344,22 +344,39 @@ def request_server(request_payload: dict, task_header: str, success_key: str, re
         sts[result_key] = decode_unicode_in_dict(sts[result_key])
         log_write(task_header, f"Response: {sts[result_key]}")
 
-        try:
-            if sts[result_key]["result"] == "success":
-                sts[success_key] = True
-                st.success("Request processed successfully!")
-            else: # result = "error"
+        if sts.async_mode:
+            try:
+                if sts[result_key]["status"] == "background":
+                    sts[success_key] = True
+                    st.success("Request is being processed in background!")
+                else: # status = "error"
+                    sts[success_key] = False
+                    st.error("Error in processing the request in background. Please check the input and try again.")
+                    st.write(f"Error (String): {sts[result_key].get('error', 'No error details available.')}")
+                log_write("Streamlit", "Server Output: Success")
+            except Exception as e:
                 sts[success_key] = False
-                st.error("Error in processing the request. Please check the input and try again.")
-                st.write("Error (String):")
-                st.code(sts[result_key]["error"])
-            log_write("Streamlit", "Server Output: Success")
-        except Exception as e:
-            sts[success_key] = False
-            st.error(f"Error in processing the request: {e}")
-            st.write("Response (String):")
-            st.code(str(sts[result_key]))
-            log_write(task_header, f"Server Output: Error - {e}")
+                st.error(f"Error in processing the request: {e}")
+                st.write("Response (String):")
+                st.code(str(sts[result_key]))
+                log_write(task_header, f"Server Output: Error - {e}")
+        else:
+            try:
+                if sts[result_key]["result"] == "success":
+                    sts[success_key] = True
+                    st.success("Request processed successfully!")
+                else: # result = "error"
+                    sts[success_key] = False
+                    st.error("Error in processing the request. Please check the input and try again.")
+                    st.write("Error (String):")
+                    st.code(sts[result_key]["error"])
+                log_write("Streamlit", "Server Output: Success")
+            except Exception as e:
+                sts[success_key] = False
+                st.error(f"Error in processing the request: {e}")
+                st.write("Response (String):")
+                st.code(str(sts[result_key]))
+                log_write(task_header, f"Server Output: Error - {e}")
 
     else:
         sts[success_key] = False
