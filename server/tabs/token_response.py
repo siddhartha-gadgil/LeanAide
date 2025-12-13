@@ -13,12 +13,12 @@ st.write("Use the token you received earlier to fetch the response from the serv
 st.divider()
 st.subheader("Token Information")
 
-
 def check_token_status():
     try:
         with open(TOKEN_JSON_FILE, "r") as f:
             token_data = json.load(f)
-            for token, status in token_data.items():
+            for token, info in token_data.items():
+                status = info.get("status")
                 if status == "running":
                     err_code, _ = get_async_response(token)
                     if err_code == 0:
@@ -39,9 +39,13 @@ def check_token_status():
 
 
 token_data = check_token_status()
+# Sort tokens by last_updated timestamp from new to old (assuming last_updated is a comparable timestamp)
+sorted_tokens = sorted(token_data.keys(), key=lambda t: token_data[t].get("last_updated", ""), reverse=True)
+
 token_table = {
-    "Token" : [token for token in token_data.keys()],
-    "Status" : [token_data[token] for token in token_data.keys()]
+    "Token": sorted_tokens,
+    "Status": [token_data[token].get("status", "") for token in sorted_tokens],
+    "Last Updated": [token_data[token].get("last_updated", "") for token in sorted_tokens]
 }
 
 st.table(token_table)

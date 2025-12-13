@@ -223,6 +223,9 @@ if sts.self_input_button or sts.selected_tasks:
         # Clean up empty values
         if sts.val_input:
             sts.val_input = {k: v for k, v in sts.val_input.items() if v not in ["", None]}
+
+        if sts.async_mode:
+            sts.val_input["mode"] = "async"
         
         with st.container():
             st.success("Query successfully validated!")

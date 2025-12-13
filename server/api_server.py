@@ -118,12 +118,28 @@ def process_reader(process, output_queue, request_logs=None):
         line = process.stdout.readline()
         if not line:
             break  # Process terminated
-        output_queue.put(line.strip())
-        line_filtered = filter_logs(line.strip())
-        print(f"process stdout: {line_filtered}")
-        log_write("Server stdout", line_filtered, log_file=True)
-        if request_logs is not None and line_filtered:
-            request_logs.append(f"[stdout] {line_filtered}")
+        line_stripped = line.strip()
+        
+        # Check if this is a JSON line (starts with { or [)
+        if line_stripped and (line_stripped.startswith('{') or line_stripped.startswith('[')):
+            try:
+                # Try to parse as JSON to verify it's complete
+                json.loads(line_stripped)
+                # Valid JSON found, put in queue for HTTP response
+                output_queue.put(line_stripped)
+            except json.JSONDecodeError:
+                # Not complete JSON yet, just log it
+                line_filtered = filter_logs(line_stripped)
+                print(f"process stdout (incomplete JSON): {line_filtered}", flush=True)
+        else:
+            # Not JSON, just log
+            line_filtered = filter_logs(line_stripped)
+            if line_filtered:
+                print(f"process stdout: {line_filtered}", flush=True)
+        
+        log_write("Server stdout", line_stripped, log_file=True)
+        if request_logs is not None and line_stripped:
+            request_logs.append(f"[stdout] {line_stripped}")
 
 def process_error_reader(process, request_logs=None):
     """Read stderr and optionally capture to request_logs"""
@@ -132,8 +148,11 @@ def process_error_reader(process, request_logs=None):
         if not line:
             break  # Process terminated
         line_filtered = filter_logs(line.strip())
-        print(f"process stderr: {line_filtered}")
+        print(f"process stderr: {line_filtered}", flush=True)
         log_write("Server stderr", line_filtered, log_file=True)
+        
+        # Don't put stderr output in queue - we only want stdout JSON responses
+        
         if request_logs is not None and line_filtered:
             # Skip the "Server ready" spam
             if "Server ready. Waiting for input" not in line_filtered:
@@ -199,14 +218,22 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     try:
                         request_logs.append("[info] Starting new process")
                         # Ensure child process inherits the current environment
+                        env = os.environ.copy()
+                        # Force unbuffered output from child process
+                        env['PYTHONUNBUFFERED'] = '1'
+                        
+                        # Wrap command with stdbuf to force unbuffered stdout
+                        cmd = updated_leanaide_command().split()
+                        cmd = ['stdbuf', '-oL', '-eL'] + cmd  # Line buffered stdout and stderr
+                        
                         process = subprocess.Popen(
-                            updated_leanaide_command().split(),
+                            cmd,
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             text=True,
-                            bufsize=1, # Line buffering
-                            env=os.environ.copy(),
+                            bufsize=1,  # Line buffering
+                            env=env,
                         )
                         threading.Thread(target=process_reader, args=(process, output_queue, request_logs), daemon=True).start()
                         threading.Thread(target=process_error_reader, args=(process, request_logs), daemon=True).start()

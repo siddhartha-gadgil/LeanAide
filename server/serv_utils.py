@@ -443,19 +443,23 @@ def process_lookup_response(lookup_response):
 def store_token_responses(token: str, status: str):
     """
     Store the token responses in session state.
+    Also saves a timestamp of when it was last updated.
     """
-    if not int(token) and int(token)> 0:
+    if not int(token) and int(token) > 0:
         return
-     # Ensure the directory exists
+    # Ensure the directory exists
+    from datetime import datetime
+
+    timestamp = datetime.now().strftime("%H:%M:%S %Y-%m-%d")
     if os.path.exists(TOKEN_JSON_FILE):
         with open(TOKEN_JSON_FILE, "r", encoding="utf-8") as f:
             token_data = json.load(f)
 
-        token_data[token] = status
+        token_data[token] = {"status": status, "last_updated": timestamp}
         with open(TOKEN_JSON_FILE, "w", encoding="utf-8") as f:
             json.dump(token_data, f, indent=4)
     else:
-        token_data = {token: status}
+        token_data = {token: {"status": status, "last_updated": timestamp}}
         with open(TOKEN_JSON_FILE, "w", encoding="utf-8") as f:
             json.dump(token_data, f, indent=4)
 
@@ -477,13 +481,12 @@ def show_response(show_input: bool = False, async_response: bool = False):
 
     if async_response:
         st.subheader("Job Token Response", divider =True)
-        if show_input:
-            if sts.result.get("status", "") == "background":
-                st.sucess("The task is sent to background processing. Use the below token to check for the response.")
-                st.code(st.result.get("token", "No token available."), language="plaintext", wrap_lines = True)
-            else:
-                st.error("Error occurred while sending task to background processing.")
-                st.error(f"Error: {st.result.get('error', 'No error details available.')}")
+        if sts.result.get("status", "") == "background":
+            st.success("The task is sent to background processing. Use the below token to check for the response.")
+            st.code(sts.result.get("token", "No token available."), language="plaintext", wrap_lines = True)
+        else:
+            st.error("Error occurred while sending task to background processing.")
+            st.error(f"Error: {sts.result.get('error', 'No error details available.')}")
 
     else:
         for task in sts.selected_tasks:
