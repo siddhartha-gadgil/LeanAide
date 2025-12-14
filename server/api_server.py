@@ -6,19 +6,23 @@ import subprocess
 import sys
 import threading
 from socketserver import ThreadingMixIn
-from sentence_transformers import SentenceTransformer
+
 import torch
+from sentence_transformers import SentenceTransformer
+
 sys.path.insert(0, "SimilaritySearch/")
 import similarity_search
+
+from logging_utils import (delete_env_file, filter_logs, get_env, log_write,
+                           post_env)
 
 # from huggingface_hub import login
 
 # login()
 
-from logging_utils import log_write, filter_logs, get_env, post_env, delete_env_file
 
 PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
-HOST = os.environ.get("HOST", "localhost")
+HOST = os.environ.get("HOST", "0.0.0.0")
 COMMAND = os.environ.get("LEANAIDE_COMMAND", "lake exe leanaide_process")
 for arg in sys.argv[1:]:
     COMMAND = " " + arg
@@ -26,18 +30,31 @@ for arg in sys.argv[1:]:
 # Config model
 MODEL_NAME = "BAAI/bge-base-en-v1.5"
 
-# Load model
-device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-print(f"Using device: {device}")
-print(f"Loading model: {MODEL_NAME}")
-MODEL = SentenceTransformer(MODEL_NAME, device=device, model_kwargs={"dtype": torch.bfloat16})
-print("Model loaded!\n")
+# Lazy load model - will be loaded in background after server starts
+MODEL = None
+MODEL_LOAD_LOCK = threading.Lock()
 
-# Replace `/` with `-` to avoid directory name issues 
-MODEL_NAME = MODEL_NAME.replace('/','-')
+def lazy_load_model():
+    """Lazy load the model on first use"""
+    global MODEL
+    if MODEL is None:
+        with MODEL_LOAD_LOCK:
+            if MODEL is None:  # Double-check locking
+                device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+                print(f"Loading model: {MODEL_NAME} on {device}")
+                MODEL = SentenceTransformer(MODEL_NAME, device=device, model_kwargs={"dtype": torch.bfloat16})
+                print("Model loaded!")
+                # Check and create indexes after model loads
+                model_name_safe = MODEL_NAME.replace('/', '-')
+                similarity_search.run_checks(MODEL, model_name_safe)
+    return MODEL
 
-# Check and create indexes
-similarity_search.run_checks(MODEL, MODEL_NAME)
+def init_model_bg():
+    """Start loading model in background thread"""
+    def load():
+        lazy_load_model()
+    threading.Thread(target=load, daemon=True).start()
+    print(f"Model {MODEL_NAME} will load in background...")
 
 def get_env_args():
     """Get environment variables for the server, mainly LLM details"""
@@ -76,36 +93,70 @@ def updated_leanaide_command():
     post_env("LEANAIDE_COMMAND", COMMAND)
     return COMMAND
 
-command = updated_leanaide_command()
-# Hide auth_key value for security
-if "--auth_key" in command:
-    auth_key_part = command.split("--auth_key ")[1].split()[0]
-    hidden_key = auth_key_part[:6] + "...key_hidden..." if len(auth_key_part) > 6 else auth_key_part
-    command = command.replace(auth_key_part, hidden_key)
+
+def hide_sensitive_command():
+    # Hide auth_key value for security
+    command = updated_leanaide_command()
+    if "--auth_key" in command:
+        auth_key_part = command.split("--auth_key ")[1].split()[0]
+        hidden_key = auth_key_part[:6] + "...key_hidden..." if len(auth_key_part) > 6 else auth_key_part
+        command = command.replace(auth_key_part, hidden_key)
+
+    return command
+
+command = hide_sensitive_command()
+
 print(f"Command: {command}")
 log_write("Server command", command, log_file=True)
 process = None
 process_lock = threading.Lock()
 output_queue = queue.Queue()
 
-def process_reader(process, output_queue):
+def process_reader(process, output_queue, request_logs=None):
+    """Read stdout and optionally capture to request_logs"""
     while True:
         line = process.stdout.readline()
         if not line:
             break  # Process terminated
-        output_queue.put(line.strip())
-        line = filter_logs(line.strip())
-        print(f"process stdout: {line.strip()}")
-        log_write("Server stdout", line.strip(), log_file=True)
+        line_stripped = line.strip()
+        
+        # Check if this is a JSON line (starts with { or [)
+        if line_stripped and (line_stripped.startswith('{') or line_stripped.startswith('[')):
+            try:
+                # Try to parse as JSON to verify it's complete
+                json.loads(line_stripped)
+                # Valid JSON found, put in queue for HTTP response
+                output_queue.put(line_stripped)
+            except json.JSONDecodeError:
+                # Not complete JSON yet, just log it
+                line_filtered = filter_logs(line_stripped)
+                print(f"process stdout (incomplete JSON): {line_filtered}", flush=True)
+        else:
+            # Not JSON, just log
+            line_filtered = filter_logs(line_stripped)
+            if line_filtered:
+                print(f"process stdout: {line_filtered}", flush=True)
+        
+        log_write("Server stdout", line_stripped, log_file=True)
+        if request_logs is not None and line_stripped:
+            request_logs.append(f"[stdout] {line_stripped}")
 
-def process_error_reader(process):  # New function for stderr
+def process_error_reader(process, request_logs=None):
+    """Read stderr and optionally capture to request_logs"""
     while True:
         line = process.stderr.readline()
         if not line:
             break  # Process terminated
-        line = filter_logs(line.strip())
-        print(f"process stderr: {line.strip()}")
-        log_write("Server stderr", line.strip(), log_file=True)
+        line_filtered = filter_logs(line.strip())
+        print(f"process stderr: {line_filtered}", flush=True)
+        log_write("Server stderr", line_filtered, log_file=True)
+        
+        # Don't put stderr output in queue - we only want stdout JSON responses
+        
+        if request_logs is not None and line_filtered:
+            # Skip the "Server ready" spam
+            if "Server ready. Waiting for input" not in line_filtered:
+                request_logs.append(f"[stderr] {line_filtered}")
 
 class ThreadingHTTPServer(ThreadingMixIn, http.server.HTTPServer):
     # Handle requests in a separate thread.
@@ -130,8 +181,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     print(f"ERROR: 400 Bad Request - {error_msg}", file=sys.stderr)
                     return # Exit after handling
 
+                # Load model if not already loaded
+                model = lazy_load_model()
+                model_name_safe = MODEL_NAME.replace('/', '-')
+                
                 # Call the main function from similarity_search
-                result = similarity_search.run_similarity_search(MODEL, MODEL_NAME, data['num'], data['query'], data['descField'])
+                result = similarity_search.run_similarity_search(model, model_name_safe, data['num'], data['query'], data['descField'])
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -153,60 +208,116 @@ class Handler(http.server.BaseHTTPRequestHandler):
         global process, process_lock
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length).decode('utf-8')
+        
+        # Per-request log capture (simple list of strings)
+        request_logs = []
 
         try:
             with process_lock:
                 if process is None or process.poll() is not None:
                     try:
+                        request_logs.append("[info] Starting new process")
+                        # Ensure child process inherits the current environment
+                        env = os.environ.copy()
+                        # Force unbuffered output from child process
+                        env['PYTHONUNBUFFERED'] = '1'
+                        
+                        # Wrap command with stdbuf to force unbuffered stdout
+                        cmd = updated_leanaide_command().split()
+                        cmd = ['stdbuf', '-oL', '-eL'] + cmd  # Line buffered stdout and stderr
+                        
                         process = subprocess.Popen(
-                            updated_leanaide_command().split(),
+                            cmd,
                             stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             text=True,
-                            bufsize=1 # Line buffering
+                            bufsize=1,  # Line buffering
+                            env=env,
                         )
-                        threading.Thread(target=process_reader, args=(process, output_queue), daemon=True).start()
-                        threading.Thread(target=process_error_reader, args=(process,), daemon=True).start()  # Start stderr thread
+                        threading.Thread(target=process_reader, args=(process, output_queue, request_logs), daemon=True).start()
+                        threading.Thread(target=process_error_reader, args=(process, request_logs), daemon=True).start()
                     except FileNotFoundError:
+                        request_logs.append(f"[error] Command not found: {updated_leanaide_command()}")
                         self.send_response(500)
-                        self.send_header('Content-type', 'text/plain')
+                        self.send_header('Content-type', 'application/json')
                         self.end_headers()
-                        self.wfile.write(f"Command not found: {updated_leanaide_command()}".encode())
+                        error_response = {
+                            "error": f"Command not found: {updated_leanaide_command()}",
+                            "logs": "\n".join(request_logs)
+                        }
+                        self.wfile.write(json.dumps(error_response).encode())
                         return
             try:
                 json_data = json.loads(post_data)
+                
+                request_logs.append("[info] Sending request to process")
                 process.stdin.write(json.dumps(json_data) + '\n')
                 process.stdin.flush()
 
                 try:
                     output = output_queue.get(timeout=6000)  # Timeout after 6000 seconds
+                    request_logs.append("[info] Received response from process")
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
-                    self.wfile.write(output.encode())
+                    
+                    # Parse the output and add logs field to it
+                    try:
+                        result_data = json.loads(output)
+                        # Add logs directly to the result JSON
+                        result_data["logs"] = "\n".join(request_logs)
+                        response = result_data
+                    except json.JSONDecodeError:
+                        # If output is not JSON, wrap it
+                        response = {
+                            "result": output,
+                            "logs": "\n".join(request_logs)
+                        }
+                    
+                    self.wfile.write(json.dumps(response).encode())
                 except queue.Empty:
-                    self.send_response(504)  # Gateway Timeout
-                    self.send_header('Content-type', 'text/plain')
+                    request_logs.append("[error] Process timed out after 600s")
+                    self.send_response(504)
+                    self.send_header('Content-type', 'application/json')
                     self.end_headers()
-                    self.wfile.write("Process timed out".encode())
+                    error_response = {
+                        "error": "Process timed out",
+                        "logs": "\n".join(request_logs)
+                    }
+                    self.wfile.write(json.dumps(error_response).encode())
             except json.JSONDecodeError:
+                request_logs.append("[error] Invalid JSON in request")
                 self.send_response(400)
-                self.send_header('Content-type', 'text/plain')
+                self.send_header('Content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write("Invalid JSON".encode())
+                error_response = {
+                    "error": "Invalid JSON",
+                    "logs": "\n".join(request_logs)
+                }
+                self.wfile.write(json.dumps(error_response).encode())
             except BrokenPipeError:
+                request_logs.append("[error] Process crashed (broken pipe)")
                 with process_lock:
                     process = None
                 self.send_response(500)
-                self.send_header('Content-type', 'text/plain')
+                self.send_header('Content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write("Process crashed".encode())
+                error_response = {
+                    "error": "Process crashed",
+                    "logs": "\n".join(request_logs)
+                }
+                self.wfile.write(json.dumps(error_response).encode())
         except Exception as e:
+            request_logs.append(f"[error] Exception: {str(e)}")
             self.send_response(500)
-            self.send_header('Content-type', 'text/plain')
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(str(e).encode())
+            error_response = {
+                "error": str(e),
+                "logs": "\n".join(request_logs)
+            }
+            self.wfile.write(json.dumps(error_response).encode())
 
     def do_GET(self):
         self.send_response(200)
@@ -219,7 +330,12 @@ def run(server_class=http.server.HTTPServer, handler_class=Handler, port=PORT, h
     server_address = (host, port) # Use the host
     ThreadingHTTPServer.allow_reuse_address = True
     httpd = ThreadingHTTPServer(server_address, handler_class)
-    print(f"Starting httpd on port {port}, command: {updated_leanaide_command()}")
+    print(f"Starting httpd on port {port}, command: {hide_sensitive_command()}")
+    
+    # Start loading model in background after server is ready
+    init_model_bg()
+    print("\nServer is ready...\n")
+    
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

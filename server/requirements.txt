@@ -1,14 +1,14 @@
 # Requirements for the project
-python-dotenv>=1.1.0
-streamlit>=1.45.1
-watchdog>=6.0.0
 streamlit-sortables>=0.3.1
-st-copy>=1.1.2
-openai>=1.86.0
+watchdog>=6.0.0
 pymupdf>=1.26.1
-# streamlit-tags>=1.2.8
-faiss_cpu==1.12.0
-sentence_transformers==5.1.1
+st-copy>=1.1.2
+openai>=1.91.0
+streamlit>=1.46.0
+python-dotenv>=1.1.1
+requests>=2.32.4
+faiss-cpu>=1.13.1
+torch>=2.9.1
+sentence-transformers>=5.1.2
 numpy==2.3.4
-Requests==2.32.5
-torch==2.5.1
+

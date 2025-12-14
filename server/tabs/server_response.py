@@ -2,11 +2,14 @@ import json
 
 import requests
 import streamlit as st
-from streamlit import session_state as sts
 from dotenv import load_dotenv
+from streamlit import session_state as sts
 
-from serv_utils import TASKS, lean_code_button, get_actual_input, validate_input_type, copy_to_clipboard, log_section, button_clicked, request_server, host_information, lean_code_cleanup
-from logging_utils import log_write, get_env
+from logging_utils import get_env, log_write
+from serv_utils import (TASKS, button_clicked, get_actual_input,
+                        host_information, lean_code_cleanup, log_section,
+                        request_server, show_response, store_token_responses,
+                        validate_input_type)
 
 load_dotenv()
 
@@ -197,6 +200,12 @@ if sts.self_input_button or sts.selected_tasks:
                     if param_input:
                         sts.val_input[param] = param_input
                         sts.valid_input = True
+            
+    sts.async_mode = st.checkbox(
+        "Asynchronous Mode",
+        help="Enable asynchronous processing for task in background.",
+        value=True
+    )
 
     # Control buttons
     st.divider()
@@ -214,6 +223,9 @@ if sts.self_input_button or sts.selected_tasks:
         # Clean up empty values
         if sts.val_input:
             sts.val_input = {k: v for k, v in sts.val_input.items() if v not in ["", None]}
+
+        if sts.async_mode:
+            sts.val_input["mode"] = "async"
         
         with st.container():
             st.success("Query successfully validated!")
@@ -223,29 +235,6 @@ if sts.self_input_button or sts.selected_tasks:
 
 
 st.write("")
-# Show Response function
-def show_response():
-    for task in sts.selected_tasks:
-        st.subheader(task + " Output", divider =True)
-        if "elaborate" in task.lower().strip():
-            if sts.result["result"] == "success":
-                st.success("Successful Elaboration => Lean Code is **Correct**.")
-            else:
-                st.error("Elaboration failed. The Lean code produced may be **incorrect**.")
-
-        for key, val_type in TASKS[task]["output"].items():
-            if "json" in val_type.lower().split():
-                st.write(f"{key.capitalize()} ({val_type}):")
-                json_out = sts.result.get(key) or {}
-                st.json(json_out)
-                copy_to_clipboard(str(json_out))
-            else:
-                st.write(f"{key.capitalize()} ({val_type}):")
-                st.code(
-                    sts.result.get(key) or "No data available.", language="plaintext", wrap_lines = True
-                )
-                if "lean_code" in key.lower():
-                    lean_code_button("result", key, task)
  
 def dummy_request():
     command = get_env("LEANAIDE_COMMAND", "lake exe leanaide_process")
@@ -287,6 +276,8 @@ if submit_response_button or sts.request_button:
 
         if submit_response_button:
             try:
+                if sts.async_mode:
+                    request_payload["mode"] = "async"
                 request_server(request_payload=request_payload, task_header="Streamlit", success_key="server_output_success", result_key="result")
                 sts.server_output_success = True
             except Exception as e:
@@ -296,12 +287,19 @@ if submit_response_button or sts.request_button:
                 sts.result = {}
 
         if sts.server_output_success:
-            show_response()
+            if not sts.async_mode:
+                show_response()
+            else:
+                sts.token_server = sts.result.get("token", "-1")
+                store_token_responses(sts.token_server, "running")
+                show_response(async_response=True)
+
         else:
             # If server itself gives "error" output, it goes here
             st.error("No output available. Please check the input and try again.")
             try:
                 st.error(f"Error: {sts.result["error"]}")
+                store_token_responses(sts.token_server, "error_response")
             except Exception as e:
                 st.error(f"Error retrieving error from server: {e}")
                 pass

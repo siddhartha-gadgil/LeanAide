@@ -8,9 +8,11 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from server.logging_utils import log_write, filter_logs, create_env_file, delete_env_file
 
-STREAMLIT_PORT = 8501
+from server.logging_utils import (create_env_file, delete_env_file,
+                                  filter_logs, log_write)
+
+STREAMLIT_PORT = int(os.environ.get("LEANAIDE_STREAMLIT_PORT", 8501))
 LEANAIDE_PORT = int(os.environ.get("LEANAIDE_PORT", 7654))
 
 home_dir = str(Path(__file__).resolve().parent)
@@ -201,7 +203,10 @@ LEANAIDE_PROCESS_FLAGS (passed to `lake exe leanaide_process`):
     streamlit_process = None
 
     if run_server:
-        print(f"\033[1;34mAPI Server:\033[0m http://{os.environ.get('HOST', 'localhost')}:{LEANAIDE_PORT}\n", file=sys.stderr)
+        host_display = os.environ.get('HOST', '0.0.0.0')
+        if host_display == '0.0.0.0':
+            host_display = socket.gethostname()  # Show actual hostname instead of 0.0.0.0
+        print(f"\033[1;34mAPI Server:\033[0m http://{host_display}:{LEANAIDE_PORT}\n", file=sys.stderr)
         serv_process = multiprocessing.Process(target=run_server_api)
         serv_process.start()
     else:

@@ -1,16 +1,17 @@
 import base64
 import json
 import os
-from jsonschema import validate, ValidationError
 
 import pymupdf
 import streamlit as st
 from dotenv import load_dotenv
+from jsonschema import ValidationError, validate
 from openai import OpenAI
 
-from llm_prompts import thmpf_prompt, thmpf_reprompt, soln_from_image_prompt, mathpaper_prompt
-from serv_utils import SCHEMA_JSON, HOMEDIR
+from llm_prompts import (mathpaper_prompt, soln_from_image_prompt,
+                         thmpf_prompt, thmpf_reprompt)
 from logging_utils import log_write
+from serv_utils import HOMEDIR, SCHEMA_JSON
 
 load_dotenv(os.path.join(HOMEDIR, ".env"))
 

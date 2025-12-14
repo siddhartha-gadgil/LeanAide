@@ -1,10 +1,13 @@
+import os
+import subprocess
+
 import streamlit as st
 from streamlit import session_state as sts
+
+from api_server import HOST, PORT
 from llm_response import get_supported_models, provider_info
 from logging_utils import post_env_args
-from api_server import HOST, PORT
-import subprocess
-import os
+
 
 def get_git_commit_info():
     """Get current git commit information"""
@@ -30,7 +33,7 @@ NONE_INIT_KEYS = [
     "image_paths", "proof", "theorem", "structured_proof", "paper", "paper_pdf", "format_index", "thm_details", 
     "uploaded_pdf", "genai_proof_button",
     # For benchmark
-    "bm_input_opt", "bm_json_dataset", "bm_single_thm", "bm_single_proof", "bm_time_taken", "bm_total_problems", "bm_display_table", "bm_evaluator", "bm_status_text", "bm_progress_bar", "bm_results_container"
+    "bm_input_opt", "bm_json_dataset", "bm_single_thm", "bm_single_proof", "bm_time_taken", "bm_total_problems", "bm_display_table", "bm_evaluator", "bm_status_text", "bm_progress_bar", "bm_results_container", "token_server", "async_mode"
 ]
 
 FALSE_INIT_KEYS = [
@@ -88,6 +91,11 @@ logs_page = st.Page(
     title = "Logs",
     icon = ":material/bug_report:",
 )
+token_page = st.Page(
+    page = "tabs/token_response.py",
+    title = "Token Response",
+    icon = ":material/code:",
+)
 benchmark_page = st.Page(
     page = "tabs/benchmark.py",
     title = "Benchmark",
@@ -99,6 +107,7 @@ pg = st.navigation(pages = [
     structured_json_page,
     server_response_page,
     logs_page,
+    token_page,
     benchmark_page
 ])
 
