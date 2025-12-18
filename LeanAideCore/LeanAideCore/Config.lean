@@ -1,4 +1,5 @@
 import Lean
+import Std
 open Lean Meta
 
 initialize
@@ -113,3 +114,10 @@ def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
       let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
       IO.eprintln s!"The output is logged to {logFilePath}"
       IO.FS.writeFile logFilePath s!"[File] {msg}"
+
+
+def timestamp : IO String := do
+  let now ← Std.Time.PlainDateTime.now
+  return now.format "uuuu-MM-dd'T'HH:mm:ss"
+
+-- #eval timestamp
