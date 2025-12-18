@@ -1,25 +1,28 @@
 import ast
 import json
 import os
+import re
+import socket
 import sys
+import urllib.parse
 from pathlib import Path
 from typing import Any, Tuple, Type
-import urllib.parse
 
-import socket
-import streamlit as st
-from streamlit import session_state as sts
-from st_copy import copy_button
-from logging_utils import log_write
 import requests
+import streamlit as st
+from st_copy import copy_button
+from streamlit import session_state as sts
 
-from logging_utils import log_server, log_buffer_clean
 from api_server import HOST
+from logging_utils import (LEANAIDE_HOMEDIR, log_buffer_clean, log_server,
+                           log_write)
 
 HOMEDIR = str(Path(__file__).resolve().parent.parent) # LeanAide root
 sys.path.append(HOMEDIR)
 schema_path = os.path.join(str(HOMEDIR), "resources", "PaperStructure.json")
 SCHEMA_JSON = json.load(open(schema_path, "r", encoding="utf-8"))
+
+TOKEN_JSON_FILE = f"{LEANAIDE_HOMEDIR}/.leanaide_cache/tasks/token_status.json"
 
 # Lean Checker Tasks
 TASKS = {
@@ -198,6 +201,28 @@ def action_copy_download(key: str, filename: str, copy_text: str = "", usage: st
     text = sts[key]
     if copy_text:
         text = copy_text
+    
+    # Decode unicode escape sequences (e.g., \u2208 -> ∈, \u03a8 -> Ψ)
+    if isinstance(text, str):
+        try:
+            text = text.encode('utf-8').decode('unicode_escape')
+        except (UnicodeDecodeError, AttributeError):
+            # If decoding fails, keep original text
+            pass
+            # Handle LaTeX syntax: ensure even number of backslashes before commands
+            if isinstance(text, str):
+                def fix_latex_backslashes(text: str) -> str:
+                    def repl(m):
+                        slashes = m.group(1)
+                        cmd = m.group(2)
+                        # if odd number of backslashes → make it even
+                        if len(slashes) % 2 == 1:
+                            slashes += "\\"
+                        return slashes + cmd
+
+                    return re.sub(r'(\\+)([a-zA-Z]+)', repl, text)
+                text = fix_latex_backslashes(text)
+    
     with col1:
         copy_to_clipboard(text)
     with col2:
@@ -211,10 +236,19 @@ def preview_text(key: str, default_text: str = "", caption = "", usage: str = ""
         caption = key
     with st.expander(f"Preview Text {caption.capitalize()}", expanded=False):
         lang = st.radio("Language", ["Markdown", "Text"], horizontal = True, key = f"preview_{key}_{usage}").lower()
+        
+        # Decode unicode escape sequences for display
+        display_text = sts[key] if sts[key] else default_text
+        if isinstance(display_text, str):
+            try:
+                display_text = display_text.encode('utf-8').decode('unicode_escape')
+            except (UnicodeDecodeError, AttributeError):
+                pass
+        
         if lang == "markdown":
-            st.markdown(sts[key] if sts[key] else default_text)
+            st.markdown(display_text)
         else:
-            st.code(sts[key] if sts[key] else default_text, wrap_lines = True)
+            st.code(display_text, wrap_lines = True)
             
 def lean_code_cleanup(lean_code: str, elaborate: bool = False) -> str:
     """
@@ -292,24 +326,57 @@ def request_server(request_payload: dict, task_header: str, success_key: str, re
         # Get the result
         st.success("Response sent and received successfully!")
         sts[result_key] = response.json()
+        
+        # Decode unicode escape sequences in the response
+        def decode_unicode_in_dict(obj):
+            """Recursively decode unicode escape sequences in dict/list/str"""
+            if isinstance(obj, dict):
+                return {k: decode_unicode_in_dict(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [decode_unicode_in_dict(item) for item in obj]
+            elif isinstance(obj, str):
+                try:
+                    return obj.encode('utf-8').decode('unicode_escape')
+                except (UnicodeDecodeError, AttributeError):
+                    return obj
+            return obj
+        
+        sts[result_key] = decode_unicode_in_dict(sts[result_key])
         log_write(task_header, f"Response: {sts[result_key]}")
 
-        try:
-            if sts[result_key]["result"] == "success":
-                sts[success_key] = True
-                st.success("Request processed successfully!")
-            else: # result = "error"
+        if sts.async_mode:
+            try:
+                if sts[result_key]["status"] == "background":
+                    sts[success_key] = True
+                    st.success("Request is being processed in background!")
+                else: # status = "error"
+                    sts[success_key] = False
+                    st.error("Error in processing the request in background. Please check the input and try again.")
+                    st.write(f"Error (String): {sts[result_key].get('error', 'No error details available.')}")
+                log_write("Streamlit", "Server Output: Success")
+            except Exception as e:
                 sts[success_key] = False
-                st.error("Error in processing the request. Please check the input and try again.")
-                st.write("Error (String):")
-                st.code(sts[result_key]["error"])
-            log_write("Streamlit", "Server Output: Success")
-        except Exception as e:
-            sts[success_key] = False
-            st.error(f"Error in processing the request: {e}")
-            st.write("Response (String):")
-            st.code(str(sts[result_key]))
-            log_write(task_header, f"Server Output: Error - {e}")
+                st.error(f"Error in processing the request: {e}")
+                st.write("Response (String):")
+                st.code(str(sts[result_key]))
+                log_write(task_header, f"Server Output: Error - {e}")
+        else:
+            try:
+                if sts[result_key]["result"] == "success":
+                    sts[success_key] = True
+                    st.success("Request processed successfully!")
+                else: # result = "error"
+                    sts[success_key] = False
+                    st.error("Error in processing the request. Please check the input and try again.")
+                    st.write("Error (String):")
+                    st.code(sts[result_key]["error"])
+                log_write("Streamlit", "Server Output: Success")
+            except Exception as e:
+                sts[success_key] = False
+                st.error(f"Error in processing the request: {e}")
+                st.write("Response (String):")
+                st.code(str(sts[result_key]))
+                log_write(task_header, f"Server Output: Error - {e}")
 
     else:
         sts[success_key] = False
@@ -338,3 +405,123 @@ def host_information():
         help="Specify the port number where the proof server is running. Default is 7654.",
     )
     sts.api_port = api_port
+
+def get_async_response(token):
+    """
+    Get and manage the asynchronous response from the server or cache.
+    """
+    cached_response_file = f"{LEANAIDE_HOMEDIR}/.leanaide_cache/tasks/response_{token}.json"
+    if os.path.exists(cached_response_file):
+        with open(cached_response_file, "r", encoding="utf-8") as f:
+            response_data = json.load(f)
+        return 0, response_data
+    else:
+        # request server in lookup mode
+        request_payload = {
+            "mode": "lookup",
+            "token": token
+        }
+        try:
+            response = requests.post(
+                f"http://{sts.api_host}:{sts.api_port}", json=request_payload
+            )
+            if response.status_code == 200:
+                err_code, response_data = process_lookup_response(response.json())
+                return err_code, response_data
+            else:
+                return 2, {"result": "error", "error": f"Error: {response.status_code}, {response.text}"}
+        except Exception as e:
+            return 2, {"result": "error", "error": str(e)}
+
+
+
+def process_lookup_response(lookup_response):
+    """
+    Process the lookup response from the server.
+    0 : Job is completed by the server(what the response is, success or error, is independent)
+    1 : Job is still running
+    2 : Error in lookup
+    """
+    lookup_status = lookup_response.get("status", {})
+    lookup_result = lookup_response.get("result", "error")
+
+    if lookup_result != "success":
+        # wrong token or similar
+        return 2, lookup_response
+
+    # This is for when job was successfully submitted
+    if "completed" in lookup_status.keys():
+        return 0, lookup_status["completed"]
+    elif "running" in lookup_status:
+        return 1, lookup_status["running"]
+    else:
+        return 3, lookup_response
+
+def store_token_responses(token: str, status: str):
+    """
+    Store the token responses in session state.
+    Also saves a timestamp of when it was last updated.
+    """
+    if not int(token) and int(token) > 0:
+        return
+    # Ensure the directory exists
+    from datetime import datetime
+
+    timestamp = datetime.now().strftime("%H:%M:%S %Y-%m-%d")
+    if os.path.exists(TOKEN_JSON_FILE):
+        with open(TOKEN_JSON_FILE, "r", encoding="utf-8") as f:
+            token_data = json.load(f)
+
+        token_data[token] = {"status": status, "last_updated": timestamp}
+        with open(TOKEN_JSON_FILE, "w", encoding="utf-8") as f:
+            json.dump(token_data, f, indent=4)
+    else:
+        token_data = {token: {"status": status, "last_updated": timestamp}}
+        with open(TOKEN_JSON_FILE, "w", encoding="utf-8") as f:
+            json.dump(token_data, f, indent=4)
+
+
+def show_response(show_input: bool = False, async_response: bool = False):  
+    def show_util(val_type, key, input_data, task):
+        if "json" in val_type.lower().split():
+            st.write(f"{key.capitalize()} ({val_type}):")
+            json_in = input_data.get(key) or {}
+            st.json(json_in)
+            copy_to_clipboard(str(json_in))
+        else:
+            st.write(f"{key.capitalize()} ({val_type}):")
+            st.code(
+                input_data.get(key) or "No data available.", language="plaintext", wrap_lines = True
+            )
+            if "lean_code" in key.lower():
+                lean_code_button("input", key, task)
+
+    if async_response:
+        st.subheader("Job Token Response", divider =True)
+        if sts.result.get("status", "") == "background":
+            st.success("The task is sent to background processing. Use the below token to check for the response.")
+            st.code(sts.result.get("token", "No token available."), language="plaintext", wrap_lines = True)
+        else:
+            st.error("Error occurred while sending task to background processing.")
+            st.error(f"Error: {sts.result.get('error', 'No error details available.')}")
+
+    else:
+        for task in sts.selected_tasks:
+            st.subheader(task + " Output", divider =True)
+            if "elaborate" in task.lower().strip():
+                if sts.result["result"] == "success":
+                    st.success("Successful Elaboration => Lean Code is **Correct**.")
+                else:
+                    st.error("Elaboration failed. The Lean code produced may be **incorrect**.")
+
+            for key, val_type in TASKS[task]["output"].items():
+                show_util(val_type, key, sts.result, task)
+
+            st.divider()
+            if show_input:
+                st.subheader(task + " Input", divider =True)
+                input_data = {key: sts.val_input.get(key, "No data available.") for key in TASKS[task].get("input", {}).keys()}
+
+                for key, val_type in TASKS[task].get("input", {}).items():
+                    show_util(val_type, key, input_data, task)
+
