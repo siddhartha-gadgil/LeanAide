@@ -135,7 +135,7 @@ deriving ToJson, FromJson, Repr
 
 #eval fromJson? (α := S) <| (toJson ({ a := 10, b := "hello" } : S)).mergeObj (Json.mkObj [("a", Json.num 20), ("d", Json.str "extra")])
 
--- def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
+-- def traceAide (tag : Name) (msg : String) : CoreM Unit := do
 --   Lean.trace tag (fun _ => msg)
 --   let traceToIO := tag = `Translate.info -- dummy condition for testing
 --   if traceToIO then
@@ -144,7 +144,7 @@ deriving ToJson, FromJson, Repr
 #check trace
 
 def egTrace : CoreM Nat := do
-  polyTrace `Translate.info "This is an info trace message."
+  traceAide `Translate.info "This is an info trace message."
   return 42
 
 #eval egTrace
@@ -153,7 +153,7 @@ set_option trace.Translate.info true
 #eval egTrace
 
 def egTrace' : CoreM Nat := do
-  polyTrace `Translate.debug "This is a debug trace message."
+  traceAide `Translate.debug "This is a debug trace message."
   return 42
 
 set_option trace.Translate.debug true

@@ -58,45 +58,49 @@ def resourcesDir : IO System.FilePath := do
 
 -- #eval resourcesDir
 
-initialize polyTraceIO : IO.Ref Bool ← IO.mkRef true
-initialize polyTraceFile : IO.Ref Bool ← IO.mkRef false
+initialize traceAideIO : IO.Ref Bool ← IO.mkRef true
+initialize traceAideFile : IO.Ref Bool ← IO.mkRef false
 
-namespace polyTraceIO
+namespace traceAideIO
   def on (_ : Unit) : IO Unit := do
-    let current ← polyTraceIO.get
-    if current then pure () else polyTraceIO.set true
+    let current ← traceAideIO.get
+    if current then pure () else traceAideIO.set true
 
   def off (_ : Unit) : IO Unit := do
-    let current ← polyTraceIO.get
-    if current then polyTraceIO.set false else pure ()
+    let current ← traceAideIO.get
+    if current then traceAideIO.set false else pure ()
 
   def status (_ : Unit) : IO Bool := do
-    (← polyTraceIO.get)
+    (← traceAideIO.get)
     |> pure
 
-end polyTraceIO
+end traceAideIO
 
-namespace polyTraceFile
+namespace traceAideFile
   def on (_ : Unit) : IO Unit := do
-    let current ← polyTraceFile.get
-    if current then pure () else polyTraceFile.set true
+    let current ← traceAideFile.get
+    if current then pure () else traceAideFile.set true
 
   def off (_ : Unit) : IO Unit := do
-    let current ← polyTraceFile.get
-    if current then polyTraceFile.set false
+    let current ← traceAideFile.get
+    if current then traceAideFile.set false
 
   def status (_ : Unit) : IO Bool := do
-    (← polyTraceFile.get)
+    (← traceAideFile.get)
     |> pure
 
-end polyTraceFile
+end traceAideFile
 
-def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
+def timestamp : IO String := do
+  let now ← Std.Time.PlainDateTime.now
+  return now.format "uuuu-MM-dd'T'HH:mm:ss"
+
+def traceAide (tag : Name) (msg : String) : CoreM Unit := do
 -- always print trace
   Lean.trace tag (fun _ => msg)
 -- use mkRef to globally update this
-  let isIO ← liftM <| polyTraceIO.status ()
-  let isFile ← liftM <| polyTraceFile.status ()
+  let isIO ← liftM <| traceAideIO.status ()
+  let isFile ← liftM <| traceAideFile.status ()
 
   match isIO, isFile with
   | false, false =>
@@ -116,8 +120,5 @@ def polyTrace (tag : Name) (msg : String) : CoreM Unit := do
       IO.FS.writeFile logFilePath s!"[File] {msg}"
 
 
-def timestamp : IO String := do
-  let now ← Std.Time.PlainDateTime.now
-  return now.format "uuuu-MM-dd'T'HH:mm:ss"
 
 -- #eval timestamp

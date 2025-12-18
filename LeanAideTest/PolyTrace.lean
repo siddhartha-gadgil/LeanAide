@@ -4,23 +4,23 @@ import Std
 
 open Lean
 
--- >>> polyTrace example #1
+-- >>> traceAide example #1
 
 -- example of how
--- #eval polyTraceIO.on ()
--- #eval polyTrace `PaperCodes.info "This is an example"
--- #eval polyTraceIO.off ()
--- #eval polyTraceFile.on ()
--- #eval polyTraceFile.status ()
--- #eval polyTrace `PaperCodes.info "This is a file example"
--- #eval polyTraceFile.status ()
--- #eval polyTraceIO.status ()
+-- #eval traceAideIO.on ()
+-- #eval traceAide `PaperCodes.info "This is an example"
+-- #eval traceAideIO.off ()
+-- #eval traceAideFile.on ()
+-- #eval traceAideFile.status ()
+-- #eval traceAide `PaperCodes.info "This is a file example"
+-- #eval traceAideFile.status ()
+-- #eval traceAideIO.status ()
 
 namespace Generate
 
-  def polyTraceFile (fileStatus : IO Bool) : IO (Except String Unit) := do
+  def traceAideFile (fileStatus : IO Bool) : IO (Except String Unit) := do
     if ←fileStatus then
-      let _ ← polyTrace `PaperCodes.info s!"[File] :: Test message" |> pure
+      let _ ← traceAide `PaperCodes.info s!"[File] :: Test message" |> pure
       .ok () |> pure
     else
       .error s!"invalid state"
@@ -29,8 +29,8 @@ end Generate
 
 namespace Test
 
-  private def fileStatus := polyTraceFile.status ()
-  private def ioStatus := polyTraceIO.status ()
+  private def fileStatus := traceAideFile.status ()
+  private def ioStatus := traceAideIO.status ()
   private def defaultName := s!"output.log"
   private def defaultPath := do
     let currentDir ← (←IO.currentDir).toString |> pure
@@ -39,8 +39,8 @@ namespace Test
       defaultName
     ] |> pure
 
-  def polyTraceFile (_ : Unit) : IO Unit := do
-    let response ←(Generate.polyTraceFile fileStatus)
+  def traceAideFile (_ : Unit) : IO Unit := do
+    let response ←(Generate.traceAideFile fileStatus)
     match response with
     | .error e => IO.eprintln s!"[FAILED] File Generated failed with error : {e}"
     | .ok _ =>
