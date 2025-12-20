@@ -86,6 +86,7 @@ private/
 .env
 leanaide_st_temp/
 .leanaide_cache/*/*.json
+.logs/*.log
 SimilaritySearch/Indexes
 SimilaritySearch/Data
 tmp/
