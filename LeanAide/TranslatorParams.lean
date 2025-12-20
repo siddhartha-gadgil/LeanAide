@@ -6,8 +6,6 @@ namespace LeanAide
 
 open Cli Translator Lean
 
-#check Parsed.variableArgs
-
 def Translator.ofCli (p: Parsed) : IO Translator :=
   let numSim := p.flag? "prompts" |>.map (fun s => s.as! Nat)
     |>.getD 20

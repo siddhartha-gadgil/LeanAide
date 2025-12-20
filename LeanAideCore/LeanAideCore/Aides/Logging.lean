@@ -89,7 +89,7 @@ def traceAide (tag : Name) (msg : String) : CoreM Unit := do
   let ioLogs := logsToIO env
   let fileLogs := logsToFile env
   if tag ∈ ioLogs then
-    logIO tag (m!"{msg}")
+    logIO tag (m!"{msg.replace "\n" "\n\t"}")
   -- else
   --   IO.eprintln s!"{tag} suppressed IO log, logs : {ioLogs}"
   if tag ∈ fileLogs then

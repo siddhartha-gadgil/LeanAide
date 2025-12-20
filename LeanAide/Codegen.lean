@@ -32,6 +32,8 @@ instance : ToString SyntaxNodeKinds where
 
 namespace Codegen
 
+#logIO leanaide.codegen.info
+
 /--
 Attribute for generating Lean code, more precisely Syntax of a given category, from JSON data. More precisely, we generate `TranslateM <| Option <| TSyntax Q` from a JSON object, with the matching key as part of the attribute. In some cases, no syntax is generated as the goal is purely to have a side-effect to modify the context.
 
@@ -94,9 +96,9 @@ def codegenMatches (key: String) : CoreM <| Array Name := do
   let some fs :=
     (codegenExt.getState (← getEnv)).get? key | throwError
       s!"codegen: no function found for key '{key}' available keys are {allKeys.toList}"
-  IO.eprintln s!"codegen: found {fs.size} functions for key {key}"
+  traceAide `leanaide.codegen.info s!"found {fs.size} functions for key {key}"
   if fs.isEmpty then
-    IO.eprintln s!"codegen: no function found for key {key} in {allKeys.toList}"
+    traceAide `leanaide.codegen.info s!"no function found for key {key} in {allKeys.toList}"
   return fs
 
 /--
@@ -133,11 +135,11 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
     let mut accumErrors : Array String := #[]
     for f in fs do
       logInfo m!"codegen: trying {f} for key {key}"
-      IO.eprintln s!"codegen: trying {f} for key {key}"
+      traceAide `leanaide.codegen.info s!"trying {f} for key {key}"
       try
         -- logInfo m!"codegen: trying {f} for key {key}"
         let code? ← codeFromFunc goal? translator f kind source
-        IO.eprintln s!"codegen: {f} for key {key} worked; returned : {code?.isSome}"
+        traceAide `leanaide.codegen.info s!"{f} for key {key} worked; returned : {code?.isSome}"
         return code?
       catch e =>
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
@@ -180,26 +182,26 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) (accum: TSyntax ``tacticSeq) :
     TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
   goal.withContext do
-  IO.eprintln "Tring assumptions"
+  traceAide `leanaide.codegen.info "Trying assumptions"
   try
     goal.assumption
     return (← appendTacticSeqSeq accum (← `(tacticSeq| assumption)), none)
   catch _ =>
-  IO.eprintln "Trying exact tactics or automation"
+  traceAide `leanaide.codegen.info "Trying exact tactics or automation"
   match ← getSimpOrExactTactics? (← goal.getType) with
   | some code => do
-    IO.eprintln s!"codegen: exact tactics found for goal: {← ppExpr <| ← goal.getType}"
-    -- IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+    traceAide `leanaide.codegen.info s!"exact tactics found for goal: {← ppExpr <| ← goal.getType}"
+    -- traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
     return (← appendTacticSeqSeq accum code, none)
   | none => do
   -- IO.eprintln "Trying automation tactics"
   -- match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
   -- | some autoTacs => do
   --   let autoTac ← `(tacticSeq| $autoTacs*)
-  --   IO.eprintln s!"codegen: automation closes the goal"
+  --   traceAide `leanaide.codegen.info s!"automation closes the goal"
   --   return (← appendTactics accum autoTac, none)
   -- | none => do
-  IO.eprintln "No exact or automation tactics found, trying sources"
+  traceAide `leanaide.codegen.info "No exact or automation tactics found, trying sources"
   match sources with
   | [] => do
     return (accum, goal)
@@ -225,18 +227,18 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
       else
         if ← endsWithDone code then
           -- the tactics are "done", so we can return the accumulated tactics
-          IO.eprintln s!"codegen: goal still open after tactics, but tactics end with 'done' so no further tactics generated."
-          IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
-          IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+          traceAide `leanaide.codegen.info s!"goal still open after tactics, but tactics end with 'done' so no further tactics generated."
+          traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
+          traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
           return (← appendTacticSeqSeq accum code, none)
         else
             -- continue with the next source
         let goal? ← runForSingleGoal goal code
         match goal? with
         | none => do -- tactics closed the goal
-          IO.eprintln s!"codegen: goal closed by tactics"
-          IO.eprintln s!"goal: {← ppExpr <| ← goal.getType}"
-          IO.eprintln s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+          traceAide `leanaide.codegen.info s!"goal closed by tactics"
+          traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
+          traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
           return (← appendTacticSeqSeq accum code, none)
         | some newGoal => do
           let newAccum ← appendTacticSeqSeq accum code
@@ -248,14 +250,14 @@ Obtain a sequence of tactics to apply to a goal, given a list of JSON sources. T
 def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) := goal.withContext do
-  IO.eprintln "Trying automation tactics"
+  traceAide `leanaide.codegen.info "Trying automation tactics"
   match ← runTacticsAndFindTryThis? (← goal.getType) [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
   | some autoTacs => do
     let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
     let autoTacs :=
       #[← `(tactic| trace $traceText)] ++ (getTactics autoTacs)
     let autoTac ← `(tacticSeq| $autoTacs*)
-    IO.eprintln s!"codegen: automation closes the goal"
+    traceAide `leanaide.codegen.info s!"automation closes the goal"
     return autoTac
   | none => do
   let accum ← emptyTacs
@@ -268,16 +270,16 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     if ← goal.isAssigned then
       return tacs
     else
-    IO.eprintln s!"codegen: goal still open after tactics: {← ppExpr <| ← goal.getType}"
+    traceAide `leanaide.codegen.info s!"goal still open after tactics: {← ppExpr <| ← goal.getType}"
     IO.eprintln "Local context:"
     let lctx ← getLCtx
     for decl in lctx do
-      IO.eprintln s!"{decl.userName} : {← ppExpr <| decl.type}"
+      traceAide `leanaide.codegen.info s!"{decl.userName} : {← ppExpr <| decl.type}"
     let autoTacs ←
       runTacticsAndFindTryThisI (← goal.getType) [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})]
-    IO.eprintln s!"codegen: auto tactics:"
+    traceAide `leanaide.codegen.info s!"auto tactics:"
     for tac in autoTacs do
-      IO.eprintln s!"{← PrettyPrinter.ppTactic tac}"
+      traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
     appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
 
 
@@ -329,7 +331,7 @@ Placeholder function for code generation that is not implemented yet. It logs a 
 -/
 def notImplementedCode (name: String) : CodeGenerator → Option MVarId  →
   (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
-  IO.eprintln s!"codegen: {name} not implemented"
+  traceAide `leanaide.codegen.info s!"{name} not implemented"
   logWarning m!"codegen: {name} not implemented"
   return none
 
@@ -349,7 +351,7 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
     for source in sources do
       let _code ← getCode translator goal? kind source
       -- unless code.isNone do
-      --   IO.eprintln s!"codegen: contextCode expected pure side effect, but got {code}"
+      --   traceAide `leanaide.codegen.info s!"contextCode expected pure side effect, but got {code}"
       --   logWarning m!"codegen: contextCode expected pure side effect, but got {code}"
     return
   | .error _ => do
