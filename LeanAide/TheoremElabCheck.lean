@@ -58,15 +58,21 @@ def elabThm4Aux (s : String)
 def elabThm4 (s : String)
   (levelNames : List Lean.Name := levelNames)
   : TranslateM <| Except ElabError Expr := do
+  traceAide `leanaide.elaboration.info s!"Trying to elaborate '{s}'"
   match ← elabThm4Aux s levelNames with
   | Except.error err =>
       let groups := lineBlocks s
+      traceAide `leanaide.elaboration.info s!"Checking groups: {groups.length}"
       let elabs? ←  groups.findSomeM? (fun s => do
         pure (← elabThm4Aux s levelNames).toOption)
       match elabs? with
       | none => return Except.error err
-      | some e => return Except.ok e
-  | Except.ok e => return Except.ok e
+      | some e =>
+        traceAide `leanaide.elaboration.info s!"Succeeded on sub-line for '{s}'"
+        return Except.ok e
+  | Except.ok e =>
+    traceAide `leanaide.elaboration.info s!"Succeeded in elaborating '{s}'"
+    return Except.ok e
 
 def egLines := "Yes, a vector space with dimension `2` is indeed finite dimensional. In the language of Lean theorem prover, you don't need to write an explicit proof for this, because the fact that the space has dimension `2` already implies that it is finite dimensional. However, if you want to insist on having an explicit statement, it could be something like:
 

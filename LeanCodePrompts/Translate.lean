@@ -22,6 +22,8 @@ open LeanAide.Meta
 namespace LeanAide
 open Translate
 
+#logIO leanaide.elaboration.info
+
 @[default_instance]
 instance : Add ℤ := inferInstance
 @[default_instance]

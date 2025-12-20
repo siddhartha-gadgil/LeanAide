@@ -9,11 +9,13 @@ initialize
   registerTraceClass `leanaide.proof.info
   registerTraceClass `leanaide.codegen.info
   registerTraceClass `leanaide.papercodes.info
-  registerTraceClass `leanaide.papercodes.error
+  registerTraceClass `leanaide.papercodes.debug
   registerTraceClass `leanaide.llm.info
-  registerTraceClass `leanaide.llm.error
+  registerTraceClass `leanaide.llm.debug
   registerTraceClass `leanaide.interpreter.info
-  registerTraceClass `leanaide.interpreter.error
+  registerTraceClass `leanaide.interpreter.debug
+  registerTraceClass `leanaide.elaboration.info
+  registerTraceClass `leanaide.elaboration.debug
 
 register_option leanaide.logging : Bool :=
   { defValue := false
