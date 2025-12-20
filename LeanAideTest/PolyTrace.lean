@@ -8,11 +8,11 @@ open Lean
 
 -- example of how
 -- #eval traceAideIO.on ()
--- #eval traceAide `PaperCodes.info "This is an example"
+-- #eval traceAide `leanaide.papercodes.info "This is an example"
 -- #eval traceAideIO.off ()
 -- #eval traceAideFile.on ()
 -- #eval traceAideFile.status ()
--- #eval traceAide `PaperCodes.info "This is a file example"
+-- #eval traceAide `leanaide.papercodes.info "This is a file example"
 -- #eval traceAideFile.status ()
 -- #eval traceAideIO.status ()
 
@@ -20,7 +20,7 @@ namespace Generate
 
   def traceAideFile (fileStatus : IO Bool) : IO (Except String Unit) := do
     if ←fileStatus then
-      let _ ← traceAide `PaperCodes.info s!"[File] :: Test message" |> pure
+      let _ ← traceAide `leanaide.papercodes.info s!"[File] :: Test message" |> pure
       .ok () |> pure
     else
       .error s!"invalid state"

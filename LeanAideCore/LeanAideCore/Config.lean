@@ -8,8 +8,8 @@ initialize
   registerTraceClass `Translate.warning
   registerTraceClass `leanaide.proof.info
   registerTraceClass `leanaide.codegen.info
-  registerTraceClass `PaperCodes.info
-  registerTraceClass `PaperCodes.error
+  registerTraceClass `leanaide.papercodes.info
+  registerTraceClass `leanaide.papercodes.error
 
 register_option leanaide.logging : Bool :=
   { defValue := false
@@ -91,34 +91,26 @@ namespace traceAideFile
 
 end traceAideFile
 
-def timestamp : IO String := do
-  let now ← Std.Time.PlainDateTime.now
-  return now.format "uuuu-MM-dd'T'HH:mm:ss"
+-- def traceAide (tag : Name) (msg : String) : CoreM Unit := do
+-- -- always print trace
+--   Lean.trace tag (fun _ => msg)
+-- -- use mkRef to globally update this
+--   let isIO ← liftM <| traceAideIO.status ()
+--   let isFile ← liftM <| traceAideFile.status ()
 
-def traceAide (tag : Name) (msg : String) : CoreM Unit := do
--- always print trace
-  Lean.trace tag (fun _ => msg)
--- use mkRef to globally update this
-  let isIO ← liftM <| traceAideIO.status ()
-  let isFile ← liftM <| traceAideFile.status ()
-
-  match isIO, isFile with
-  | false, false =>
-      return
-  | true, false =>
-      IO.eprintln s!"[{tag.toString}] [IO] {msg}"
-  | false, true =>
-      let currentDir ← IO.currentDir
-      let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
-      IO.eprintln s!"The output is logged to {logFilePath}"
-      IO.FS.writeFile logFilePath s!"[File] {msg}"
-  | true, true =>
-      IO.eprintln s!"[{tag.toString}] [IO] {msg}"
-      let currentDir ← IO.currentDir
-      let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
-      IO.eprintln s!"The output is logged to {logFilePath}"
-      IO.FS.writeFile logFilePath s!"[File] {msg}"
-
-
-
--- #eval timestamp
+--   match isIO, isFile with
+--   | false, false =>
+--       return
+--   | true, false =>
+--       IO.eprintln s!"[{tag.toString}] [IO] {msg}"
+--   | false, true =>
+--       let currentDir ← IO.currentDir
+--       let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
+--       IO.eprintln s!"The output is logged to {logFilePath}"
+--       IO.FS.writeFile logFilePath s!"[File] {msg}"
+--   | true, true =>
+--       IO.eprintln s!"[{tag.toString}] [IO] {msg}"
+--       let currentDir ← IO.currentDir
+--       let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
+--       IO.eprintln s!"The output is logged to {logFilePath}"
+--       IO.FS.writeFile logFilePath s!"[File] {msg}"
