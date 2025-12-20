@@ -1,5 +1,6 @@
 import Lean
 import LeanAideCore.Aides
+import LeanAideCore.Config
 
 open Lean Meta Elab Parser
 
@@ -35,7 +36,27 @@ def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment 
   if modifyEnv then setEnv env
   return (env, msgs)
 
+variable [LeanAideBaseDir]
+
 def runFrontEndForMessages (input: String) : MetaM MessageLog := do
+  let cacheFile := (← cachePath) / "frontend" / s!"{input.hash}_{← leanToolchain}.json"
+  if (← cacheFile.pathExists) then
+    let content ← IO.FS.readFile cacheFile
+    let json := Json.parse content
+       match json with
+       | Except.error err =>
+         traceAide `leanaide.frontend.info s!"Could not parse frontend cache file {cacheFile}: {err}"
+       | Except.ok j =>
+         match fromJson? (α :=  List SerialMessage) j  with
+         | .error e =>
+           traceAide `leanaide.frontend.info s!"Could not decode frontend cache file {cacheFile}, error: {e}"
+         | .ok ss =>
+           let msgs := ss.foldl (fun log msg => log.add msg.toMessage) (MessageLog.empty)
+           traceAide `leanaide.frontend.info s!"Frontend read from {cacheFile} with {msgs.toList.length} messages (from cache)"
+           for msg in msgs.toList do
+             traceAide `leanaide.frontend.debug s!"{← msg.toString}"
+           return msgs
+  traceAide `leanaide.frontend.info s!"Running frontend (no cache) on input:\n{input}"
   let (_, msgs) ← runFrontendM input
   return msgs
 
@@ -81,7 +102,7 @@ def dropPrefixes : Name → Name
 | .str _ s => .str .anonymous s
 | .num _ n => .num .anonymous n
 
--- #eval dropPrefixes `LeanAide.SimpleFrontend.elabFrontDefsExprAtM
+  ---   #eval dropPrefixes `LeanAide.SimpleFrontend.elabFrontDefsExprAtM
 
 
 def elabFrontDefsExprAtM(s: String)(pfx: Name)(modifyEnv: Bool := false) : MetaM <| Array (Name × Expr) × MessageLog := do
@@ -102,17 +123,17 @@ def elabFrontDefsExprAtM(s: String)(pfx: Name)(modifyEnv: Bool := false) : MetaM
   logInfo s!"Found {ns.size} definitions with prefix {pfx}"
   return (nameDefs, msgs)
 
--- def egCodeAt := "namespace leanaide_scratch
--- def eg : True := by simp
--- end leanaide_scratch"
+--    def egCodeAt := "namespace leanaide_scratch
+--    def eg : True := by simp
+--    end leanaide_scratch"
 
--- def egVal : MetaM (Array Name) := do
---   let res ← elabFrontDefsExprAtM egCodeAt `leanaide_scratch
---   return res.1.map (fun (n, _) => n)
+--    def egVal : MetaM (Array Name) := do
+--      let res ← elabFrontDefsExprAtM egCodeAt `leanaide_scratch
+--      return res.1.map (fun (n, _) => n)
 
--- #eval egVal
+--    #eval egVal
 
--- #eval (`leanaide_scratch).isPrefixOf `leanaide_scratch.eg
+--    #eval (`leanaide_scratch).isPrefixOf `leanaide_scratch.eg
 
 def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM String := do
   let val ← elabFrontDefExprM s n modifyEnv
@@ -149,7 +170,7 @@ def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr :=
     return Except.error errorStrings
 
 
--- #eval elabFrontTheoremExprM "∀ n: Nat, n ≤ n + 1"
+--    #eval elabFrontTheoremExprM "∀ n: Nat, n ≤ n + 1"
 
 def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem
@@ -166,14 +187,14 @@ def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
     return Except.error errorStrings
 
 def checkElabFrontM(s: String) : MetaM <| List String := do
-  -- IO.eprintln  s!"Checking command elaboration for: {s}"
+  --    IO.eprintln  s!"Checking command elaboration for: {s}"
   let log ← runFrontEndForMessages  s
   let mut l := []
   for msg in log.toList do
     if msg.severity == MessageSeverity.error then
       let x ← msg.data.toString
-      -- IO.eprintln s!"Error: {x}"
-      -- IO.eprintln s!"imports : {env.allImportedModuleNames.size}"
+      --    IO.eprintln s!"Error: {x}"
+      --    IO.eprintln s!"imports : {env.allImportedModuleNames.size}"
       l := l.append [x]
   return l
 
@@ -185,7 +206,7 @@ def checkTermElabFrontM(s: String) : MetaM <| List String := do
 
 
 
--- #eval checkTermElabFrontM "(fun n => 3 : Nat → Nat)"
+--    #eval checkTermElabFrontM "(fun n => 3 : Nat → Nat)"
 
 def newDeclarations (s: String) : MetaM <| Array Name := do
   let constants := (← getEnv).constants
@@ -207,7 +228,7 @@ def elabFrontDefsNewExprM(s: String)(modifyEnv: Bool := false) : MetaM <| List (
     if  !constants.contains n then
       match d.value? with
       | none => continue
-      | some v => -- IO.eprintln s!"Found new definition: {n} with
+      | some v => --    IO.eprintln s!"Found new definition: {n} with
         nameDefs := nameDefs.push (n, v)
   return (nameDefs.toList, msgs)
 
