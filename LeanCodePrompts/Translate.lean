@@ -23,6 +23,7 @@ namespace LeanAide
 open Translate
 
 #logIO leanaide.elaboration.info
+-- #logIO leanaide.translate.debug
 
 @[default_instance]
 instance : Add ℤ := inferInstance
@@ -104,7 +105,7 @@ def Translator.getMessages (s: String) (translator : Translator)
 -/
 def Translator.getLeanCodeJson (s: String)
     (translator : Translator)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
-  logTimed s!"translating string `{s}` with  examples"
+  traceAide `leanaide.translate.debug  s!"translating string `{s}` with  examples"
   -- IO.eprintln s!"translating string `{s}` with  examples"
   let s ← withPreludes s
   setContext s
@@ -121,12 +122,12 @@ def Translator.getLeanCodeJson (s: String)
       -- work starts here; before this was caching, polling etc
       let (messages, docPairs) ← translator.getMessages s header
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
-      logTimed "querying server"
+      traceAide `leanaide.translate.debug  "querying server"
       -- IO.eprintln s!"querying server"
       let fullJson ← translator.server.query messages translator.params
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
-      logTimed "obtained llm response"
+      traceAide `leanaide.translate.debug  "obtained llm response"
       let pending ←  pendingJsonQueries.get
       pendingJsonQueries.set (pending.erase s)
       cacheJson s (outJson, messages, docPairs)
@@ -176,11 +177,11 @@ def bestElab (output: Array String) : TranslateM Expr := do
     appendLog "translate_fail_error" errorJson
     mkAppM ``sorryAx #[(mkSort levelZero), mkConst ``true]
   else
-    logTimed "elaborated outputs, starting majority voting"
+    traceAide `leanaide.translate.debug  "elaborated outputs, starting majority voting"
     let priority :=
         if fullElaborated.isEmpty then elaborated else fullElaborated
     let groupSorted ← groupThmExprsSorted priority
-    logTimed "finished majority voting"
+    traceAide `leanaide.translate.debug  "finished majority voting"
     return (groupSorted[0]!)[0]!
 
 /-- Given an array of outputs, tries to elaborate them with translation and autocorrection and optionally returns the best choice as well as all elaborated terms (used for batch processing, interactive code uses `bestElab` instead)  -/
@@ -191,7 +192,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
   let mut fullElaborated : Array Expr := Array.empty
   let mut cache : Std.HashMap String (Except ElabError Expr) :=
     Std.HashMap.emptyWithCapacity output.size
-  logTimed "elaborating outputs"
+  traceAide `leanaide.translate.debug  "elaborating outputs"
   let mut errors : Array ElabError := #[]
 
   for out in output do
@@ -216,14 +217,14 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
   if elaborated.isEmpty then
     return Except.error errors
   else
-    logTimed "elaborated outputs, starting majority voting"
+    traceAide `leanaide.translate.debug  "elaborated outputs, starting majority voting"
     -- let priority :=
     --     if fullElaborated.isEmpty then elaborated else fullElaborated
     -- IO.eprintln s!"grouping priority: {priority.size}"
     let groupSorted ← groupThmExprsSorted (elaborated.toList.take maxVoting).toArray -- priority
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
-    logTimed "obtained majority vote"
+    traceAide `leanaide.translate.debug  "obtained majority vote"
     return Except.ok {term := thm, allElaborated := elabStrs, groups := gpView, allElaboratedExprs := elaborated, groupsExprs := groupSorted, typeView := (← ppExpr thm).pretty}
     -- {⟨thm, elabStrs, gpView⟩}
 
@@ -437,7 +438,7 @@ namespace Translator
 Translate a string and output as a string.
 -/
 def translateViewM (s: String)(translator : Translator := {}) : TranslateM String := do
-  logTimed "starting translation"
+  traceAide `leanaide.translate.debug  "starting translation"
   let (js, _) ← translator.getLeanCodeJson  s
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
@@ -460,7 +461,7 @@ def translateViewM (s: String)(translator : Translator := {}) : TranslateM Strin
 
 def translateToProp? (s: String)(translator : Translator)
    : TranslateM (Except (Array ElabError) Expr) := do
-  logTimed "starting translation"
+  traceAide `leanaide.translate.debug  "starting translation"
   let (js, prompt, _) ← translator.getLeanCodeJson  s
   let output ← getMessageContents js
   trace[Translate.info] m!"{output}"
@@ -476,7 +477,7 @@ Translating a definition greedily by parsing as a command
 -/
 def translateDefCmdM? (s: String) (translator : Translator)
   (isProp: Bool := false): TranslateM <| Except (Array CmdElabError) Syntax.Command := do
-  logTimed "starting translation"
+  traceAide `leanaide.translate.debug  "starting translation"
   let header := if isProp then "Theorem" else "Definition"
   let (js, _) ← translator.forDef.getLeanCodeJson  s (header:= header)
   let output ← getMessageContents js
@@ -556,11 +557,11 @@ open PrettyPrinter Tactic
   let (js, _) ←
     translator.getLeanCodeJson  s |>.run' {}
   let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq |>.run' {}
-  logTimed "obtained expression"
+  traceAide `leanaide.translate.debug  "obtained expression"
   let stx' ← delab e
-  logTimed "obtained syntax"
+  traceAide `leanaide.translate.debug  "obtained syntax"
   TryThis.addSuggestion stx stx'
-  logTimed "added suggestion"
+  traceAide `leanaide.translate.debug  "added suggestion"
   return e
   | _ => throwUnsupportedSyntax
 

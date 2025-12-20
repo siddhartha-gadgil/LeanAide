@@ -153,10 +153,10 @@ set_option trace.Translate.info true
 #eval egTrace
 
 def egTrace' : CoreM Nat := do
-  traceAide `Translate.debug "This is a debug trace message."
+  traceAide `leanaide.translate.debug "This is a debug trace message."
   return 42
 
-set_option trace.Translate.debug true
+set_option trace.leanaide.translate.debug true
 #eval egTrace'
 
 set_option pp.proofs false in

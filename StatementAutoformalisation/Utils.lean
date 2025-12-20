@@ -12,7 +12,7 @@ def Lean.Expr.view (expr : Expr) : MetaM String := do
   return fmt.pretty
 
 partial def showSyntax : Syntax → String
-| Syntax.node _ _ args => 
+| Syntax.node _ _ args =>
   (args.map <| fun s => showSyntax s).foldl (fun acc s => acc ++ " " ++ s) ""
 | Lean.Syntax.atom _ val => val
 | Lean.Syntax.ident _ _ val _ => val.toString
@@ -43,7 +43,7 @@ def getStr! (j : Json) : String :=
 
 end Lean.Json
 
-def mkMessage (role : String) (content : String) : Json := 
+def mkMessage (role : String) (content : String) : Json :=
   .mkObj [("role", role), ("content", content)]
 
 def Array.joinWith (sep : String := " ") : Array String → String
@@ -106,5 +106,5 @@ def Array.partitionExceptM {α β σ : Type} [Monad M] (p : α → M (Except σ 
 
 initialize
   registerTraceClass `Translate.info
-  registerTraceClass `Translate.debug
+  registerTraceClass `leanaide.translate.debug
   registerTraceClass `Translate.warning

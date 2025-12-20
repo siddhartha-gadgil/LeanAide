@@ -4,7 +4,7 @@ open Lean Meta
 
 initialize
   registerTraceClass `Translate.info
-  registerTraceClass `Translate.debug
+  registerTraceClass `leanaide.translate.debug
   registerTraceClass `Translate.warning
   registerTraceClass `leanaide.proof.info
   registerTraceClass `leanaide.codegen.info
