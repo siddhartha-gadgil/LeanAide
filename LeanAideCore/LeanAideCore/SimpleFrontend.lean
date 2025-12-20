@@ -1,4 +1,5 @@
 import Lean
+import LeanAideCore.Aides
 
 open Lean Meta Elab Parser
 
@@ -26,9 +27,13 @@ open scoped Nat
   pure (s.commandState.env, s.commandState.messages)
 
 def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment × MessageLog) := do
-  let (env, chk) ← simpleRunFrontend input (← getEnv)
+  traceAide `leanaide.frontend.info s!"Running frontend on input:\n{input}"
+  let (env, msgs) ← simpleRunFrontend input (← getEnv)
+  traceAide `leanaide.frontend.info s!"Frontend finished with {msgs.toList.length} messages"
+  for msg in msgs.toList do
+    traceAide `leanaide.frontend.debug s!"{← msg.toString}"
   if modifyEnv then setEnv env
-  return (env, chk)
+  return (env, msgs)
 
 def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr := do
   let (env, _) ← runFrontendM s modifyEnv

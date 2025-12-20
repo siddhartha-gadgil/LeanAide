@@ -24,6 +24,7 @@ open Translate
 
 #logIO leanaide.elaboration.info
 -- #logIO leanaide.translate.debug
+#logIO leanaide.frontend.info
 
 @[default_instance]
 instance : Add ℤ := inferInstance

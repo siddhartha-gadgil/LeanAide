@@ -16,6 +16,8 @@ initialize
   registerTraceClass `leanaide.interpreter.debug
   registerTraceClass `leanaide.elaboration.info
   registerTraceClass `leanaide.elaboration.debug
+  registerTraceClass `leanaide.frontend.info
+  registerTraceClass `leanaide.frontend.debug
 
 register_option leanaide.logging : Bool :=
   { defValue := false
