@@ -58,6 +58,10 @@ def runFrontEndForMessages (input: String) : MetaM MessageLog := do
            return msgs
   traceAide `leanaide.frontend.info s!"Running frontend (no cache) on input:\n{input}"
   let (_, msgs) ← runFrontendM input
+  let serialMsgs ←  msgs.toList.mapM fun m => m.serialize
+  let json := toJson serialMsgs
+  IO.FS.writeFile cacheFile (json.pretty)
+  traceAide `leanaide.frontend.info s!"Frontend wrote to {cacheFile} with {msgs.toList.length} messages"
   return msgs
 
 def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr := do
