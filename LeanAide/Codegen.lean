@@ -33,6 +33,7 @@ instance : ToString SyntaxNodeKinds where
 namespace Codegen
 
 #logIO leanaide.codegen.info
+#logFile leanaide.codegen.info
 
 /--
 Attribute for generating Lean code, more precisely Syntax of a given category, from JSON data. More precisely, we generate `TranslateM <| Option <| TSyntax Q` from a JSON object, with the matching key as part of the attribute. In some cases, no syntax is generated as the goal is purely to have a side-effect to modify the context.

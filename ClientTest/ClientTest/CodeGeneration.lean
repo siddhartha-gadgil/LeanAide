@@ -10,8 +10,6 @@ set_option linter.unusedTactic false
 
 open Nat
 
-#eval logsToIOM
-
 def egTheorem : Json :=
   json% {
     "type": "theorem",

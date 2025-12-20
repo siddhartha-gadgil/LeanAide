@@ -8,18 +8,19 @@ def timestamp : IO String := do
   let now ← Std.Time.PlainDateTime.now
   return now.format "uuuu-MM-dd'T'HH:mm:ss"
 
-def logIO (name : Name)(msg : MessageData) : IO Unit := do
+def logIO (name : Name)(msg : String) : IO Unit := do
   let timeStr ← timestamp
-  let msg := m!"[{timeStr}] [{name}] {msg}"
+  let head := s!"[{timeStr}] [{name}] "
+  let msg := m!"{head} {msg.replace "\n" ("\n" ++ head)}"
   IO.eprintln (← msg.toString)
 
-def logFile (name : Name)(msg : MessageData) : IO Unit := do
+def logFile (name : Name)(msg : String) : IO Unit := do
   let timeStr ← timestamp
   let now ← Std.Time.PlainDateTime.now
   let date := now.format "uuuu-MM-dd"
   let logFilePath := System.mkFilePath [".logs", s!"{date}.log"]
   let handle ← IO.FS.Handle.mk logFilePath IO.FS.Mode.append
-  let message := m!"[{timeStr}] [{name}] {msg}"
+  let message := m!"[{timeStr}] [{name}] {msg.replace "\n" ("\n" ++ s!"[{timeStr}] [{name}] ")}"
   handle.putStrLn (← message.toString)
   handle.flush
 
@@ -89,10 +90,10 @@ def traceAide (tag : Name) (msg : String) : CoreM Unit := do
   let ioLogs := logsToIO env
   let fileLogs := logsToFile env
   if tag ∈ ioLogs then
-    logIO tag (m!"{msg.replace "\n" "\n\t"}")
+    logIO tag msg
   -- else
   --   IO.eprintln s!"{tag} suppressed IO log, logs : {ioLogs}"
   if tag ∈ fileLogs then
-    logFile tag (m!"{msg}")
+    logFile tag msg
 
 end LeanAide

@@ -10,6 +10,10 @@ initialize
   registerTraceClass `leanaide.codegen.info
   registerTraceClass `leanaide.papercodes.info
   registerTraceClass `leanaide.papercodes.error
+  registerTraceClass `leanaide.llm.info
+  registerTraceClass `leanaide.llm.error
+  registerTraceClass `leanaide.interpreter.info
+  registerTraceClass `leanaide.interpreter.error
 
 register_option leanaide.logging : Bool :=
   { defValue := false
@@ -57,60 +61,3 @@ def resourcesDir : IO System.FilePath := do
   return base / "resources"
 
 -- #eval resourcesDir
-
-initialize traceAideIO : IO.Ref Bool ← IO.mkRef true
-initialize traceAideFile : IO.Ref Bool ← IO.mkRef false
-
-namespace traceAideIO
-  def on (_ : Unit) : IO Unit := do
-    let current ← traceAideIO.get
-    if current then pure () else traceAideIO.set true
-
-  def off (_ : Unit) : IO Unit := do
-    let current ← traceAideIO.get
-    if current then traceAideIO.set false else pure ()
-
-  def status (_ : Unit) : IO Bool := do
-    (← traceAideIO.get)
-    |> pure
-
-end traceAideIO
-
-namespace traceAideFile
-  def on (_ : Unit) : IO Unit := do
-    let current ← traceAideFile.get
-    if current then pure () else traceAideFile.set true
-
-  def off (_ : Unit) : IO Unit := do
-    let current ← traceAideFile.get
-    if current then traceAideFile.set false
-
-  def status (_ : Unit) : IO Bool := do
-    (← traceAideFile.get)
-    |> pure
-
-end traceAideFile
-
--- def traceAide (tag : Name) (msg : String) : CoreM Unit := do
--- -- always print trace
---   Lean.trace tag (fun _ => msg)
--- -- use mkRef to globally update this
---   let isIO ← liftM <| traceAideIO.status ()
---   let isFile ← liftM <| traceAideFile.status ()
-
---   match isIO, isFile with
---   | false, false =>
---       return
---   | true, false =>
---       IO.eprintln s!"[{tag.toString}] [IO] {msg}"
---   | false, true =>
---       let currentDir ← IO.currentDir
---       let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
---       IO.eprintln s!"The output is logged to {logFilePath}"
---       IO.FS.writeFile logFilePath s!"[File] {msg}"
---   | true, true =>
---       IO.eprintln s!"[{tag.toString}] [IO] {msg}"
---       let currentDir ← IO.currentDir
---       let logFilePath := System.mkFilePath [currentDir.toString, "output.log"]
---       IO.eprintln s!"The output is logged to {logFilePath}"
---       IO.FS.writeFile logFilePath s!"[File] {msg}"

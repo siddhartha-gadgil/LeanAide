@@ -8,6 +8,8 @@ open Lean Meta System
 
 namespace LeanAide
 
+#logIO leanaide.llm.info
+
 variable [LeanAideBaseDir]
 /--
 Extracts the content of the message field from a JSON object,
@@ -31,7 +33,7 @@ def getMessageContents (json: Json) : CoreM (Array String) := do
 
         pure parsedArr
     | Except.error e =>
-      IO.eprintln s!"json parsing error: {e}"
+      traceAide `leanaide.llm.info s!"json parsing error: {e}"
       return #[]
 
 structure ChatParams where
@@ -91,7 +93,7 @@ def url : ChatServer → IO String
       azureURL deployment
   | gemini _ _ => do
       let url ←  pure s!"https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-      -- IO.eprintln s!"Google URL: {url}"
+      -- traceAide `leanaide.llm.info s!"Google URL: {url}"
       return url
   | generic _ url .. =>
       return url
@@ -169,7 +171,7 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
   -- logInfo "Authenticating"
   let authHeader? ← server.authHeader?
   -- logInfo s!"Auth header: {authHeader?}"
-  -- IO.eprintln s!"Querying {url} at {← IO.monoMsNow }"
+  -- traceAide `leanaide.llm.info s!"Querying {url} at {← IO.monoMsNow }"
   let start ← IO.monoMsNow
   let baseArgs :=
     #[url, "-X", "POST", "-H", "Content-Type: application/json"]
@@ -184,39 +186,39 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
     ("url", Json.str url),
     ("arguments", Json.arr <| baseArgs.map (Json.str)),
     ("data", data)]
-  IO.eprintln s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
-  IO.eprintln s!"Response: {output}" -- uncomment for debugging
+  traceAide `leanaide.llm.info s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
+  traceAide `leanaide.llm.info s!"Response: {output}" -- uncomment for debugging
   match Lean.Json.parse output with
   | Except.ok j =>
     appendLog "chat_queries"
       (Json.mkObj [("query", queryJs), ("success", true), ("response", j)])
     return j
   | Except.error e =>
-    IO.eprintln s!"Error parsing JSON: {e}; source: {output}"
+    traceAide `leanaide.llm.info s!"Error parsing JSON: {e}; source: {output}"
     appendLog "chat_queries"
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
     return .null
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
-  IO.eprintln s!"Querying: {toJson server |>.compress}"
+  traceAide `leanaide.llm.info s!"Querying: {toJson server |>.compress}"
   -- logInfo s!"Querying {server.model}"
   let file : System.FilePath :=
     (← cachePath) / "chat" /
       s!"{hash server}_{hash params}_{hash messages}.json"
   if ← file.pathExists then
-    IO.eprintln s!"Reading from cache: {file}"
+    traceAide `leanaide.llm.info s!"Reading from cache: {file}"
     -- logInfo s!"Reading from cache: {file}"
     let output ← IO.FS.readFile file
     match Json.parse output with
     | Except.ok j => return j
     | Except.error e =>
-      IO.eprintln s!"Error parsing JSON: {e}; source: {output}"
+      traceAide `leanaide.llm.info s!"Error parsing JSON: {e}; source: {output}"
       let result ←  queryAux server messages params
       unless (result.getObjVal? "error").toOption.isSome do
         IO.FS.writeFile file result.pretty
       return result
   else
-    -- IO.eprintln s!"Querying server"
+    -- traceAide `leanaide.llm.info s!"Querying server"
     -- logInfo s!"Querying server"
     let result ←  queryAux server messages params
     IO.FS.writeFile file result.pretty
