@@ -93,7 +93,7 @@ def traceAide (tag : Name) (msg : String) : CoreM Unit := do
     logIO tag msg
   -- else
   --   IO.eprintln s!"{tag} suppressed IO log, logs : {ioLogs}"
-  if tag ∈ fileLogs then
+  if tag ∈ fileLogs ∨ tag ∈ ioLogs then
     logFile tag msg
 
 end LeanAide
