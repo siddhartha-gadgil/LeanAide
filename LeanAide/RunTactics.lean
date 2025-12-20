@@ -19,7 +19,7 @@ def MessageCore.ofMessageM (msg: Message) : MetaM MessageCore := do
   return {severity := msg.severity, text := ← msg.data.toString}
 
 def runFrontEndMsgCoreM (inp : String) : MetaM (List MessageCore) := do
-  let (_, msgs) ← runFrontendM inp -- cache this
+  let msgs ← runFrontEndForMessages inp -- cache this
   msgs.toList.mapM fun msg => MessageCore.ofMessageM msg
 
 open Parser.Tactic
@@ -166,7 +166,7 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
   let egCode ← frontendCodeForTactics mvarId tactics
   -- let code := topCode ++ egCode
   traceAide `leanaide.interpreter.info s!"Running frontend with code:\n{egCode}"
-  let (_, msgs') ← runFrontendM egCode
+  let msgs' ← runFrontEndForMessages egCode
   traceAide `leanaide.interpreter.info s!"Ran frontend, Messages:"
   for msg in msgs'.toList do
     traceAide `leanaide.interpreter.info s!"{← msg.data.toString}"
@@ -186,7 +186,7 @@ def runTacticsAndGetMessages' (mvarId : MVarId) (tactics : Array Syntax.Tactic):
   logInfo m!"Tactic proof: {termView}"
   let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
-  let (_, msgs') ← runFrontendM egCode
+  let msgs' ← runFrontEndForMessages egCode
   traceAide `leanaide.interpreter.info s!"Ran frontend, Messages:"
   for msg in msgs'.toList do
     traceAide `leanaide.interpreter.info s!"{← msg.data.toString}"

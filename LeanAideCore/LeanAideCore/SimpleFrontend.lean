@@ -35,6 +35,10 @@ def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment 
   if modifyEnv then setEnv env
   return (env, msgs)
 
+def runFrontEndForMessages (input: String) : MetaM MessageLog := do
+  let (_, msgs) ← runFrontendM input
+  return msgs
+
 def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr := do
   let (env, _) ← runFrontendM s modifyEnv
   let seek? : Option ConstantInfo :=  env.find? n
@@ -163,7 +167,7 @@ def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
 
 def checkElabFrontM(s: String) : MetaM <| List String := do
   -- IO.eprintln  s!"Checking command elaboration for: {s}"
-  let (_, log) ← runFrontendM  s
+  let log ← runFrontEndForMessages  s
   let mut l := []
   for msg in log.toList do
     if msg.severity == MessageSeverity.error then
