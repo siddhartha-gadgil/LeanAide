@@ -301,7 +301,7 @@ open Command Elab Term Meta in
     | .some code =>
       TryThis.addSuggestion stx code
     | none =>
-      logInfo s!"No code found for token {token}, process still running?"
+      logInfo s!"No code found for token {token}, process still running at {← timestamp}"
 | _ => throwUnsupportedSyntax
 
 
