@@ -280,10 +280,29 @@ open Command Elab Term Meta in
     let sourceTerm ←  Term.elabTerm s (mkConst ``Json)
     let sourceJson ←  unsafe evalExpr Json (mkConst ``Json) sourceTerm
     let token ← getCodeJsonTokenM sourceJson
-    let stx' := Syntax.mkNatLit token.toNat
+    let token := token.toNat
+    let stx' := Syntax.mkNatLit token
     TryThis.addSuggestion stx stx'
     return toExpr token
 | _, _ => throwUnsupportedSyntax
+
+
+syntax (name := codegenAsyncCmd) "#codegen_async" ppSpace term : command
+
+open Command Elab Term Meta in
+@[command_elab codegenAsyncCmd] def elabCodegenAsyncCmdImpl : CommandElab
+| stx@`(command| #codegen_async $s:term) =>
+  Command.liftTermElabM do
+  withoutModifyingEnv do
+    let tokenTerm ←  Term.elabTerm s (mkConst ``Json)
+    let token ←
+      unsafe evalExpr Nat (mkConst ``Nat) tokenTerm
+    match ← updateCodeByToken token.toUInt64 with
+    | .some code =>
+      TryThis.addSuggestion stx code
+    | none =>
+      logInfo s!"No code found for token {token}, process still running?"
+| _ => throwUnsupportedSyntax
 
 
 declare_syntax_cat filepath

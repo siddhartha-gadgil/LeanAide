@@ -536,6 +536,19 @@ def getCodeJsonTokenM (json: Json) : MetaM UInt64 := do
   let .ok token := json.getObjValAs? UInt64 "token" | throwError "response has no 'token' field"
   return token
 
+open LeanAidePipe in
+def updateCodeByToken (token: UInt64) :
+    TermElabM (Option (TSyntax ``commandSeq))  := do
+  let pipe ← getPipeM
+  let req := Json.mkObj [("mode", "lookup"), ("token", toJson token)]
+  let json ← pipe.response req
+  let .ok status :=
+    json.getObjValAs? TaskStatus "status" | throwError "response has no 'status' field"
+  match status with
+  | .completed _ result => return some <| ← codeFromJsonDecode result
+  | .running _ => return none
+
+
 namespace KernelM
 
 @[inherit_doc Kernel.translateThm]
