@@ -268,6 +268,22 @@ open Command Elab Term Meta in
     TryThis.addSuggestion stx code
 | _ => throwUnsupportedSyntax
 
+syntax (name := codegenToken) "codegen%" ppSpace term : term
+
+macro "codegen%" source:json : term =>
+  `(codegen% json% $source)
+
+open Command Elab Term Meta in
+@[term_elab codegenToken] def elabCodegenTokenImpl : TermElab
+| stx@`(codegen% $s:term), _ =>
+  withoutModifyingEnv do
+    let sourceTerm ←  Term.elabTerm s (mkConst ``Json)
+    let sourceJson ←  unsafe evalExpr Json (mkConst ``Json) sourceTerm
+    let token ← getCodeJsonTokenM sourceJson
+    let stx' := Syntax.mkNatLit token.toNat
+    TryThis.addSuggestion stx stx'
+    return toExpr token
+| _, _ => throwUnsupportedSyntax
 
 
 declare_syntax_cat filepath

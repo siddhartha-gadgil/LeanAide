@@ -49,8 +49,8 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
         IO.eprintln "Background process launched"
         IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
       | some ts =>
-        IO.println (Json.mkObj [("status", (toJson ts).compress), ("token", toJson hash)])
-        IO.eprintln s!"Task with token {hash} is already running."
+        IO.println (Json.mkObj [("status", (toJson ts).compress), ("token", toJson hash)]).compress
+        IO.eprintln s!"Task with token {hash} is already running, status: {(toJson ts).compress}."
     | some "lookup" =>
       IO.eprintln "Running in lookup mode"
       let .ok hash :=

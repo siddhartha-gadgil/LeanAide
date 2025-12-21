@@ -523,6 +523,19 @@ def getKernelM : MetaM Kernel := do
   let inst ←  synthInstance (mkConst ``Kernel)
   unsafe evalExpr Kernel (mkConst ``Kernel) inst
 
+def getPipeM : MetaM LeanAidePipe := do
+  let inst ←  synthInstance (mkConst ``LeanAidePipe)
+  unsafe evalExpr LeanAidePipe (mkConst ``LeanAidePipe) inst
+
+open LeanAidePipe in
+def getCodeJsonTokenM (json: Json) : MetaM UInt64 := do
+  let pipe ← getPipeM
+  let req ←  codeFromJsonEncode json
+  let req := req.mergeObj (Json.mkObj [("mode", "async")])
+  let json ← pipe.response req
+  let .ok token := json.getObjValAs? UInt64 "token" | throwError "response has no 'token' field"
+  return token
+
 namespace KernelM
 
 @[inherit_doc Kernel.translateThm]
