@@ -227,7 +227,11 @@ def uploadDesciptions (file: System.FilePath) : TranslateM Unit := do
     | Except.error _ => continue
 
 def preloadDescriptions : TranslateM Unit := do
-  -- uploadDesciptions <| (← resourcesDir) / "mathlib4-prompts.jsonl"
+  if (← ((← searchData) / "mathlib4-prompts.jsonl").pathExists) then
+    uploadDesciptions <| (← searchData) / "mathlib4-prompts.jsonl"
+  else
+     let _ ← IO.Process.output {cmd:= "curl", args := #["--output", ((← searchData) / "mathlib4-prompts.jsonl").toString, "https://storage.googleapis.com/leanaide_data/mathlib4-prompts.jsonl"]}
+     uploadDesciptions <| (← searchData) / "mathlib4-prompts.jsonl"
   uploadDesciptions <| (← resourcesDir) / "mathlib4-descs.jsonl"
 
 def getDescriptionData (name: Name) : TranslateM <| Option Json := do
