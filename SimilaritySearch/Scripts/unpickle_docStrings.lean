@@ -23,12 +23,12 @@ def writeAllEmbedData (filename : String) (content : EmbedData) : IO Unit := do
 
 unsafe def readAndWrite (args : List String) : IO Unit := do
   let x ← unpickle (EmbedData) (args.getD 0
-    ".lake/build/lib/mathlib4-concise-description-embeddings-v4.22.0.olean")
+    ".lake/build/lib/mathlib4-concise-description-embeddings-v4.26.0.olean")
   writeAllEmbedData (args.getD 1 "TestEmbeddings/unpickled1.txt") (x.1)
 
 
---#eval readAndWrite [".lake/build/lib/mathlib4-concise-description-embeddings-v4.22.0.olean", "SimilaritySearch/docStrings/concise_desc_emb.json"]
+--#eval readAndWrite [".lake/build/lib/mathlib4-concise-description-embeddings-v4.26.0.olean", "SimilaritySearch/docStrings/concise_desc_emb.json"]
 
---#eval readAndWrite [".lake/build/lib/mathlib4-description-embeddings-v4.22.0.olean", "SimilaritySearch/docStrings/desc_emb.json"]
+--#eval readAndWrite [".lake/build/lib/mathlib4-description-embeddings-v4.26.0.olean", "SimilaritySearch/docStrings/desc_emb.json"]
 
---#eval readAndWrite [".lake/build/lib/mathlib4-prompts-embeddings-v4.22.0.olean", "SimilaritySearch/docStrings/prompt_emb.json"]
+--#eval readAndWrite [".lake/build/lib/mathlib4-prompts-embeddings-v4.26.0.olean", "SimilaritySearch/docStrings/prompt_emb.json"]
