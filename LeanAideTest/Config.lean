@@ -115,13 +115,4 @@ def authDiffPatch : CoreM <| Option (Json × (List JsonDiff) × List (JsonDiff))
 
 #eval authDiffPatch
 
-
-def testSimSearchDirectoryOutput : IO Bool := do
-    let bool ← ((← searchData).pathExists)
-    return bool
-
-/-- info: true -/
-#guard_msgs in
-#eval testSimSearchDirectoryOutput
-
 end LeanAide

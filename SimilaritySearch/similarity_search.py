@@ -9,10 +9,9 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 # Config the file paths
-DATA_FOLDER = "SimilaritySearch/Data"
 INDEX_FOLDER = "SimilaritySearch/Indexes"
 
-docString_url = "https://storage.googleapis.com/leanaide_data/mathlib4-prompts.jsonl"
+descfields = ["docString", "concise-description", "description"]
 
 def model_index_url(model_name, descField):
     return f"https://storage.googleapis.com/leanaide_data/{model_name}/{descField}.index"
@@ -22,11 +21,21 @@ def MODEL_INDEXES_FOLDER(model_name):
 
 def DESCFIELD_PATHS(descField):
     if descField == "docString":
-        return f"{DATA_FOLDER}/mathlib4-prompts.jsonl"
+        return f"resources/mathlib4-prompts.jsonl"
     elif descField == "concise-description":
         return "resources/mathlib4-descs.jsonl"
     elif descField == "description":
         return "resources/mathlib4-descs.jsonl"
+    else:
+        raise Exception("Incorrect descField!")
+    
+def DESCFIELD_URL(descField):
+    if descField == "docString":
+        return "https://storage.googleapis.com/leanaide_data/mathlib4-prompts.jsonl"
+    elif descField == "concise-description":
+        return "https://storage.googleapis.com/leanaide_data/mathlib4-descs.jsonl"
+    elif descField == "description":
+        return "https://storage.googleapis.com/leanaide_data/mathlib4-descs.jsonl"
     else:
         raise Exception("Incorrect descField!")
 
@@ -62,7 +71,6 @@ def check_GPU():
 # SECTION: CREATE INDEXES
 
 def check_paths(model_name):
-    os.makedirs(DATA_FOLDER, exist_ok=True)
     os.makedirs(INDEX_FOLDER, exist_ok=True)
     os.makedirs(MODEL_INDEXES_FOLDER(model_name), exist_ok=True)
 
@@ -87,10 +95,13 @@ def download_file(url, filename):
     except IOError as e:
         print(f"Error writing to file: {e}\n", file=sys.stderr)
 
-def check_data(docString_url, path):
-    if not os.path.exists(path):
-        print(f"Fetching docStrings from {docString_url}...", file=sys.stderr)
-        download_file(docString_url, path)
+def check_data():
+    for descField in descfields:
+        path = DESCFIELD_PATHS(descField)
+        url = DESCFIELD_URL(descField)
+        if not os.path.exists(path):
+            print(f"Fetching {url}...", file=sys.stderr)
+            download_file(url, path)
 
 def batch_generator(descField, batch_size):
     batch, ids = [], []
@@ -147,7 +158,7 @@ def check_and_create_indexes(model, model_name):
 
 def run_checks(model, model_name):
     check_paths(model_name)
-    check_data(docString_url, DESCFIELD_PATHS("docString"))
+    check_data()
     check_and_create_indexes(model, model_name)
 
 # SECTION: SIMILARITY_SEARCH
@@ -191,7 +202,7 @@ def similarity_search(query, model, index, descField, num):
 def run_similarity_search(model, model_name, num, query = "mathematics", descField = "docString"):
     try: num = int(num)
     except: num = 10 # default value for num
-    if descField not in ["docString", "concise-description", "description"]:
+    if descField not in descfields:
         descField = "docString" # default value for descField
     # Check if DESCFIELD_PATHS(descField) exists
     if not os.path.exists(DESCFIELD_PATHS(descField)):
