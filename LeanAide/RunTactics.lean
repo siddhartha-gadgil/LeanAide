@@ -175,8 +175,8 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
 def getTacticsFromMessageData? (s: String) :
     MetaM <| Option (Array Syntax.Tactic) := do
   let s := s.trim
-  if s.startsWith "Try this:" then
-    let s' := (s.splitOn "Try this:")[1]!
+  if s.startsWith "Try this" || s.startsWith "TryThese" then
+    let s' := (s.splitOn "[apply] ")[1]!
     let tacticSeq? ← getTacticsFromText? s'
     tacticSeq?.mapM fun tacticSeq => do
       let tacs := getTactics tacticSeq
@@ -341,47 +341,47 @@ partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := [
   | _, _ => do
     return (goal, accum)
 
-open Lean PremiseSelection Tactic Elab
-def getPremiseNames (goalType: Expr)
-    (selector: Option Selector := none)
-    (maxSuggestions: Option Nat := none) : MetaM (Array Name) := do
-  let mvar ← mkFreshExprMVar goalType
-  let defaultSelector := Cloud.premiseSelector <|> mepoSelector (useRarity := true) (p := 0.6) (c := 0.9)
-  let selector := selector.getD defaultSelector
-  let mut config : PremiseSelection.Config :=
-    { maxSuggestions := maxSuggestions
-      caller := `premises }
-  let suggestions ← selector mvar.mvarId! config
-  return suggestions.map (fun s => s.name)
+-- open Lean Tactic Elab
+-- def getPremiseNames (goalType: Expr)
+--     (selector: Option Selector := none)
+--     (maxSuggestions: Option Nat := none) : MetaM (Array Name) := do
+--   let mvar ← mkFreshExprMVar goalType
+--   let defaultSelector := Cloud.premiseSelector <|> mepoSelector (useRarity := true) (p := 0.6) (c := 0.9)
+--   let selector := selector.getD defaultSelector
+--   let mut config : PremiseSelection.Config :=
+--     { maxSuggestions := maxSuggestions
+--       caller := `premises }
+--   let suggestions ← selector mvar.mvarId! config
+--   return suggestions.map (fun s => s.name)
 
-def getPremiseStatements (goalType: Expr)
-    (selector: Option Selector := none)
-    (maxSuggestions: Option Nat := none) : MetaM (Array String) := do
-  let names ← getPremiseNames goalType selector maxSuggestions
-  let mut statements : Array String := #[]
-  for name in names do
-    try
-      let defData : DefData ← DefData.ofNameM name
-      let view ← defData.statement
-      statements := statements.push view
-    catch _ =>
-      traceAide `leanaide.interpreter.info s!"Failed to get statement for {name}"
-  return statements
+-- def getPremiseStatements (goalType: Expr)
+--     (selector: Option Selector := none)
+--     (maxSuggestions: Option Nat := none) : MetaM (Array String) := do
+--   let names ← getPremiseNames goalType selector maxSuggestions
+--   let mut statements : Array String := #[]
+--   for name in names do
+--     try
+--       let defData : DefData ← DefData.ofNameM name
+--       let view ← defData.statement
+--       statements := statements.push view
+--     catch _ =>
+--       traceAide `leanaide.interpreter.info s!"Failed to get statement for {name}"
+--   return statements
 
-elab "#premises" goal:term : command =>
- Command.liftTermElabM do
- do
-  let goalType ← elabType goal
-  let ss ← getPremiseStatements goalType (maxSuggestions := some 5)
-  for s in ss do
-    logInfo s
+-- elab "#premises" goal:term : command =>
+--  Command.liftTermElabM do
+--  do
+--   let goalType ← elabType goal
+--   let ss ← getPremiseStatements goalType (maxSuggestions := some 5)
+--   for s in ss do
+--     logInfo s
 
-elab "supergrind" : tactic => do
-  let premiseNames ← getPremiseNames (← getMainTarget)
-  let ids ←  premiseNames.mapM (fun n=>
-      let id := mkIdent n
-      `(grindParam| $id:ident)
-    )
-  evalTactic <| ← `(tactic| grind +ring +splitIndPred +splitImp [$ids,*] )
+-- elab "supergrind" : tactic => do
+--   let premiseNames ← getPremiseNames (← getMainTarget)
+--   let ids ←  premiseNames.mapM (fun n=>
+--       let id := mkIdent n
+--       `(grindParam| $id:ident)
+--     )
+--   evalTactic <| ← `(tactic| grind +ring +splitIndPred +splitImp [$ids,*] )
 
 end LeanAide

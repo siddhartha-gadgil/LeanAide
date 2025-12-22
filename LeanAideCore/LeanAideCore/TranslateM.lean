@@ -410,7 +410,7 @@ def runToAsync (x: TranslateM α) (em?: Option EmbedMap)
 
 def runBackground (t₀ : T)(x: T → TranslateM α)   (em?: Option EmbedMap)
     (ctx : Core.Context) (env: Environment) (callback : T →  α → IO Unit)(prio: Task.Priority := Task.Priority.default) : Async Unit :=
-  background prio do
+  background (prio := prio) do
     let res ← runToAsync (x t₀) em? ctx env
     callback t₀ res
 
@@ -425,7 +425,7 @@ def runBackgroundIO (t₀ : T)(x: T → TranslateM α)  (em?: Option EmbedMap)
 
 partial def runBackgroundChain (t₀ : α)(x: α  → TranslateM α)   (em?: Option EmbedMap)
     (ctx : Core.Context) (env: Environment) (callback : α →  α → IO Unit)(chains : α → α → Array (α → TranslateM α)) (prios: α → Task.Priority := fun _ => Task.Priority.default) : Async Unit :=
-  background (prios t₀) do
+  background (prio := prios t₀) do
     let res ← runToAsync (x t₀) em? ctx env
     callback t₀ res
     let offspringTasks := chains t₀ res

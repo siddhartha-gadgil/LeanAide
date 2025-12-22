@@ -78,7 +78,7 @@ partial def patch (js diff : Json) : Json :=
     | _, _ =>
       let keys₁ := kvs₁.toArray.map (fun ⟨k, _⟩ => k)
       let updated := kvs₁.toArray.map fun ⟨k, v₁⟩ =>
-        match kvs₂.find compare k with
+        match kvs₂.get? k with
         | some v₂ =>
           let v := patch v₁ v₂
           (k, v)
@@ -108,7 +108,7 @@ partial def getPatch? (js₁ js₂ : Json) : Option Json :=
     | _, _ =>
       let keys₁ := kvs₁.toArray.map (fun ⟨k, _⟩ => k)
       let updated := kvs₁.toArray.foldl (init := #[]) fun acc ⟨k, v₁⟩ =>
-        match kvs₂.find compare k with
+        match kvs₂.get? k with
         | some v₂ =>
           let vDiff := getPatch? v₁ v₂
           match vDiff with
