@@ -161,7 +161,7 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
   let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if s.hasError then
     Except.error (s.toErrorMsg ictx)
-  else if input.atEnd s.pos then
+  else if (String.Pos.Raw.atEnd input) s.pos then
     Except.ok ⟨s.stxStack.back⟩
   else
     Except.error ((s.mkError "end of input").toErrorMsg ictx)
@@ -178,7 +178,7 @@ def parseGroup (env : Environment) (input : String) (parsers: List Parser) (file
   let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if s.hasError then
     Except.error (s.toErrorMsg ictx)
-  else if input.atEnd s.pos then
+  else if (String.Pos.Raw.atEnd input) s.pos then
     Except.ok s.stxStack.back
   else
     Except.error ((s.mkError "end of input").toErrorMsg ictx)
@@ -287,7 +287,7 @@ def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : 
   if stack.isEmpty &&  s.hasError then
     return Except.error (s.toErrorMsg ictx)
   else
-    let head := input.extract 0 s.pos
+    let head := (String.Pos.Raw.extract input) 0 s.pos
     let stx := stack.back!
     return Except.ok (stx, head, input.drop head.length)
 
