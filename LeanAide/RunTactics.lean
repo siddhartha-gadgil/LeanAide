@@ -175,7 +175,7 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
 def getTacticsFromMessageData? (s: String) :
     MetaM <| Option (Array Syntax.Tactic) := do
   let s := s.trim
-  if s.startsWith "Try this" || s.startsWith "TryThese" then
+  if s.startsWith "Try this:" || s.startsWith "Try these:" then
     let s' := (s.splitOn "[apply] ")[1]!
     let tacticSeq? ← getTacticsFromText? s'
     tacticSeq?.mapM fun tacticSeq => do

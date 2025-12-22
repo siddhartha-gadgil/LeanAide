@@ -18,7 +18,9 @@ def runFrontendForTactics (input: String) : MetaM (List (Array Syntax.Tactic)) :
     | some tacs =>
       logInfo s!"Tactics: {← tacs.mapM fun tac => PrettyPrinter.ppTactic tac}"
       res := res ++ [tacs]
-    | none => continue
+    | none =>
+      logInfo s!"No tactics found, in:{← msg.data.toString}"
+      continue
   return res
 
 example (x : Nat) : 0 < match x with
