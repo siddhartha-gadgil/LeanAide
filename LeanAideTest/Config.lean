@@ -1,5 +1,6 @@
 import LeanAideCore.Aides.Toml
 import LeanAideCore.Translator
+import LeanAideCore.Config
 import LeanAide.JsonDiff
 import LeanAide.TranslatorParams
 
@@ -114,6 +115,23 @@ def authDiffPatch : CoreM <| Option (Json × (List JsonDiff) × List (JsonDiff))
     return (diff, jsonDiff (json₃.patch diff) json₃, jsonDiff (json₃.patch diff) (toJson translator₄))
 
 #eval authDiffPatch
+
+
+
+def testPreloadDescs : TranslateM Bool := do
+  let filePath_prompts:= ((← resourcesDir) / "mathlib4-prompts.jsonl")
+  let filePath_descs := ((← resourcesDir) / "mathlib4-descs.jsonl")
+  Translate.preloadDescriptions
+  if (← ((filePath_prompts).pathExists)) ∧ (← ((filePath_descs).pathExists)) then
+   return true
+  else
+   return false
+
+
+/-- info: true -/
+#guard_msgs in
+#eval testPreloadDescs
+
 
 
 end LeanAide
