@@ -118,7 +118,7 @@ structure Translator where
   /-- The LLM server being used. -/
   server : ChatServer := .default
   /-- Parameters for the LLM server called. -/
-  params : ChatParams := {n := 10}
+  params : ChatParams := {n := 8}
   /-- Builder for prompt examples given sentence. -/
   pb : PromptExampleBuilder := .default
   /-- Chat examples, i.e., the dialogues of `user` and `assistant`, from the examples. -/
@@ -178,7 +178,7 @@ register_option lean_aide.translate.desc_size : Nat :=
 
 
 register_option lean_aide.translate.choices : Nat :=
-  { defValue := 10
+  { defValue := 8
     group := "lean_aide.translate"
     descr := "Number of outputs to request in a query (default 8)." }
 

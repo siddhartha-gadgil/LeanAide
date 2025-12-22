@@ -95,7 +95,7 @@ variable {context}
 
 
 
-def getContinuationExprs (s: String)(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩) : TermElabM <| Array String := do
+def getContinuationExprs (s: String)(numSim : Nat:= 10)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩) : TermElabM <| Array String := do
       -- work starts here; before this was caching, polling etc
     let (pairs, IOOut) ←
       if numSim > 0 then
@@ -167,7 +167,7 @@ def showContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(
     return (s!"{s} := sorry",exps.map (fun (_, s) => s.2))
   )
 
-def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 20)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
+def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(includeFixed: Bool := Bool.false)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩)(scoreBound: Float := 0.2)(matchBound: Nat := 15) : TermElabM <| Array (String × (List String)) := do
   let exprs ←
     getDocContinuationExprs s numSim numKW includeFixed queryNum temp scoreBound matchBound
   exprs.mapM (fun s => do
@@ -176,7 +176,7 @@ def showDocContinuationExprs (s: String)(numSim : Nat:= 10)(numKW: Nat := 1)(inc
     return (s, exps.map (fun (_, s) => s.2))
   )
 
-def showSectionContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(queryNum: Nat := 16)(temp : JsonNumber := ⟨8, 1⟩) : TermElabM <| Array (String × (List String)) := do
+def showSectionContinuationExprs (s: String)(context: String := "")(numSim : Nat:= 10)(queryNum: Nat := 8)(temp : JsonNumber := ⟨8, 1⟩) : TermElabM <| Array (String × (List String)) := do
   let exprs ←
     getSectionContinuationExprs s context numSim  queryNum temp
   exprs.mapM (fun s => do
