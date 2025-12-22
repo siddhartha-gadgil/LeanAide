@@ -31,8 +31,15 @@ def egTheorem : Json :=
 --     }
 --   }
 
+
 /--
-info: Try this: ⏎
+info: Automation tactics found for a⁻¹ = 1, closing goal
+---
+warning: unused variable `inst`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+-/
+#guard_msgs in
   theorem inv_eq_one_of_eq_one : ∀ {G : Type u} [inst : Group G] {a : G}, a = 1 → a⁻¹ = 1 :=
     by
     intro G inst a a_5197011753719384802
@@ -45,170 +52,6 @@ info: Try this: ⏎
     trace "Automation tactics found for e⁻¹ = e, closing goal"
     subst h₂
     simp_all only [inv_one]
--/
-#guard_msgs in
-#codegen {
-  "document": [
-    {
-      "type": "Theorem",
-      "header": "Lemma",
-      "label": "lem:inverse_one",
-      "hypothesis": [
-        {
-          "type": "let_statement",
-          "variable_name": "G",
-          "variable_type": "Type u",
-          "statement": "G : Type u"
-        },
-        {
-          "type": "assume_statement",
-          "assumption": "[Group G]"
-        },
-        {
-          "type": "let_statement",
-          "variable_name": "a",
-          "variable_type": "G",
-          "statement": "a : G"
-        },
-        {
-          "type": "assume_statement",
-          "assumption": "h₁ : a = 1"
-        }
-      ],
-      "claim": "a⁻¹ = 1",
-      "proof": {
-        "type": "Proof",
-        "claim_label": "lem:inverse_one",
-        "proof_steps": [
-          [
-            {
-              "type": "assert_statement",
-              "label": "step1",
-              "claim": "a⁻¹ = 1⁻¹",
-              "proof_method": "Eq.subst",
-              "internal_references": [
-                {
-                  "target_identifier": "h₁"
-                }
-              ],
-              "results_used": [
-                {
-                  "statement": "Eq.subst for inv",
-                  "mathlib_identifier": "Eq.subst"
-                }
-              ]
-            },
-            {
-              "type": "assert_statement",
-              "label": "step2",
-              "claim": "1⁻¹ = 1",
-              "proof_method": "inv_one",
-              "internal_references": [
-                {
-                  "target_identifier": "inv_one"
-                }
-              ]
-            },
-            {
-              "type": "assert_statement",
-              "claim": "a⁻¹ = 1",
-              "proof_method": "transitivity",
-              "results_used": [
-                {
-                  "statement": "a⁻¹ = 1⁻¹",
-                  "target_identifier": "step1"
-                },
-                {
-                  "statement": "1⁻¹ = 1",
-                  "target_identifier": "step2"
-                }
-              ]
-            },
-            {
-              "type": "conclude_statement"
-            }
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Theorem",
-      "header": "Theorem",
-      "label": "thm:inverse_self",
-      "hypothesis": [
-        {
-          "type": "let_statement",
-          "variable_name": "G",
-          "variable_type": "Type u",
-          "statement": "G : Type u"
-        },
-        {
-          "type": "assume_statement",
-          "assumption": "[Group G]"
-        },
-        {
-          "type": "let_statement",
-          "variable_name": "e",
-          "variable_type": "G",
-          "statement": "e : G"
-        },
-        {
-          "type": "assume_statement",
-          "assumption": "h₂ : e = 1"
-        }
-      ],
-      "claim": "e⁻¹ = e",
-      "proof": {
-        "type": "Proof",
-        "claim_label": "thm:inverse_self",
-        "proof_steps": [
-          [
-            {
-              "type": "assert_statement",
-              "label": "step1",
-              "claim": "e⁻¹ = 1",
-              "proof_method": "by Lemma 1",
-              "internal_references": [
-                {
-                  "target_identifier": "lem:inverse_one"
-                }
-              ]
-            },
-            {
-              "type": "assert_statement",
-              "label": "step2",
-              "claim": "1 = e",
-              "proof_method": "Eq.symm",
-              "internal_references": [
-                {
-                  "target_identifier": "h₂"
-                }
-              ]
-            },
-            {
-              "type": "assert_statement",
-              "claim": "e⁻¹ = e",
-              "proof_method": "transitivity",
-              "results_used": [
-                {
-                  "statement": "e⁻¹ = 1",
-                  "target_identifier": "step1"
-                },
-                {
-                  "statement": "1 = e",
-                  "target_identifier": "step2"
-                }
-              ]
-            },
-            {
-              "type": "conclude_statement"
-            }
-          ]
-        ]
-      }
-    }
-  ]
-}
 
 
 def egTheorem' : Json :=

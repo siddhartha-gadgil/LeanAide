@@ -172,66 +172,33 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
     traceAide `leanaide.interpreter.info s!"{← msg.data.toString}"
   return msgs'
 
-def runTacticsAndGetMessages' (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
-    mvarId.withContext do
-  -- traceAide `leanaide.interpreter.info s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
-    -- traceAide `leanaide.interpreter.info s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
-  -- vars := vars[1:]
-  let targetType ← mvarId.getType
-  let typeStx ← delabDetailed targetType
-  let typeView ← PrettyPrinter.ppTerm typeStx
-  logInfo m!"Target type: {typeView}"
-  let tacticCode ← `(tacticSeq| $tactics*)
-  let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
-  logInfo m!"Tactic proof: {termView}"
-  let egCode := s!"example : {typeView} := {termView}"
-  -- let code := topCode ++ egCode
-  let msgs' ← runFrontEndForMessages egCode
-  traceAide `leanaide.interpreter.info s!"Ran frontend, Messages:"
-  for msg in msgs'.toList do
-    traceAide `leanaide.interpreter.info s!"{← msg.data.toString}"
-  return msgs'
-
-
 def getTacticsFromMessageData? (s: String) :
     MetaM <| Option (Array Syntax.Tactic) := do
   let s := s.trim
   if s.startsWith "Try this:" then
-    let s' := s.drop 10 |>.trim
-    match Parser.runParserCategory (← getEnv) `term ("by\n  " ++ s') with
-    | Except.ok term => do
-      match term with
-      | `(by $[$t]*) =>
-        -- traceAide `leanaide.interpreter.info "Parsed tactics:"
-        return t
-      | _ =>
-        traceAide `leanaide.interpreter.info s!"Message: {s} starts with Try this:, but failed to parse {"by\n  " ++ s'} as a tactic sequence"
-        return none
-    | Except.error e => do
-      traceAide `leanaide.interpreter.info s!"Message: {s} starts with Try this:, but failed to parse {s'} with error {e}"
-      return none
+    let s' := (s.splitOn "Try this:")[1]!
+    let tacticSeq? ← getTacticsFromText? s'
+    tacticSeq?.mapM fun tacticSeq => do
+      let tacs := getTactics tacticSeq
+      traceAide `leanaide.interpreter.info s!"Extracted tactics from message: {s}"
+      return tacs
   else
     -- traceAide `leanaide.interpreter.info s!"Message: {s} does not start with Try this:"
     return none
-
--- #check List.findSome?
 
 def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
   let mvar ← mkFreshExprMVar goal
   let egCode ← frontendCodeForTactics mvar.mvarId! tactics
-  -- let code := topCode ++ egCode
   traceAide `leanaide.interpreter.info s!"Running frontend with code:\n{egCode}"
   let msgs' ← runFrontEndMsgCoreM egCode
   let _pickle := toJson msgs'
   if strict then
     for msg in msgs' do
       if msg.severity == MessageSeverity.error then
-        -- traceAide `leanaide.interpreter.info s!"Error message: {← msg.data.toString}"
         return none
       if msg.severity == MessageSeverity.warning then
         if msg.text == "declaration uses 'sorry'" then
-          -- traceAide `leanaide.interpreter.info s!"Warning message with Try this: {← msg.data.toString}"
           return none
   let trys ← msgs'.filterMapM
     fun msg => do getTacticsFromMessageData? msg.text
@@ -247,28 +214,9 @@ def runTacticsAndFindTryThis? (goal : Expr) (tacticSeqs : List (TSyntax ``tactic
       let tacs? ← runTacticsAndGetTryThis? goal tacs strict
       tacs?.mapM fun tacs => mkTacticSeq tacs
 
-def runTacticsAndGetTryThis'? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
-    withoutModifyingState do
-  let mvar ← mkFreshExprMVar goal
-  let msgs ←
-    runTacticsAndGetMessages' mvar.mvarId! tactics
-  traceAide `leanaide.interpreter.info "Messages:"
-  for msg in msgs.toList do
-    traceAide `leanaide.interpreter.info s!"Message: {← msg.data.toString}"
-  if strict then
-    for msg in msgs.toList do
-      if msg.severity == MessageSeverity.error then
-        -- traceAide `leanaide.interpreter.info s!"Error message: {← msg.data.toString}"
-        return none
-      if msg.severity == MessageSeverity.warning then
-        if (← msg.data.toString).trim == "declaration uses 'sorry'" then
-          -- traceAide `leanaide.interpreter.info s!"Warning message with Try this: {← msg.data.toString}"
-          return none
-  msgs.toList.findSomeM?
-    fun msg => do getTacticsFromMessageData? (← msg.data.toString)
 
 def getSimpOrExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try (try simp?); exact?)] (strict := true)
+  let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?)] (strict := true)
   match tactics? with
   | none => return none
   | some tacs =>

@@ -84,6 +84,24 @@ def endsWithDone (t: TSyntax ``tacticSeq) : MetaM Bool := do
     pure <| fmt.pretty.trim.endsWith "done"
   | _ => pure false
 
+declare_syntax_cat tacticSeqCategory
+syntax tacticSeq : tacticSeqCategory
+
+def getTacticsFromText? (tacticText: String) : MetaM (Option (TSyntax ``tacticSeq)) := do
+  let stx? := runParserCategory (← getEnv) `tacticSeqCategory tacticText
+  match stx? with
+  | Except.ok stx =>
+    match stx with
+    | `(tacticSeqCategory| $ts:tacticSeq) =>
+      return some ts
+    | _ =>
+      throwError m!"Unexpected syntax format for tactics: {stx}"
+      return none
+  | Except.error e =>
+    throwError m!"Failed to parse tactics; {e}:\n{tacticText}"
+    return none
+
+
 
 syntax commandSeq := sepBy1IndentSemicolon(command)
 
