@@ -65,7 +65,3 @@ def resourcesDir : IO System.FilePath := do
   return base / "resources"
 
 -- #eval resourcesDir
-
-def searchData : IO System.FilePath := do
-  let base ← baseDir
-  return base / "SimilaritySearch" / "Data"
