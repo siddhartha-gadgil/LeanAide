@@ -130,7 +130,7 @@ def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
         match decl with
         | some <| .cdecl _ fVarId _ dtype .. => do
           let check ← isDefEq dtype type
-          -- logInfo m!"Checking {dtype} and {type} gives {check}"
+          traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
           if check then pure <| some fVarId
           else pure none
         | _ => pure none
@@ -144,22 +144,24 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
     | some (.cdecl _ fVarId _ dtype ..) =>
-      let check ← isDefEq dtype binderType
-      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      let check ← match dtype, binderType with
+      | .sort _, .sort _ => pure true
+      | _, _ =>   isDefEq dtype binderType
+        traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 (mkFVar fVarId)
         dropLocalContext body'
       else
-        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return type
     | some (.ldecl _ _ _ dtype value ..) =>
       let check ← isDefEq dtype binderType
-      -- logInfo m!"Checking {dtype} and {type} gives {check}"
+      traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 value
         dropLocalContext body'
       else
-        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return type
     | none =>
       match ← findLocalDecl? name binderType with

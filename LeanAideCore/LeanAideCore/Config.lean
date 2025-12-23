@@ -18,6 +18,8 @@ initialize
   registerTraceClass `leanaide.elaboration.debug
   registerTraceClass `leanaide.frontend.info
   registerTraceClass `leanaide.frontend.debug
+  registerTraceClass `leanaide.lctx.info
+  registerTraceClass `leanaide.lctx.debug
 
 register_option leanaide.logging : Bool :=
   { defValue := false
