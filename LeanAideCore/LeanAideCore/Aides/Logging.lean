@@ -4,13 +4,18 @@ open Lean Meta
 
 namespace LeanAide
 
+initialize logProcess : IO.Ref String ← IO.mkRef "root"
+
+def setLogProcess (name : String) : IO Unit :=
+  logProcess.set name
+
 def timestamp : IO String := do
   let now ← Std.Time.PlainDateTime.now
   return now.format "uuuu-MM-dd'T'HH:mm:ss"
 
 def logIO (name : Name)(msg : String) : IO Unit := do
   let timeStr ← timestamp
-  let head := s!"[{timeStr}] [{name}] "
+  let head := s!"[{timeStr}] [{name}] [{← logProcess.get}] "
   let msg := m!"{head} {msg.replace "\n" ("\n" ++ head)}"
   IO.eprintln (← msg.toString)
 

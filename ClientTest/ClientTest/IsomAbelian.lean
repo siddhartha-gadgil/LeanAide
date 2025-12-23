@@ -157,11 +157,11 @@ def egIsomorphicToAbelian := json% {
   ]
 }
 
--- def tokenTest := codegen% egIsomorphicToAbelian
+def tokenTest := codegen% egIsomorphicToAbelian
 
--- example := codegen% egIsomorphicToAbelian
+example := codegen% egIsomorphicToAbelian
 
--- #codegen_async tokenTest
+#codegen_async tokenTest
 
   theorem assert_1316498616452051197 :
       ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),

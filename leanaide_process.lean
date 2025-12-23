@@ -46,6 +46,7 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
         TranslateM.runBackgroundChainIO js
           (Actor.response translator) none ctx env
           callback chains prios
+        setLogProcess (s!"process:hash")
         IO.eprintln "Background process launched"
         IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
       | some ts =>

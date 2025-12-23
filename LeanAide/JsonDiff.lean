@@ -32,12 +32,12 @@ partial def jsonDiff : Json → Json → List JsonDiff
   let ob := b.toArray.toList
   let mut error :List JsonDiff := []
   for ⟨k,v⟩ in oa do
-      let val? := b.find compare k
+      let val? := b.get? k
       match val? with
       | none => error := error.append [JsonDiff.existsKey1only k v.compress]
       | some val => error := error.append ((jsonDiff v val).map (fun d ↦ JsonDiff.atKey k d))
   for ⟨k,v⟩ in ob do
-    let val? := a.find compare k
+    let val? := a.get? k
     match val? with
     | none => error := error.append [JsonDiff.existsKey2only k v.compress]
     | some _ => continue
