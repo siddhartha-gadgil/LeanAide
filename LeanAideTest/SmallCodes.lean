@@ -209,3 +209,7 @@ example : (n : ℕ) →
   n + 2 = 3 := by
   intro n all_one_lemma
   simp; exact?
+
+#logIO leanaide.interpreter.debug
+
+#codegen egNested₁

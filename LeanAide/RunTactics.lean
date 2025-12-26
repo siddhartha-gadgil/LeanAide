@@ -130,11 +130,12 @@ def frontendCodeForTactics (mvarId : MVarId) (tactics : Array Syntax.Tactic): Te
   traceAide `leanaide.interpreter.info s!"Running tactics on {← PrettyPrinter.ppExpr <| ← mvarId.getType} to get messages in context:"
   let lctx ← getLCtx
   let mut vars : Array Syntax.Term := #[]
-  let fvars : Array Expr := lctx.getFVarIds.map (mkFVar)
+  let fvars : Array Expr ← getLocalHyps
   let decls := lctx.decls.toList
   for decl in lctx do
-    unless decl.isImplementationDetail || decl.isLet do
+    unless decl.isImplementationDetail  do
       let name := decl.userName
+      traceAide `leanaide.interpreter.debug s!"Adding variable: {decl.userName} (internal: {decl.userName.isInternal}, isLet: {decl.isLet} and {decl.isLet true}) : {← PrettyPrinter.ppExpr decl.type}"
       let term ← if !name.isInternal then
         let id := mkIdent name
         `($id)
