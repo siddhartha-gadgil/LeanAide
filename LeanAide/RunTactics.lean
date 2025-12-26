@@ -144,6 +144,7 @@ def frontendCodeForTactics (mvarId : MVarId) (tactics : Array Syntax.Tactic): Te
     traceAide `leanaide.interpreter.info s!"Declaration: {decl.userName} (internal: {decl.userName.isInternal}) : {← PrettyPrinter.ppExpr decl.type}"
   -- vars := vars[1:]
   -- let targetType := lctx.mkForall  fvars <| ← mvarId.getType
+  traceAide `leanaide.interpreter.info s!"LocalHyps: {← (← getLocalHyps).mapM fun h => do PrettyPrinter.ppExpr h}"
   traceAide `leanaide.interpreter.info "FVars:"
   for fvar in fvars do
     traceAide `leanaide.interpreter.info s!"{← PrettyPrinter.ppExpr fvar} : {← PrettyPrinter.ppExpr <| ← inferType fvar}"
@@ -297,7 +298,8 @@ def runTacticsAndGetTryThisI (goal : MVarId) (tactics : Array Syntax.Tactic): Te
   let res :=  tacs?.getD #[(←  `(tactic| repeat (sorry)))]
   let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
   let tail := Syntax.mkStrLit tailText
-  return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
+  return res
+  -- return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
 def runTacticsAndFindTryThisI (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)): TermElabM <|  (Array Syntax.Tactic) := do
   let tacs? ← runTacticsAndFindTryThis? goal tacticSeqs
@@ -309,7 +311,8 @@ def runTacticsAndFindTryThisI (goal : MVarId) (tacticSeqs : List (TSyntax ``tact
   let res :=  tacs?.getD #[(←  `(tactic| repeat (sorry)))]
   let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
   let tail := Syntax.mkStrLit tailText
-  return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
+  return res
+  -- return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
 
 partial def extractInstanceIntros (goal: MVarId) (accum: List Name := []) :

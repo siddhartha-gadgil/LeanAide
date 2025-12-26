@@ -253,9 +253,9 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   traceAide `leanaide.codegen.info "Trying automation tactics"
   match ← runTacticsAndFindTryThis? goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
   | some autoTacs => do
-    let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
+    -- let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
     let autoTacs :=
-      #[← `(tactic| trace $traceText)] ++ (getTactics autoTacs)
+      (getTactics autoTacs)
     let autoTac ← `(tacticSeq| $autoTacs*)
     traceAide `leanaide.codegen.info s!"automation closes the goal"
     return autoTac
