@@ -230,11 +230,12 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
         else
           return Json.mkObj [("result", "error"), ("errors", toJson es)]
       | Except.ok translation => do
+        let mvar ← Lean.Meta.mkFreshExprMVar translation
         let defs ← defsBlob? translation
         let typeStx ← delabDetailed translation
         let thmFmt ← PrettyPrinter.ppExpr translation
         let pf? ←
-          getSimpOrExactTactics? translation <||> getHammerTactics? translation
+          getSimpOrExactTactics? mvar.mvarId! <||> getHammerTactics? mvar.mvarId!
         let name? := data.getObjValAs? Name "theorem_name" |>.toOption
         let name := name?.getD (← try
           translator.server.theoremName text
@@ -502,8 +503,9 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
                 let defs ← defsBlob? expr
                 let typeStx ← delabDetailed expr
                 let thmFmt ← PrettyPrinter.ppExpr expr
+                let mvar ← Lean.Meta.mkFreshExprMVar expr
                 let pf? ←
-                  getSimpOrExactTactics? expr <||> getHammerTactics? expr
+                  getSimpOrExactTactics? mvar.mvarId! <||> getHammerTactics? mvar.mvarId!
                 let name ← try
                   translator.server.theoremName desc
                   catch e =>
@@ -581,8 +583,9 @@ instance kernel : Kernel := {
       let defs ← defsBlob? translation
       let typeStx ← delabDetailed translation
       let thmFmt ← PrettyPrinter.ppExpr translation
+      let mvar ← Lean.Meta.mkFreshExprMVar translation
       let pf? ←
-        getSimpOrExactTactics? translation <||> getHammerTactics? translation
+        getSimpOrExactTactics? mvar.mvarId! <||> getHammerTactics? mvar.mvarId!
       let name := name?.getD (← try
         translator.server.theoremName text
         catch e =>

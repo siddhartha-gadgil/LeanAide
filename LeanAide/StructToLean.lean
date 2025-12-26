@@ -669,8 +669,9 @@ def conclusionTactic (conclusion: String)(context: Array Json) (qp: CodeGenerato
   let conclusionTerm' : Syntax.Term ← delabDetailed conclusionTerm
   let hash := hash conclusion
   let conclusionId := mkIdent <| Name.mkSimple s!"conclusion_{hash}"
+  let mvar ← mkFreshExprMVar conclusionTerm
   let tacs ←
-    runTacticsAndGetTryThisI conclusionTerm #[← `(tactic| auto?)]
+    runTacticsAndGetTryThisI mvar.mvarId! #[← `(tactic| auto?)]
   `(tactic| first | done |have $conclusionId : $conclusionTerm':term := by $tacs*)
 
 def contradictionTactics (statement: String)
@@ -692,7 +693,8 @@ def contradictionTactics (statement: String)
 elab "#tactic_trythis" goal:term "by" tacticCode:tactic "log" : command =>
   Command.liftTermElabM do
   let goal ← elabType goal
-  let tacs? ← runTacticsAndGetTryThis? goal #[tacticCode]
+  let mvar ← mkFreshExprMVar goal
+  let tacs? ← runTacticsAndGetTryThis? mvar.mvarId! #[tacticCode]
   match tacs? with
     | some tacs => do
       logInfo "Tactics found:"
@@ -749,8 +751,9 @@ def haveForAssertion (goal: Expr)
   let ids := premises.toArray.map fun n => Lean.mkIdent n
   let existsTacs ←
     resolveExistsHave type
+  let mvar ← mkFreshExprMVar goal
   let headTacs? ←
-    runTacticsAndGetTryThis? goal #[← `(tactic| auto? [$ids,*])]
+    runTacticsAndGetTryThis? mvar.mvarId! #[← `(tactic| auto? [$ids,*])]
   if headTacs?.isNone then
     IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr goal} while running "
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
@@ -771,8 +774,9 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
         let typeStx ← delabDetailed type
         let hash := hash statement
         let name := mkIdent <| Name.mkSimple s!"calculation_{hash}"
+        let mvar ← mkFreshExprMVar type
         let headTacs? ←
-          runTacticsAndGetTryThis? type #[← `(tactic| auto?)]
+          runTacticsAndGetTryThis? mvar.mvarId! #[← `(tactic| auto?)]
         if headTacs?.isNone then
           IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr type} while running "
         let headTacs := headTacs?.getD #[← `(tactic| sorry)]
@@ -795,8 +799,9 @@ def conditionCases (cond₁ cond₂ : String)
   let condTerm₂' : Syntax.Term := ⟨condTerm₂⟩
   let hash := hash cond₂
   let condId₂ := mkIdent <| Name.mkSimple s!"cond_{hash}"
+  let mvar₂ ← mkFreshExprMVar condProp₂
   let headTacs? ←
-    runTacticsAndGetTryThis? condProp₂ #[← `(tactic| auto?)]
+    runTacticsAndGetTryThis? mvar₂.mvarId! #[← `(tactic| auto?)]
   if headTacs?.isNone then
     IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr condProp₂} while running "
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
@@ -894,7 +899,7 @@ mutual
       match input with
       | [] => do
         let headTacs? ←
-          runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| auto?)]
+          runTacticsAndGetTryThis? goal #[← `(tactic| auto?)]
         if headTacs?.isNone then
           IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr <| ← goal.getType} while running "
         let headTacs := headTacs?.getD #[← `(tactic| sorry)]
@@ -920,7 +925,8 @@ mutual
                       | Except.ok e =>
                         let stx ← delabDetailed e
                         let name := mkIdent <| Name.mkSimple s
-                        let tacs ← runTacticsAndGetTryThisI e #[← `(tactic| auto?)]
+                        let mvar ← mkFreshExprMVar e
+                        let tacs ← runTacticsAndGetTryThisI mvar.mvarId! #[← `(tactic| auto?)]
                         prevTacs := prevTacs.push <| ← `(tactic| have $name : $stx := by
                           $tacs*)
                       | _ => pure ()
@@ -1009,7 +1015,9 @@ mutual
                   | Except.ok pfSource =>
                     let mvar ← mkFreshExprMVar exType
                     structToTactics mvar.mvarId! #[] context pfSource qp
-                  | _ => runTacticsAndGetTryThisI exType #[← `(tactic| auto?)]
+                  | _ =>
+                  let mvar ← mkFreshExprMVar exType
+                  runTacticsAndGetTryThisI mvar.mvarId! #[← `(tactic| auto?)]
                 groupCases context conditionProofs.toList union_pf qp none
               | some "condition" =>
                 match conditionProofs with
@@ -1019,8 +1027,9 @@ mutual
               | _ => /- treat like a group but with conditions as claims;
                       works for `iff` -/
                 let exType ← exhaustiveType goal context conds.toList qp
+                let mvar ← mkFreshExprMVar exType
                 let union_pf : Array Syntax.Tactic ←
-                  runTacticsAndGetTryThisI exType #[← `(tactic| auto?)]
+                  runTacticsAndGetTryThisI mvar.mvarId! #[← `(tactic| auto?)]
                 groupCases context conditionProofs.toList union_pf qp none
             | _ =>
               pure #[]
@@ -1055,7 +1064,7 @@ mutual
                 structToTactics goal #[] context pf qp
               let proof := proof?.getD #[]
               let tacs ← contradictionTactics s proof context qp
-              runTacticsAndGetTryThisI (← goal.getType) tacs
+              runTacticsAndGetTryThisI goal tacs
             | _, _ => pure #[]
           | some ("conclude", head) =>
             match head.getObjValAs? String "claim" with

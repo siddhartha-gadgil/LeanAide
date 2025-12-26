@@ -186,10 +186,9 @@ def getTacticsFromMessageData? (s: String) :
     -- traceAide `leanaide.interpreter.info s!"Message: {s} does not start with Try this:"
     return none
 
-def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
+def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
-  let mvar ← mkFreshExprMVar goal
-  let egCode ← frontendCodeForTactics mvar.mvarId! tactics
+  let egCode ← frontendCodeForTactics goal tactics
   traceAide `leanaide.interpreter.info s!"Running frontend with code:\n{egCode}"
   let msgs' ← runFrontEndMsgCoreM egCode
   let _pickle := toJson msgs'
@@ -207,7 +206,7 @@ def runTacticsAndGetTryThis? (goal : Expr) (tactics : Array Syntax.Tactic) (stri
   else
     return some <| trys.foldl (fun acc tacs => acc ++ tacs) #[]
 
-def runTacticsAndFindTryThis? (goal : Expr) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := true): TermElabM <| Option (TSyntax ``tacticSeq) := do
+def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := true): TermElabM <| Option (TSyntax ``tacticSeq) := do
   tacticSeqs.findSomeM?
     fun tacticSeq => do
       let tacs := getTactics tacticSeq
@@ -215,7 +214,7 @@ def runTacticsAndFindTryThis? (goal : Expr) (tacticSeqs : List (TSyntax ``tactic
       tacs?.mapM fun tacs => mkTacticSeq tacs
 
 
-def getSimpOrExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+def getSimpOrExactTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) := do
   let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?)] (strict := true)
   match tactics? with
   | none => return none
@@ -227,7 +226,7 @@ def getSimpOrExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticS
       let tacticCode ←  `(tacticSeq| $tacsArr*)
       return some tacticCode
 
-def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+def getExactTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) := do
   let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| exact?))]
   match tactics? with
   | none => return none
@@ -238,7 +237,7 @@ def getExactTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) :=
       let tacticCode ←  `(tacticSeq| $tacs*)
       return some tacticCode
 
-def getHammerTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+def getHammerTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) := do
   let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | (simp? ; done) | hammer {aesopPremises := 5, autoPremises := 0}))]
   match tactics? with
   | none => return none
@@ -250,7 +249,8 @@ def getHammerTactics? (goal: Expr) : TermElabM <| Option (TSyntax ``tacticSeq) :
       return some tacticCode
 
 def getExactTerm? (goal: Expr) : TermElabM <| Option Syntax.Term := do
-  let tacticCode? ← getExactTactics? goal
+  let mvarId ← mkFreshExprMVar goal
+  let tacticCode? ← getExactTactics? mvarId.mvarId!
   tacticCode?.bindM fun tacticCode => do
     match tacticCode with
     | `(tacticSeq| exact $t:term) =>
@@ -259,7 +259,8 @@ def getExactTerm? (goal: Expr) : TermElabM <| Option Syntax.Term := do
       return none
 
 def getExactTermParts? (goal: Expr) : TermElabM <| Option <| Array Name := do
-  let tacticCode? ← getExactTactics? goal
+  let mvarId ← mkFreshExprMVar goal
+  let tacticCode? ← getExactTactics? mvarId.mvarId!
   tacticCode?.mapM fun tacticCode => do
     match tacticCode with
     | `(tacticSeq| exact $t:term) =>
@@ -271,7 +272,8 @@ def getExactTermParts? (goal: Expr) : TermElabM <| Option <| Array Name := do
 
 elab "#exact? " goal:term : command => Command.liftTermElabM do
   let goal ← elabTerm goal none
-  let tacticCode? ← getSimpOrExactTactics? goal
+  let mvarId ← mkFreshExprMVar goal
+  let tacticCode? ← getSimpOrExactTactics? mvarId.mvarId!
   match tacticCode? with
   | none => logWarning "exact? tactic failed to find any tactics"
   | some tacticCode =>
@@ -280,7 +282,7 @@ elab "#exact? " goal:term : command => Command.liftTermElabM do
 -- #exact? ∀ (n m : Nat), n + m = m + n
 
 open PrettyPrinter
-def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): TermElabM <|  (Array Syntax.Tactic) := do
+def runTacticsAndGetTryThisI (goal : MVarId) (tactics : Array Syntax.Tactic): TermElabM <|  (Array Syntax.Tactic) := do
   let tacs? ← runTacticsAndGetTryThis? goal tactics
   -- traceAide `leanaide.interpreter.info s!"Tactics for goal: {← PrettyPrinter.ppExpr goal}"
   -- if let some tacs := tacs? then
@@ -290,22 +292,22 @@ def runTacticsAndGetTryThisI (goal : Expr) (tactics : Array Syntax.Tactic): Term
   --   traceAide `leanaide.interpreter.info "No tactics found"
   let autoTacs ← ppCategory ``tacticSeq <|
     ← `(tacticSeq| $tactics*)
-  let headerText := s!"Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
+  let headerText := s!"Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
   let header := Syntax.mkStrLit headerText
   let res :=  tacs?.getD #[(←  `(tactic| repeat (sorry)))]
-  let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
+  let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
   let tail := Syntax.mkStrLit tailText
   return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
-def runTacticsAndFindTryThisI (goal : Expr) (tacticSeqs : List (TSyntax ``tacticSeq)): TermElabM <|  (Array Syntax.Tactic) := do
+def runTacticsAndFindTryThisI (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)): TermElabM <|  (Array Syntax.Tactic) := do
   let tacs? ← runTacticsAndFindTryThis? goal tacticSeqs
   let autoTacs ← ppCategory ``tacticSeq <|
     ← flattenTacticSeq tacticSeqs.toArray
-  let headerText := s!"Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
+  let headerText := s!"Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
   let header := Syntax.mkStrLit headerText
   let tacs? := tacs?.map getTactics
   let res :=  tacs?.getD #[(←  `(tactic| repeat (sorry)))]
-  let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr goal}"
+  let tailText := s!"Finished Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
   let tail := Syntax.mkStrLit tailText
   return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
