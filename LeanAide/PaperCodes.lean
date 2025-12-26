@@ -500,8 +500,10 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
       doc? := none
     }
     addDefn defn
-    -- defn.addDeclaration
-    `(commandSeq| theorem $n : $stx := by $pf)
+    if isProp then
+      `(commandSeq| theorem $n : $stx := by $pf)
+    else
+      `(commandSeq| noncomputable def $n : $stx := by $pf)
   | none =>
     let propName := mkIdent (name ++ `prop)
     let propExpr := mkSort Level.zero
