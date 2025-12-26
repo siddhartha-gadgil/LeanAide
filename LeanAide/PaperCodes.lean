@@ -473,11 +473,14 @@ Should perhaps try to use automation if there is no proof.
 @[codegen "theorem"]
 def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  let (stx, name, pf?, _) ← thmStxParts js
+  let (stx, name, pf?, isProp) ← thmStxParts js
   match pf? with
   | some pf =>
     let n := mkIdent name
-    `(command| theorem $n : $stx := by $pf)
+    if isProp then
+      `(command| theorem $n : $stx := by $pf)
+    else
+      `(command| noncomputable def $n : $stx := by $pf)
   | none =>
     let n := mkIdent (name ++ `prop)
     let propExpr := mkSort Level.zero
