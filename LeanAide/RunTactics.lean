@@ -25,9 +25,13 @@ def runFrontEndMsgCoreM (inp : String) : MetaM (List MessageCore) := do
 
 open LeanSearchClient in
 def suggestionsForGoal (goal: MVarId) (maxSuggestions: Nat := 5) (leanVersion := "v4.22.0") : MetaM (Array Name) := do
-  let fmt ← ppGoal goal
-  let res ← queryStateSearch fmt.pretty maxSuggestions leanVersion
-  return res.map fun r => r.name.toName
+  try
+    let fmt ← ppGoal goal
+    let res ← queryStateSearch fmt.pretty maxSuggestions leanVersion
+    return res.map fun r => r.name.toName
+  catch e =>
+    traceAide `leanaide.interpreter.info s!"Error querying StateSearch for goal {← PrettyPrinter.ppExpr <| ← goal.getType}: {← e.toMessageData.toString}"
+    return #[]
 
 open Parser.Tactic
 def checkGrind (name: Name) : MetaM Bool := do
