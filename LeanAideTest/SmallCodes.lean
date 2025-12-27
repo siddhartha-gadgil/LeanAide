@@ -162,16 +162,12 @@ def egNested₁ : Json := json% {
   ]}
 
 /--
-info: All theorems : [all_one_lemma]
----
-info: All theorems : [all_one_lemma, all_one]
+info: All theorems : [all_one]
 ---
 info: Try this:
   [apply] theorem all_one : ∀ (n : ℕ), n + 2 = 3 := by
       intro n
-      have all_one_lemma : n = 1 := by simp [nat_eq_one]
-      simp only [Nat.reduceEqDiff]
-      exact all_one_lemma
+      exact nat_eq_one n
 -/
 #guard_msgs in
 #codegen egNested₁

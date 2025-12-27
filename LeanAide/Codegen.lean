@@ -251,13 +251,13 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) := goal.withContext do
   traceAide `leanaide.codegen.info "Trying automation tactics"
-  let localNames := #[] -- (not yet including code on top) ← Translate.defsNames
+  let localNames  ← Translate.defsNames
   let grindWs ← grindWithSuggestions goal localNames
   let simpWs ← simpWithSuggestions goal localNames
   -- add theorems from earlier in the document
   let blobArr ← Translate.defsBlob
   let blob := blobArr.foldl  (fun acc j => acc ++ j ++ "\n\n") ""
-  match ← runTacticsAndFindTryThis? goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try?), grindWs, simpWs, ← `(tacticSeq| try simp; exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
+  match ← runTacticsAndFindTryThis? goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try?), grindWs, simpWs, ← `(tacticSeq| try simp; exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) (previous := blob) with
   | some autoTacs => do
     -- let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
     let autoTacs :=
