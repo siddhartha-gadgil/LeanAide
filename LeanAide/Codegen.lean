@@ -188,7 +188,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     return (← appendTacticSeqSeq accum (← `(tacticSeq| assumption)), none)
   catch _ =>
   traceAide `leanaide.codegen.info "Trying exact tactics or automation"
-  match ← getSimpOrExactTactics? goal with
+  match ← getQuickTactics? goal with
   | some code => do
     traceAide `leanaide.codegen.info s!"exact tactics found for goal: {← ppExpr <| ← goal.getType}"
     -- traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
@@ -251,7 +251,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) := goal.withContext do
   traceAide `leanaide.codegen.info "Trying automation tactics"
-  match ← runTacticsAndFindTryThis? goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
+  match ← runTacticsAndFindTryThis? goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try simp; exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
   | some autoTacs => do
     -- let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
     let autoTacs :=

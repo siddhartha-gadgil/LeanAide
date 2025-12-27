@@ -2,6 +2,7 @@ import Lean
 import LeanAide.Aides
 import LeanAide.SimpleFrontend
 import LeanAide.DefData
+import LeanSearchClient
 import Hammer
 
 open Lean Meta Elab Term PrettyPrinter Nat
@@ -21,6 +22,43 @@ def MessageCore.ofMessageM (msg: Message) : MetaM MessageCore := do
 def runFrontEndMsgCoreM (inp : String) : MetaM (List MessageCore) := do
   let msgs ← runFrontEndForMessages inp -- cache this
   msgs.toList.mapM fun msg => MessageCore.ofMessageM msg
+
+open LeanSearchClient in
+def suggestionsForGoal (goal: MVarId) (maxSuggestions: Nat := 5) (leanVersion := "v4.22.0") : MetaM (Array Name) := do
+  let fmt ← ppGoal goal
+  let res ← queryStateSearch fmt.pretty maxSuggestions leanVersion
+  return res.map fun r => r.name.toName
+
+open Parser.Tactic
+def checkGrind (name: Name) : MetaM Bool := do
+  let id := mkIdent name
+  let p ← `(grindParam| $id:ident)
+  let stx ←  `(command| example : 1 = 1 := by grind [$p])
+  let l ← checkElabFrontM (← ppCommand stx).pretty
+  return l.isEmpty
+
+def suggestionsForGrind (goal: MVarId) (maxSuggestions: Nat := 5) (leanVersion := "v4.22.0") : MetaM (Array Name) := do
+  let all ← suggestionsForGoal goal maxSuggestions leanVersion
+  all.filterM fun name => checkGrind name
+
+def grindWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions: Nat := 5) (leanVersion := "v4.22.0") : MetaM (TSyntax ``tacticSeq) := do
+  let names ← suggestionsForGrind goal maxSuggestions leanVersion
+  let names := names ++ localNames
+  let params : Array (TSyntax ``grindParam) ← names.mapM fun
+    name => do
+      let id := mkIdent name
+      `(grindParam| $id:ident)
+  `(tacticSeq| grind? [$params,*])
+
+def simpWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions: Nat := 5) (leanVersion := "v4.22.0") : MetaM (TSyntax ``tacticSeq) := do
+  let names ← suggestionsForGoal goal maxSuggestions leanVersion
+  let names := names ++ localNames
+  let params : Array (TSyntax ``simpLemma) ← names.mapM fun
+    name => do
+      let id := mkIdent name
+      `(simpLemma| $id:ident)
+  `(tacticSeq| simp? [$params,*])
+
 
 open Parser.Tactic
 -- TODO: add errors and warnings
@@ -216,8 +254,8 @@ def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tact
       tacs?.mapM fun tacs => mkTacticSeq tacs
 
 
-def getSimpOrExactTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?)] (strict := true)
+def getQuickTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+  let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?), ← `(tacticSeq| grind?)] (strict := true)
   match tactics? with
   | none => return none
   | some tacs =>
@@ -240,7 +278,7 @@ def getExactTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) 
       return some tacticCode
 
 def getHammerTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| first | (simp? ; done) | hammer {aesopPremises := 5, autoPremises := 0}))]
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| hammer {aesopPremises := 5, autoPremises := 0}))]
   match tactics? with
   | none => return none
   | some tacs =>
@@ -275,7 +313,7 @@ def getExactTermParts? (goal: Expr) : TermElabM <| Option <| Array Name := do
 elab "#exact? " goal:term : command => Command.liftTermElabM do
   let goal ← elabTerm goal none
   let mvarId ← mkFreshExprMVar goal
-  let tacticCode? ← getSimpOrExactTactics? mvarId.mvarId!
+  let tacticCode? ← getQuickTactics? mvarId.mvarId!
   match tacticCode? with
   | none => logWarning "exact? tactic failed to find any tactics"
   | some tacticCode =>
