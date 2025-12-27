@@ -230,9 +230,15 @@ def getTacticsFromMessageData? (s: String) :
     -- traceAide `leanaide.interpreter.info s!"Message: {s} does not start with Try this:"
     return none
 
-def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (strict : Bool := false): TermElabM <| Option (Array Syntax.Tactic) :=
+def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (strict : Bool := false) (previous: String := ""): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
+  -- Add code from earlier theorems in the document
   let egCode ← frontendCodeForTactics goal tactics
+  let egCode :=
+    if previous == "" then
+      egCode
+    else
+      previous ++ "\n\n" ++ egCode
   traceAide `leanaide.interpreter.info s!"Running frontend with code:\n{egCode}"
   let msgs' ← runFrontEndMsgCoreM egCode
   let _pickle := toJson msgs'
@@ -250,11 +256,11 @@ def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (st
   else
     return some <| trys.foldl (fun acc tacs => acc ++ tacs) #[]
 
-def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := true): TermElabM <| Option (TSyntax ``tacticSeq) := do
+def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := true) (previous: String := ""): TermElabM <| Option (TSyntax ``tacticSeq) := do
   tacticSeqs.findSomeM?
     fun tacticSeq => do
       let tacs := getTactics tacticSeq
-      let tacs? ← runTacticsAndGetTryThis? goal tacs strict
+      let tacs? ← runTacticsAndGetTryThis? goal tacs strict previous
       tacs?.mapM fun tacs => mkTacticSeq tacs
 
 
