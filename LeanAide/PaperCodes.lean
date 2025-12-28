@@ -500,6 +500,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
       doc? := none
     }
     addDefn defn
+    traceAide `leanaide.papercodes.info s!"Added theorem definition: {defn.name}"
     if isProp then
       `(commandSeq| theorem $n : $stx := by $pf)
     else

@@ -209,3 +209,20 @@ example : (n : ℕ) →
 #logIO leanaide.interpreter.debug
 
 #codegen egNested₁
+
+def egNested₃ : Json := json% {
+  "document" : [
+    {
+      "theorem" : {
+        "name" : "all_one",
+        "claim" : "∀ n: Nat, n = 1",
+        "proof" : [{"lean": "simp [nat_eq_one]"}]
+      }
+    },
+      {"theorem" : {
+        "name" : "all_one_lemma_succ",
+        "claim" : "∀ n: Nat, n + 1 = 2",
+        "proof" : []}}]
+      }
+
+#codegen egNested₃

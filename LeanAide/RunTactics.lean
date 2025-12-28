@@ -241,9 +241,10 @@ def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (st
       previous ++ "\n\n" ++ egCode
   traceAide `leanaide.interpreter.info s!"Running frontend with code:\n{egCode}"
   let msgs' ← runFrontEndMsgCoreM egCode
-  let _pickle := toJson msgs'
+  traceAide `leanaide.interpreter.debug s!"Ran frontend, Messages:"
   if strict then
     for msg in msgs' do
+      traceAide `leanaide.interpreter.debug s!"{msg.text}"
       if msg.severity == MessageSeverity.error then
         return none
       if msg.severity == MessageSeverity.warning then
