@@ -96,11 +96,14 @@ def translatePromptPairs (docPairs: Array (String × Json))
     let head := if isThm then "Theorem" else "Definition"
     (s!"Translate the following statement into Lean 4:\n## {head}: " ++ doc ++ "\n\nGive ONLY the Lean code", thm)
 
+
 def translateMessages (s: String)(promptPairs: Array (String × Json))
       (header: String) (dfns: Array String) (toChat : ChatExampleType)
       (msg: MessageBuilder) : TranslateM Json := do
   let examples ←  promptPairs.filterMapM fun pair =>
     toChat.map? pair
+  let examples :=
+    examples ++ (← getRecentTranslations)
   let preludeCode :=
     if dfns.isEmpty then ""
     else

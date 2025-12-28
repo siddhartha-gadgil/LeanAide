@@ -162,6 +162,8 @@ structure Translate.State where
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
   labelledTheorems : Array LabelledTheorem := #[]
+  recentTranslations: Array ChatPair := #[] -- (input, output)
+  numRecentTranslationsToUse : Nat := 0
 deriving Inhabited
 
 /-- Monad with environment for translation -/
@@ -269,6 +271,25 @@ def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
 def addDefn (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statementStx
   modify fun s => {s with defs := s.defs.push dfn}
+
+def addRecentTranslation (input: String) (output: String) : TranslateM Unit := do
+  modify fun s =>
+    let newRecent := s.recentTranslations.push {user:= input, assistant := output}
+    {s with recentTranslations := newRecent}
+
+def getRecentTranslations : TranslateM <| Array ChatPair := do
+  let n := (← get).numRecentTranslationsToUse
+  let recent := (← get).recentTranslations
+  if n == 0 then
+    return #[]
+  else
+    if recent.size <= n then
+      return recent
+    else
+      return recent.extract (recent.size - n) recent.size
+
+def setNumRecentTranslationsToUse (n: Nat) : TranslateM Unit := do
+  modify fun s => {s with numRecentTranslationsToUse := n}
 
 def getDefs : TranslateM <| Array DefData := do
   return (← get).defs
@@ -467,18 +488,19 @@ def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
 
 
 structure Translate.SavedState where
-  cmdPrelude : Array Syntax.Command := #[]
-  defs : Array (DefData) := #[]
-  preludes : Array String := #[]
-  context : Option String := none
+  cmdPrelude : Array Syntax.Command
+  defs : Array (DefData)
+  preludes : Array String
+  context : Option String
+  recentTranslations: Array ChatPair
 
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
-    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context}
+    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context, recentTranslations := σ.recentTranslations}
     return (saved, σ)
   restoreState := fun ss => do
   modify fun s =>
-      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, preludes := ss.preludes, context := ss.context}
+      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, preludes := ss.preludes, context := ss.context, recentTranslations := ss.recentTranslations}
 
 
 structure CodeElabResult where

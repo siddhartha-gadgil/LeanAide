@@ -43,7 +43,7 @@ def Translator.translateToPropStrictAux
   catch _ =>
   let thm ← withPreludes claim
   traceAide `leanaide.papercodes.info s!"Translating to proposition: {claim}, full statement: {thm}"
-  let (js, _, _) ← translator.getLeanCodeJson  thm
+  let (js, _, _) ← translator.getLeanCodeJson claim
   let output ← getMessageContents js
   for out in output do
     let el? ← elabThm4 out
@@ -61,6 +61,7 @@ def Translator.translateToPropStrictAux
             inferType type
         if univ.isSort then
           traceAide `leanaide.papercodes.info s!"Obtained type: {← ppExpr type}"
+          Translate.addRecentTranslation thm out
           let type ← dropLocalContext type
           traceAide `leanaide.papercodes.info s!"Obtained type in local context: {← ppExpr type}"
           return type
