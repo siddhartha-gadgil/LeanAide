@@ -158,7 +158,7 @@ def relDecls : List (Option LocalDecl) → Syntax.Term → MetaM Syntax.Term
       let typeStx ← delabDetailed type
       let valStx ← delabDetailed val
       if ← isProp type then
-        `(have $n:ident : $typeStx := $valStx; $prev)
+        `(($n:ident : $typeStx) →  $prev)
       else
         `(let $n:ident : $typeStx := $valStx; $prev)
     | .cdecl _ _ n type bi .. =>
