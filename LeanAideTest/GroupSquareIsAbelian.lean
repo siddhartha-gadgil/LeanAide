@@ -85,6 +85,15 @@ def groupSquareIsAbelian : Json :=
 #logIO leanaide.papercodes.debug
 #logIO leanaide.interpreter.debug
 
+#codegen groupSquareIsAbelian
+
+example : {G : Type u_1} →
+     [inst : Group G] →
+     (a_180468121275325397 : ∀ (a b : G), (a * b) ^ 2 = a ^ 2 * b ^ 2) →
+       have assert_11371057909598991355 : ∀ (a b : G), a * b * a * b = a * a * b * b := sorry;
+       ∀ (a b : G), a * b * (a * b) = a * a * (b * b) := by
+   intro G inst a_180468121275325397 assert_11371057909598991355
+   grind?
 
 -- Automatically generated code from the above JSON proof
 noncomputable def is_commutative_of_forall_mul_pow_two_eq_pow_two_mul_pow_two :

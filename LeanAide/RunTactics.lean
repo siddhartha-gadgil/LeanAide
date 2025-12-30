@@ -157,7 +157,10 @@ def relDecls : List (Option LocalDecl) → Syntax.Term → MetaM Syntax.Term
       let n := mkIdent n
       let typeStx ← delabDetailed type
       let valStx ← delabDetailed val
-      `(let $n:ident : $typeStx := $valStx; $prev)
+      if ← isProp type then
+        `(have $n:ident : $typeStx := $valStx; $prev)
+      else
+        `(let $n:ident : $typeStx := $valStx; $prev)
     | .cdecl _ _ n type bi .. =>
       let n := mkIdent n
       let typeStx ← delabDetailed type
@@ -203,7 +206,6 @@ def frontendCodeForTactics (mvarId : MVarId) (tactics : Array Syntax.Tactic): Te
   let egCode := s!"example : {typeView} := {termView}"
   -- let code := topCode ++ egCode
   return egCode
-
 
 def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
     mvarId.withContext do
