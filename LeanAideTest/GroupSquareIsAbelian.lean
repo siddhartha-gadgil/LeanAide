@@ -85,9 +85,35 @@ def groupSquareIsAbelian : Json :=
 #logIO leanaide.papercodes.debug
 #logIO leanaide.interpreter.debug
 
-#codegen groupSquareIsAbelian
 
+-- Automatically generated code from the above JSON proof
+noncomputable def is_commutative_of_forall_mul_pow_two_eq_pow_two_mul_pow_two :
+      {G : Type u_1} →
+        [inst : Group G] → (∀ (a b : G), (a * b) ^ 2 = a ^ 2 * b ^ 2) → CommGroup G :=
+    by
+    intro G inst a_180468121275325397
+    have assert_11371057909598991355 : ∀ (a b : G), a * b * a * b = a * a * b * b := by
+      repeat (sorry)
+    have assert_12084550143141261290 : ∀ (a b : G), a * b * (a * b) = a * a * (b * b) := by
+      repeat (sorry)
+    have assert_8792733627225243773 : ∀ (a b : G), a⁻¹ * (a * b) ^ 2 = a⁻¹ * (a ^ 2 * b ^ 2) :=
+      by
+      simp only [mul_right_inj]
+      exact fun a b => a_180468121275325397 a b
+    have assert_2584691247916677600 : ∀ (a b : G), a⁻¹ * a * b * a * b = a⁻¹ * a * a * b * b := by
+      repeat (sorry)
+    have assert_4512232750963544230 : ∀ (a b : G), b * a * b = a * b * b := by repeat (sorry)
+    have assert_7951337427665103720 : ∀ (a b : G), b * a * b * b⁻¹ = a * b * b * b⁻¹ :=
+      by
+      intro a b
+      simp_all only [mul_inv_cancel_right, assert_4512232750963544230]
+    have assert_12054441707386195591 : ∀ (a b : G), b * a * (b * b⁻¹) = a * b * (b * b⁻¹) := by
+      repeat (sorry)
+    have assert_16921761843838546612 : ∀ (a b : G), b * a = a * b := by repeat (sorry)
+    have : CommGroup G := by repeat (sorry)
+    assumption
 
+-- Ajay's fully fixed version below
 set_option statesearch.revision "v4.22.0"
 noncomputable def is_abelian_of_mul_sq_eq_sq_mul_sq' :
       {G : Type u_1} →

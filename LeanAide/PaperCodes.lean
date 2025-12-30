@@ -1246,7 +1246,7 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   mkCommandSeq <| #[head] ++ resolvedCmds
 | _, ``tacticSeq, js => do
   let (stx, tac, _) ← typeStx js
-  let hash₀ := hash stx.raw.reprint
+  let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let headTac ← `(tactic| have $name : $stx := by $tac)
   traceAide `leanaide.papercodes.info s!"codegen: assertionCode: headTac: {← PrettyPrinter.ppTactic headTac}"
@@ -1307,7 +1307,7 @@ def calculationCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
     -- let .ok inline := inlineJs.getObjValAs? String "inline_calculation" | throwError
     --   s!"codegen: no 'inline_calculation' string found in 'calculation'"
     let stx ← typeStx inline
-    let hash₀ := hash stx.raw.reprint
+    let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
     let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
     let headTac ← `(tactic| have $name : $stx := by $tac)
     let tacSeq := #[headTac]
@@ -1321,7 +1321,7 @@ def calculationCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
     let mut tacs : Array <| Syntax.Tactic := #[]
     for step in steps do
       let stx ← typeStx step
-      let hash₀ := hash stx.raw.reprint
+      let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
       let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
       let headTac ← `(tactic| have $name : $stx := by $tac)
       tacs := tacs.push headTac
