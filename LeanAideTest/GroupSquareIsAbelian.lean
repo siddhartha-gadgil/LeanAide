@@ -95,26 +95,16 @@ noncomputable def is_commutative_of_forall_mul_pow_two_eq_pow_two_mul_pow_two :
       repeat (sorry)
     have assert_12084550143141261290 : ∀ (a b : G), a * b * (a * b) = a * a * (b * b) := by
       grind only [#9c41]
-    have assert_8792733627225243773 : ∀ (a b : G), a⁻¹ * (a * b) ^ 2 = a⁻¹ * (a ^ 2 * b ^ 2) :=
-      by
-      simp only [mul_right_inj]
-      exact fun a b => a_180468121275325397 a b
+    have assert_8792733627225243773 : ∀ (a b : G), a⁻¹ * (a * b) ^ 2 = a⁻¹ * (a ^ 2 * b ^ 2) := by
+      grind only [#e0e5]
     have assert_2584691247916677600 : ∀ (a b : G), a⁻¹ * a * b * a * b = a⁻¹ * a * a * b * b := by
-      repeat (sorry)
-    have assert_4512232750963544230 : ∀ (a b : G), b * a * b = a * b * b :=
-      by
-      intro a b
-      simp_all only [mul_left_inj, implies_true, inv_mul_cancel, one_mul]
+      grind only [mul_assoc, inv_mul_cancel_left, #0580]
+    have assert_4512232750963544230 : ∀ (a b : G), b * a * b = a * b * b := by simp_all
     have assert_7951337427665103720 : ∀ (a b : G), b * a * b * b⁻¹ = a * b * b * b⁻¹ := by
       grind only [#b501]
-    have assert_12054441707386195591 : ∀ (a b : G), b * a * (b * b⁻¹) = a * b * (b * b⁻¹) :=
-      by
-      intro a b
-      simp_all only [mul_left_inj, implies_true, inv_mul_cancel, one_mul, mul_inv_cancel, mul_one]
-    have assert_16921761843838546612 : ∀ (a b : G), b * a = a * b :=
-      by
-      intro a b
-      simp_all only [mul_left_inj, implies_true, inv_mul_cancel, one_mul, mul_inv_cancel, mul_one]
+    have assert_12054441707386195591 : ∀ (a b : G), b * a * (b * b⁻¹) = a * b * (b * b⁻¹) := by
+      simp_all
+    have assert_16921761843838546612 : ∀ (a b : G), b * a = a * b := by simp_all
     have : CommGroup G := by repeat (sorry)
     assumption
 
@@ -126,6 +116,10 @@ example : {G : Type u_1} →
    intro G inst a_180468121275325397 assert_11371057909598991355
    grind?
 
+example {G : Type u_1}
+        [inst : Group G] : (∀ (a b : G), (a * b) ^ 2 = a ^ 2 * b ^ 2) := by
+        premises
+        sorry
 
 -- Ajay's fully fixed version below
 set_option statesearch.revision "v4.22.0"
@@ -138,7 +132,7 @@ noncomputable def is_abelian_of_mul_sq_eq_sq_mul_sq' :
       by  --typed in by me
       intro a b
       have h := a_180468121275325397 a b
-      simp [pow_two] at h
+      simp [mul_inv_cancel, pow_two, mul_inv_cancel_left, inv_mul_cancel_left, sq] at h
       grind
     have assert_75887743678899807134 : ∀ (a b : G), a * b * (a * b) = a * a * (b * b) :=
      by   --typed in by me
@@ -165,6 +159,7 @@ noncomputable def is_abelian_of_mul_sq_eq_sq_mul_sq' :
       simp_all -- try? gave this
     have : CommGroup G :=
      by -- typed in by me
+     premises
      constructor
      grind
     assumption

@@ -23,12 +23,16 @@ def runFrontEndMsgCoreM (inp : String) : MetaM (List MessageCore) := do
   let msgs ← runFrontEndForMessages inp -- cache this
   msgs.toList.mapM fun msg => MessageCore.ofMessageM msg
 
-open LeanSearchClient in
-def suggestionsForGoal (goal: MVarId) (maxSuggestions: Nat := 5) (leanVersion := "v4.22.0") : MetaM (Array Name) := do
+open LeanSearchClient LibrarySuggestions in
+def suggestionsForGoal (goal: MVarId) (maxSuggestions: Nat := 15) (leanVersion := "v4.22.0") : MetaM (Array Name) := do
   try
     let fmt ← ppGoal goal
     let res ← queryStateSearch fmt.pretty maxSuggestions leanVersion
-    return res.map fun r => r.name.toName
+    let selector ← getSelector
+    let defaultSelector := Cloud.premiseSelector <|> mepoSelector (useRarity := true) (p := 0.6) (c := 0.9)
+    let selector := selector.getD defaultSelector
+    let suggestions ← selector goal {maxSuggestions := 40}
+    return (res.map fun r => r.name.toName) ++ (suggestions.map fun s => s.name)
   catch e =>
     traceAide `leanaide.interpreter.info s!"Error querying StateSearch for goal {← PrettyPrinter.ppExpr <| ← goal.getType}: {← e.toMessageData.toString}"
     return #[]

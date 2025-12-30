@@ -244,21 +244,28 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           let newAccum ← appendTacticSeqSeq accum code
           getCodeTacticsAux translator newGoal sources newAccum
 
+def findTactics? (goal :  MVarId):
+    TranslateM (Option (TSyntax ``tacticSeq)) := goal.withContext do
+  traceAide `leanaide.codegen.info "Trying automation tactics"
+  let localNames  ← Translate.defsNames
+  traceAide `leanaide.codegen.info s!"previous definitions/theorems names: {localNames}"
+  let grindWs ← grindWithSuggestions goal (← localNames.filterM fun n => checkGrind n)
+  let simpWs ← simpWithSuggestions goal localNames
+  runTacticsAndFindTryThis? goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try?), grindWs, simpWs, ← `(tacticSeq| try simp; exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true)
+
+def findTacticsI (goal :  MVarId):
+    TranslateM (Array (Syntax.Tactic)) := goal.withContext do
+  let tacs? ← findTactics? goal
+  let defaultTacs ← `(tacticSeq| repeat (sorry))
+  return getTactics <| tacs?.getD defaultTacs
+
 /--
 Obtain a sequence of tactics to apply to a goal, given a list of JSON sources. The function first tries to find exact tactics for the goal type, then checks for automation tactics, and finally processes the sources to generate a sequence of tactics.
 -/
 def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) := goal.withContext do
-  traceAide `leanaide.codegen.info "Trying automation tactics"
-  let localNames  ← Translate.defsNames
-  traceAide `leanaide.codegen.info s!"previous definitions/theorems names: {localNames}"
-  let grindWs ← grindWithSuggestions goal (← localNames.filterM fun n => checkGrind n)
-  let simpWs ← simpWithSuggestions goal localNames
-  -- add theorems from earlier in the document
-  -- let blobArr ← Translate.defsBlob
-  -- let blob := blobArr.foldl  (fun acc j => acc ++ j ++ "\n") ""
-  match ← runTacticsAndFindTryThis? goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try?), grindWs, simpWs, ← `(tacticSeq| try simp; exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
+  match ← findTactics? goal with
   | some autoTacs => do
     -- let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
     let autoTacs :=
