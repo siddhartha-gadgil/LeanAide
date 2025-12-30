@@ -1,5 +1,4 @@
 import LeanCodePrompts.Translate
-import Lake.Toml.ParserUtil
 import Lean
 import LeanAideCore.Syntax
 import LeanAideCore.Kernel
