@@ -1,6 +1,7 @@
 import LeanAide
 import LeanAideCore.Syntax
 import LeanAide.Responses
+import Mathlib
 import Lean
 import Qq
 
@@ -85,3 +86,45 @@ def groupSquareIsAbelian : Json :=
 #logIO leanaide.interpreter.debug
 
 #codegen groupSquareIsAbelian
+
+
+set_option statesearch.revision "v4.22.0"
+noncomputable def is_abelian_of_mul_sq_eq_sq_mul_sq' :
+      {G : Type u_1} →
+        [inst : Group G] → (∀ (a b : G), (a * b) ^ 2 = a ^ 2 * b ^ 2) → CommGroup G :=
+    by
+    intro G inst a_180468121275325397
+    have assert_7588774367889980713 : ∀ (a b : G), a * b * a * b = a * a * b * b :=
+      by  --typed in by me
+      intro a b
+      have h := a_180468121275325397 a b
+      simp [pow_two] at h
+      grind
+    have assert_75887743678899807134 : ∀ (a b : G), a * b * (a * b) = a * a * (b * b) :=
+     by   --typed in by me
+     grind
+    have assert_6962295349712497767 : ∀ (a b : G), a⁻¹ * (a * b) ^ 2 = a⁻¹ * (a ^ 2 * b ^ 2) :=
+     by  --typed in by me
+     grind
+    have assert_535051176632805034 : ∀ (a b : G), a⁻¹ * a * b * a * b = a⁻¹ * a * a * b * b :=
+     by --typed in by me
+      intro a b
+      grind [mul_assoc]
+    have assert_3764728263289504248 : ∀ (a b : G), b * a * b = a * b * b :=
+     by
+      intro a b
+      simp_all -- try? gave this
+    have assert_115077752020245055414 : ∀ (a b : G), b * a * b * b⁻¹ = a * b * b * b⁻¹ :=
+     by  --typed in by me
+      grind
+    have assert_11507775202024505541 : ∀ (a b : G), b * a * (b * b⁻¹) = a * b * (b * b⁻¹) :=
+     by
+      simp_all -- try? gave this
+    have assert_3794893689440862483 : ∀ (a b : G), b * a = a * b :=
+     by
+      simp_all -- try? gave this
+    have : CommGroup G :=
+     by -- typed in by me
+     constructor
+     grind
+    assumption

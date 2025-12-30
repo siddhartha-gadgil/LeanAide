@@ -88,6 +88,8 @@ declare_syntax_cat tacticSeqCategory
 syntax tacticSeq : tacticSeqCategory
 
 def getTacticsFromText? (tacticText: String) : MetaM (Option (TSyntax ``tacticSeq)) := do
+  unless (tacticText.splitOn "sorry").length = 1 do
+    return none
   let stx? := runParserCategory (← getEnv) `tacticSeqCategory tacticText
   match stx? with
   | Except.ok stx =>

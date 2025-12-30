@@ -220,8 +220,9 @@ def getTacticsFromMessageData? (s: String) :
     MetaM <| Option (Array Syntax.Tactic) := do
   let s := s.trim
   if s.startsWith "Try this:" || s.startsWith "Try these:" then
-    let s' := (s.splitOn "[apply] ")[1]!
-    let tacticSeq? ← getTacticsFromText? s'
+    -- let s' := (s.splitOn "[apply] ")[1]!
+    let ss := (s.splitOn "[apply] ").drop 1
+    let tacticSeq? ← ss.findSomeM? getTacticsFromText?
     tacticSeq?.mapM fun tacticSeq => do
       let tacs := getTactics tacticSeq
       traceAide `leanaide.interpreter.info s!"Extracted tactics from message: {s}"
@@ -247,9 +248,9 @@ def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (st
       traceAide `leanaide.interpreter.debug s!"{msg.text}"
       if msg.severity == MessageSeverity.error then
         return none
-      if msg.severity == MessageSeverity.warning then
-        if msg.text == "declaration uses 'sorry'" then
-          return none
+      -- if msg.severity == MessageSeverity.warning then
+      --   if msg.text == "declaration uses 'sorry'" then
+      --     return none
   let trys ← msgs'.filterMapM
     fun msg => do getTacticsFromMessageData? msg.text
   if trys.isEmpty then
