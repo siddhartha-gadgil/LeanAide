@@ -605,6 +605,7 @@ where
     traceAide `leanaide.papercodes.info s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
     let thm ← withPreludes claim
     let name := (js.getObjValAs? Name "name").toOption.getD <| ← translator.server.theoremName thm
+    let name ← newName name
     let name :=
       if name.toString = "[anonymous]" then
 
@@ -697,7 +698,7 @@ where
       js.getObjValAs? String "definition" | throwError
         s!"codegen: no 'definition' found in 'definition'"
     let .ok name :=
-      js.getObjValAs? String "name" | throwError
+      js.getObjValAs? Name "name" | throwError
         s!"codegen: no 'name' found in 'definition'"
     match
       ← translator.translateDefCmdM? statement with

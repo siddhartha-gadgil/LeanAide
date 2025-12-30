@@ -37,13 +37,13 @@ def mainFileNamePieces : Std.HashMap (String × String) (List String) :=
             ("all"  :: groups).map fun group => ((kind, group), ["premises", kind, group++".jsonl"])
 
 def fileHandles (clean : Bool := true) : IO (Std.HashMap (String × String) IO.FS.Handle)  := do
-    let mut handles := Std.HashMap.empty
+    let mut handles := Std.HashMap.emptyWithCapacity
     for (k, v) in fileNamePieces.toList do
         handles := handles.insert k <| ← freshDataHandle v clean
     return handles
 
 def mainFileHandles : IO (Std.HashMap (String × String) IO.FS.Handle) := do
-    let mut handles := Std.HashMap.empty
+    let mut handles := Std.HashMap.emptyWithCapacity
     for (k, v) in mainFileNamePieces.toList do
         handles := handles.insert k <| ← freshDataHandle v
     return handles
@@ -462,10 +462,6 @@ structure CorePremiseData extends CorePremiseDataDirect where
     namedLemmas : Array (String × String)
     idString := toJson ids |>.compress
 deriving Repr, ToJson, FromJson
-
-def checkName (name: Name) : MetaM Bool := do
-    let l ← resolveGlobalName name
-    return l.length > 0
 
 -- #eval checkName `Or.inl
 

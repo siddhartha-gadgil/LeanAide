@@ -468,6 +468,17 @@ def trivialEquality : Syntax → CoreM Bool
   | _ => return false
 
 
+def checkName (name: Name) : CoreM Bool := do
+    let l ← resolveGlobalName name
+    return l.length > 0
+
+def newName (base: Name) : CoreM Name := do
+  let mut idx := 1
+  let mut newName := base
+  while (← checkName newName) do
+    idx := idx + 1
+    newName := Name.mkStr base s!"_{idx}"
+  return newName
 
 def extractJsonM (s: String) : CoreM Json :=
   let code := codeBlock? "json" s |>.getD s

@@ -643,7 +643,8 @@ def theoremName (server: ChatServer)
     let llm_name := namesArr[0]! |>.replace "`" ""
           |>.replace "\""  "" |>.trim
         -- logInfo llm_name
-    return llm_name.toName
+    let name := llm_name.toName
+    newName name
 
 def fullStatement (server: ChatServer)
   (statement: String): CoreM String := do
