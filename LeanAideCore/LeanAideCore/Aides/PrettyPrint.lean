@@ -64,7 +64,8 @@ def delabMatchless (e: Expr) : MetaM Syntax := withOptions (fun o₁ =>
 
 def delabDetailed (e: Expr) : MetaM Syntax.Term := withOptions (fun o₁ =>
                     let o₂ := pp.motives.pi.set o₁ true
-                    let o₅ := pp.deepTerms.set o₂ true
+                    let o₃ := pp.numericTypes.set o₂ true
+                    let o₅ := pp.deepTerms.set o₃ true
                     let o₆ := pp.funBinderTypes.set o₅ true
                     let o₇ := pp.piBinderTypes.set o₆ true
                     let o₈ := pp.letVarTypes.set o₇ true
