@@ -1234,7 +1234,7 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   `(command| example : $stx := by $tac)
 | _, `commandSeq, js => do
   let (stx, tac, isProp) ← typeStx js
-  let hash₀ := hash stx.raw.reprint
+  let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let head ← `(command| theorem $name : $stx := by $tac)
   let dfn: DefData :=
