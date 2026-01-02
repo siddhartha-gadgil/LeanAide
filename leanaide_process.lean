@@ -34,12 +34,22 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
       | none =>
         IO.eprintln "Running in background"
         states.addStart hash js
+        let post_url? :=
+          (js.getObjValAs? String "post_url").toOption
         let callback (js res : Json) : IO Unit := do
           logIO `leanaide.tasks.info s!"Background process completed for token: {hash}\ninput: {js.pretty}"
           logIO `leanaide.tasks.info s!"Output: {res.pretty}"
           let outfile : System.FilePath := ".leanaide_cache" / "tasks" / ("response_" ++ toString hash ++ ".json")
           IO.FS.writeFile outfile (res.pretty)
-          -- Can POST to a URL or send a notification here
+          match post_url? with
+          | some url =>
+            try
+              let res ← IO.Process.run {cmd := "curl", args := #["--data", res.pretty, url]}
+              logIO `leanaide.tasks.info s!"Posted results to {url} for token {hash}, response: {res}"
+            catch e =>
+              logIO `leanaide.tasks.warning s!"Failed to post results to {url} for token {hash}: {e}"
+          | none => pure ()
+
           states.addResult hash res
         let prios :=
           (js.getObjValAs? Task.Priority "priority").toOption |>.getD Task.Priority.default
