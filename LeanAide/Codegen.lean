@@ -211,7 +211,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
       catch e =>
         let err ←   e.toMessageData.toString
         traceAide `leanaide.codegen.info err
-        let sourceId := mkIdent (s!"source_{hash source}").toName
+        let sourceId := mkIdent (s!"error_source_{hash source}").toName
         let sourceTacs ←
           try
             let stx ← getJsonSyntax source
