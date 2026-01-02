@@ -210,6 +210,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         getCode translator (some goal) ``tacticSeq source
       catch e =>
         let err ←   e.toMessageData.toString
+        traceAide `leanaide.codegen.info err
         let errs := "Error: " ++  err |>.splitOn "\n"
         let errStxs : List Syntax.Tactic ←
           errs.mapM fun err =>
