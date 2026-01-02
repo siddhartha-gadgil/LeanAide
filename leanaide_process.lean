@@ -44,7 +44,9 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
           match post_url? with
           | some url =>
             try
-              let res ← IO.Process.run {cmd := "curl", args := #["--data", res.pretty, url]}
+              let data :=
+                Json.mkObj [("token", toJson hash), ("response", res)]
+              let res ← IO.Process.run {cmd := "curl", args := #["--data", data.pretty, url]}
               logIO `leanaide.tasks.info s!"Posted results to {url} for token {hash}, response: {res}"
             catch e =>
               logIO `leanaide.tasks.warning s!"Failed to post results to {url} for token {hash}: {e}"
