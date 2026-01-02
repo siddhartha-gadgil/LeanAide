@@ -211,13 +211,22 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
       catch e =>
         let err ←   e.toMessageData.toString
         traceAide `leanaide.codegen.info err
-        let errs := "Error: " ++  err |>.splitOn "\n"
-        let errStxs : List Syntax.Tactic ←
-          errs.mapM fun err =>
-          let errStx := Syntax.mkStrLit <| err
-          `(tactic| trace $errStx)
-        let errStxs := errStxs.toArray
-        pure <| some <| ← `(tacticSeq| $errStxs*)
+        let sourceId := mkIdent (s!"source_{hash source}").toName
+        let sourceTacs ←
+          try
+            let stx ← getJsonSyntax source
+            `(tacticSeq| let $sourceId : Json := json% $stx)
+          catch _ =>
+            let strLit := Syntax.mkStrLit (source.pretty)
+            `(tacticSeq| let $sourceId : String := $strLit)
+        -- let errs := "Error: " ++  err |>.splitOn "\n"
+        -- let errStxs : List Syntax.Tactic ←
+        --   errs.mapM fun err =>
+        --   let errStx := Syntax.mkStrLit <| err
+        --   `(tactic| trace $errStx)
+        -- let errStxs := errStxs.toArray
+        -- pure <| some <| ← `(tacticSeq| $errStxs*)
+        pure <| some <| sourceTacs
     match code? with
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
