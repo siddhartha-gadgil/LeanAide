@@ -3,26 +3,26 @@ import LeanCodePrompts.EpsilonClusters
 import LeanAide.Aides
 import Lean.Data.Json
 import Batteries.Util.Pickle
-open Lean
+open Lean LeanAide
 
 unsafe def checkAndFetch (descField: String) : IO Unit := do
   let picklePath ← picklePath descField
   let picklePresent ←
     if ← picklePath.pathExists then
-    IO.eprintln s!"Pickle file already present at {picklePath}"
+    logToStdErr `leanaide.translate.info s!"Pickle file already present at {picklePath}"
     try
       withUnpickle  picklePath <|
         fun (_ : EmbedData) => do
         pure true
     catch e =>
-        IO.eprintln s!"Error unpickling {picklePath}: {e}"
+        logToStdErr `leanaide.translate.info s!"Error unpickling {picklePath}: {e}"
         pure false
      else pure false
   unless picklePresent do
-    IO.eprintln s!"Fetching embeddings ... ({picklePath})"
+    logToStdErr `leanaide.translate.info s!"Fetching embeddings ... ({picklePath})"
     let out ← IO.Process.output {cmd:= "curl", args := #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]}
-    IO.eprintln "Fetched embeddings"
-    IO.eprintln out.stdout
+    logToStdErr `leanaide.translate.info "Fetched embeddings"
+    logToStdErr `leanaide.translate.info out.stdout
 
 unsafe def main (args: List String) : IO Unit := do
   let inp := args[0]!

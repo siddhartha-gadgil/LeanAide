@@ -180,7 +180,7 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
         let body' := body.instantiate1 value
         dropLocalContext body'
       else
-        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
+        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
         return type
     | _ =>
       withLetDecl name ltype value fun x => do
@@ -201,7 +201,7 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
         let body' := body.instantiate1 (mkFVar fVarId)
         fillLocalContext body'
       else
-        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return expr
     | some (.ldecl _ _ _ dtype value ..) =>
       let check ← isDefEq dtype binderType
@@ -210,7 +210,7 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
         let body' := body.instantiate1 value
         fillLocalContext body'
       else
-        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return expr
     | _ => return expr
   | .letE name type value body _ =>
@@ -223,7 +223,7 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
           let body' := body.instantiate1 dvalue
           fillLocalContext body'
       else
-        IO.eprintln s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
+        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
         return expr
     | _ =>
       withLetDecl name type value fun x => do
@@ -380,16 +380,16 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
     let s := s!"{decl.userName} : {← PrettyPrinter.ppExpr decl.type};"
     unless decl.userName.toString.contains '_' do
       decls := decls.push s
-  -- IO.eprintln s!"Context: {context}"
-  -- IO.eprintln s!"Declarations: {decls}"
+  -- logToStdErr `leanaide.translate.info s!"Context: {context}"
+  -- logToStdErr `leanaide.translate.info s!"Declarations: {decls}"
   unless decls.isEmpty do
     context := context ++ #["We have the following variables with types in context: "] ++ decls ++ #["."]
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
-  -- IO.eprintln s!"Full statement: {fullStatement}"
+  -- logToStdErr `leanaide.translate.info s!"Full statement: {fullStatement}"
   let translator := qp.toTranslator
   let type? ← Translator.translateToProp?
     fullStatement.trim {translator with params:={translator.params with n := 5}}
-  -- IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
+  -- logToStdErr `leanaide.translate.info s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   match type? with
   | Except.error e => do
     return Except.error e
@@ -407,10 +407,10 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
       return Except.error #[ElabError.parsed statement s!"Failed to infer type {type}, error {← e.toMessageData.format}" [] none]
     if univ.isSort then
       let type ←  dropLocalContext type
-      -- IO.eprintln s!"Type: {← PrettyPrinter.ppExpr type}"
+      -- logToStdErr `leanaide.translate.info s!"Type: {← PrettyPrinter.ppExpr type}"
       return Except.ok type
     else
-      IO.eprintln s!"Not a type: {type}"
+      logToStdErr `leanaide.translate.info s!"Not a type: {type}"
       return Except.error #[ElabError.parsed statement s!"Not a type {type}" [] none]
 
 def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator) : TranslateM (Option Syntax.Command) := do
@@ -649,7 +649,7 @@ def calculateStatement (js: Json) : IO <| Array String := do
   match js.getKV? with
   | some ("inline_calculation", .str s) => return #["We have: " ++ s]
   | some ("calculation_sequence", .arr seq) =>
-    -- IO.eprintln s!"Calculating sequence: {seq}"
+    -- logToStdErr `leanaide.translate.info s!"Calculating sequence: {seq}"
     let steps := seq.filterMap fun js =>
       js.getStr? |>.toOption |>.orElse fun _ =>
       match js.getKV? with
@@ -657,7 +657,7 @@ def calculateStatement (js: Json) : IO <| Array String := do
       | _ => none
     return steps.map fun s => "We have: " ++ s
   | _ => do
-    IO.eprintln s!"No calculation found in {js.compress}"
+    logToStdErr `leanaide.translate.info s!"No calculation found in {js.compress}"
     return #[]
 
 
@@ -755,7 +755,7 @@ def haveForAssertion (goal: Expr)
   let headTacs? ←
     runTacticsAndGetTryThis? mvar.mvarId! #[← `(tactic| auto? [$ids,*])]
   if headTacs?.isNone then
-    IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr goal} while running "
+    logToStdErr `leanaide.translate.info s!"No tactics found for {← PrettyPrinter.ppExpr goal} while running "
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
   let head ← `(tactic| have $name : $type := by $headTacs*)
   return #[head] ++ existsTacs
@@ -768,7 +768,7 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
     let type? ← theoremExprInContext? context statement qp
     match type? with
       | Except.error e =>
-        IO.eprintln s!"Failed to translate calculation: {repr e}"
+        logToStdErr `leanaide.translate.info s!"Failed to translate calculation: {repr e}"
         mkNoteTactic s!"Failed to translate calculation {js.compress}"
       | Except.ok type =>
         let typeStx ← delabDetailed type
@@ -778,7 +778,7 @@ def calculateTactics (js: Json) (context: Array Json) (qp: CodeGenerator) :
         let headTacs? ←
           runTacticsAndGetTryThis? mvar.mvarId! #[← `(tactic| auto?)]
         if headTacs?.isNone then
-          IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr type} while running "
+          logToStdErr `leanaide.translate.info s!"No tactics found for {← PrettyPrinter.ppExpr type} while running "
         let headTacs := headTacs?.getD #[← `(tactic| sorry)]
         `(tactic| have $name : $typeStx := by
             $headTacs*)
@@ -803,7 +803,7 @@ def conditionCases (cond₁ cond₂ : String)
   let headTacs? ←
     runTacticsAndGetTryThis? mvar₂.mvarId! #[← `(tactic| auto?)]
   if headTacs?.isNone then
-    IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr condProp₂} while running "
+    logToStdErr `leanaide.translate.info s!"No tactics found for {← PrettyPrinter.ppExpr condProp₂} while running "
   let headTacs := headTacs?.getD #[← `(tactic| sorry)]
   let ass₂ ← `(tactic| have $condId₂ : $condTerm₂' := by
     $headTacs*)
@@ -864,7 +864,7 @@ mutual
             | Except.error _ =>
               mkNoteCmd s!"Failed to translate theorem {claim}"
             | Except.ok thm => do
-              -- IO.eprintln s!"Theorem: {← PrettyPrinter.ppExpr thm}"
+              -- logToStdErr `leanaide.translate.info s!"Theorem: {← PrettyPrinter.ppExpr thm}"
               let mvar ← mkFreshExprMVar thm
               let mvarId := mvar.mvarId!
               let vars ← getVars thm
@@ -876,7 +876,7 @@ mutual
                   structToTactics mvarId #[] (context ++ hypothesis) steps.toList qp
                 let pf := #[introTacs] ++  pf
                 let pfTerm ← `(by $pf*)
-                -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
+                -- logToStdErr `leanaide.translate.info s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
                 let name ← match name? with
                   | some n => pure n
                   | none => qp.server.theoremName (← PrettyPrinter.ppExpr thm).pretty
@@ -901,7 +901,7 @@ mutual
         let headTacs? ←
           runTacticsAndGetTryThis? goal #[← `(tactic| auto?)]
         if headTacs?.isNone then
-          IO.eprintln s!"No tactics found for {← PrettyPrinter.ppExpr <| ← goal.getType} while running "
+          logToStdErr `leanaide.translate.info s!"No tactics found for {← PrettyPrinter.ppExpr <| ← goal.getType} while running "
         let headTacs := headTacs?.getD #[← `(tactic| sorry)]
         return accum ++ headTacs
       | head :: tail => do
@@ -941,7 +941,7 @@ mutual
               let type? ← theoremExprInContext? context claim qp
               match type? with
               | Except.error _ =>
-                IO.eprintln s!"Failed to translate assertion {claim}"
+                logToStdErr `leanaide.translate.info s!"Failed to translate assertion {claim}"
                 pure #[← mkNoteTactic s!"Failed to translate assertion {claim}"]
               | Except.ok type =>
                 let names' ← useResults.toList.mapM fun s =>
@@ -1070,17 +1070,17 @@ mutual
             match head.getObjValAs? String "claim" with
             | Except.ok s => pure #[← conclusionTactic s context qp]
             | _ =>
-              IO.eprintln s!"Failed to translate conclusion {head}"
+              logToStdErr `leanaide.translate.info s!"Failed to translate conclusion {head}"
               pure #[]
           | some ("calculate", js) =>
             calculateTactics js context qp
           | _ =>
             pure #[]
-        -- IO.eprintln s!"Head tactics : {headTactics.size}"
+        -- logToStdErr `leanaide.translate.info s!"Head tactics : {headTactics.size}"
         let newGoals ← runAndGetMVars goal  headTactics 1 true
         match newGoals.head? with
         | none =>
-          IO.eprintln s!"Failed to get new goal"
+          logToStdErr `leanaide.translate.info s!"Failed to get new goal"
           return accum
         | some newGoal =>
           structToTactics newGoal (accum ++ headTactics) (context.push head) tail qp
@@ -1123,7 +1123,7 @@ mutual
                   structToTactics #[] (context ++ hypothesis) steps.toList qp (some thm)
                 let pf := #[introTacs] ++  pf
                 let pfTerm ← `(by $pf*)
-                -- IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
+                -- logToStdErr `leanaide.translate.info s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
                 mkStatementStx name? (← delabDetailed thm) pfTerm true (isNoncomputable := isNonComputable)
         | _, _ =>
           -- logInfo s!"failed to get theorem conclusion or proof"
@@ -1142,7 +1142,7 @@ mutual
       match input with
       | [] => return accum.push <| ← `(tactic| auto?)
       | head :: tail =>
-        -- IO.eprintln s!"Processing {head}"
+        -- logToStdErr `leanaide.translate.info s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
           match head.getKV? with
           | some ("assert", head) =>
@@ -1177,7 +1177,7 @@ mutual
               let type? ← theoremExprInContext? context claim qp
               match type? with
               | Except.error _ =>
-                IO.eprintln s!"Failed to translate assertion {claim}"
+                logToStdErr `leanaide.translate.info s!"Failed to translate assertion {claim}"
                 pure #[← mkNoteTactic s!"Failed to translate assertion {claim}"]
               | Except.ok type =>
                 let names' ← useResults.toList.mapM fun s =>
@@ -1264,15 +1264,15 @@ mutual
             match head.getObjValAs? String "claim" with
             | Except.ok s => pure #[← conclusionTactic s context qp]
             | _ =>
-              IO.eprintln s!"Failed to translate conclusion {head}"
+              logToStdErr `leanaide.translate.info s!"Failed to translate conclusion {head}"
               pure #[]
           | some ("calculate", js) =>
             calculateTactics js context qp
           | _ =>
             pure #[]
-        -- IO.eprintln s!"Head tactics"
+        -- logToStdErr `leanaide.translate.info s!"Head tactics"
         -- for tac in headTactics do
-        --   IO.eprintln s!"{← ppTactic tac}"
+        --   logToStdErr `leanaide.translate.info s!"{← ppTactic tac}"
         structToTactics (accum ++ headTactics) (context.push head) tail qp goal?
 
 end
@@ -1292,7 +1292,7 @@ def structToCommandSeq? (context: Array Json)
       | none =>
         unless contextStatementOfJson j |>.isSome do
           let s := s!"JSON object not command or context: {j.compress}"
-          IO.eprintln s
+          logToStdErr `leanaide.translate.info s
           let cmd ←
             mkNoteCmd s
           cmds := cmds.push cmd

@@ -45,17 +45,17 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   let io?' ← io?.toIO'
   match io?' with
   | Except.ok (translation?, output, prompt) =>
-    IO.eprintln "Ran successfully"
+    logToStdErr `leanaide.translate.info "Ran successfully"
     if showPrompt tgemini
-      IO.eprintln "Prompt:"
-      IO.eprintln prompt.pretty
-      IO.eprintln "---"
+      logToStdErr `leanaide.translate.info "Prompt:"
+      logToStdErr `leanaide.translate.info prompt.pretty
+      logToStdErr `leanaide.translate.info "---"
     match translation? with
     | some result =>
-      IO.eprintln "Translation:"
+      logToStdErr `leanaide.translate.info "Translation:"
       IO.println result.view
       if p.hasFlag "roundtrip" then
-        IO.eprintln "Roundtrip:"
+        logToStdErr `leanaide.translate.info "Roundtrip:"
         let core :=
           translator.checkTranslationM result.view result.term |>.run' {}
           let io? :=
@@ -66,42 +66,42 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
           | Except.ok <| some p =>
             let trans:= p.1
             let checks := p.2
-            IO.eprintln "Checked translation"
-            IO.eprintln "Translation:"
-            IO.eprintln trans
-            IO.eprintln "Checks:"
+            logToStdErr `leanaide.translate.info "Checked translation"
+            logToStdErr `leanaide.translate.info "Translation:"
+            logToStdErr `leanaide.translate.info trans
+            logToStdErr `leanaide.translate.info "Checks:"
             for check in checks do
-              IO.eprintln check
+              logToStdErr `leanaide.translate.info check
           | Except.ok none =>
-            IO.eprintln "Ran with error (no output)"
+            logToStdErr `leanaide.translate.info "Ran with error (no output)"
             return 1
           | Except.error e =>
             do
-              IO.eprintln "Ran with error"
+              logToStdErr `leanaide.translate.info "Ran with error"
               let msg ← e.toMessageData.toString
-              IO.eprintln msg
+              logToStdErr `leanaide.translate.info msg
       if p.hasFlag "show_elaborated" then
-        IO.eprintln "Elaborated terms:"
+        logToStdErr `leanaide.translate.info "Elaborated terms:"
         for out in result.allElaborated do
-          IO.eprintln out
-        IO.eprintln "---"
-        IO.eprintln "Groups:"
+          logToStdErr `leanaide.translate.info out
+        logToStdErr `leanaide.translate.info "---"
+        logToStdErr `leanaide.translate.info "Groups:"
         for gp in result.groups do
           for out in gp do
-            IO.eprintln out
-          IO.eprintln "---"
+            logToStdErr `leanaide.translate.info out
+          logToStdErr `leanaide.translate.info "---"
       return 0
     | none =>
-      IO.eprintln "No translation"
-      IO.eprintln "All outputs:"
+      logToStdErr `leanaide.translate.info "No translation"
+      logToStdErr `leanaide.translate.info "All outputs:"
       for out in output do
-        IO.eprintln <| "* " ++ out
+        logToStdErr `leanaide.translate.info <| "* " ++ out
       return 2
   | Except.error e =>
     do
-      IO.eprintln "Ran with error"
+      logToStdErr `leanaide.translate.info "Ran with error"
       let msg ← e.toMessageData.toString
-      IO.eprintln msg
+      logToStdErr `leanaide.translate.info msg
       return 1
 
 unsafe def ctranslate : Cmd := `[Cli|

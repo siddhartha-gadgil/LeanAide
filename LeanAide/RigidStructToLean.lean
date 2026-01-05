@@ -145,11 +145,11 @@ def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Opti
     | some s => context := context.push s
     | none => pure ()
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
-  IO.eprintln s!"Full statement: {fullStatement}"
+  logToStdErr `leanaide.translate.info s!"Full statement: {fullStatement}"
   let type? ← translateToProp?
     fullStatement.trim {}
   let type? := type?.toOption
-  -- IO.eprintln s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
+  -- logToStdErr `leanaide.translate.info s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e
 
 def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
@@ -343,15 +343,15 @@ mutual
           | Except.ok steps =>
             let thm? ← theoremExprInContext? (context ++ hypothesis) claim
             if thm?.isNone then
-              IO.eprintln s!"failed to get theorem conclusion"
+              logToStdErr `leanaide.translate.info s!"failed to get theorem conclusion"
             thm?.mapM fun thm => do
               let pf ← structToTactics #[] context steps
               let pf := pf.push <| ← `(tactic| auto?)
               let pfTerm ← `(by $pf*)
-              IO.eprintln s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
+              logToStdErr `leanaide.translate.info s!"Proof term: {← ppTerm {env := ← getEnv} pfTerm}"
               mkStatementStx name? (← delab thm) pfTerm true
           | _ =>
-            IO.eprintln s!"failed to get proof steps"
+            logToStdErr `leanaide.translate.info s!"failed to get proof steps"
             logInfo s!"failed to get proof steps"
             return none
         | _, _ =>
@@ -370,7 +370,7 @@ mutual
       match input with
       | [] => return accum
       | head :: tail =>
-        IO.eprintln s!"Processing {head}"
+        logToStdErr `leanaide.translate.info s!"Processing {head}"
         let headTactics: Array Syntax.Tactic ←
           match head.getObjString? "type" with
           | some "assert" =>
@@ -460,9 +460,9 @@ mutual
             | Except.ok s => contradictionTactics s accum
             | _ => pure #[]
           | _ => pure #[]
-        IO.eprintln s!"Head tactics"
+        logToStdErr `leanaide.translate.info s!"Head tactics"
         for tac in headTactics do
-          IO.eprintln s!"{← ppTactic tac}"
+          logToStdErr `leanaide.translate.info s!"{← ppTactic tac}"
         structToTactics (accum ++ headTactics) (context.push head) tail
 
 end

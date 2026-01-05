@@ -57,10 +57,10 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
     catch _ => pure false
      else pure false
   unless picklePresent do
-    IO.eprintln "Fetching embeddings ..."
+    logToStdErr `leanaide.translate.info "Fetching embeddings ..."
     let out ← IO.Process.output {cmd:= "curl", args := #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]}
-    IO.eprintln "Fetched embeddings"
-    IO.eprintln out.stdout
+    logToStdErr `leanaide.translate.info "Fetched embeddings"
+    logToStdErr `leanaide.translate.info out.stdout
 
 unsafe def main (args: List String) : IO Unit := do
   for descField in ["docString", "description", "concise-description"] do
@@ -72,7 +72,7 @@ unsafe def main (args: List String) : IO Unit := do
   let picklePath ← picklePath descField
   withUnpickle  picklePath <|
     fun (data : EmbedData) => do
-        IO.eprintln s!"Searching among {data.size} embeddings"
+        logToStdErr `leanaide.translate.info s!"Searching among {data.size} embeddings"
         let num := (args[1]?.bind fun s => s.toNat?).getD 10
         logTimed s!"finding nearest to `{doc}`"
         let start ← IO.monoMsNow
@@ -88,7 +88,7 @@ unsafe def main (args: List String) : IO Unit := do
               ]
         let finish ← IO.monoMsNow
         logTimed "found nearest"
-        IO.eprintln s!"Time taken: {finish - start} ms"
+        logToStdErr `leanaide.translate.info s!"Time taken: {finish - start} ms"
   | none =>
     logTimed "No arguments provided, starting interactive mode"
     withUnpickle (← picklePath "docString") <|fun
@@ -101,7 +101,7 @@ unsafe def main (args: List String) : IO Unit := do
     (concDescData : EmbedData) =>
 
     do
-        IO.eprintln "Enter the document string to find the nearest embeddings"
+        logToStdErr `leanaide.translate.info "Enter the document string to find the nearest embeddings"
         let stdin ← IO.getStdin
         let stdout ← IO.getStdout
         show_nearest_full stdin stdout docStringData descData concDescData

@@ -51,9 +51,9 @@ def main : IO Unit := do
         failures := failures + 1
         IO.println s!"failures: {failures}"
         IO.println s!"successes: {elabs.size}"
-        IO.eprintln s
-        IO.eprintln err
-        IO.eprintln "-----------------------------------------"
+        logToStdErr `leanaide.translate.info s
+        logToStdErr `leanaide.translate.info err
+        logToStdErr `leanaide.translate.info "-----------------------------------------"
         pure ()
     | Except.error e =>
       IO.println "error"

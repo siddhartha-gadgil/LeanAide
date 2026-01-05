@@ -19,6 +19,9 @@ def logIO (name : Name)(msg : String) : IO Unit := do
   let msg := m!"{head} {msg.replace "\n" ("\n" ++ head)}"
   IO.eprintln (← msg.toString)
 
+def logToStdErr [ToString α] (name : Name) (msg : α ) : IO Unit := do
+  logIO name (toString msg)
+
 def logFile (name : Name)(msg : String) : IO Unit := do
   let timeStr ← timestamp
   let now ← Std.Time.PlainDateTime.now
@@ -97,7 +100,7 @@ def traceAide (tag : Name) (msg : String) : CoreM Unit := do
   if tag ∈ ioLogs then
     logIO tag msg
   -- else
-  --   IO.eprintln s!"{tag} suppressed IO log, logs : {ioLogs}"
+  --   logToStdErr `leanaide.translate.info s!"{tag} suppressed IO log, logs : {ioLogs}"
   if tag ∈ fileLogs ∨ tag ∈ ioLogs then
     logFile tag msg
 

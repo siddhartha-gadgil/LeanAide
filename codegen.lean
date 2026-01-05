@@ -36,16 +36,16 @@ def main (args: List String) : IO UInt32 := do
   match io?' with
   | Except.ok ((result, name), s) =>
     let messages := s.messages
-    IO.eprintln "Ran successfully, with messages:"
+    logToStdErr `leanaide.translate.info "Ran successfully, with messages:"
     for msg in messages.toList do
-      IO.eprintln (← msg.data.toString)
+      logToStdErr `leanaide.translate.info (← msg.data.toString)
     let outFile := System.mkFilePath <| ["CodeGen", s!"{name}.lean"]
     IO.FS.writeFile outFile result.pretty
-    IO.eprintln s!"Ran successfully, written to {outFile}"
+    logToStdErr `leanaide.translate.info s!"Ran successfully, written to {outFile}"
     return 0
   | Except.error e =>
     do
-      IO.eprintln "Ran with error"
+      logToStdErr `leanaide.translate.info "Ran with error"
       let msg ← e.toMessageData.toString
-      IO.eprintln msg
+      logToStdErr `leanaide.translate.info msg
       return 1

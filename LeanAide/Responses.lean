@@ -240,7 +240,7 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
         let name := name?.getD (← try
           translator.server.theoremName text
           catch e =>
-            IO.eprintln s!"Error in theorem name: {← e.toMessageData.format}"
+            logToStdErr `leanaide.translate.info s!"Error in theorem name: {← e.toMessageData.format}"
             let hash := hash thmFmt.pretty
             let name := s!"thm_{hash}"
             pure name.toName)
@@ -509,7 +509,7 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
                 let name ← try
                   translator.server.theoremName desc
                   catch e =>
-                    IO.eprintln s!"Error in theorem name: {← e.toMessageData.format}"
+                    logToStdErr `leanaide.translate.info s!"Error in theorem name: {← e.toMessageData.format}"
                     let hash := hash thmFmt.pretty
                     let name := s!"thm_{hash}"
                     pure name.toName
@@ -589,7 +589,7 @@ instance kernel : Kernel := {
       let name := name?.getD (← try
         translator.server.theoremName text
         catch e =>
-          IO.eprintln s!"Error in theorem name: {← e.toMessageData.format}"
+          logToStdErr `leanaide.translate.info s!"Error in theorem name: {← e.toMessageData.format}"
           let hash := hash thmFmt.pretty
           let name := s!"thm_{hash}"
           pure name.toName)

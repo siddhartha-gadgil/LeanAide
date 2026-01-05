@@ -203,7 +203,7 @@ def getErrors : TranslateM <| Array ElabErrorData := do
 
 def printKeys : TranslateM Unit := do
   let em := (← getEmbedMap)
-  IO.eprintln s!"Loaded embeddings: {em.toList.map Prod.fst}"
+  logToStdErr `leanaide.translate.info s!"Loaded embeddings: {em.toList.map Prod.fst}"
 
 def getDescMap : TranslateM (Std.HashMap Name Json) := do
   return (← get).descriptionMap
@@ -310,7 +310,7 @@ def addPrelude (p: String) : TranslateM Unit := do
     if s.preludes.contains p then
       s
     else
-      -- IO.eprintln s!"Adding prelude: {p}"
+      -- logToStdErr `leanaide.translate.info s!"Adding prelude: {p}"
     {s with preludes := s.preludes.push p}
 
 def addVarPrelude (p: String) : TranslateM Unit := do

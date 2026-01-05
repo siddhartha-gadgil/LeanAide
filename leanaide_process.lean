@@ -14,14 +14,14 @@ set_option compiler.extract_closed false
 
 partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : String → IO Unit)
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
-  IO.eprintln "Server ready. Waiting for input..."
+  logToStdErr `leanaide.translate.info "Server ready. Waiting for input..."
   let inp ← getLine
   if inp.trim.isEmpty then
     process_loop env getLine putStrLn translator states chains
   else
   match Json.parse inp with
   | Except.error e =>
-     IO.eprintln s!"Error parsing input: {e}"
+     logToStdErr `leanaide.translate.info s!"Error parsing input: {e}"
      process_loop env getLine putStrLn translator states chains
   | Except.ok js =>
     let mode? := js.getObjValAs? String "mode" |>.toOption
@@ -32,7 +32,7 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
       let check? ← states.lookup hash
       match check? with
       | none =>
-        IO.eprintln "Running in background"
+        logToStdErr `leanaide.translate.info "Running in background"
         states.addStart hash js
         let response_url? :=
           (js.getObjValAs? String "response_url").toOption
@@ -59,34 +59,34 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
           (Actor.response translator) none ctx env
           callback chains prios
         setLogProcess (s!"process:{hash}")
-        IO.eprintln "Background process launched"
+        logToStdErr `leanaide.translate.info "Background process launched"
         IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
       | some ts =>
         IO.println (Json.mkObj [("status", (toJson ts).compress), ("token", toJson hash)]).compress
-        IO.eprintln s!"Task with token {hash} is already running, status: {(toJson ts).compress}."
+        logToStdErr `leanaide.translate.info s!"Task with token {hash} is already running, status: {(toJson ts).compress}."
     | some "lookup" =>
-      IO.eprintln "Running in lookup mode"
+      logToStdErr `leanaide.translate.info "Running in lookup mode"
       let .ok hash :=
         js.getObjValAs? UInt64 "token" | IO.throwServerError "No token provided"
       let result ← states.lookupJson hash
       putStrLn <| result.compress
     | some "quit" =>
-      IO.eprintln "Exiting..."
+      logToStdErr `leanaide.translate.info "Exiting..."
       return 0
     | _ =>
-      IO.eprintln "Running in foreground"
+      logToStdErr `leanaide.translate.info "Running in foreground"
       let core := Actor.response translator js |>.runToCore
       let result ←
         core.run' ctx {env := env} |>.runToIO'
-      IO.eprintln "Ran successfully"
+      logToStdErr `leanaide.translate.info "Ran successfully"
       putStrLn <| result.compress
-      IO.eprintln "Output sent."
+      logToStdErr `leanaide.translate.info "Output sent."
     process_loop env getLine putStrLn translator states chains
 
 def launchProcess (p : Parsed) : IO UInt32 := do
   initSearchPath (← findSysroot)
   let translator : Translator ←  Translator.ofCli p
-  -- IO.eprintln <| toJson translator
+  -- logToStdErr `leanaide.translate.info <| toJson translator
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},

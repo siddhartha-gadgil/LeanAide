@@ -189,7 +189,7 @@ def writeBatchM (batch: List Name)(group: String)
         h'.flush
       count := count + 1
       if count % 100 == 0 then
-        IO.eprintln s!"Wrote {count} names for {tag}; data size: {dataCount}"
+        logToStdErr `leanaide.translate.info s!"Wrote {count} names for {tag}; data size: {dataCount}"
 
 def writeBatchCore (batch: List Name)(group: String)
   (handles: Std.HashMap String IO.FS.Handle) (tag: String) : CoreM Unit :=

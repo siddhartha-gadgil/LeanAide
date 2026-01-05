@@ -16,10 +16,10 @@ unsafe def checkAndFetch (descField: String) : IO Unit := do
     catch _ => pure false
      else pure false
   unless picklePresent do
-    IO.eprintln "Fetching embeddings ..."
+    logToStdErr `leanaide.translate.info "Fetching embeddings ..."
     let out ← IO.Process.output {cmd:= "curl", args := #["--output", picklePath.toString,   "https://storage.googleapis.com/leanaide_data/{picklePath.fileName.get!}"]}
-    IO.eprintln "Fetched embeddings"
-    IO.eprintln out.stdout
+    logToStdErr `leanaide.translate.info "Fetched embeddings"
+    logToStdErr `leanaide.translate.info out.stdout
 
 unsafe def main  : IO Unit := do
   searchPathRef.set compile_time_search_path%
@@ -49,7 +49,7 @@ unsafe def main  : IO Unit := do
       pure #[]
   let preNames := preNames ++ errLines
   let errH ← IO.FS.Handle.mk errFile IO.FS.Mode.append
-  IO.eprintln s!"{preNames.size} names already done\n"
+  logToStdErr `leanaide.translate.info s!"{preNames.size} names already done\n"
   let h ← IO.FS.Handle.mk outFile IO.FS.Mode.append
   let jsSource ←  match Json.parse source with
     | Except.error _ => IO.throwServerError "failed to parse"

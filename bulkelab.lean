@@ -96,10 +96,10 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   --   <|fun (descData : EmbedData) =>  do
   -- withUnpickle (← picklePath "concise-description")
   --   <|fun (concDescData : EmbedData) => do
-  IO.eprintln "Loading hashmap"
+  logToStdErr `leanaide.translate.info "Loading hashmap"
   -- let dataMap :
   --   EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
-  IO.eprintln "Loaded hashmap"
+  logToStdErr `leanaide.translate.info "Loaded hashmap"
   let core :=
     translator.checkTranslatedThmsM input_file  delay repeats
     queryData? tag |>.runToCore

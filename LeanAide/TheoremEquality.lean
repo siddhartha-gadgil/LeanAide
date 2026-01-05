@@ -99,7 +99,7 @@ def compareThmNameExprM(n: Name) (e: Expr)
   : TermElabM Bool := do
       let info ← getConstInfo n
       let e' := info.type
-      IO.eprintln s!"Comparing {← ppExpr e} and {← ppExpr e'}"
+      logToStdErr `leanaide.translate.info s!"Comparing {← ppExpr e} and {← ppExpr e'}"
       let f ← ppExpr e
       let f' ← ppExpr e'
       equalThms f.pretty f'.pretty

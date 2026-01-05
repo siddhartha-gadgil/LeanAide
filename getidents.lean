@@ -33,7 +33,7 @@ unsafe def main (_: List String) : IO Unit := do
   enableInitializersExecution
   init
   let env ← environment
-  IO.eprintln "Obtaining names"
+  logToStdErr `leanaide.translate.info "Obtaining names"
   let groupedNameFiles (group: String) : System.FilePath :=
     "rawdata" / "premises" / "identifiers" / "grouped_names" / s!"{group}.txt"
   let preGroups : Bool ← groups.allM fun group => do
@@ -55,7 +55,7 @@ unsafe def main (_: List String) : IO Unit := do
     else do
       let names ←
         propNamesCore.run' coreContext {env := env} |>.runToIO'
-      IO.eprintln s!"Obtained names: {names.size} entries"
+      logToStdErr `leanaide.translate.info s!"Obtained names: {names.size} entries"
       let m ← splitData names
       for group in groups do
         let names := m[group]!
@@ -66,7 +66,7 @@ unsafe def main (_: List String) : IO Unit := do
       IO.FS.writeFile doneNamesFile ""
       pure m
   let doneNames ← IO.FS.lines doneNamesFile
-  IO.eprintln s!"Obtained grouped names: {groupedNames.size} entries"
+  logToStdErr `leanaide.translate.info s!"Obtained grouped names: {groupedNames.size} entries"
   let handles ← PropIdentData.handles !preGroups
   let concurrency := (← threadNum) * 3 / 4
   IO.println s!"Using {concurrency} threads"

@@ -29,7 +29,7 @@ def translateWithDataM (s: String)(translator: Translator)  (repeats: Nat := 0)(
   match repeats with
   | 0 => return (Except.error #[], output, prompt?)
   | k + 1 =>
-    IO.eprintln s!"No outputs; repeating ({k} left)"
+    logToStdErr `leanaide.translate.info s!"No outputs; repeating ({k} left)"
     IO.sleep (sleepTime * 1000).toUInt32
     translator.translateWithDataM s
        k
@@ -51,7 +51,7 @@ Translate theorems in a given file and record results in a JSON file.
 -/
 def checkTranslatedThmsM(inputFile: String := "thm")(translator: Translator)
   (delay: Nat := 20)(repeats: Nat := 0)(queryData? : Option <| (Std.HashMap String Json) )(tag: Bool := false) : TranslateM Json := do
-  IO.eprintln s!"Writing to file: {inputFile}-elab-{translator.pb.signature}-{translator.params.n}-{translator.params.temp.mantissa}.json"
+  logToStdErr `leanaide.translate.info s!"Writing to file: {inputFile}-elab-{translator.pb.signature}-{translator.params.n}-{translator.params.temp.mantissa}.json"
   let promptsFile := System.mkFilePath ["data",
     s!"prompts-{inputFile}-{translator.pb.signature}-{translator.params.n}-{translator.params.temp.mantissa}.jsonl"]
   let gitHash ← gitHash
@@ -91,7 +91,7 @@ def checkTranslatedThmsM(inputFile: String := "thm")(translator: Translator)
     match res? with
     | Except.ok res =>
       let v ← res.view
-      IO.eprintln s!"theorem {v}"
+      logToStdErr `leanaide.translate.info s!"theorem {v}"
       elaborated := elaborated + 1
       let js := Json.mkObj [("text", Json.str statement),
        ("prompt", toJson prompt?),
@@ -116,11 +116,11 @@ def checkTranslatedThmsM(inputFile: String := "thm")(translator: Translator)
       outHandle.putStrLn <| js.compress
       elabData := elabData.push js
     | .error err =>
-      IO.eprintln "failed to elaborate"
+      logToStdErr `leanaide.translate.info "failed to elaborate"
       failed := failed.push ⟨statement, prompt?, err⟩
-    IO.eprintln s!"total : {count}"
-    IO.eprintln s!"elaborated: {elaborated}"
-    IO.eprintln s!"roundtrip errors: {roundTripError}"
+    logToStdErr `leanaide.translate.info s!"total : {count}"
+    logToStdErr `leanaide.translate.info s!"elaborated: {elaborated}"
+    logToStdErr `leanaide.translate.info s!"roundtrip errors: {roundTripError}"
     IO.sleep <| (delay * 1000).toUInt32
 
   let js :=
@@ -207,6 +207,6 @@ def checkStatementTranslationM (s: String) (typeString: String) (translator: Tra
   | Except.ok type => do
     let triple? ←  getTypeDescriptionM type translator
     triple?.mapM fun (transl, _, defBlob?) => do
-      IO.eprintln s!"translation: {transl}"
+      logToStdErr `leanaide.translate.info s!"translation: {transl}"
       let checks ← ChatServer.checkEquivalence s transl defBlob? (server:= translator.reasoningServer)
       return (transl,  checks)

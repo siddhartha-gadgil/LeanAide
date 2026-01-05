@@ -569,7 +569,7 @@ def checkEquivalence
     | some defBlob =>
     fromTemplate "check_equivalence_with_defs" [("theorem1", thm1), ("theorem2", thm2), ("definitions", defBlob)]
   let responses ← ChatServer.mathCompletions server queryString 1 params examples
-  -- IO.eprintln responses
+  -- logToStdErr `leanaide.translate.info responses
   return responses.map fun s =>
     ((s.toLower.trim.splitOn "true").length > 1, s)
 

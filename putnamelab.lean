@@ -41,10 +41,10 @@ unsafe def main (args : List String) : IO UInt32 := do
   let mut failures : Array (String × Nat) := #[]
   for l in [start:last] do
     if args.drop 2 |>.contains (toString l) then
-      IO.eprintln s!"Skipping problem {l}"
+      logToStdErr `leanaide.translate.info s!"Skipping problem {l}"
     else
       let problem ←  putnamProblem l
-      IO.eprintln s!"Starting problem {l}"
+      logToStdErr `leanaide.translate.info s!"Starting problem {l}"
       let core := runToCore <|
         withEmbeddings dataMap do translator.translateM problem
       let io? :=
@@ -52,7 +52,7 @@ unsafe def main (args : List String) : IO UInt32 := do
         {env := env}
       match ← io?.toIO' with
       | Except.ok (result, prompts) =>
-        IO.eprintln "Success in running"
+        logToStdErr `leanaide.translate.info "Success in running"
         IO.println "Prompts:"
         IO.println prompts.pretty
         IO.println "\n---\n"
@@ -72,14 +72,14 @@ unsafe def main (args : List String) : IO UInt32 := do
             IO.println js.pretty
             failures := failures.push (problem, l)
             jsLines := jsLines.push js
-        IO.eprintln s!"Written to file {outFile}"
+        logToStdErr `leanaide.translate.info s!"Written to file {outFile}"
       | Except.error e =>
         do
               IO.println "Ran with error"
               let msg ← e.toMessageData.toString
               IO.println msg
-      IO.eprintln s!"Finished problem {l}"
-      IO.eprintln s!"Successes: {successes.size}, Failures: {failures.size}"
+      logToStdErr `leanaide.translate.info s!"Finished problem {l}"
+      logToStdErr `leanaide.translate.info s!"Successes: {successes.size}, Failures: {failures.size}"
   let js := toJson jsLines
   IO.FS.writeFile (System.mkFilePath <| ["results", "putnam", s!"statements_{start}_{last}.json"]) js.pretty
   IO.println "Successes:"

@@ -107,12 +107,12 @@ def Translator.getMessages (s: String) (translator : Translator)
 def Translator.getLeanCodeJson (s: String)
     (translator : Translator)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
   traceAide `leanaide.translate.debug  s!"translating string `{s}` with  examples"
-  -- IO.eprintln s!"translating string `{s}` with  examples"
+  -- logToStdErr `leanaide.translate.info s!"translating string `{s}` with  examples"
   let s ← withPreludes s
   setContext s
   match ← getCachedJson? s with
   | some js =>
-    -- IO.eprintln s!"cached json found"
+    -- logToStdErr `leanaide.translate.info s!"cached json found"
     return js
   | none =>
     let pending ←  pendingJsonQueries.get
@@ -124,7 +124,7 @@ def Translator.getLeanCodeJson (s: String)
       let (messages, docPairs) ← translator.getMessages s header
       trace[Translate.info] m!"prompt: \n{messages.pretty}"
       traceAide `leanaide.translate.debug  "querying server"
-      -- IO.eprintln s!"querying server"
+      -- logToStdErr `leanaide.translate.info s!"querying server"
       let fullJson ← translator.server.query messages translator.params
       let outJson :=
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
@@ -221,7 +221,7 @@ def bestElab? (output: Array String)(maxVoting: Nat := 5) : TranslateM (Except (
     traceAide `leanaide.translate.debug  "elaborated outputs, starting majority voting"
     -- let priority :=
     --     if fullElaborated.isEmpty then elaborated else fullElaborated
-    -- IO.eprintln s!"grouping priority: {priority.size}"
+    -- logToStdErr `leanaide.translate.info s!"grouping priority: {priority.size}"
     let groupSorted ← groupThmExprsSorted (elaborated.toList.take maxVoting).toArray -- priority
     let thm := (groupSorted[0]!)[0]!
     let gpView ←  groupSorted.mapM (fun gp => gp.mapM (fun e => e.view))
@@ -324,7 +324,7 @@ def exprStrsFromJson (json: Json) : TranslateM (Array String) := do
                 throwError m!"no text field"
         pure parsedArr
     | Except.error e =>
-      IO.eprintln s!"json parsing error: {e}"
+      logToStdErr `leanaide.translate.info s!"json parsing error: {e}"
       pure #[]
   return outArr
 
@@ -647,12 +647,12 @@ Translate a string to a Lean expression using the GPT model, returning three com
 -/
 def translateViewVerboseM (s: String)(translator : Translator) :   TranslateM ((Option TranslateSuccessResult) × Array String × Json) := do
   -- let dataMap ← getEmbedMap
-  -- IO.eprintln s!"dataMap keys: {dataMap.toList.map Prod.fst}"
+  -- logToStdErr `leanaide.translate.info s!"dataMap keys: {dataMap.toList.map Prod.fst}"
   let (js,prompt, _) ←
     translator.getLeanCodeJson s
   let output ← getMessageContents js
   if output.isEmpty then
-    IO.eprintln "no output"
+    logToStdErr `leanaide.translate.info "no output"
     return (none, output, prompt)
   else
     let res? ← bestElab? output

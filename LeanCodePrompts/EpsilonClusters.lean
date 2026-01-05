@@ -1,7 +1,8 @@
 import Lean.Data
 import LeanAide.Aides
+import LeanAideCore.Aides.Logging
 import Mathlib
-open Lean
+open Lean LeanAide
 
 def insertByMemo (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)
     (x : α) (cx? : Option Float := none) : Array <| α × Float :=
@@ -59,14 +60,14 @@ partial def epsilonClustersAux  (ε: Float)
   if elements.isEmpty then
     return accum
   else
-    IO.eprintln s!"Splitting {elements.size}"
+    logToStdErr `leanaide.translate.info s!"Splitting {elements.size}"
     let idx ← IO.rand 0 (elements.size - 1)
     let pivot := elements[idx]!
-    -- IO.eprintln s!"Found pivot"
+    -- logToStdErr `leanaide.translate.info s!"Found pivot"
     let (group, rest) :=
       elements.partition (fun x => distance x pivot < ε)
-    -- IO.eprintln s!"Split into {group.size} and {rest.size}"
-    IO.eprintln s!"Split into {group.size} and {rest.size}"
+    -- logToStdErr `leanaide.translate.info s!"Split into {group.size} and {rest.size}"
+    logToStdErr `leanaide.translate.info s!"Split into {group.size} and {rest.size}"
     let (cluster, tail) ← do
       if group.size ≥ minSize then
         pure ({pivot := pivot, elements := group, ε := ε},
@@ -130,8 +131,8 @@ def Cluster.kNearest (k: Nat)(cs : Array <| Cluster α)(x : β)
   let sorted :=
     withDistance.qsort (fun (_, d1) (_, d2) => d1 < d2)
   let finish ← IO.monoMsNow
-  IO.eprintln s!"Cluster centers Sorted in {finish - start} ms"
-  IO.eprintln <| sorted.map fun (c, d) => (c.ε, d)
+  logToStdErr `leanaide.translate.info s!"Cluster centers Sorted in {finish - start} ms"
+  logToStdErr `leanaide.translate.info <| sorted.map fun (c, d) => (c.ε, d)
   let best :=
     sorted.foldl (fun best (cl, d) =>
       let check: Bool := match best[k - 1]? with

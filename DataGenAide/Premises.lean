@@ -372,7 +372,7 @@ def PremiseData.writeBatch (names: List Name)(group: String)
         | none => pure ()
         | some defn =>
             if verbose then
-                IO.eprintln s!"Writing {defn.name}"
+                logToStdErr `leanaide.translate.info s!"Writing {defn.name}"
             for premise in defn.premises do
                 premise.write group handles propMap
                 let coreData ← premise.coreData propMap

@@ -563,8 +563,8 @@ where
       | Except.ok h =>
         traceAide `leanaide.papercodes.info s!"hypothesis: {h} in proof"
         contextRun translator none ``tacticSeq (.arr h)
-        -- IO.eprintln "Preludes added:"
-        -- IO.eprintln <| ← withPreludes ""
+        -- logToStdErr `leanaide.translate.info "Preludes added:"
+        -- logToStdErr `leanaide.translate.info <| ← withPreludes ""
         traceAide `leanaide.papercodes.info s!"Preludes added:\n {(← withPreludes "")}"
         pure h.size
       | Except.error _ => pure 0
@@ -849,7 +849,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let goalType := labelledTheorem.type
   let goalExpr ← mkFreshExprMVar goalType
   let goal := goalExpr.mvarId!
-  -- IO.eprintln s!"number of proof steps: {content.length}"
+  -- logToStdErr `leanaide.translate.info s!"number of proof steps: {content.length}"
   traceAide `leanaide.papercodes.info s!"number of proof steps: {content.length}"
   let hypSize ←
     match labelledTheorem.source.getObjValAs? (Array Json)  "hypothesis" with
@@ -857,8 +857,8 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
         traceAide `leanaide.papercodes.info s!"hypothesis: {h} in proof"
         contextRun translator none ``tacticSeq (.arr h)
         traceAide `leanaide.papercodes.info s!"Ran hypothesis context"
-        -- IO.eprintln "Preludes added:"
-        -- IO.eprintln <| ← withPreludes ""
+        -- logToStdErr `leanaide.translate.info "Preludes added:"
+        -- logToStdErr `leanaide.translate.info <| ← withPreludes ""
         traceAide `leanaide.papercodes.info s!"Preludes added:\n {(← withPreludes "")}"
         pure h.size
       | Except.error _ => pure 0
@@ -1266,8 +1266,8 @@ where typeStx (js: Json) :
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in 'assertion_statement'"
   let type ← translator.translateToPropStrict claim
-  let resultsUsed ←
-    getResultsUsed translator.toTranslator js
+  -- let resultsUsed ←
+  --   getResultsUsed translator.toTranslator js
   let mvar ← mkFreshExprMVar type
   let tacs ← findTacticsI mvar.mvarId!
   addPrelude <| "Assume: " ++ claim
@@ -1867,7 +1867,7 @@ Generate code for a `general_induction_proof`. This is used to perform a proof b
 -/
 def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases : List (Expr ×Json × (Array String))) (inductionNames: Array Name)  : TranslateM (TSyntax ``tacticSeq) := match cases with
   | [] => goal.withContext do
-    let inductionIds := inductionNames.map Lean.mkIdent
+    -- let inductionIds := inductionNames.map Lean.mkIdent
     let pf ← findTacticsI goal
     `(tacticSeq| $pf*)
   | (conditionType, trueCaseProof, inductionHyps) :: tail => goal.withContext do

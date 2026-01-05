@@ -86,9 +86,9 @@ def setErr : IO Unit := do
 
 def writeToErr (s : String) : IO Unit := do
   setErr
-  IO.eprintln s
+  logToStdErr `leanaide.translate.info s
   IO.sleep 5000
-  IO.eprintln <| s ++ " again"
+  logToStdErr `leanaide.translate.info <| s ++ " again"
 
 -- #eval writeToErr "hello"
 
@@ -139,7 +139,7 @@ deriving ToJson, FromJson, Repr
 --   Lean.trace tag (fun _ => msg)
 --   let traceToIO := tag = `leanaide.translate.info -- dummy condition for testing
 --   if traceToIO then
---     IO.eprintln s!"[IO] {msg}"
+--     logToStdErr `leanaide.translate.info s!"[IO] {msg}"
 
 #check trace
 

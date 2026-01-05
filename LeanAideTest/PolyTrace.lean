@@ -42,10 +42,10 @@ namespace Test
   def traceAideFile (_ : Unit) : IO Unit := do
     let response ←(Generate.traceAideFile fileStatus)
     match response with
-    | .error e => IO.eprintln s!"[FAILED] File Generated failed with error : {e}"
+    | .error e => logToStdErr `leanaide.translate.info s!"[FAILED] File Generated failed with error : {e}"
     | .ok _ =>
       let fileExists ←System.FilePath.pathExists (←defaultPath)
-      if fileExists then IO.eprintln s!"[PASSED] File Generated"
-      else IO.eprintln s!"[FAILED] File Generation failed at {←defaultPath}"
+      if fileExists then logToStdErr `leanaide.translate.info s!"[PASSED] File Generated"
+      else logToStdErr `leanaide.translate.info s!"[FAILED] File Generation failed at {←defaultPath}"
 
 end Test

@@ -47,7 +47,7 @@ def runTaskChain (data: Json) (translator : Translator) : List (String × Json) 
 | [] => return data
 | ((task, config) :: tasks) => do
   let data := data.setObjValAs! "task" (Json.str task)
-  IO.eprintln s!"running task {task}"
+  logToStdErr `leanaide.translate.info s!"running task {task}"
   let result ← runTask data <| translator.patch config
   appendLog "server" (force := true) <| Json.mkObj [("data", data), ("output", result)]
   match result.getObjVal? "result" with

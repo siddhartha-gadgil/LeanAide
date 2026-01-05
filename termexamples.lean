@@ -18,7 +18,7 @@ def main : IO Unit := do
     importModules (loadExts := true) #[
     {module := `Mathlib},
     {module := `DataGenAide.ConstDeps}] {}
-  IO.eprintln "Seeking term kind examples..."
+  logToStdErr `leanaide.translate.info "Seeking term kind examples..."
   let core := termKindExamplesCore
   let l ← core.run' coreContext {env := env} |>.runToIO'
   let js := toJson l

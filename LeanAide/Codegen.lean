@@ -194,7 +194,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     -- traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
     return (← appendTacticSeqSeq accum code, none)
   | none => do
-  -- IO.eprintln "Trying automation tactics"
+  -- logToStdErr `leanaide.translate.info "Trying automation tactics"
   -- match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
   -- | some autoTacs => do
   --   let autoTac ← `(tacticSeq| $autoTacs*)

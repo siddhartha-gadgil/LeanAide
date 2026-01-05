@@ -117,7 +117,7 @@ def offSpring? (name: Name) : MetaM (Option (Array Name)) := do
       pure !(← isBlackListed n)
     return  some deps
   | none =>
-    IO.eprintln s!"no expr for {name}"
+    logToStdErr `leanaide.translate.info s!"no expr for {name}"
     return none
 
 initialize simplifyCache : IO.Ref (Std.HashMap Expr Expr) ← IO.mkRef Std.HashMap.emptyWithCapacity
@@ -265,7 +265,7 @@ def getM (withoutDocs: Bool := false) : MetaM <| Array DefDataRepr := do
             ⟨name, typeStr, isProp, isNoncomputable, doc?, valueStr, statement⟩
         catch e =>
           let msg := e.toMessageData
-          IO.eprintln s!"Failed to process {name}; error {← msg.toString}"
+          logToStdErr `leanaide.translate.info s!"Failed to process {name}; error {← msg.toString}"
     return dfns
 
 def writeM (dfns : Array DefDataRepr)(name: String := "all.json") : MetaM Unit := do
@@ -426,7 +426,7 @@ def getPropMapStr : MetaM <| Std.HashMap String (String × String) := do
         count := count + 1
       catch e =>
         let msg := e.toMessageData
-        IO.eprintln s!"Failed to process {name}; error {← msg.toString}"
+        logToStdErr `leanaide.translate.info s!"Failed to process {name}; error {← msg.toString}"
       else
         if type.approxDepth >= 60 then
           skipped := skipped + 1
@@ -488,14 +488,14 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
          Array (Name × Nat × String × Bool)) := do
     let cs ← constantNameValueDocs
     let kinds ← termKindList
-    IO.eprintln s!"Found {cs.size} constants"
+    logToStdErr `leanaide.translate.info s!"Found {cs.size} constants"
     let mut count := 0
     let mut m : Std.HashMap Name (Nat × (Array (Name × Nat × String × Bool × String)) ×
          Array (Name × Nat × String × Bool)) := Std.HashMap.emptyWithCapacity 10000
     for ⟨name, type, doc?⟩ in cs do
         count := count + 1
         if count % 400 == 0 then
-            IO.eprintln s!"Processed {count} constants out of {cs.size}"
+            logToStdErr `leanaide.translate.info s!"Processed {count} constants out of {cs.size}"
         let depth := type.approxDepth.toNat
         unless depth > 50 do
             try
@@ -546,13 +546,13 @@ def termKindBestEgsM (choice: Nat := 3)(constantNameValueDocs  := constantNameVa
                         else
                             m := m.insert tk (c + 1, egs, noDocEgs)
             catch e =>
-                IO.eprintln s!"Error {← e.toMessageData.toString} delaborating {name}"
+                logToStdErr `leanaide.translate.info s!"Error {← e.toMessageData.toString} delaborating {name}"
     return m
 
 
 def termKindExamplesM (choices: Nat := 3)(constantNameValueDocs  := constantNameValueDocs)(termKindList : MetaM <| List SyntaxNodeKind := termKindList) : MetaM <| List Json := do
     let egs ← termKindBestEgsM choices constantNameValueDocs termKindList
-    IO.eprintln s!"Found {egs.size} term kinds"
+    logToStdErr `leanaide.translate.info s!"Found {egs.size} term kinds"
     let examples := egs.toArray.qsort (
         fun (_, n, _, _) (_, m, _, _) => n > m
     ) |>.toList

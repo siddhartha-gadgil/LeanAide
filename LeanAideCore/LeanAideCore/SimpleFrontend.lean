@@ -196,8 +196,8 @@ def checkElabFrontM(s: String) : MetaM <| List String := do
   for msg in log.toList do
     if msg.severity == MessageSeverity.error then
       let x ← msg.data.toString
-      --    IO.eprintln s!"Error: {x}"
-      --    IO.eprintln s!"imports : {env.allImportedModuleNames.size}"
+      --    logToStdErr `leanaide.translate.info s!"Error: {x}"
+      --    logToStdErr `leanaide.translate.info s!"imports : {env.allImportedModuleNames.size}"
       l := l.append [x]
   return l
 
@@ -231,7 +231,7 @@ def elabFrontDefsNewExprM(s: String)(modifyEnv: Bool := false) : MetaM <| List (
     if  !constants.contains n then
       match d.value? with
       | none => continue
-      | some v => --    IO.eprintln s!"Found new definition: {n} with
+      | some v => --    logToStdErr `leanaide.translate.info s!"Found new definition: {n} with
         nameDefs := nameDefs.push (n, v)
   return (nameDefs.toList, msgs)
 

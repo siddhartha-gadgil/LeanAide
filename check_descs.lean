@@ -23,7 +23,7 @@ def main : IO Unit := do
   for line in jsLines do
     count := count + 1
     if count % 100 == 0 then
-      IO.eprintln s!"{count}, errors : {errorCount}"
+      logToStdErr `leanaide.translate.info s!"{count}, errors : {errorCount}"
     let .ok js := Json.parse line | throw <| IO.userError s!"Failed to parse JSON line: {line}"
     let .ok name := js.getObjValAs? String "name" | throw <| IO.userError s!"Failed to parse JSON line: {line}"
     let .ok s := js.getObjValAs? String "type" | throw <| IO.userError s!"Failed to parse JSON line: {line}"
@@ -36,14 +36,14 @@ def main : IO Unit := do
       | Except.ok _ =>
         IO.println s!"Succeeded for {name} : {s}"
       | Except.error err =>
-        IO.eprintln "failure"
+        logToStdErr `leanaide.translate.info "failure"
         IO.println s!"Failed for {name} : {s}"
         IO.println err.error
         errorCount := errorCount + 1
         IO.println "----"
     | Except.error e =>
-      IO.eprintln "error"
+      logToStdErr `leanaide.translate.info "error"
       let m := e.toMessageData
-      IO.eprintln <| ← m.toString
-      IO.eprintln s!"Failed for {name} : {s}"
-      IO.eprintln "----"
+      logToStdErr `leanaide.translate.info <| ← m.toString
+      logToStdErr `leanaide.translate.info s!"Failed for {name} : {s}"
+      logToStdErr `leanaide.translate.info "----"

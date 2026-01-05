@@ -67,7 +67,7 @@ def runTranslate (p : Parsed) : IO UInt32 := do
   let mut mismatched := 0
   for name in names do
     let name := name.toName
-    IO.eprintln s!"Translating {name}"
+    logToStdErr `leanaide.translate.info s!"Translating {name}"
     let translator : Translator := {server := chatServer, params := {chatParams with n := 1}}
     let coreDesc := translator.getDescriptionCore name
     let io? :=
@@ -77,14 +77,14 @@ def runTranslate (p : Parsed) : IO UInt32 := do
     match io?' with
     | .error e => do
       let msg ← e.toMessageData.toString
-      IO.eprintln "Could not get description"
-      IO.eprintln msg
+      logToStdErr `leanaide.translate.info "Could not get description"
+      logToStdErr `leanaide.translate.info msg
     | .ok none => do
-      IO.eprintln "No description"
+      logToStdErr `leanaide.translate.info "No description"
     | Except.ok <| some (statement, desc) =>
-      IO.eprintln "Got description"
-      IO.eprintln statement
-      IO.eprintln desc
+      logToStdErr `leanaide.translate.info "Got description"
+      logToStdErr `leanaide.translate.info statement
+      logToStdErr `leanaide.translate.info desc
       let translator' := {translator with pb :=  (PromptExampleBuilder.embedBuilder numSim numConcise numDesc)}
       let coreTranslate :=
         translator'.translateViewVerboseM desc  |>.runToCore
@@ -94,24 +94,24 @@ def runTranslate (p : Parsed) : IO UInt32 := do
       let io?' ← io?.toIO'
       match io?' with
       | Except.ok (translation?, output, prompt) =>
-        IO.eprintln "Ran successfully"
+        logToStdErr `leanaide.translate.info "Ran successfully"
         if showPrompt then
-          IO.eprintln "Prompt:"
-          IO.eprintln prompt.pretty
-          IO.eprintln "---"
+          logToStdErr `leanaide.translate.info "Prompt:"
+          logToStdErr `leanaide.translate.info prompt.pretty
+          logToStdErr `leanaide.translate.info "---"
         match translation? with
         | some res =>
           if p.hasFlag "show_elaborated" then
-            IO.eprintln "Elaborated terms:"
+            logToStdErr `leanaide.translate.info "Elaborated terms:"
             for out in res.allElaborated do
-              IO.eprintln out
-            IO.eprintln "---"
-            IO.eprintln "Groups:"
+              logToStdErr `leanaide.translate.info out
+            logToStdErr `leanaide.translate.info "---"
+            logToStdErr `leanaide.translate.info "Groups:"
             for gp in res.groups do
               for out in gp do
-                IO.eprintln out
-              IO.eprintln "---"
-          IO.eprintln "Translation:"
+                logToStdErr `leanaide.translate.info out
+              logToStdErr `leanaide.translate.info "---"
+          logToStdErr `leanaide.translate.info "Translation:"
           IO.println res.view
           let coreCompare := compareThmNameExprCore name res.term
           let io? :=
@@ -120,24 +120,24 @@ def runTranslate (p : Parsed) : IO UInt32 := do
           let io?' ← io?.toIO'
           match io?' with
           | Except.ok b =>
-            IO.eprintln "Compared successfully"
+            logToStdErr `leanaide.translate.info "Compared successfully"
             IO.println s!"Roundtrip match : {b}"
             if b then matched := matched + 1
             else mismatched := mismatched + 1
           | Except.error e =>
-            IO.eprintln "Could not compare"
+            logToStdErr `leanaide.translate.info "Could not compare"
             let msg ← e.toMessageData.toString
-            IO.eprintln msg
+            logToStdErr `leanaide.translate.info msg
         | none =>
-          IO.eprintln "No translation"
-          IO.eprintln "All outputs:"
+          logToStdErr `leanaide.translate.info "No translation"
+          logToStdErr `leanaide.translate.info "All outputs:"
           for out in output do
-            IO.eprintln <| "* " ++ out
+            logToStdErr `leanaide.translate.info <| "* " ++ out
       | Except.error e =>
         do
-          IO.eprintln "Ran with error"
+          logToStdErr `leanaide.translate.info "Ran with error"
           let msg ← e.toMessageData.toString
-          IO.eprintln msg
+          logToStdErr `leanaide.translate.info msg
   IO.println s!"Matched: {matched}, Mismatched: {mismatched}"
   return 0
 

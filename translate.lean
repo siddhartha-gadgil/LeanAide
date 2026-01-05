@@ -14,14 +14,14 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 unsafe def runTranslate (p : Parsed) : IO UInt32 := do
-  -- IO.eprintln (← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot)))
+  -- logIO `leanaide.translate.info (← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot)))
   initSearchPath (← findSysroot)
 
   let type :=
     p.positionalArg? "input" |>.map (fun s => s.as! String)
     |>.getD "thm"
   let translator ←  Translator.ofCli p
-  IO.eprintln (toJson translator).pretty
+  logIO `leanaide.translate.info (toJson translator).pretty
   let model := translator.server.model
   let showPrompt := p.hasFlag "show_prompt"
   let tag := p.hasFlag "tag"
@@ -37,9 +37,9 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
     {module := `LeanAide.TheoremElab}] {}
   -- let text := "example : ∀ (G : Type) [Group G], ∀ a b : G, a * b = b * a := by sorry"
   -- let (_, logs) ← simpleRunFrontend text env
-  -- IO.eprintln "Ran dummy example to load Mathlib and LeanAide"
+  -- logIO `leanaide.translate.info "Ran dummy example to load Mathlib and LeanAide"
   -- for log in logs.toList do
-  --   IO.eprintln s!"{←  log.toString}"
+  --   logIO `leanaide.translate.info s!"{←  log.toString}"
   let core :=
     translator.translateViewVerboseM type   |>.runToCore
   let io? :=
@@ -47,17 +47,17 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
   let io?' ← io?.toIO'
   match io?' with
   | Except.ok (translation?, output, prompt) =>
-    IO.eprintln "Ran successfully"
+    logIO `leanaide.translate.info "Ran successfully"
     if showPrompt then
-      IO.eprintln "Prompt:"
-      IO.eprintln prompt.pretty
-      IO.eprintln "---"
+      logIO `leanaide.translate.info "Prompt:"
+      logIO `leanaide.translate.info prompt.pretty
+      logIO `leanaide.translate.info "---"
     match translation? with
     | some result =>
-      IO.eprintln "Translation:"
+      logIO `leanaide.translate.info "Translation:"
       IO.println result.view
       if p.hasFlag "roundtrip" then
-        IO.eprintln "Roundtrip:"
+        logIO `leanaide.translate.info "Roundtrip:"
         let core :=
           translator.checkTranslationM result.view result.term |>.run' {}
           let io? :=
@@ -68,42 +68,42 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
           | Except.ok <| some p =>
             let trans:= p.1
             let checks := p.2
-            IO.eprintln "Checked translation"
-            IO.eprintln "Translation:"
-            IO.eprintln trans
-            IO.eprintln "Checks:"
+            logIO `leanaide.translate.info "Checked translation"
+            logIO `leanaide.translate.info "Translation:"
+            logIO `leanaide.translate.info trans
+            logIO `leanaide.translate.info "Checks:"
             for check in checks do
-              IO.eprintln check
+              logIO `leanaide.translate.info (toString check)
           | Except.ok none =>
-            IO.eprintln "Ran with error (no output)"
+            logIO `leanaide.translate.info "Ran with error (no output)"
             return 1
           | Except.error e =>
             do
-              IO.eprintln "Ran with error"
+              logIO `leanaide.translate.info "Ran with error"
               let msg ← e.toMessageData.toString
-              IO.eprintln msg
+              logIO `leanaide.translate.info msg
       if p.hasFlag "show_elaborated" then
-        IO.eprintln "Elaborated terms:"
+        logIO `leanaide.translate.info "Elaborated terms:"
         for out in result.allElaborated do
-          IO.eprintln out
-        IO.eprintln "---"
-        IO.eprintln "Groups:"
+          logIO `leanaide.translate.info out
+        logIO `leanaide.translate.info "---"
+        logIO `leanaide.translate.info "Groups:"
         for gp in result.groups do
           for out in gp do
-            IO.eprintln out
-          IO.eprintln "---"
+            logIO `leanaide.translate.info out
+          logIO `leanaide.translate.info "---"
       return 0
     | none =>
-      IO.eprintln "No translation"
-      IO.eprintln "All outputs:"
+      logIO `leanaide.translate.info "No translation"
+      logIO `leanaide.translate.info "All outputs:"
       for out in output do
-        IO.eprintln <| "* " ++ out
+        logIO `leanaide.translate.info <| "* " ++ out
       return 2
   | Except.error e =>
     do
-      IO.eprintln "Ran with error"
+      logIO `leanaide.translate.info "Ran with error"
       let msg ← e.toMessageData.toString
-      IO.eprintln msg
+      logIO `leanaide.translate.info msg
       return 1
 
 

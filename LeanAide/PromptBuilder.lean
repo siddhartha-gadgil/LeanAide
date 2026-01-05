@@ -52,10 +52,10 @@ def getLeanSearchQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <|
   let apiUrl := "https://leansearch.net/search"
   let js := Json.mkObj [("query", Json.arr #[toJson s]), ("num_results", num_results)]
   let s ← IO.Process.output {cmd := "curl", args := #["-X", "POST", apiUrl, "--user-agent", useragent, "-H", "accept: application/json", "-H", "Content-Type: application/json", "--data", js.pretty]}
-  -- IO.eprintln s!"LeanSearch output: {s.stdout}"
+  -- logToStdErr `leanaide.translate.info s!"LeanSearch output: {s.stdout}"
   match Json.parse s.stdout with
   | Except.error e =>
-      IO.eprintln s!"Could not parse JSON from leansearch output: {s.stdout}; error: {e}"
+      logToStdErr `leanaide.translate.info s!"Could not parse JSON from leansearch output: {s.stdout}; error: {e}"
       return #[]
   | Except.ok js =>
       match js.getArr? with
@@ -72,7 +72,7 @@ def getMoogleQueryJsonArray (s : String) (num_results : Nat := 6) : CoreM <| Arr
   let s ← IO.Process.output {cmd := "curl", args := #[apiUrl, "-H", "Content-Type: application/json",  "--user-agent", useragent, "--data", data.pretty]}
   match Json.parse s.stdout with
   | Except.error e =>
-    IO.eprintln s!"Could not parse JSON from Moogle output: {s.stdout}; error: {e}"
+    logToStdErr `leanaide.translate.info s!"Could not parse JSON from Moogle output: {s.stdout}; error: {e}"
     return #[]
   | Except.ok js =>
   let result? := js.getObjValAs?  Json "data"
@@ -198,7 +198,7 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
   -- let dataMap ← getEmbedMap
   match pb with
   | similarSearch descField n =>
-      IO.eprintln s!"similarSearch on {descField} with query: {query}"
+      logToStdErr `leanaide.translate.info s!"similarSearch on {descField} with query: {query}"
       if n = 0 then return #[]
       let out ← callSimilaritySearch query descField n
       match out with
@@ -206,10 +206,10 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
         match ← pairsFromEmbeddingJson outJs with
         | Except.ok jsArr => return jsArr
         | Except.error e =>
-          IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
+          logToStdErr `leanaide.translate.info s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
           throwError e
       | Except.error e =>
-        IO.eprintln s!"Error in callSimilaritySearch: {e}"
+        logToStdErr `leanaide.translate.info s!"Error in callSimilaritySearch: {e}"
         throwError e
   | embedSearch .. =>
       traceAide `leanaide.translate.info "Embedding search not supported; please use similarity search instead."
@@ -219,7 +219,7 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
       -- match ← pairsFromEmbeddingJsonString outJs with
       -- | Except.ok jsArr => return jsArr
       -- | Except.error e =>
-      --   IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
+      --   logToStdErr `leanaide.translate.info s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
       --   throwError e
   | leansearch descFields preferDocs n =>
     let jsArr ← getLeanSearchQueryJsonArray query n
@@ -241,11 +241,11 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
     let s ← IO.Process.output {cmd := "curl", args := #[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}
     match Json.parse s.stdout with
     | Except.error e =>
-      IO.eprintln s!"Could not parse JSON from generic output: {s.stdout}; error: {e}"
-      IO.eprintln s!"curl {#[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}"
+      logToStdErr `leanaide.translate.info s!"Could not parse JSON from generic output: {s.stdout}; error: {e}"
+      logToStdErr `leanaide.translate.info s!"curl {#[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}"
       return #[]
     | Except.ok js =>
-      -- IO.eprintln s!"curl {#[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}"
+      -- logToStdErr `leanaide.translate.info s!"curl {#[url] ++ httpHeaders ++ #["--user-agent", useragent, "--data", data.pretty]}"
       let result? := js.getObjVal?  "data"
       match result? with
       | Except.ok result =>
@@ -274,7 +274,7 @@ def getPromptPairsOrdered (pb: PromptExampleBuilder)
       let js ← IO.FS.readFile file
       match Json.parse js with
       | Except.error e =>
-        IO.eprintln s!"Could not parse JSON from file {file}; error: {e}"
+        logToStdErr `leanaide.translate.info s!"Could not parse JSON from file {file}; error: {e}"
         let pairs ← getPromptPairsOrderedAux pb query
         let js := toJson pairs
         IO.FS.writeFile file js.compress
@@ -282,7 +282,7 @@ def getPromptPairsOrdered (pb: PromptExampleBuilder)
       | Except.ok js =>
         match (fromJson? js : Except String (Array (String × Json))) with
         | Except.error e =>
-          IO.eprintln s!"Could not parse JSON from file {file}; error: {e}"
+          logToStdErr `leanaide.translate.info s!"Could not parse JSON from file {file}; error: {e}"
           let pairs ← getPromptPairsOrderedAux pb query
           let js := toJson pairs
           IO.FS.writeFile file js.compress

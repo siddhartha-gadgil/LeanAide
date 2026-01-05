@@ -22,19 +22,19 @@ unsafe def main : IO Unit := do
   let lines ← IO.FS.lines ((← resourcesDir) / "mathlib4-descs.jsonl")
   let jsLines := lines.filterMap fun line =>
     (Json.parse line).toOption
-  IO.eprintln s!"Read {jsLines.size} lines (after filtering) from {(lines.size)}"
+  logToStdErr `leanaide.translate.info s!"Read {jsLines.size} lines (after filtering) from {(lines.size)}"
   let h ← IO.FS.Handle.mk ((← resourcesDir) / "mathlib4-descs.jsonl") IO.FS.Mode.write
   let mut count := 0
   for js in jsLines do
     count := count + 1
-    if count % 1000 == 0 then IO.eprintln s!"Processing {count} lines"
+    if count % 1000 == 0 then logToStdErr `leanaide.translate.info s!"Processing {count} lines"
     let .ok name := js.getObjValAs? Name "name" | throw <| IO.userError s!"Failed to parse JSON: {js}"
     let core := updateDescCore? js
     let js? ← core.run' coreContext {env := env} |>.runToIO'
     match js? with
     | none =>
-      -- IO.eprintln s!"No update for {name}"
+      -- logToStdErr `leanaide.translate.info s!"No update for {name}"
       continue
     | some js =>
-      -- IO.eprintln s!"Updated {name}"
+      -- logToStdErr `leanaide.translate.info s!"Updated {name}"
       h.putStrLn js.compress
