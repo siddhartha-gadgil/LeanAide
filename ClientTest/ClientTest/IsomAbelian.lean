@@ -168,11 +168,11 @@ example := codegen% egIsomorphicToAbelian
         (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → Function.Bijective (⇑f.toMonoidHom : G → H) :=
     by
     trace
-      "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → Function.Bijective ⇑f.toMonoidHom"
+      "Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → Function.Bijective ⇑f.toMonoidHom"
     simp only [MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe]
     exact fun {G} {H} [Group G] [Group H] f a => MulEquiv.bijective f
     trace
-      "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → Function.Bijective ⇑f.toMonoidHom"
+      "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → Function.Bijective ⇑f.toMonoidHom"
   theorem assert_2372424619086864196 :
       ∀ {G H : Type u} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),
         (∀ (g1 g2 : G), g1 * g2 = g2 * g1) →
@@ -181,10 +181,10 @@ example := codegen% egIsomorphicToAbelian
               (f.toMonoidHom : G → H) g1 * (f.toMonoidHom : G → H) g2 :=
     by
     trace
-      "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G H : Type u} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (g1 g2 : G), f.toMonoidHom (g1 * g2) = f.toMonoidHom g1 * f.toMonoidHom g2"
+      "Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G H : Type u} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (g1 g2 : G), f.toMonoidHom (g1 * g2) = f.toMonoidHom g1 * f.toMonoidHom g2"
     simp only [MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe, map_mul, implies_true]
     trace
-      "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G H : Type u} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (g1 g2 : G), f.toMonoidHom (g1 * g2) = f.toMonoidHom g1 * f.toMonoidHom g2"
+      "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G H : Type u} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (g1 g2 : G), f.toMonoidHom (g1 * g2) = f.toMonoidHom g1 * f.toMonoidHom g2"
   theorem mul_equiv.apply_symm_apply :
       ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),
         (∀ (g1 g2 : G), g1 * g2 = g2 * g1) →
@@ -193,10 +193,10 @@ example := codegen% egIsomorphicToAbelian
               ∀ (g : G), f_inv ((f.toMonoidHom : G → H) g) = g :=
     by
     trace
-      "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) →\n    ∃ f_inv, (∀ (h : H), f.toMonoidHom (f_inv h) = h) ∧ ∀ (g : G), f_inv (f.toMonoidHom g) = g"
+      "Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) →\n    ∃ f_inv, (∀ (h : H), f.toMonoidHom (f_inv h) = h) ∧ ∀ (g : G), f_inv (f.toMonoidHom g) = g"
     repeat (sorry)
     trace
-      "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) →\n    ∃ f_inv, (∀ (h : H), f.toMonoidHom (f_inv h) = h) ∧ ∀ (g : G), f_inv (f.toMonoidHom g) = g"
+      "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) →\n    ∃ f_inv, (∀ (h : H), f.toMonoidHom (f_inv h) = h) ∧ ∀ (g : G), f_inv (f.toMonoidHom g) = g"
   theorem is_commutative_of_mul_equiv :
       ∀ {G : Type u_1} [inst : Group G] {H : Type u_2} [inst_1 : Group H] (f : G ≃* H),
         (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), x * y = y * x :=
@@ -207,57 +207,57 @@ example := codegen% egIsomorphicToAbelian
     have assert_7489075926961938327 : (f.toMonoidHom : G → H) ((f.symm : H → G) x) = x :=
       by
       trace
-        "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: f.toMonoidHom (f.symm x) = x"
+        "Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: f.toMonoidHom (f.symm x) = x"
       simp only [MulEquiv.toMonoidHom_eq_coe, Lake.FamilyOut.fam_eq, MonoidHom.coe_coe,
         MulEquiv.apply_symm_apply]
       trace
-        "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: f.toMonoidHom (f.symm x) = x"
+        "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: f.toMonoidHom (f.symm x) = x"
     have assert_8514619438374239574 :
       ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),
         (∀ (g1 g2 : G), g1 * g2 = g2 * g1) →
           ∀ (x y : H), (f.toMonoidHom : G → H) ((f.symm : H → G) y) = y :=
       by
       trace
-        "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), f.toMonoidHom (f.symm y) = y"
+        "Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), f.toMonoidHom (f.symm y) = y"
       repeat (sorry)
       trace
-        "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), f.toMonoidHom (f.symm y) = y"
+        "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), f.toMonoidHom (f.symm y) = y"
     have assert_6843468071432122699 :
       x * y = (f.toMonoidHom : G → H) ((f.symm : H → G) x * (f.symm : H → G) y) :=
       by
       trace
-        "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: x * y = f.toMonoidHom (f.symm x * f.symm y)"
+        "Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: x * y = f.toMonoidHom (f.symm x * f.symm y)"
       repeat (sorry)
       trace
-        "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: x * y = f.toMonoidHom (f.symm x * f.symm y)"
+        "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: x * y = f.toMonoidHom (f.symm x * f.symm y)"
     have assert_854745467688580925 :
       let g2 : G := (f.symm : H → G) y;
       (f.symm : H → G) x * g2 = g2 * (f.symm : H → G) x :=
       by
       trace
-        "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: let g2 := f.symm y;\nf.symm x * g2 = g2 * f.symm x"
+        "Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: let g2 := f.symm y;\nf.symm x * g2 = g2 * f.symm x"
       repeat (sorry)
       trace
-        "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: let g2 := f.symm y;\nf.symm x * g2 = g2 * f.symm x"
+        "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: let g2 := f.symm y;\nf.symm x * g2 = g2 * f.symm x"
     have assert_10318218632535122012 :
       (f.toMonoidHom : G → H) ((f.symm : H → G) x * (f.symm : H → G) y) = y * x :=
       by
       trace
-        "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: f.toMonoidHom (f.symm x * f.symm y) = y * x"
+        "Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: f.toMonoidHom (f.symm x * f.symm y) = y * x"
       repeat (sorry)
       trace
-        "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: f.toMonoidHom (f.symm x * f.symm y) = y * x"
+        "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: f.toMonoidHom (f.symm x * f.symm y) = y * x"
     have :
       ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),
         (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), x * y = y * x :=
       by
       trace
-        "Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), x * y = y * x"
+        "Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), x * y = y * x"
       repeat (sorry)
       trace
-        "Finished Automation Tactics   simp?\n  try (try simp?); exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), x * y = y * x"
+        "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer [] {aesopPremises := 0, autoPremises := 0} for goal: ∀ [inst : Group G] {H : Type u_2} [inst_2 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), x * y = y * x"
     trace
-      "Automation Tactics   simp?\n  grind?\n  try (try simp?); exact?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: x * y = y * x"
+      "Automation Tactics   simp?\n  grind?\n  try simp?; exact?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: x * y = y * x"
     repeat (sorry)
     trace
-      "Finished Automation Tactics   simp?\n  grind?\n  try (try simp?); exact?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: x * y = y * x"
+      "Finished Automation Tactics   simp?\n  grind?\n  try simp?; exact?\n  hammer {aesopPremises := 5, autoPremises := 0} for goal: x * y = y * x"

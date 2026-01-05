@@ -300,7 +300,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     for decl in lctx do
       traceAide `leanaide.codegen.info s!"{decl.userName} : {← ppExpr <| decl.type}"
     let autoTacs ←
-      runTacticsAndFindTryThisI goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try (try simp?); exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})]
+      runTacticsAndFindTryThisI goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try simp?; exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0})]
     traceAide `leanaide.codegen.info s!"auto tactics:"
     for tac in autoTacs do
       traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
