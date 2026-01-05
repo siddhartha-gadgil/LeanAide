@@ -9,8 +9,9 @@ open Lean Meta LeanAide Elab Term Parser Tactic PrettyPrinter
 elab "#findTryThis?" goal:term "using" tactics:tacticSeq,* : command =>
   Command.liftTermElabM do
     let goal ← Term.elabTerm goal none
+    let mvar ← mkFreshExprMVar goal
     let tactics? ←
-      runTacticsAndFindTryThis? goal tactics.getElems.toList
+      runTacticsAndFindTryThis? mvar.mvarId! tactics.getElems.toList
     match tactics? with
     | some tacticSeq =>
       logInfo m!"#findTryThis? found tactics: {← ppCategory ``tacticSeq tacticSeq}"
@@ -49,6 +50,10 @@ info: #findTryThis? found tactics: ⏎
 #guard_msgs in
 #findTryThis? ∀ {G : Type u_11} {H : Type u_12} [Group G] [Group H] (ϕ : G ≃* H),
         Function.Bijective (⇑ϕ.toMonoidHom : G → H) using try simp?; exact?
+
+example : ∀ {G : Type u_11} {H : Type u_12} [Group G] [Group H] (ϕ : G ≃* H),
+        Function.Bijective (⇑ϕ.toMonoidHom : G → H) := by
+          simp?; exact?
 
 opaque P : Prop
 

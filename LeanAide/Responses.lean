@@ -621,7 +621,11 @@ instance kernel : Kernel := {
     let translator ← Translator.defaultM
     let defs := (←  defsBlob? theorem_code).getD ""
     let results ← translator.server.proveForFormalization theorem_text (← PrettyPrinter.ppCommand theorem_statement).pretty defs 1 translator.params
-    return results[0]?.getD (s!"No document found for {theorem_text}")
+    match results[0]? with
+    | none => return s!" No document found for {theorem_text}"
+    | some document =>
+      let doc := s!"# Theorem\n{theorem_text}\n\n# Proof\n{document}"
+      return doc
   jsonStructured := fun document => do
     let translator ← Translator.defaultM
     let jsons ←
