@@ -137,14 +137,14 @@ deriving ToJson, FromJson, Repr
 
 -- def traceAide (tag : Name) (msg : String) : CoreM Unit := do
 --   Lean.trace tag (fun _ => msg)
---   let traceToIO := tag = `Translate.info -- dummy condition for testing
+--   let traceToIO := tag = `leanaide.translate.info -- dummy condition for testing
 --   if traceToIO then
 --     IO.eprintln s!"[IO] {msg}"
 
 #check trace
 
 def egTrace : CoreM Nat := do
-  traceAide `Translate.info "This is an info trace message."
+  traceAide `leanaide.translate.info "This is an info trace message."
   return 42
 
 #eval egTrace

@@ -81,6 +81,7 @@ def mkSimilarBuilder (url?: Option String) (numSim numConcise numDesc: Nat) (hea
   | some url => genericEmbedBuilder url numSim numConcise numDesc headers
   | none => similarBuilder numSim numConcise numDesc
 
+@[deprecated mkSimilarBuilder (since := "2026-01-01")]
 def mkEmbedBuilder (url?: Option String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
   match url? with
   | some url => genericEmbedBuilder url numSim numConcise numDesc headers

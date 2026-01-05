@@ -105,6 +105,6 @@ def Array.partitionExceptM {α β σ : Type} [Monad M] (p : α → M (Except σ 
   return (oks, errors)
 
 initialize
-  registerTraceClass `Translate.info
+  registerTraceClass `leanaide.translate.info
   registerTraceClass `leanaide.translate.debug
-  registerTraceClass `Translate.warning
+  registerTraceClass `leanaide.translate.warning

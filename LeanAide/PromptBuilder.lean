@@ -160,7 +160,7 @@ namespace PromptExampleBuilder
 
 partial def num : PromptExampleBuilder →  Nat
 | similarSearch _ n => n
-| embedSearch _ n _ => n
+| embedSearch _ _ _ => 0 -- no longer supported
 | leansearch _ _ n => n
 | moogle _ _ n => n
 | generic _ _ _ n => n
@@ -195,7 +195,7 @@ def pairsFromSearchResults (srs: Array SearchResult)(descFields: List String)
 
 partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
   (query: String) : TranslateM ((Array (String × Json))) := do
-  let dataMap ← getEmbedMap
+  -- let dataMap ← getEmbedMap
   match pb with
   | similarSearch descField n =>
       IO.eprintln s!"similarSearch on {descField} with query: {query}"
@@ -211,15 +211,16 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
       | Except.error e =>
         IO.eprintln s!"Error in callSimilaritySearch: {e}"
         throwError e
-  | embedSearch descField n p =>
-      IO.eprintln s!"embedSearch on {descField} with query: {query}"
-      let outJs ←
-        getNearestEmbeddingsFull query (← embedQueryCached query) n p (descField := descField) (dataMap := dataMap)
-      match ← pairsFromEmbeddingJsonString outJs with
-      | Except.ok jsArr => return jsArr
-      | Except.error e =>
-        IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
-        throwError e
+  | embedSearch .. =>
+      traceAide `leanaide.translate.info "Embedding search not supported; please use similarity search instead."
+      return #[]
+      -- let outJs ←
+      --   getNearestEmbeddingsFull query (← embedQueryCached query) n p (descField := descField) (dataMap := dataMap)
+      -- match ← pairsFromEmbeddingJsonString outJs with
+      -- | Except.ok jsArr => return jsArr
+      -- | Except.error e =>
+      --   IO.eprintln s!"Could not parse JSON from embedding output: {outJs}; error: {e}"
+      --   throwError e
   | leansearch descFields preferDocs n =>
     let jsArr ← getLeanSearchQueryJsonArray query n
     let srs := jsArr.filterMap SearchResult.ofLeanSearchJson?
@@ -269,7 +270,7 @@ def getPromptPairsOrdered (pb: PromptExampleBuilder)
     let file : System.FilePath :=
       (← cachePath) / "prompt" / s!"{hash pb}_{hash query}.json"
     if (← file.pathExists) then
-      -- IO.eprintln s!"Getting prompt pairs from cache: {file}"
+      traceAide `leanaide.translate.debug s!"Getting prompt pairs from cache: {file}"
       let js ← IO.FS.readFile file
       match Json.parse js with
       | Except.error e =>
@@ -289,7 +290,7 @@ def getPromptPairsOrdered (pb: PromptExampleBuilder)
         | Except.ok pairs  =>
           return pairs
     else do
-      -- IO.eprintln s!"Getting prompt pairs, no cache"
+      traceAide `leanaide.translate.debug s!"Getting prompt pairs, no cache"
       let pairs ← getPromptPairsOrderedAux pb query
       let js := toJson pairs
       IO.FS.writeFile file js.compress
@@ -306,7 +307,7 @@ def getPromptPairs (pb: PromptExampleBuilder)
 
 partial def usedEmbeddings : PromptExampleBuilder → List String
 | .similarSearch d _ => [d]
-| .embedSearch d _ _ => [d]
+| .embedSearch _ _ _ => [] -- no longer supported
 | .blend pbs => pbs.map usedEmbeddings |>.flatten
 | .sequence pbs => pbs.map usedEmbeddings |>.flatten
 | _ => []
@@ -314,7 +315,7 @@ partial def usedEmbeddings : PromptExampleBuilder → List String
 partial def simplify? (pb : PromptExampleBuilder): Option (PromptExampleBuilder) :=
 match pb with
 | .similarSearch _ n => if n > 0 then some pb else none
-| .embedSearch _ _ n => if n > 0 then some pb else none
+| .embedSearch _ _ _ =>  none -- no longer supported
 | .leansearch _ _ n => if n > 0 then some pb else none
 | .moogle _ _ n => if n > 0 then some pb else none
 | .fixed ps => if ps.size > 0 then some pb else none

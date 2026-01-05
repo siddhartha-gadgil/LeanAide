@@ -554,7 +554,7 @@ open PrettyPrinter Tactic
   let s := s.getString
   let embedUrl := lean_aide.translate.examples_url?.get (← getOptions)
   let embedUrl? := if embedUrl.isEmpty then none else some embedUrl
-  let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.mkEmbedBuilder embedUrl? (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams}
+  let translator : Translator := {server := ← chatServer, pb := PromptExampleBuilder.mkSimilarBuilder embedUrl? (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams}
   let (js, _) ←
     translator.getLeanCodeJson  s |>.run' {}
   let e ← jsonToExpr' js (← greedy) !(← chatParams).stopColEq |>.run' {}

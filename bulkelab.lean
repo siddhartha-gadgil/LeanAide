@@ -22,7 +22,7 @@ def runBulkElab (p : Parsed) : IO UInt32 := do
   let numDesc := p.flag? "descriptions" |>.map
     (fun s => s.as! Nat) |>.getD 2
   let pb₁ :=
-    PromptExampleBuilder.embedBuilder numSim numConcise numDesc |>.simplify
+    PromptExampleBuilder.similarBuilder numSim numConcise numDesc |>.simplify
   let numLeanSeach := p.flag? "leansearch_prompts" |>.map
     (fun s => s.as! Nat) |>.getD 0
   let numMoogle := p.flag? "moogle_prompts" |>.map
