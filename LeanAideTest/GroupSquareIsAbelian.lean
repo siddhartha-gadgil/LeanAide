@@ -88,14 +88,16 @@ def groupSquareIsAbelian : Json :=
 -- Automatically generated code from the above JSON proof
 noncomputable def is_commutative_of_forall_mul_pow_two_eq_pow_two_mul_pow_two :
       {G : Type u_1} →
-        [inst : Group G] → (∀ (a b : G), (a * b) ^ 2 = a ^ 2 * b ^ 2) → CommGroup G :=
+        [inst : Group G] →
+          (∀ (a b : G), (a * b) ^ (2 : ℕ) = a ^ (2 : ℕ) * b ^ (2 : ℕ)) → CommGroup G :=
     by
     intro G inst a_180468121275325397
     have assert_11371057909598991355 : ∀ (a b : G), a * b * a * b = a * a * b * b := by
       repeat (sorry)
     have assert_12084550143141261290 : ∀ (a b : G), a * b * (a * b) = a * a * (b * b) := by
       grind only [#9c41]
-    have assert_8792733627225243773 : ∀ (a b : G), a⁻¹ * (a * b) ^ 2 = a⁻¹ * (a ^ 2 * b ^ 2) := by
+    have assert_11235059817416261103 :
+      ∀ (a b : G), a⁻¹ * (a * b) ^ (2 : ℕ) = a⁻¹ * (a ^ (2 : ℕ) * b ^ (2 : ℕ)) := by
       grind only [#e0e5]
     have assert_2584691247916677600 : ∀ (a b : G), a⁻¹ * a * b * a * b = a⁻¹ * a * a * b * b := by
       grind only [mul_assoc, inv_mul_cancel_left, #0580]
@@ -105,7 +107,9 @@ noncomputable def is_commutative_of_forall_mul_pow_two_eq_pow_two_mul_pow_two :
     have assert_12054441707386195591 : ∀ (a b : G), b * a * (b * b⁻¹) = a * b * (b * b⁻¹) := by
       simp_all
     have assert_16921761843838546612 : ∀ (a b : G), b * a = a * b := by simp_all
-    have : CommGroup G := by repeat (sorry)
+    have : CommGroup G := by
+      constructor
+      grind only [#2923]
     assumption
 
 example : {G : Type u_1} →

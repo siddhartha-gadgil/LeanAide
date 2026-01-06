@@ -38,7 +38,7 @@ syntax (name:= tryThisStrinctwrap) "try_this_strict" "(" tacticSeq ")" : tactic
       throwError s!"try_this failed: {← e.toMessageData.toString}"
   | _ => throwError "unexpected syntax in try_this"
 
-syntax (name:= tryThiswrap) "try_this " "(" tacticSeq ")" (" then " "(" tacticSeq ")")? : tactic
+syntax (name:= tryThiswrap) "try_this" "(" tacticSeq ")" (" then " "(" tacticSeq ")")? : tactic
 @[tactic tryThiswrap] def evalTryThiswrap : Tactic := fun stx => do
   match stx with
   | `(tactic| try_this ( $tacticSeq:tacticSeq )) =>
@@ -264,16 +264,16 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
   return msgs'
 
 def getTacticsFromMessageData? (s: String) :
-    MetaM <| Option (Array Syntax.Tactic) := do
+    MetaM <| Option (Array Syntax.Tactic × Bool) := do
   let s := s.trim
   if s.startsWith "Try this:" || s.startsWith "Try these:" then
     -- let s' := (s.splitOn "[apply] ")[1]!
     let ss := (s.splitOn "[apply] ").drop 1
     let tacticSeq? ← ss.findSomeM? getTacticsFromText?
-    tacticSeq?.mapM fun tacticSeq => do
+    tacticSeq?.mapM fun (tacticSeq, hasSorry) => do
       let tacs := getTactics tacticSeq
       traceAide `leanaide.interpreter.info s!"Extracted tactics from message: {s}"
-      return tacs
+      return (tacs, hasSorry)
   else
     -- traceAide `leanaide.interpreter.info s!"Message: {s} does not start with Try this:"
     return none
@@ -300,10 +300,11 @@ def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (st
       --     return none
   let trys ← msgs'.filterMapM
     fun msg => do getTacticsFromMessageData? msg.text
-  if trys.isEmpty then
+  let checks := trys.map fun (_, hasSorry) => hasSorry
+  if trys.isEmpty || (strict && checks.any id) then
     return none
   else
-    return some <| trys.foldl (fun acc tacs => acc ++ tacs) #[]
+    return some <| trys.foldl (fun acc (tacs, _) => acc ++ tacs) #[]
 
 def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := true) (previous: String := ""): TermElabM <| Option (TSyntax ``tacticSeq) := do
   tacticSeqs.findSomeM?

@@ -87,15 +87,14 @@ def endsWithDone (t: TSyntax ``tacticSeq) : MetaM Bool := do
 declare_syntax_cat tacticSeqCategory
 syntax tacticSeq : tacticSeqCategory
 
-def getTacticsFromText? (tacticText: String) : MetaM (Option (TSyntax ``tacticSeq)) := do
-  unless (tacticText.splitOn "sorry").length = 1 do
-    return none
+def getTacticsFromText? (tacticText: String) : MetaM (Option (TSyntax ``tacticSeq × Bool)) := do
+  let hasSorry := (tacticText.splitOn "sorry").length > 1
   let stx? := runParserCategory (← getEnv) `tacticSeqCategory tacticText
   match stx? with
   | Except.ok stx =>
     match stx with
     | `(tacticSeqCategory| $ts:tacticSeq) =>
-      return some ts
+      return some (ts, hasSorry)
     | _ =>
       throwError m!"Unexpected syntax format for tactics: {stx}"
       return none
