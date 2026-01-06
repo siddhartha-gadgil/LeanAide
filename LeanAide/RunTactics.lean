@@ -5,7 +5,7 @@ import LeanAide.DefData
 import LeanSearchClient
 import Hammer
 
-open Lean Meta Elab Term PrettyPrinter Nat
+open Lean Meta Elab Term PrettyPrinter Nat Tactic
 
 namespace LeanAide
 
@@ -22,6 +22,45 @@ def MessageCore.ofMessageM (msg: Message) : MetaM MessageCore := do
 def runFrontEndMsgCoreM (inp : String) : MetaM (List MessageCore) := do
   let msgs ← runFrontEndForMessages inp -- cache this
   msgs.toList.mapM fun msg => MessageCore.ofMessageM msg
+
+
+syntax (name:= tryThisStrinctwrap) "try_this_strict" "(" tacticSeq ")" : tactic
+@[tactic tryThisStrinctwrap] def evalTryThisStrictwrap : Tactic := fun stx => do
+  match stx with
+  | `(tactic| try_this_strict ( $tacticSeq:tacticSeq )) =>
+    let s ← saveState
+    try
+      withoutErrToSorry do
+        evalTactic tacticSeq
+        TryThis.addSuggestion stx tacticSeq
+    catch e =>
+      s.restore
+      throwError s!"try_this failed: {← e.toMessageData.toString}"
+  | _ => throwError "unexpected syntax in try_this"
+
+syntax (name:= tryThiswrap) "try_this " "(" tacticSeq ")" (" then " "(" tacticSeq ")")? : tactic
+@[tactic tryThiswrap] def evalTryThiswrap : Tactic := fun stx => do
+  match stx with
+  | `(tactic| try_this ( $tacticSeq:tacticSeq )) =>
+    let s ← saveState
+    try
+      withoutErrToSorry do
+        evalTactic tacticSeq
+        TryThis.addSuggestion stx tacticSeq
+    catch e =>
+      s.restore
+      traceAide `leanaide.interpreter.debug s!"try_this failed: {← e.toMessageData.toString}"
+  | `(tactic| try_this ( $tacticSeq:tacticSeq ) then  ( $tacticSeq2:tacticSeq )) =>
+    let s ← saveState
+    try
+      withoutErrToSorry do
+        evalTactic tacticSeq
+        TryThis.addSuggestion stx tacticSeq
+        evalTactic tacticSeq2
+    catch e =>
+      s.restore
+      traceAide `leanaide.interpreter.debug s!"try_this failed: {← e.toMessageData.toString}"
+  | _ => throwError "unexpected syntax in try_this"
 
 open LeanSearchClient LibrarySuggestions in
 def suggestionsForGoal (goal: MVarId) (maxSuggestions: Nat := 15) (leanVersion := "v4.22.0") : MetaM (Array Name) := do
@@ -173,6 +212,8 @@ def relDecls : List (Option LocalDecl) → Syntax.Term → MetaM Syntax.Term
       | BinderInfo.instImplicit => `([$n:ident : $typeStx] →  $prev)
       | BinderInfo.implicit => `({$n:ident : $typeStx} →  $prev)
       | BinderInfo.strictImplicit => `({{$n:ident : $typeStx}} →  $prev)
+
+#check evalTacticSafe
 
 def frontendCodeForTactics (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM String  :=
     mvarId.withContext do

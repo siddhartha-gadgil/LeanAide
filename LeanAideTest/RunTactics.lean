@@ -65,3 +65,99 @@ axiom ax : P
 
 example : P := by
   (try simp?); simp? [ax]
+
+example : 1 ≤ 3 := by
+  try_this (apply Nat.succ_le_succ)
+  simp?
+
+/--
+info: #findTryThis? found tactics: ⏎
+  apply Nat.succ_le_succ
+  simp only [zero_le]
+-/
+#guard_msgs in
+#findTryThis? (1 : Nat) ≤ 3 using try_this (apply Nat.succ_le_succ); simp?
+
+/-- info: #findTryThis? found tactics: simp only [Nat.one_le_ofNat] -/
+#guard_msgs in
+#findTryThis? (1 : Nat) ≤ 3 using try_this (apply Nat.succ); simp?
+
+/-- info: #findTryThis? found no applicable tactics -/
+#guard_msgs in
+#findTryThis? (1 : Nat) ≤ 3 using try_this (apply Nat.succ; simp)
+
+/--
+info: #findTryThis? found tactics: ⏎
+  apply Nat.succ_le_succ
+  simp only [zero_le]
+-/
+#guard_msgs in
+#findTryThis? (1 : Nat) ≤ 3 using try_this_strict (apply Nat.succ_le_succ); simp?
+
+/-- info: #findTryThis? found no applicable tactics -/
+#guard_msgs in
+#findTryThis? (1 : Nat) ≤ 3 using try_this_strict (apply Nat.succ); simp?
+
+/--
+info: #findTryThis? found tactics: ⏎
+  apply Nat.succ_le_succ
+  simp
+-/
+#guard_msgs in
+#findTryThis? (1 : Nat) ≤ 3 using try_this (apply Nat.succ_le_succ; simp)
+
+example : (1 : ℕ) ≤ (3 : ℕ) := by
+  try_this (apply Nat.succ_le_succ; simp)
+
+/--
+info: #findTryThis? found tactics: ⏎
+  apply Nat.succ_le_succ
+  simp only [zero_le]
+-/
+#guard_msgs in
+#findTryThis? (1 : Nat) ≤ 3 using try_this (apply Nat.succ_le_succ) then (simp?)
+
+/-- info: #findTryThis? found no applicable tactics -/
+#guard_msgs in
+#findTryThis? (1 : Nat) ≤ 3 using try_this (apply Nat.succ_le) then (simp?)
+
+/--
+info: #findTryThis? found tactics: ⏎
+  intro n
+  apply Nat.le_of_succ_le_succ
+  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Nat.reduceLeDiff]
+-/
+#guard_msgs in
+#findTryThis? ∀(n : Nat), n + 1 ≤ 3 using try_this (intro n; apply Nat.le_of_succ_le_succ) then (simp?; sorry)
+
+example : ∀(n : ℕ), n + 1 ≤ 3 := by
+  intro n
+  apply Nat.le_of_succ_le_succ
+  simp?
+  try (simp?)
+  sorry
+
+/-- info: #findTryThis? found no applicable tactics -/
+#guard_msgs in
+#findTryThis? ∀(n : Nat), n + 1 ≤ 3 using try_this (intro n; apply Nat.le_of_succ_le_succ) then (simp?; simp; sorry)
+
+set_option trace.leanaide.frontend.debug true in
+/--
+info: #findTryThis? found no applicable tactics
+---
+trace: [leanaide.frontend.debug] Try this:
+      [apply] intro n; apply Nat.le_of_succ_le_succ
+    ⏎
+[leanaide.frontend.debug] Try this:
+      [apply] simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Nat.reduceLeDiff]
+    ⏎
+[leanaide.frontend.debug] <input>:5:46: error: unsolved goals
+    case a
+    n : ℕ
+    ⊢ n ≤ 2
+-/
+#guard_msgs in
+#findTryThis? ∀(n : Nat), n + 1 ≤ 3 using try_this (intro n; apply Nat.le_of_succ_le_succ) then (simp?; try(simp?); sorry)
+
+example : ∀ (n : ℕ), n + (1 : ℕ) ≤ (3 : ℕ) := by
+  try_this(intro n; apply Nat.le_of_succ_le_succ)then(simp?; sorry)
