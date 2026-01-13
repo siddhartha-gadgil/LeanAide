@@ -1813,7 +1813,7 @@ def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind
   let some tacs ← withoutModifyingState do getCode translator (some goal) ``tacticSeq proof | throwError
     s!"codegen: no tactics found for proof {proof}"
   let fullTacs ←  appendTacticSeqSeq (← `(tacticSeq| intro $contraId:term)) tacs
-  let stx ← delabDetailed assumptionType
+  let stx ← delabDetailed goalType
   `(tacticSeq| have : $stx := by $fullTacs)
 | _, kind, _ => throwError
     s!"codegen: conclude_statement does not work for kind {kind}"
