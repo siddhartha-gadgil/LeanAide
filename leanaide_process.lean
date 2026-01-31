@@ -21,7 +21,8 @@ def webPutStrLn (url : String) (msg : String) : IO Unit := do
 
 def webGetLine (url : String) : Unit →  IO String := fun _ => do
   try
-    let res ← IO.Process.output {cmd := "curl", args := #["-X", "GET", url]}
+    let data := json% {"mode": "worker"} |>.compress
+    let res ← IO.Process.output {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", data, url]}
     logIO `leanaide.tasks.info s!"Fetched input from {url}, response: {res.stdout}"
     return res.stdout
   catch e =>
