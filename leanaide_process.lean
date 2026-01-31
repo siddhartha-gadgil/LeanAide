@@ -12,16 +12,32 @@ set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : String → IO Unit)
+def webPutStrLn (url : String) (msg : String) : IO Unit := do
+  try
+    let res ← IO.Process.run {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", msg, url]}
+    logIO `leanaide.tasks.info s!"Posted results to {url}, response: {res}"
+  catch e =>
+    logIO `leanaide.tasks.info s!"Failed to post results to {url}: {e}"
+
+def webGetLine (url : String) : Unit →  IO String := fun _ => do
+  try
+    let res ← IO.Process.output {cmd := "curl", args := #["-X", "GET", url]}
+    logIO `leanaide.tasks.info s!"Fetched input from {url}, response: {res.stdout}"
+    return res.stdout
+  catch e =>
+    logIO `leanaide.tasks.info s!"Failed to fetch input from {url}: {e}"
+    return ""
+
+partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putStrLn : String → IO Unit)
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
-  logToStdErr `leanaide.translate.info "Server ready. Waiting for input..."
-  let inp ← getLine
+  logToStdErr `leanaide.tasks.info "Server ready. Waiting for input..."
+  let inp ← getLine ()
   if inp.trim.isEmpty then
     process_loop env getLine putStrLn translator states chains
   else
   match Json.parse inp with
   | Except.error e =>
-     logToStdErr `leanaide.translate.info s!"Error parsing input: {e}"
+     logToStdErr `leanaide.tasks.info s!"Error parsing input: {e}"
      process_loop env getLine putStrLn translator states chains
   | Except.ok js =>
     let mode? := js.getObjValAs? String "mode" |>.toOption
@@ -74,10 +90,18 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
       logToStdErr `leanaide.translate.info "Exiting..."
       return 0
     | some "sleep" =>
-      logToStdErr `leanaide.translate.debug "Sleeping for 1 second..."
       let duration := js.getObjValAs? Nat "duration" |>.toOption.getD 10
+      logToStdErr `leanaide.translate.debug s!"Sleeping for {duration} seconds..."
       IO.sleep (duration * 1000).toUInt32
       logToStdErr `leanaide.translate.debug "Awake."
+    | some "worker" =>
+      let .ok getWorkUrl :=
+        js.getObjValAs? String "getWorkUrl" | IO.throwServerError "No getWorkUrl provided"
+      let .ok postWorkUrl :=
+        js.getObjValAs? String "postWorkUrl" | IO.throwServerError "No postWorkUrl provided"
+      logToStdErr `leanaide.translate.info s!"Starting worker with getWorkUrl: {getWorkUrl} and postWorkUrl: {postWorkUrl}"
+      discard <| process_loop env (webGetLine getWorkUrl) (webPutStrLn postWorkUrl)
+        translator states chains
     | _ =>
       logToStdErr `leanaide.translate.info "Running in foreground"
       let core := Actor.response translator js |>.runToCore
@@ -100,17 +124,9 @@ def launchProcess (p : Parsed) : IO UInt32 := do
     {module:= `LeanAide.PaperCodes},
     {module:= `LeanAide.Responses},
     {module := `LeanAideCore}] {}
-  -- withUnpickle (← picklePath "docString")
-  --   <|fun (docStringData : EmbedData) => do
-  -- withUnpickle (← picklePath "description")
-  --   <|fun (descData : EmbedData) =>  do
-  -- withUnpickle (← picklePath "concise-description")
-  --   <|fun (concDescData : EmbedData) => do
-  -- let dataMap :
-  --   EmbedMap := Std.HashMap.ofList [("docString", docStringData), ("description", descData), ("concise-description", concDescData)]
   let stdin ←  IO.getStdin
   let stdout ← IO.getStdout
-  let getLine : IO String := stdin.getLine
+  let getLine : Unit → IO String := fun _ => stdin.getLine
   let putStrLn : String → IO Unit := fun s => do
     stdout.putStrLn s
     stdout.flush
