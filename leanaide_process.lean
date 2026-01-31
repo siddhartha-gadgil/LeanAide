@@ -60,9 +60,9 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
           callback chains prios
         setLogProcess (s!"process:{hash}")
         logToStdErr `leanaide.translate.info "Background process launched"
-        IO.println (Json.mkObj [("status", "background"), ("token", toJson hash)])
+        putStrLn (Json.mkObj [("status", "background"), ("token", toJson hash)]).compress
       | some ts =>
-        IO.println (Json.mkObj [("status", (toJson ts).compress), ("token", toJson hash)]).compress
+        putStrLn (Json.mkObj [("status", (toJson ts).compress), ("token", toJson hash)]).compress
         logToStdErr `leanaide.translate.info s!"Task with token {hash} is already running, status: {(toJson ts).compress}."
     | some "lookup" =>
       logToStdErr `leanaide.translate.info "Running in lookup mode"
@@ -73,6 +73,11 @@ partial def process_loop (env: Environment)(getLine : IO String) (putStrLn : Str
     | some "quit" =>
       logToStdErr `leanaide.translate.info "Exiting..."
       return 0
+    | some "sleep" =>
+      logToStdErr `leanaide.translate.debug "Sleeping for 1 second..."
+      let duration := js.getObjValAs? Nat "duration" |>.toOption.getD 10
+      IO.sleep (duration * 1000).toUInt32
+      logToStdErr `leanaide.translate.debug "Awake."
     | _ =>
       logToStdErr `leanaide.translate.info "Running in foreground"
       let core := Actor.response translator js |>.runToCore
