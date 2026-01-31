@@ -97,9 +97,9 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
       logToStdErr `leanaide.translate.debug "Awake."
     | some "worker" =>
       let .ok getWorkUrl :=
-        js.getObjValAs? String "getWorkUrl" | IO.throwServerError "No getWorkUrl provided"
+        js.getObjValAs? String "get_work_url" | IO.throwServerError "No get_work_url provided"
       let .ok postWorkUrl :=
-        js.getObjValAs? String "postWorkUrl" | IO.throwServerError "No postWorkUrl provided"
+        js.getObjValAs? String "post_work_url" | IO.throwServerError "No post_work_url provided"
       logToStdErr `leanaide.translate.info s!"Starting worker with getWorkUrl: {getWorkUrl} and postWorkUrl: {postWorkUrl}"
       discard <| process_loop env (webGetLine getWorkUrl) (webPutStrLn postWorkUrl)
         translator states chains
