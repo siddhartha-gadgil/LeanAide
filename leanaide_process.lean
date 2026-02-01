@@ -23,11 +23,13 @@ def webGetLine (url : String) : Unit →  IO String := fun _ => do
   try
     let data := json% {"mode": "worker"} |>.compress
     let res ← IO.Process.output {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", data, url]}
-    logIO `leanaide.tasks.info s!"Fetched input from {url}, response: {res.stdout}"
+    logIO `leanaide.tasks.info s!"Fetched input from {url}, response: {res.stdout}, errors: {res.stderr}({res.exitCode})"
+    if res.exitCode != 0 then
+      throw <| IO.userError s!"Failed to fetch input from {url}: {res.stderr}"
     return res.stdout
   catch e =>
     logIO `leanaide.tasks.info s!"Failed to fetch input from {url}: {e}"
-    return ""
+    throw <| IO.userError s!"Failed to fetch input from {url}: {e}"
 
 partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putStrLn : String → IO Unit)
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
