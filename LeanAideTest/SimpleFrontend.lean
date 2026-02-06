@@ -1,4 +1,4 @@
-import LeanAide.SimpleFrontend
+import LeanAideCore.SimpleFrontend
 import LeanAideCore.Aides
 import Mathlib
 

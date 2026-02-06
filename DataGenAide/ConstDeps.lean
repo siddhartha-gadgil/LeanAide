@@ -2,8 +2,8 @@ import Lean
 import Lean.Meta
 import Init.System
 import LeanAide.Aides
-import LeanAide.StatementSyntax
-import LeanAide.DefData
+import LeanAideCore.StatementSyntax
+import LeanAideCore.DefData
 import LeanAideCore.Sorries
 open Lean Meta Elab
 

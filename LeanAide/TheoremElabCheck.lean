@@ -1,7 +1,7 @@
 import Mathlib
 import LeanAide.TheoremElab
-import LeanAide.SimpleFrontend
-import LeanAide.TranslateM
+import LeanAideCore.SimpleFrontend
+import LeanAideCore.TranslateM
 open Lean Meta Elab Term
 
 namespace LeanAide

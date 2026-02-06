@@ -1,10 +1,10 @@
 import Lean
 import LeanAide.Aides
-import LeanAide.TranslateM
+import LeanAideCore.TranslateM
 import LeanCodePrompts.SimilaritySearch
 import LeanCodePrompts.SpawnNearestEmbeddings
 import LeanCodePrompts.ChatClient
-import LeanAide.PromptExampleBuilder
+import LeanAideCore.PromptExampleBuilder
 import LeanAideCore.Translator
 import Mathlib
 open Lean Meta Elab Term

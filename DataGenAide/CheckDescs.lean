@@ -1,6 +1,6 @@
 import Lean
 import LeanAide.Aides
-import LeanAide.StatementSyntax
+import LeanAideCore.StatementSyntax
 import Mathlib
 
 namespace LeanAide

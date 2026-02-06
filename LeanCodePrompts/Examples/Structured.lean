@@ -1,6 +1,6 @@
 import LeanCodePrompts.ChatClient
 import LeanAide.StructToLean
-import LeanAide.TranslateM
+import LeanAideCore.TranslateM
 open Lean Json LeanAide.Meta LeanAide CodeGenerator
 namespace Structured
 

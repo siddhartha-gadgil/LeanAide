@@ -106,7 +106,7 @@ def dropPrefixes : Name → Name
 | .str _ s => .str .anonymous s
 | .num _ n => .num .anonymous n
 
-  ---   #eval dropPrefixes `LeanAide.SimpleFrontend.elabFrontDefsExprAtM
+  ---   #eval dropPrefixes `LeanAideCore.SimpleFrontend.elabFrontDefsExprAtM
 
 
 def elabFrontDefsExprAtM(s: String)(pfx: Name)(modifyEnv: Bool := false) : MetaM <| Array (Name × Expr) × MessageLog := do

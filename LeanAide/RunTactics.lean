@@ -1,7 +1,7 @@
 import Lean
 import LeanAide.Aides
-import LeanAide.SimpleFrontend
-import LeanAide.DefData
+import LeanAideCore.SimpleFrontend
+import LeanAideCore.DefData
 import LeanSearchClient
 import Hammer
 
