@@ -1,4 +1,4 @@
 import Lean
 import LeanAide.Aides
-import LeanAide.Template
+import LeanAideCore.Template
 import LeanAideCore.ChatClient

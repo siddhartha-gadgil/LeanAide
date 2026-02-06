@@ -1,6 +1,6 @@
 import Mathlib
 import Lean
-import LeanAide.SimpleFrontend
+import LeanAideCore.SimpleFrontend
 
 open Lean LeanAide
 

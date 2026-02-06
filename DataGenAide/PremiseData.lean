@@ -1,7 +1,7 @@
 import Lean
 import LeanAide.Aides
-import LeanAide.StatementSyntax
-import LeanAide.DefData
+import LeanAideCore.StatementSyntax
+import LeanAideCore.DefData
 
 /-!
 # Premise data

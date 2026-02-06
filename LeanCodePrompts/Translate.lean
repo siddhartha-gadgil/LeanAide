@@ -10,10 +10,10 @@ import LeanCodePrompts.SpawnNearestEmbeddings
 import Lean.Meta.Tactic.TryThis
 import Batteries.Util.Pickle
 import LeanCodePrompts.ChatClient
-import LeanAide.StatementSyntax
-import LeanAide.TranslateM
+import LeanAideCore.StatementSyntax
+import LeanAideCore.TranslateM
 import LeanAide.PromptBuilder
-import LeanAide.SimpleFrontend
+import LeanAideCore.SimpleFrontend
 import LeanAide.Descriptions
 
 open Lean Meta Elab Parser Command

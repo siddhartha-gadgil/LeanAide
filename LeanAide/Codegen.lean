@@ -1,7 +1,6 @@
 import Lean
 import Qq
 import LeanAide.Aides
-import LeanAide.TranslateM
 import LeanCodePrompts.Translate
 import LeanAide.RunTactics
 import LeanAide.AutoTactic
@@ -212,13 +211,13 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         let err ←   e.toMessageData.toString
         traceAide `leanaide.codegen.info err
         let sourceId := mkIdent (s!"error_source_{hash source}").toName
-        let sourceTacs ←
-          try
-            let stx ← getJsonSyntax source
-            `(tacticSeq| let $sourceId : Json := json% $stx)
-          catch _ =>
-            let strLit := Syntax.mkStrLit (source.pretty)
-            `(tacticSeq| let $sourceId : String := $strLit)
+        let sourceTacs ← `(tacticSeq| sorry)
+          -- try
+          --  let stx ← getJsonSyntax source
+          --  `(tacticSeq| let $sourceId : Json := json% $stx; sorry)
+          -- catch _ =>
+          --  let strLit := Syntax.mkStrLit (source.pretty)
+          --  `(tacticSeq| let $sourceId : String := $strLit; sorry)
         -- let errs := "Error: " ++  err |>.splitOn "\n"
         -- let errStxs : List Syntax.Tactic ←
         --   errs.mapM fun err =>
