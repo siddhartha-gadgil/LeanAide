@@ -1,5 +1,5 @@
 name = "leanaide"
-defaultTargets = ["LeanAide", "LeanCodePrompts", "bulkelab", "translate", "leanaide_process", "nearest_embeddings"]
+defaultTargets = ["LeanAide", "LeanCodePrompts", "translate", "leanaide_process"]
 testDriver = "LeanAideTest"
 
 [[require]]
