@@ -26,25 +26,7 @@ name = "LeanCodePrompts"
 name = "DataGenAide"
 
 [[lean_lib]]
-name = "StatementAutoformalisation"
-
-[[lean_lib]]
-name = "TacticExtraction"
-
-[[lean_lib]]
-name = "CodeGen"
-
-[[lean_lib]]
-name = "notes"
-
-[[lean_lib]]
 name = "LeanAideTest"
-
-[[lean_lib]]
-name = "Scratch"
-
-[[lean_lib]]
-name = "Extras"
 
 [[lean_exe]]
 name = "datagen"
@@ -63,10 +45,6 @@ name = "translate"
 supportInterpreter = true
 
 [[lean_exe]]
-name = "preload_translate"
-supportInterpreter = true
-
-[[lean_exe]]
 name = "leanaide_process"
 supportInterpreter = true
 
@@ -79,41 +57,11 @@ name = "thmextract"
 supportInterpreter = true
 
 [[lean_exe]]
-name = "premiseless"
-supportInterpreter = true
-
-[[lean_exe]]
 name = "bulkchk"
 supportInterpreter = true
 
 [[lean_exe]]
-name = "extras.lib4chk"
-supportInterpreter = true
-
-[[lean_exe]]
-name = "pickle_embeddings"
-
-[[lean_exe]]
 name = "batchcheck"
-supportInterpreter = true
-
-[[lean_exe]]
-name = "nearest_embeddings"
-
-[[lean_exe]]
-name = "nearest_embeddings_full"
-
-[[lean_exe]]
-name = "fetch_embeddings"
-
-[[lean_exe]]
-name = "nearest_embeddings_test"
-
-[[lean_exe]]
-name = "benchmark_embeddings"
-
-[[lean_exe]]
-name = "lemma_suggest"
 supportInterpreter = true
 
 [[lean_exe]]
@@ -129,18 +77,10 @@ name = "props"
 supportInterpreter = true
 
 [[lean_exe]]
-name = "testpremises"
-supportInterpreter = true
-
-[[lean_exe]]
 name = "dedup"
 
 [[lean_exe]]
 name = "getdefns"
-supportInterpreter = true
-
-[[lean_exe]]
-name = "moduledeps"
 supportInterpreter = true
 
 [[lean_exe]]
@@ -180,33 +120,9 @@ name = "descdetails"
 supportInterpreter = true
 
 [[lean_exe]]
-name = "roundtrip"
-supportInterpreter = true
-
-[[lean_exe]]
-name = "codegen"
-supportInterpreter = true
-
-[[lean_exe]]
-name = "termexamples"
-supportInterpreter = true
-
-[[lean_exe]]
-name = "cubecode"
-supportInterpreter = true
-
-[[lean_exe]]
 name = "putnamelab"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "check_command"
-supportInterpreter = true
-
-[[lean_exe]]
-name = "extras.constnames"
-supportInterpreter = true
-
-[[lean_exe]]
-name = "extras.depnames"
 supportInterpreter = true
