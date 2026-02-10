@@ -458,7 +458,8 @@ def ifSkeleton (context: Array Json) (discr: String) (qp: CodeGenerator) : Trans
     mkNoteTactic s!"Failed to translate condition {discr}"
   | Except.ok discrTerm => do
     let discrTerm' : Syntax.Term ← delabDetailed discrTerm
-    let hash := hash discrTerm'.raw.reprint
+    let fmt ← ppTerm {env := ← getEnv} discrTerm'
+    let hash := hash fmt.pretty
     let c := mkIdent <| ("c" ++ s!"_{hash}").toName
     `(tactic| if $c:ident : $discrTerm':term then _ else _)
 
@@ -544,7 +545,8 @@ def groupCasesAux (context: Array Json) (cond_pfs: List <| Expr × Array Syntax.
       let condTerm ← delabDetailed condProp
       let condTerm' : Syntax.Term := ⟨condTerm⟩
       let tailTacs ← groupCasesAux context tail qp
-      let hash := hash condTerm'.raw.reprint
+      let fmt ← ppTerm {env := ← getEnv} condTerm'
+      let hash := hash fmt.pretty
       let c := mkIdent <| ("c" ++ s!"_{hash}").toName
       return #[← `(tactic| if $c:ident : $condTerm':term then $pf* else  $tailTacs*)]
 
@@ -562,7 +564,8 @@ def groupCases (context : Array Json) (cond_pfs: List <| String × Array Syntax.
     | some goal => orAllWithGoal condExprs goal
     | none => orAllSimpleExpr condExprs
   let orAll ← delabDetailed orAllExpr
-  let hash := hash orAll.raw.reprint
+  let fmt ← ppTerm {env := ← getEnv} orAll
+  let hash := hash fmt.pretty
   let orAllId := mkIdent <| Name.mkSimple s!"orAll_{hash}"
   let casesTacs ← groupCasesAux context condPfExprs qp
   let head ← `(tactic| have $orAllId : $orAll := by $union_pfs*)
@@ -707,11 +710,13 @@ elab "#tactic_trythis" goal:term "by" tacticCode:tactic "log" : command =>
 def resolveExistsHave (type : Syntax.Term) (typeTerm? : Option Syntax.Term :=none) : TermElabM <| Array Syntax.Tactic := do
   let existsVarTypes? ← existsVarTypesStx type
   let existsVarTypes := existsVarTypes?.getD #[]
-  let existsVarTypeIdents := existsVarTypes.map fun (n, t) =>
-    let hsh := hash t.raw.reprint
-    let tId := mkIdent <| Name.mkSimple s!"assert_{hsh}"
-    (n, tId)
-  let hash₀ := hash type.raw.reprint
+  let existsVarTypeIdents ←  existsVarTypes.mapM fun (n, t) => do
+    let fmt ← ppTerm {env := ← getEnv} t
+    let hash₀ := hash fmt.pretty
+    let tId : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+    pure (n, tId)
+  let fmt ← ppTerm {env := ← getEnv} type
+  let hash₀ := hash fmt.pretty
   let typeIdent : Syntax.Term := typeTerm?.getD <| mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let rhsIdents :=
     #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
@@ -725,11 +730,13 @@ def cmdResolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Comman
   let mut cmds : Array Syntax.Command := #[]
   let existsFst := mkIdent ``Exists.fst
   let existsSnd := mkIdent ``Exists.snd
-  let existsVarTypeIdents : Array (Ident ×  Ident × Term) := existsVarTypes.map fun (n, t) =>
-    let hsh := hash t.raw.reprint
-    let tId := mkIdent <| Name.mkSimple s!"assert_{hsh}"
-    (n, tId, type)
-  let hash₀ := hash type.raw.reprint
+  let existsVarTypeIdents : Array (Ident ×  Ident × Term) ← existsVarTypes.mapM fun (n, t) => do
+    let fmt ← ppTerm {env := ← getEnv} t
+    let hash₀ := hash fmt.pretty
+    let tId  := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+    pure (n, tId, type)
+  let fmt ← ppTerm {env := ← getEnv} type
+  let hash₀ := hash fmt.pretty
   let typeIdent : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let mut prevTypeIdent := typeIdent
   for (name, tId, type) in existsVarTypeIdents do
@@ -746,7 +753,8 @@ def haveForAssertion (goal: Expr)
   (premises: List Name) :
     TermElabM <| Array Syntax.Tactic := do
   let type ← delabDetailed goal
-  let hash₀ := hash type.raw.reprint
+  let fmt ← ppTerm {env := ← getEnv} type
+  let hash₀ := hash fmt.pretty
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let ids := premises.toArray.map fun n => Lean.mkIdent n
   let existsTacs ←

@@ -1536,7 +1536,8 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
     s!"codegen: no 'condition' found in 'condition_cases_proof'"
   let conditionType ← translator.translateToPropStrict condition
   let conditionStx ← delabDetailed conditionType
-  let hash₀ := hash conditionStx.raw.reprint
+  let fmt ← ppTerm {env := ← getEnv} conditionStx
+  let hash₀ := hash (fmt.pretty)
   let conditionId := mkIdent <| Name.mkSimple s!"condition_{hash₀}"
   let conditionBinder ←
     `(Lean.binderIdent| $conditionId:ident)
@@ -1564,7 +1565,8 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
       (← `(tacticSeq| $resolution*)) trueCaseProofStx
   let some falseCaseProofStx ← withoutModifyingState do getCode translator (some elseGoal) ``tacticSeq falseCaseProof | throwError
     s!"codegen: no translation found for false_case_proof {falseCaseProof}"
-  let hash := hash conditionStx.raw.reprint
+  let fmt ← ppTerm {env := ← getEnv} conditionStx
+  let hash := hash fmt.pretty
   let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
   let conditionBinder ←
     `(Lean.binderIdent| $conditionId:ident)
@@ -1586,7 +1588,8 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
   | (conditionType, trueCaseProof) :: tail => goal.withContext do
     traceAide `leanaide.papercodes.info s!"number of cases (remaining): {tail.length + 1}"
     let conditionStx ← delabDetailed conditionType
-    let hash₀ := hash conditionStx.raw.reprint
+    let fmt ← ppTerm {env := ← getEnv} conditionStx
+    let hash₀ := hash fmt.pretty
     let conditionId := mkIdent <| Name.mkSimple s!"condition_{hash₀}"
     let conditionBinder ←
       `(Lean.binderIdent| $conditionId:ident)
@@ -1610,7 +1613,8 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
         (← `(tacticSeq| $resolution*)) trueCaseProofStx
     let falseCaseProofStx ←
       multiConditionCasesAux translator elseGoal tail exhaustiveness
-    let hash := hash conditionStx.raw.reprint
+    let fmt ← ppTerm {env := ← getEnv} conditionStx
+    let hash := hash fmt.pretty
     let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
     let conditionBinder ←
       `(Lean.binderIdent| $conditionId:ident)
@@ -1672,7 +1676,8 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
         let exhaustGoalType ←
           orAllWithGoal conds (← goal.getType)
         let exhaustGoalStx ← delabDetailed exhaustGoalType
-        let hash := hash exhaustGoalStx.raw.reprint
+        let fmt ← ppTerm {env := ← getEnv} exhaustGoalStx
+        let hash := hash fmt.pretty
         let exhaustId := mkIdent <| ("exhaust" ++ s!"_{hash}").toName
         let exhaustGoalExpr ← mkFreshExprMVar
           exhaustGoalType
@@ -1875,7 +1880,8 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
     for hyp in inductionHyps do
       addPrelude <| s!"Assume (inductively): {hyp}"
     let conditionStx ← delabDetailed conditionType
-    let hash₀ := hash conditionStx.raw.reprint
+    let fmt ← ppTerm {env := ← getEnv} conditionStx
+    let hash₀ := hash fmt.pretty
     let conditionId := mkIdent <| Name.mkSimple s!"condition_{hash₀}"
     let conditionBinder ←
       `(Lean.binderIdent| $conditionId:ident)
@@ -1899,7 +1905,8 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
         (← `(tacticSeq| $resolution*)) trueCaseProofStx
     let falseCaseProofStx ←
       generalInductionAux translator elseGoal tail inductionNames
-    let hash := hash conditionStx.raw.reprint
+    let fmt ← ppTerm {env := ← getEnv} conditionStx
+    let hash := hash fmt.pretty
     let conditionId := mkIdent <| ("condition" ++ s!"_{hash}").toName
     let conditionBinder ←
       `(Lean.binderIdent| $conditionId:ident)
