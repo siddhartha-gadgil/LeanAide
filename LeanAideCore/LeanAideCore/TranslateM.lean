@@ -467,7 +467,6 @@ def runBackgroundChainIO (t₀ : α)(x: α  → TranslateM α)   (em?: Option Em
   AsyncTask.block <| ←
     Async.toIO do
       runBackgroundChain t₀ x em? ctx env callback chains prios
-  return ()
 
 end Async
 -- {"task" : "echo"}

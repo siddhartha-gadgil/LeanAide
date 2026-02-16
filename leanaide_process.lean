@@ -6,7 +6,7 @@ import Cli
 import LeanAide.Actor
 import LeanAide.StructToLean
 import LeanAideCore.TaskStatus
-open Lean Cli LeanAide.Meta LeanAide Translator
+open Lean Cli LeanAide.Meta LeanAide Translator Std.Internal.IO.Async
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
@@ -31,6 +31,40 @@ def webGetLine (url : String) : Unit →  IO String := fun _ => do
     logIO `leanaide.tasks.info s!"Failed to fetch input from {url}: {e}"
     throw <| IO.userError s!"Failed to fetch input from {url}: {e}"
 
+def spawnTaskAsync (js : Json) (translator : Translator) (ctx : Core.Context) (env : Environment)
+    (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) (prios : Task.Priority) : Async Unit := do
+    let hash := hash js
+    logToStdErr `leanaide.translate.info "Running in background"
+    states.addStart hash js
+    let response_url? :=
+      (js.getObjValAs? String "response_url").toOption
+    let callback (js res : Json) : IO Unit := do
+      logIO `leanaide.tasks.info s!"Background process completed for token: {hash}\ninput: {js.pretty}"
+      logIO `leanaide.tasks.info s!"Output: {res.pretty}"
+      let outfile : System.FilePath := ".leanaide_cache" / "tasks" / ("response_" ++ toString hash ++ ".json")
+      IO.FS.writeFile outfile (res.pretty)
+      match response_url? with
+      | some url =>
+        try
+          let data :=
+            Json.mkObj [("token", toJson hash), ("response", res)]
+          let res ← IO.Process.run {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", data.pretty, url]}
+          logIO `leanaide.tasks.info s!"Posted results to {url} for token {hash}, response: {res}"
+        catch e =>
+          logIO `leanaide.tasks.warning s!"Failed to post results to {url} for token {hash}: {e}"
+      | none => pure ()
+      states.addResult hash res
+    let prios :=
+          (js.getObjValAs? Task.Priority "priority").toOption |>.getD prios
+    logToStdErr `leanaide.tasks.info s!"Spawning async task with token {hash}"
+    TranslateM.runBackgroundChain js (Actor.response translator) none ctx env callback chains prios
+
+def spawnTaskIO (js : Json) (translator : Translator) (ctx : Core.Context) (env : Environment)
+    (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) (prios : Task.Priority) : IO Unit := do
+  AsyncTask.block <| ←
+    Async.toIO do
+      spawnTaskAsync js translator ctx env states chains prios
+
 partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putStrLn : String → IO Unit)
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
   logToStdErr `leanaide.tasks.info "Server ready. Waiting for input..."
@@ -52,32 +86,7 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
       match check? with
       | none =>
         logToStdErr `leanaide.translate.info "Running in background"
-        states.addStart hash js
-        let response_url? :=
-          (js.getObjValAs? String "response_url").toOption
-        let callback (js res : Json) : IO Unit := do
-          logIO `leanaide.tasks.info s!"Background process completed for token: {hash}\ninput: {js.pretty}"
-          logIO `leanaide.tasks.info s!"Output: {res.pretty}"
-          let outfile : System.FilePath := ".leanaide_cache" / "tasks" / ("response_" ++ toString hash ++ ".json")
-          IO.FS.writeFile outfile (res.pretty)
-          match response_url? with
-          | some url =>
-            try
-              let data :=
-                Json.mkObj [("token", toJson hash), ("response", res)]
-              let res ← IO.Process.run {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", data.pretty, url]}
-              logIO `leanaide.tasks.info s!"Posted results to {url} for token {hash}, response: {res}"
-            catch e =>
-              logIO `leanaide.tasks.warning s!"Failed to post results to {url} for token {hash}: {e}"
-          | none => pure ()
-
-          states.addResult hash res
-        let prios :=
-          (js.getObjValAs? Task.Priority "priority").toOption |>.getD Task.Priority.default
-        TranslateM.runBackgroundChainIO js
-          (Actor.response translator) none ctx env
-          callback chains prios
-        setLogProcess (s!"process:{hash}")
+        spawnTaskIO js translator ctx env states chains Task.Priority.default
         logToStdErr `leanaide.translate.info "Background process launched"
         putStrLn (Json.mkObj [("status", "background"), ("token", toJson hash)]).compress
       | some ts =>
