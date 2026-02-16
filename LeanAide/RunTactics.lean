@@ -213,7 +213,7 @@ def relDecls : List (Option LocalDecl) → Syntax.Term → MetaM Syntax.Term
       | BinderInfo.implicit => `({$n:ident : $typeStx} →  $prev)
       | BinderInfo.strictImplicit => `({{$n:ident : $typeStx}} →  $prev)
 
-#check evalTacticSafe
+-- #check evalTacticSafe
 
 def frontendCodeForTactics (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM String  :=
     mvarId.withContext do

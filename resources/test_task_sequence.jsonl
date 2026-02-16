@@ -1,0 +1,6 @@
+{"task": "echo", "payload": "Hello, World!"}
+{"mode" : "sleep", "duration": 5}
+{"task": "echo", "payload": "Testing 123"}
+{"mode":"async", "task": "translate_thm", "theorem_text": "There are infinitely many odd prime natural numbers."}
+{"task": "echo", "payload": "Goodbye, World!"}
+{"mode": "quit"}
