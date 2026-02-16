@@ -6,11 +6,21 @@ import Cli
 import LeanAide.Actor
 import LeanAide.StructToLean
 import LeanAideCore.TaskStatus
-open Lean Cli LeanAide.Meta LeanAide Translator Std.Internal.IO.Async
+open Lean Cli LeanAide.Meta LeanAide Translator Std.Internal.IO Async
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
+
+def postJson (url : String) (msg : Json) : IO Unit := do
+  try
+    let res ← IO.Process.run {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", msg.compress, url]}
+    logIO `leanaide.tasks.info s!"Posted results to {url}, response: {res}"
+  catch e =>
+    logIO `leanaide.tasks.info s!"Failed to post results to {url}: {e}"
+
+def postJsonAsync (url : String) (msg : Json) : Async Unit := background do
+  postJson url msg
 
 def webPutStrLn (url : String) (msg : String) : IO Unit := do
   try
@@ -31,18 +41,32 @@ def webGetLine (url : String) : Unit →  IO String := fun _ => do
     logIO `leanaide.tasks.info s!"Failed to fetch input from {url}: {e}"
     throw <| IO.userError s!"Failed to fetch input from {url}: {e}"
 
+def testLoop (steps: Nat) : Async Unit := do
+  match steps with
+  | 0 => logIO `leanaide.tasks.info "Done with test loop."
+  | n + 1 => do
+    logIO `leanaide.tasks.info s!"Steps remaining {n}"
+    Async.sleep 3000
+    testLoop n
+
 def spawnTaskAsync (js : Json) (translator : Translator) (ctx : Core.Context) (env : Environment)
-    (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) (prios : Task.Priority) : Async Unit := do
+    (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) (prios : Task.Priority)
+    (outputFn?: Option (Json → Async Unit) := none) : Async Unit := do
     let hash := hash js
     logToStdErr `leanaide.translate.info "Running in background"
     states.addStart hash js
     let response_url? :=
       (js.getObjValAs? String "response_url").toOption
-    let callback (js res : Json) : IO Unit := do
+    let callback (js res : Json) : Async Unit := do
       logIO `leanaide.tasks.info s!"Background process completed for token: {hash}\ninput: {js.pretty}"
       logIO `leanaide.tasks.info s!"Output: {res.pretty}"
       let outfile : System.FilePath := ".leanaide_cache" / "tasks" / ("response_" ++ toString hash ++ ".json")
       IO.FS.writeFile outfile (res.pretty)
+      match outputFn? with
+      | some outputFn => do
+        logIO `leanaide.tasks.info s!"Sending output to callback for token {hash}"
+        background <| outputFn res
+      | none => pure ()
       match response_url? with
       | some url =>
         try
@@ -67,6 +91,8 @@ def spawnTaskIO (js : Json) (translator : Translator) (ctx : Core.Context) (env 
 
 partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putStrLn : String → IO Unit)
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
+  AsyncTask.block <| ←
+    Async.toIO do background <| testLoop 10
   logToStdErr `leanaide.tasks.info "Server ready. Waiting for input..."
   let inp ← getLine ()
   if inp.trim.isEmpty then
