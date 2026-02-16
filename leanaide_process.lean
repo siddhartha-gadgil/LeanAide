@@ -119,11 +119,17 @@ def fileInputFn (path : System.FilePath) : IO (Unit → Async Json) := do
       pure <| Json.null
   return readFn
 
+def fileOutputFn (path : System.FilePath) : IO (Json → Async Unit) := do
+  let h ← Handle.mk path IO.FS.Mode.append
+  let writeFn : Json → Async Unit := fun js => do
+    h.putStrLn js.compress
+    h.flush
+  return writeFn
+
 def testAsyncLoop  (env: Environment)
   (translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit :=   do
     let inputFn ←  fileInputFn ("resources" / "test_task_sequence.jsonl")
-    let outputFn : Json → Async Unit := fun res => do
-      logIO `leanaide.tasks.info s!"Output from async loop: {res.pretty}"
+    let outputFn ← fileOutputFn ("data" / "test_task_sequence_output.jsonl")
     asyncLoop inputFn outputFn env translator ctx states chains
 
 partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putStrLn : String → IO Unit)
