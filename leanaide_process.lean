@@ -89,8 +89,8 @@ def spawnTaskIO (js : Json) (translator : Translator) (ctx : Core.Context) (env 
     Async.toIO do
       spawnTaskAsync js translator ctx env states chains prios
 
-partial def asyncLoop (inputFn: Async Json) (outputFn : Json → Async Unit) (env: Environment)(translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit := do
-  let js ← inputFn
+partial def asyncLoop (inputFn: Unit → Async Json) (outputFn : Json → Async Unit) (env: Environment)(translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit := do
+  let js ← inputFn ()
   let mode? := js.getObjValAs? String "mode" |>.toOption
   match mode? with
   | some "quit" =>
@@ -108,16 +108,20 @@ partial def asyncLoop (inputFn: Async Json) (outputFn : Json → Async Unit) (en
     asyncLoop inputFn outputFn env translator ctx states chains
 
 open IO.FS
+def fileInputFn (path : System.FilePath) : IO (Unit → Async Json) := do
+  let h ← Handle.mk path IO.FS.Mode.read
+  let readFn: Unit → Async Json := fun _ ↦ do
+    let l ← h.getLine
+    match Json.parse l with
+    | Except.ok js => pure js
+    | Except.error e => do
+      logIO `leanaide.tasks.info s!"Error parsing input line: {e}"
+      pure <| Json.null
+  return readFn
+
 def testAsyncLoop  (env: Environment)
   (translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit :=   do
-    let h ← Handle.mk ("resources" / "test_task_sequence.jsonl") IO.FS.Mode.read
-    let inputFn : Async Json := do
-      let l ←  h.getLine
-      match Json.parse l with
-      | Except.ok js => pure js
-      | Except.error e => do
-        logIO `leanaide.tasks.info s!"Error parsing input line: {e}"
-        pure <| Json.null
+    let inputFn ←  fileInputFn ("resources" / "test_task_sequence.jsonl")
     let outputFn : Json → Async Unit := fun res => do
       logIO `leanaide.tasks.info s!"Output from async loop: {res.pretty}"
     asyncLoop inputFn outputFn env translator ctx states chains
