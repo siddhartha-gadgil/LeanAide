@@ -89,10 +89,43 @@ def spawnTaskIO (js : Json) (translator : Translator) (ctx : Core.Context) (env 
     Async.toIO do
       spawnTaskAsync js translator ctx env states chains prios
 
+partial def asyncLoop (inputFn: Async Json) (outputFn : Json → Async Unit) (env: Environment)(translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit := do
+  let js ← inputFn
+  let mode? := js.getObjValAs? String "mode" |>.toOption
+  match mode? with
+  | some "quit" =>
+    logToStdErr `leanaide.translate.info "Exiting async loop..."
+    return ()
+  | some "sleep" =>
+    let duration := js.getObjValAs? Nat "duration" |>.toOption.getD 10
+    logToStdErr `leanaide.translate.debug s!"Sleeping for {duration} seconds..."
+    Async.sleep <| Std.Time.Millisecond.Offset.ofNat <| duration * 1000
+    logToStdErr `leanaide.translate.debug "Awake."
+    asyncLoop inputFn outputFn env translator ctx states chains
+  | _ =>
+    spawnTaskAsync js translator ctx
+      env states chains Task.Priority.default (some outputFn)
+    asyncLoop inputFn outputFn env translator ctx states chains
+
+open IO.FS
+def testAsyncLoop  (env: Environment)
+  (translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit :=   do
+    let h ← Handle.mk ("resources" / "test_task_sequence.jsonl") IO.FS.Mode.read
+    let inputFn : Async Json := do
+      let l ←  h.getLine
+      match Json.parse l with
+      | Except.ok js => pure js
+      | Except.error e => do
+        logIO `leanaide.tasks.info s!"Error parsing input line: {e}"
+        pure <| Json.null
+    let outputFn : Json → Async Unit := fun res => do
+      logIO `leanaide.tasks.info s!"Output from async loop: {res.pretty}"
+    asyncLoop inputFn outputFn env translator ctx states chains
+
 partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putStrLn : String → IO Unit)
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
-  AsyncTask.block <| ←
-    Async.toIO do background <| testLoop 10
+  -- AsyncTask.block <| ←
+  --   Async.toIO do background <| testLoop 10
   logToStdErr `leanaide.tasks.info "Server ready. Waiting for input..."
   let inp ← getLine ()
   if inp.trim.isEmpty then
@@ -106,6 +139,10 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
     let mode? := js.getObjValAs? String "mode" |>.toOption
     let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     match mode? with
+    | some "test_async" =>
+      logToStdErr `leanaide.translate.info "Running test async loop..."
+      AsyncTask.block <| ←
+        Async.toIO do background <| testAsyncLoop env translator ctx states chains
     | some "async" =>
       let hash := hash js
       let check? ← states.lookup hash
