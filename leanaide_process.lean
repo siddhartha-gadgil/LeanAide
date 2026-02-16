@@ -6,43 +6,59 @@ import Cli
 import LeanAide.Actor
 import LeanAide.StructToLean
 import LeanAideCore.TaskStatus
-open Lean Cli LeanAide.Meta LeanAide Translator Std.Internal.IO.Async
+open Lean Cli LeanAide.Meta LeanAide Translator Std.Internal.IO Async
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
-def webPutStrLn (url : String) (msg : String) : IO Unit := do
+def postJson (url : String) (msg : Json) : IO Unit := do
   try
-    let res ← IO.Process.run {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", msg, url]}
+    let res ← IO.Process.run {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", msg.compress, url]}
     logIO `leanaide.tasks.info s!"Posted results to {url}, response: {res}"
   catch e =>
     logIO `leanaide.tasks.info s!"Failed to post results to {url}: {e}"
 
-def webGetLine (url : String) : Unit →  IO String := fun _ => do
-  try
-    let data := json% {"mode": "worker"} |>.compress
-    let res ← IO.Process.output {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", data, url]}
-    logIO `leanaide.tasks.info s!"Fetched input from {url}, response: {res.stdout}, errors: {res.stderr}({res.exitCode})"
-    if res.exitCode != 0 then
-      throw <| IO.userError s!"Failed to fetch input from {url}: {res.stderr}"
-    return res.stdout
-  catch e =>
-    logIO `leanaide.tasks.info s!"Failed to fetch input from {url}: {e}"
-    throw <| IO.userError s!"Failed to fetch input from {url}: {e}"
+def postJsonAsync (url : String) (msg : Json) : Async Unit := background do
+  postJson url msg
+
+-- def webPutStrLn (url : String) (msg : String) : IO Unit := do
+--   try
+--     let res ← IO.Process.run {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", msg, url]}
+--     logIO `leanaide.tasks.info s!"Posted results to {url}, response: {res}"
+--   catch e =>
+--     logIO `leanaide.tasks.info s!"Failed to post results to {url}: {e}"
+
+-- def webGetLine (url : String) : Unit →  IO String := fun _ => do
+--   try
+--     let data := json% {"mode": "worker"} |>.compress
+--     let res ← IO.Process.output {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", data, url]}
+--     logIO `leanaide.tasks.info s!"Fetched input from {url}, response: {res.stdout}, errors: {res.stderr}({res.exitCode})"
+--     if res.exitCode != 0 then
+--       throw <| IO.userError s!"Failed to fetch input from {url}: {res.stderr}"
+--     return res.stdout
+--   catch e =>
+--     logIO `leanaide.tasks.info s!"Failed to fetch input from {url}: {e}"
+--     throw <| IO.userError s!"Failed to fetch input from {url}: {e}"
 
 def spawnTaskAsync (js : Json) (translator : Translator) (ctx : Core.Context) (env : Environment)
-    (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) (prios : Task.Priority) : Async Unit := do
+    (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) (prios : Task.Priority)
+    (outputFn?: Option (Json → Async Unit) := none) : Async Unit := do
     let hash := hash js
     logToStdErr `leanaide.translate.info "Running in background"
     states.addStart hash js
     let response_url? :=
       (js.getObjValAs? String "response_url").toOption
-    let callback (js res : Json) : IO Unit := do
+    let callback (js res : Json) : Async Unit := do
       logIO `leanaide.tasks.info s!"Background process completed for token: {hash}\ninput: {js.pretty}"
       logIO `leanaide.tasks.info s!"Output: {res.pretty}"
       let outfile : System.FilePath := ".leanaide_cache" / "tasks" / ("response_" ++ toString hash ++ ".json")
       IO.FS.writeFile outfile (res.pretty)
+      match outputFn? with
+      | some outputFn => do
+        logIO `leanaide.tasks.info s!"Sending output to callback for token {hash}"
+        background <| outputFn res
+      | none => pure ()
       match response_url? with
       | some url =>
         try
@@ -65,6 +81,80 @@ def spawnTaskIO (js : Json) (translator : Translator) (ctx : Core.Context) (env 
     Async.toIO do
       spawnTaskAsync js translator ctx env states chains prios
 
+partial def asyncLoop (inputFn: Unit → Async Json) (outputFn : Json → Async Unit) (env: Environment)(translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit := do
+  let js ← inputFn ()
+  let mode? := js.getObjValAs? String "mode" |>.toOption
+  match mode? with
+  | some "quit" =>
+    logToStdErr `leanaide.translate.info "Exiting async loop..."
+    return ()
+  | some "sleep" =>
+    let duration := js.getObjValAs? Nat "duration" |>.toOption.getD 10
+    logToStdErr `leanaide.translate.debug s!"Sleeping for {duration} seconds..."
+    Async.sleep <| Std.Time.Millisecond.Offset.ofNat <| duration * 1000
+    logToStdErr `leanaide.translate.debug "Awake."
+    asyncLoop inputFn outputFn env translator ctx states chains
+  | _ =>
+    spawnTaskAsync js translator ctx
+      env states chains Task.Priority.default (some outputFn)
+    asyncLoop inputFn outputFn env translator ctx states chains
+
+open IO.FS
+def fileInputFn (path : System.FilePath) : IO (Unit → Async Json) := do
+  let h ← Handle.mk path IO.FS.Mode.read
+  let readFn: Unit → Async Json := fun _ ↦ do
+    let l ← h.getLine
+    match Json.parse l with
+    | Except.ok js => pure js
+    | Except.error e => do
+      logIO `leanaide.tasks.info s!"Error parsing input line: {e}"
+      pure <| Json.null
+  return readFn
+
+def fileOutputFn (path : System.FilePath) : IO (Json → Async Unit) := do
+  let h ← Handle.mk path IO.FS.Mode.append
+  let writeFn : Json → Async Unit := fun js => background do
+    h.putStrLn js.compress
+    h.flush
+  return writeFn
+
+def urlInputFn (url : String)(retryTime? : Option Nat) : IO (Unit → Async Json) := do
+  let readFn: Unit → Async Json := fun _ ↦ do
+    let data := json% {"mode": "worker"} |>.compress
+    let res ← IO.Process.output {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", data, url]}
+    logIO `leanaide.tasks.info s!"Fetched input from {url}, response: {res.stdout}, errors: {res.stderr}({res.exitCode})"
+    if res.exitCode != 0 then
+      logIO `leanaide.tasks.info s!"Failed to fetch input from {url}: {res.stderr}"
+      match retryTime? with
+      | some t => do
+        logIO `leanaide.tasks.info s!"Retrying in {t} seconds..."
+        return Json.mkObj [("mode", "sleep"), ("duration", Json.num t)]
+      | none =>
+        return json% {"mode" : "quit"}
+    match Json.parse res.stdout with
+    | Except.ok js => pure js
+    | Except.error e => do
+      logIO `leanaide.tasks.info s!"Error parsing input from {url}: {e}"
+      return json% {"mode" : "quit"}
+  return readFn
+
+def urlOutputFn (url : String) : Json → Async Unit :=
+  let writeFn : Json → Async Unit := fun js => background do
+    try
+      let data :=
+        Json.mkObj [("response", js)] |>.compress
+      let res ← IO.Process.run {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", data, url]}
+      logIO `leanaide.tasks.info s!"Posted results to {url}, response: {res}"
+    catch e =>
+      logIO `leanaide.tasks.info s!"Failed to post results to {url}: {e}"
+  writeFn
+
+def testAsyncLoop  (env: Environment)
+  (translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit :=   do
+    let inputFn ←  fileInputFn ("resources" / "test_task_sequence.jsonl")
+    let outputFn ← fileOutputFn ("data" / "test_task_sequence_output.jsonl")
+    asyncLoop inputFn outputFn env translator ctx states chains
+
 partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putStrLn : String → IO Unit)
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
   logToStdErr `leanaide.tasks.info "Server ready. Waiting for input..."
@@ -80,6 +170,10 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
     let mode? := js.getObjValAs? String "mode" |>.toOption
     let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 0, maxRecDepth := 1000000}
     match mode? with
+    | some "test_async" =>
+      logToStdErr `leanaide.translate.info "Running test async loop..."
+      AsyncTask.block <| ←
+        Async.toIO do background <| testAsyncLoop env translator ctx states chains
     | some "async" =>
       let hash := hash js
       let check? ← states.lookup hash
@@ -106,14 +200,14 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
       logToStdErr `leanaide.translate.debug s!"Sleeping for {duration} seconds..."
       IO.sleep (duration * 1000).toUInt32
       logToStdErr `leanaide.translate.debug "Awake."
-    | some "worker" =>
-      let .ok getWorkUrl :=
-        js.getObjValAs? String "get_work_url" | IO.throwServerError "No get_work_url provided"
-      let .ok postWorkUrl :=
-        js.getObjValAs? String "post_work_url" | IO.throwServerError "No post_work_url provided"
-      logToStdErr `leanaide.translate.info s!"Starting worker with getWorkUrl: {getWorkUrl} and postWorkUrl: {postWorkUrl}"
-      discard <| process_loop env (webGetLine getWorkUrl) (webPutStrLn postWorkUrl)
-        translator states chains
+    -- | some "worker" =>
+    --   let .ok getWorkUrl :=
+    --     js.getObjValAs? String "get_work_url" | IO.throwServerError "No get_work_url provided"
+    --   let .ok postWorkUrl :=
+    --     js.getObjValAs? String "post_work_url" | IO.throwServerError "No post_work_url provided"
+    --   logToStdErr `leanaide.translate.info s!"Starting worker with getWorkUrl: {getWorkUrl} and postWorkUrl: {postWorkUrl}"
+    --   discard <| process_loop env (webGetLine getWorkUrl) (webPutStrLn postWorkUrl)
+    --     translator states chains
     | _ =>
       logToStdErr `leanaide.translate.info "Running in foreground"
       let core := Actor.response translator js |>.runToCore
