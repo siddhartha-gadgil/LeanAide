@@ -101,15 +101,25 @@ partial def asyncLoop (inputFn: Unit → Async Json) (outputFn : Json → Async 
 
 open IO.FS
 def fileInputFn (path : System.FilePath) : IO (Unit → Async Json) := do
+  try
   let h ← Handle.mk path IO.FS.Mode.read
   let readFn: Unit → Async Json := fun _ ↦ do
-    let l ← h.getLine
-    match Json.parse l with
-    | Except.ok js => pure js
-    | Except.error e => do
-      logIO `leanaide.tasks.info s!"Error parsing input line: {e}"
-      pure <| Json.null
+    try
+      let l ← h.getLine
+      match Json.parse l with
+      | Except.ok js => pure js
+      | Except.error e => do
+        logIO `leanaide.tasks.info s!"Error parsing input line: {e}"
+        pure <| json% {"mode" : "quit"}
+    catch e =>
+      logIO `leanaide.tasks.info s!"Error reading input file: {e}"
+      pure <| json% {"mode" : "quit"}
   return readFn
+  catch e =>
+    logIO `leanaide.tasks.info s!"Failed to open input file {path}: {e}"
+    return fun _ => do
+      logIO `leanaide.tasks.info s!"No input file available, exiting async loop."
+      return (json% {"mode" : "quit"})
 
 def fileOutputFn (path : System.FilePath) : IO (Json → Async Unit) := do
   let h ← Handle.mk path IO.FS.Mode.append
@@ -118,7 +128,7 @@ def fileOutputFn (path : System.FilePath) : IO (Json → Async Unit) := do
     h.flush
   return writeFn
 
-def urlInputFn (url : String)(retryTime? : Option Nat) : IO (Unit → Async Json) := do
+def urlInputFn (url : String)(retryTime? : Option Nat := none) : IO (Unit → Async Json) := do
   let readFn: Unit → Async Json := fun _ ↦ do
     let data := json% {"mode": "worker"} |>.compress
     let res ← IO.Process.output {cmd := "curl", args := #["-X", "POST", "-H", "Content-Type: application/json","--data", data, url]}
@@ -200,6 +210,36 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
       logToStdErr `leanaide.translate.debug s!"Sleeping for {duration} seconds..."
       IO.sleep (duration * 1000).toUInt32
       logToStdErr `leanaide.translate.debug "Awake."
+    | some "spawn_worker" =>
+      logToStdErr `leanaide.translate.info "Spawning worker process..."
+      let inputFile? := js.getObjValAs? System.FilePath "input_file" |>.toOption
+      let outputFile? := js.getObjValAs? System.FilePath "output_file" |>.toOption
+      let inputUrl? := js.getObjValAs? String "input_url" |>.toOption
+      let outputUrl? := js.getObjValAs? String "output_url" |>.toOption
+      let inputFn? : Option (Unit → Async Json) ←
+        match inputFile?, inputUrl? with
+        | some path, _ => pure <| some <| ← fileInputFn path
+        | none, some url =>
+          let retryTime := js.getObjValAs? Nat "retry_time" |>.toOption
+          pure <| some <| ← urlInputFn url retryTime
+        | none, none => do
+          logToStdErr `leanaide.translate.warning "No input source provided for worker, cannot spawn worker process."
+          pure none
+      match inputFn? with
+      | none => do
+          logToStdErr `leanaide.translate.warning "No valid input source provided for worker, cannot spawn worker process."
+          pure ()
+      | some inputFn => do
+        let outputFn : Json → Async Unit ←
+          match outputFile?, outputUrl? with
+          | some path, _ => fileOutputFn path
+          | none, some url => pure (urlOutputFn url)
+          | none, none => do
+            logToStdErr `leanaide.translate.warning "No output destination provided for worker, defaulting to file output with 'data/worker_output.jsonl'"
+            fileOutputFn ("data" / "worker_output.jsonl")
+        AsyncTask.block <| ←
+          Async.toIO do background <| asyncLoop inputFn outputFn env translator ctx states chains
+
     -- | some "worker" =>
     --   let .ok getWorkUrl :=
     --     js.getObjValAs? String "get_work_url" | IO.throwServerError "No get_work_url provided"

@@ -1,0 +1,4 @@
+{"data":{"payload":"Hello, World!","task":"echo"},"payload":"Hello, World!","result":"success","task":"echo"}
+{"data":{"payload":"Testing 123","task":"echo"},"payload":"Testing 123","result":"success","task":"echo"}
+{"data":{"payload":"Goodbye, World!","task":"echo"},"payload":"Goodbye, World!","result":"success","task":"echo"}
+{"mode":"async","result":"success","task":"translate_thm","theorem_code":"{p | Nat.Prime p ∧ p % 2 = 1}.Infinite","theorem_text":"There are infinitely many odd prime natural numbers."}
