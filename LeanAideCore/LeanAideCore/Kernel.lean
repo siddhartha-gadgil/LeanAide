@@ -59,6 +59,37 @@ class Kernel where
   /-- Query the LeanAide server with a natural language statement. -/
   mathQuery (s: String) (history : List ChatPair := []) (n: Nat := 3) : MetaM (List String)
 
+structure TheoremStatementText where
+  theoremText : String
+
+structure TheoremWithCode extends TheoremStatementText where
+  name : Name
+  theoremCode : Expr
+  statement : Syntax.Command
+
+structure TheoremProved extends TheoremWithCode where
+  proof : String
+
+structure TheoremStructuredProof extends TheoremProved where
+  jsonProof : Json
+
+structure TheoremProofCode extends TheoremProved where
+  proofCode : TSyntax ``commandSeq
+
+class TaskName (α β : Type) where
+  taskName : String
+
+class TaskList (α β : Type) where
+  taskList : List (String)
+
+instance TaskList.cons {α β γ} (taskName :  TaskName α β) (taskList : TaskList α γ) : TaskList α γ where
+  taskList := taskName.taskName :: taskList.taskList
+
+instance TaskList.single {α β} (taskName : TaskName α β) : TaskList α β where
+  taskList := [taskName.taskName]
+
+def taskList {α β} [inst: TaskList α β] : List String := inst.taskList
+
 namespace Kernel
 
 /--

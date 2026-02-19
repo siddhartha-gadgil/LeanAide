@@ -6,7 +6,6 @@ import requests
 import json
 import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 # Config the file paths
 INDEX_FOLDER = "SimilaritySearch/Indexes"
@@ -220,6 +219,7 @@ import torch
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print(f"Using device: {device}", file=sys.stderr)
 print(f"Loading model: {MODEL_NAME}", file=sys.stderr)
+from sentence_transformers import SentenceTransformer
 MODEL = SentenceTransformer(MODEL_NAME, device=device, model_kwargs={"dtype": torch.bfloat16})
 print("Model loaded!\n", file=sys.stderr)
 
