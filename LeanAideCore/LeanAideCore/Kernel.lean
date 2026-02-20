@@ -76,19 +76,37 @@ structure TheoremStructuredProof extends TheoremProved where
 structure TheoremProofCode extends TheoremProved where
   proofCode : TSyntax ``commandSeq
 
-class TaskName (α β : Type) where
+/--
+Task acting on type `α` and returning type `β`, where `α` is the input type and `β` is the output type. This is used to capture the various tasks that LeanAide can perform, such as translating a theorem, generating documentation, and so on. The `TaskName` typeclass is used to associate a string name with each task, which is used when querying the LeanAide server.
+-/
+class TaskName (α : Type)(β : outParam Type) where
   taskName : String
 
 class TaskList (α β : Type) where
   taskList : List (String)
+deriving Repr
 
-instance TaskList.cons {α β γ} (taskName :  TaskName α β) (taskList : TaskList α γ) : TaskList α γ where
+instance TaskList.cons {α β γ : Type} [taskName :  TaskName α β] [taskList : TaskList β  γ] : TaskList α γ where
   taskList := taskName.taskName :: taskList.taskList
 
-instance TaskList.single {α β} (taskName : TaskName α β) : TaskList α β where
+instance TaskList.single {α β} [taskName : TaskName α β] : TaskList α β where
   taskList := [taskName.taskName]
 
-def taskList {α β} [inst: TaskList α β] : List String := inst.taskList
+def taskList (α β: Type) [inst: TaskList α β] : List String := inst.taskList
+
+instance TaskName.translateThm : TaskName TheoremStatementText TheoremWithCode where
+  taskName := "translate_thm_detailed"
+
+instance TaskName.proveTheoremForFormalization : TaskName TheoremWithCode TheoremProved where
+  taskName := "prove_for_formalization"
+
+instance TaskName.structuredProof : TaskName TheoremProved TheoremStructuredProof where
+  taskName := "structured_json_proof"
+
+instance TaskName.proofCode : TaskName TheoremStructuredProof TheoremProofCode where
+  taskName := "lean_from_json_structured"
+
+-- #eval taskList TheoremStatementText TheoremProofCode
 
 namespace Kernel
 
