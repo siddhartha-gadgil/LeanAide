@@ -590,6 +590,11 @@ def getPipeM : MetaM LeanAidePipe := do
   let inst ←  synthInstance (mkConst ``LeanAidePipe)
   unsafe evalExpr LeanAidePipe (mkConst ``LeanAidePipe) inst
 
+def getUrlM : MetaM String := do
+  let inst ←  synthInstance (mkConst ``LeanAideUrl)
+  let instVal ← unsafe evalExpr LeanAideUrl (mkConst ``LeanAideUrl) inst
+  return instVal.url
+
 open LeanAidePipe in
 def getCodeJsonTokenM (json: Json) : MetaM UInt64 := do
   let pipe ← getPipeM
