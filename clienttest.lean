@@ -10,7 +10,7 @@ set_option linter.unusedTactic false
 open Nat
 
 open Qq
-#leanaide_connect "http://10.134.13.103:7654"
+#leanaide_connect -- "http://10.134.13.103:7654"
 
 #eval LeanAidePipe.response <| json% {"task": "echo"}
 

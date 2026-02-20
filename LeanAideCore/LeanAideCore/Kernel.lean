@@ -106,6 +106,12 @@ instance TaskName.structuredProof : TaskName TheoremProved TheoremStructuredProo
 instance TaskName.proofCode : TaskName TheoremStructuredProof TheoremProofCode where
   taskName := "lean_from_json_structured"
 
+class JsonForTask (α : Type) where
+  toJsonForTask : α → MetaM Json
+
+class JsonFromTask (α : Type) where
+  fromJsonForTask : Json → TermElabM α
+
 -- #eval taskList TheoremStatementText TheoremProofCode
 
 namespace Kernel
@@ -160,6 +166,10 @@ A connection to a LeanAide server, which can be used to query for responses.
 -/
 class LeanAidePipe where
   queryResponse : Json → MetaM Json
+
+class LeanAideUrl where
+  url : String
+
 namespace LeanAidePipe
 
 /-- Create a `LeanAidePipe` from a URL, using `curl` to send requests. -/
@@ -170,6 +180,9 @@ def fromURL (url: String) : LeanAidePipe := {
       Json.parse output | throwError s!"Failed to parse response: \n{output}"
     return response
 }
+
+
+instance [inst : LeanAideUrl] : LeanAidePipe := LeanAidePipe.fromURL inst.url
 
 /-- Response from a LeanAide pipe -/
 def response [pipe: LeanAidePipe] (req: Json) : MetaM Json :=
@@ -547,9 +560,10 @@ A command to create a `LeanAidePipe` instance from a URL, defaulting to `localho
 -/
 elab "#leanaide_connect" url?:(str)? : command =>
 do
+  -- let clsId := mkIdent ``LeanAideUrl
   let cmd ← match url? with
-  | some url => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL $url)
-  | none => `(command| instance : LeanAidePipe := LeanAidePipe.fromURL "localhost:7654")
+  | some url => `(command| instance : LeanAideUrl := ⟨$url⟩)
+  | none => `(command| instance : LeanAideUrl := ⟨"localhost:7654"⟩)
   Command.elabCommand cmd
   Command.liftTermElabM do
   let inst ← synthInstance (mkConst ``LeanAidePipe)
