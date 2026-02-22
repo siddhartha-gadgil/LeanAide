@@ -68,12 +68,12 @@ structure TheoremWithCode extends TheoremStatementText where
   statement : Syntax.Command
 
 structure TheoremProved extends TheoremWithCode where
-  proof : String
+  document : String
 
 structure TheoremStructuredProof extends TheoremProved where
-  jsonProof : Json
+  documentJson : Json
 
-structure TheoremProofCode extends TheoremProved where
+structure TheoremProofCode extends TheoremStructuredProof where
   proofCode : TSyntax ``commandSeq
 
 /--
@@ -109,8 +109,14 @@ instance TaskName.proofCode : TaskName TheoremStructuredProof TheoremProofCode w
 class JsonForTask (α : Type) where
   toJsonForTask : α → MetaM Json
 
-class JsonFromTask (α : Type) where
+def jsonForTask {α : Type} [inst: JsonForTask α] (a : α) : MetaM Json :=
+  inst.toJsonForTask a
+
+class FromTaskJson (α : Type) where
   fromJsonForTask : Json → TermElabM α
+
+def fromTaskJson (α : Type) [inst: FromTaskJson α] (json : Json) : TermElabM α :=
+  inst.fromJsonForTask json
 
 -- #eval taskList TheoremStatementText TheoremProofCode
 
@@ -553,8 +559,64 @@ instance [LeanAidePipe] : Kernel where
   elabCode := LeanAidePipe.elabCode
   mathQuery := fun s h n => LeanAidePipe.mathQuery s h n
 
+instance  TheoremStatementText.toJsonForTask : JsonForTask TheoremStatementText where
+  toJsonForTask x := do
+    return Json.mkObj [("theorem_text", x.theoremText)]
 
+instance TheoremStatementText.ofTaskJson : FromTaskJson TheoremStatementText where
+  fromJsonForTask json := do
+    let theoremText : String ← match json.getObjValAs? String "theorem_text" with
+    | .ok text => pure text
+    | .error _ => throwError "response has no 'theorem_text' field"
+    return { theoremText := theoremText }
 
+instance TheoremWithCode.ofTaskJson : FromTaskJson TheoremWithCode where
+  fromJsonForTask json := do
+    let (name, thmExpr, cmd) ← LeanAidePipe.translateThmDetailedDecode json
+    let thmStatementText ← fromTaskJson TheoremStatementText json
+    return { thmStatementText with name := name, theoremCode := thmExpr, statement := cmd }
+
+instance TheoremWithCode.toJsonForTask : JsonForTask TheoremWithCode where
+  toJsonForTask x := do
+    let baseJson ← jsonForTask x.toTheoremStatementText
+    let theoremCode ← ppExpr x.theoremCode
+    return baseJson.mergeObj (Json.mkObj [("theorem_code", theoremCode.pretty), ("theorem_name", toJson x.name)])
+
+instance TheoremProved.toJsonForTask : JsonForTask TheoremProved where
+  toJsonForTask x := do
+    let baseJson ← jsonForTask x.toTheoremWithCode
+    return baseJson.mergeObj (Json.mkObj [("document_text", x.document)])
+
+instance TheoremProved.ofTaskJson : FromTaskJson TheoremProved where
+  fromJsonForTask json := do
+    let theoremWithCode ← fromTaskJson TheoremWithCode json
+    let .ok document := json.getObjValAs? String "document_text" | throwError "response has no 'document_text' field"
+    return { theoremWithCode with document := document }
+
+instance TheoremStructuredProof.toJsonForTask : JsonForTask TheoremStructuredProof where
+  toJsonForTask x := do
+    let baseJson ← jsonForTask x.toTheoremProved
+    return baseJson.mergeObj (Json.mkObj [("document_json", x.documentJson)])
+
+instance TheoremStructuredProof.ofTaskJson : FromTaskJson TheoremStructuredProof where
+  fromJsonForTask json := do
+    let theoremProved ← fromTaskJson TheoremProved json
+    let .ok documentJson := json.getObjValAs? Json "document_json" | throwError "response has no 'document_json' field"
+    return { theoremProved with documentJson := documentJson }
+
+instance TheoremProofCode.toJsonForTask : JsonForTask TheoremProofCode where
+  toJsonForTask x := do
+    let baseJson ← jsonForTask x.toTheoremStructuredProof
+    return baseJson.mergeObj (Json.mkObj [("document_code", ← showCommandSeq x.proofCode)])
+
+instance TheoremProofCode.ofTaskJson : FromTaskJson TheoremProofCode where
+  fromJsonForTask json := do
+    let theoremStructuredProof ← fromTaskJson TheoremStructuredProof json
+    let .ok proofCodeTxt := json.getObjValAs? String "document_code" | throwError "response has no 'document_code' field"
+    let proofCode ← match runParserCategory (← getEnv) `command proofCodeTxt with
+    | .ok stx => pure stx
+    | .error e => throwError s!"Error while parsing {proofCodeTxt} : {e}"
+    return { theoremStructuredProof with proofCode := ⟨proofCode⟩}
 /--
 A command to create a `LeanAidePipe` instance from a URL, defaulting to `localhost:7654` if no URL is provided.
 -/
