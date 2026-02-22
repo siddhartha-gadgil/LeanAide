@@ -74,7 +74,7 @@ structure TheoremStructuredProof extends TheoremProved where
   documentJson : Json
 
 structure TheoremProofCode extends TheoremStructuredProof where
-  proofCode : TSyntax ``commandSeq
+  documentCode : TSyntax ``commandSeq
 
 /--
 Task acting on type `α` and returning type `β`, where `α` is the input type and `β` is the output type. This is used to capture the various tasks that LeanAide can perform, such as translating a theorem, generating documentation, and so on. The `TaskName` typeclass is used to associate a string name with each task, which is used when querying the LeanAide server.
@@ -103,7 +103,7 @@ instance TaskName.proveTheoremForFormalization : TaskName TheoremWithCode Theore
 instance TaskName.structuredProof : TaskName TheoremProved TheoremStructuredProof where
   taskName := "structured_json_proof"
 
-instance TaskName.proofCode : TaskName TheoremStructuredProof TheoremProofCode where
+instance TaskName.documentCode : TaskName TheoremStructuredProof TheoremProofCode where
   taskName := "lean_from_json_structured"
 
 class JsonForTask (α : Type) where
@@ -607,16 +607,16 @@ instance TheoremStructuredProof.ofTaskJson : FromTaskJson TheoremStructuredProof
 instance TheoremProofCode.toJsonForTask : JsonForTask TheoremProofCode where
   toJsonForTask x := do
     let baseJson ← jsonForTask x.toTheoremStructuredProof
-    return baseJson.mergeObj (Json.mkObj [("document_code", ← showCommandSeq x.proofCode)])
+    return baseJson.mergeObj (Json.mkObj [("document_code", ← showCommandSeq x.documentCode)])
 
 instance TheoremProofCode.ofTaskJson : FromTaskJson TheoremProofCode where
   fromJsonForTask json := do
     let theoremStructuredProof ← fromTaskJson TheoremStructuredProof json
-    let .ok proofCodeTxt := json.getObjValAs? String "document_code" | throwError "response has no 'document_code' field"
-    let proofCode ← match runParserCategory (← getEnv) `command proofCodeTxt with
+    let .ok documentCodeTxt := json.getObjValAs? String "document_code" | throwError "response has no 'document_code' field"
+    let documentCode ← match runParserCategory (← getEnv) `command documentCodeTxt with
     | .ok stx => pure stx
-    | .error e => throwError s!"Error while parsing {proofCodeTxt} : {e}"
-    return { theoremStructuredProof with proofCode := ⟨proofCode⟩}
+    | .error e => throwError s!"Error while parsing {documentCodeTxt} : {e}"
+    return { theoremStructuredProof with documentCode := ⟨documentCode⟩}
 /--
 A command to create a `LeanAidePipe` instance from a URL, defaulting to `localhost:7654` if no URL is provided.
 -/
@@ -678,6 +678,28 @@ def updateCodeByToken (token: UInt64) :
   | .completed _ result => return some <| ← codeFromJsonDecode result
   | .running _ => return none
 
+open LeanAidePipe in
+def mkQueryM {α : Type}(x : α) (β : Type) [TaskList α β] [JsonForTask α][FromTaskJson β] : MetaM UInt64 := do
+  let json ← jsonForTask x
+  let taskList := taskList α β
+  let pipe ← getPipeM
+  let req ←  codeFromJsonEncode json
+  let req := req.mergeObj (Json.mkObj [("mode", "async"), ("tasks", toJson taskList)])
+  let json ← pipe.response req
+  let .ok token := json.getObjValAs? UInt64 "token" | throwError "response has no 'token' field"
+  return token
+
+open LeanAidePipe in
+def getQueryM? (β : Type) (tokenM: MetaM UInt64) [FromTaskJson β] : TermElabM (Option β) := do
+  let pipe ← getPipeM
+  let token ← tokenM
+  let req := Json.mkObj [("mode", "lookup"), ("token", toJson token)]
+  let json ← pipe.response req
+  let .ok status :=
+    json.getObjValAs? TaskStatus "status" | throwError "response has no 'status' field"
+  match status with
+  | .completed _ result => return some <| ← fromTaskJson β result
+  | .running _ => return none
 
 namespace KernelM
 
@@ -796,5 +818,9 @@ class RelativeDefinitionCommand (α : Type) where
 def relativeDefinitionCommand {α} [r : RelativeDefinitionCommand α] (x: α)  :
   Syntax.Term →   TermElabM Syntax.Command :=
   r.cmd x
+
+instance : TermCommands TheoremProofCode where
+  commandArray x := do
+    return getCommands x.documentCode
 
 end LeanAide
