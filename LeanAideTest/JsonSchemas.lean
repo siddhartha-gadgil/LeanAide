@@ -30,22 +30,22 @@ info: [LeanAide.JsonDiff.atKey
    "$defs"
    (LeanAide.JsonDiff.existsKey2only
      "Author"
-     "{\"type\":\"object\",\"required\":[\"name\"],\"properties\":{\"name\":{\"type\":\"string\",\"description\":\"Full name of the author.\"},\"affiliation\":{\"type\":\"string\",\"description\":\"(OPTIONAL) Author's affiliation.\"}},\"description\":\"An author of the document.\",\"additionalProperties\":false}"),
+     "{\"additionalProperties\":false,\"description\":\"An author of the document.\",\"properties\":{\"affiliation\":{\"description\":\"(OPTIONAL) Author's affiliation.\",\"type\":\"string\"},\"name\":{\"description\":\"Full name of the author.\",\"type\":\"string\"}},\"required\":[\"name\"],\"type\":\"object\"}"),
  LeanAide.JsonDiff.atKey
    "$defs"
    (LeanAide.JsonDiff.existsKey2only
      "Bibliography"
-     "{\"type\":\"object\",\"required\":[\"type\",\"header\",\"entries\"],\"properties\":{\"type\":{\"type\":\"string\",\"description\":\"The type of this document element.\",\"const\":\"Bibliography\"},\"header\":{\"type\":\"string\",\"description\":\"The section header (e.g., 'References', 'Bibliography').\"},\"entries\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/$defs/BibliographyEntry\"},\"description\":\"List of bibliography entries.\"}},\"description\":\"The bibliography or list of references section.\",\"additionalProperties\":false}"),
+     "{\"additionalProperties\":false,\"description\":\"The bibliography or list of references section.\",\"properties\":{\"entries\":{\"description\":\"List of bibliography entries.\",\"items\":{\"$ref\":\"#/$defs/BibliographyEntry\"},\"type\":\"array\"},\"header\":{\"description\":\"The section header (e.g., 'References', 'Bibliography').\",\"type\":\"string\"},\"type\":{\"const\":\"Bibliography\",\"description\":\"The type of this document element.\",\"type\":\"string\"}},\"required\":[\"type\",\"header\",\"entries\"],\"type\":\"object\"}"),
  LeanAide.JsonDiff.atKey
    "$defs"
    (LeanAide.JsonDiff.existsKey2only
      "BibliographyEntry"
-     "{\"type\":\"object\",\"required\":[\"key\",\"formatted_entry\"],\"properties\":{\"key\":{\"type\":\"string\",\"description\":\"Unique key used for citations (e.g., 'Knuth1974', '[1]').\"},\"formatted_entry\":{\"type\":\"string\",\"description\":\"The full bibliographic reference, formatted as text (e.g., APA, BibTeX style).\"}},\"description\":\"A single entry in the bibliography.\",\"additionalProperties\":false}"),
+     "{\"additionalProperties\":false,\"description\":\"A single entry in the bibliography.\",\"properties\":{\"formatted_entry\":{\"description\":\"The full bibliographic reference, formatted as text (e.g., APA, BibTeX style).\",\"type\":\"string\"},\"key\":{\"description\":\"Unique key used for citations (e.g., 'Knuth1974', '[1]').\",\"type\":\"string\"}},\"required\":[\"key\",\"formatted_entry\"],\"type\":\"object\"}"),
  LeanAide.JsonDiff.atKey
    "$defs"
    (LeanAide.JsonDiff.existsKey2only
      "case"
-     "{\"type\":\"object\",\"required\":[\"type\",\"condition\",\"proof\"],\"properties\":{\"type\":{\"type\":\"string\",\"description\":\"The type of this logical step.\",\"const\":\"case\"},\"proof\":{\"description\":\"Proof of this case.\",\"$ref\":\"#/$defs/ProofDetails\"},\"condition\":{\"type\":\"string\",\"description\":\"The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`).\"}},\"description\":\"A case in a proof by cases or proof by induction.\",\"additionalProperties\":false}")]
+     "{\"additionalProperties\":false,\"description\":\"A case in a proof by cases or proof by induction.\",\"properties\":{\"condition\":{\"description\":\"The case condition or pattern; for induction one of 'base' or 'induction-step'; for a side of an 'iff' statement write the claim being proved (i.e., the statement `P => Q` or `Q => P`).\",\"type\":\"string\"},\"proof\":{\"$ref\":\"#/$defs/ProofDetails\",\"description\":\"Proof of this case.\"},\"type\":{\"const\":\"case\",\"description\":\"The type of this logical step.\",\"type\":\"string\"}},\"required\":[\"type\",\"condition\",\"proof\"],\"type\":\"object\"}")]
 -/
 #guard_msgs in
 #eval diffWithResource

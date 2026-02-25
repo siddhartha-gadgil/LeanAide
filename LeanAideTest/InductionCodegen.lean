@@ -18,13 +18,13 @@ def induction_eg := json% {
 }
 
 /--
-warning: Found 3038 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3252 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3038 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3252 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3038 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3252 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3038 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3252 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
 info: All theorems : [eq_id_of_zero_eq_zero_succ_eq_add_one]
 ---
@@ -68,13 +68,13 @@ def pattern_eg := json% {
 }
 
 /--
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
 info: All theorems : [iterate_one_add_apply_zero]
 ---
@@ -114,17 +114,17 @@ def multiConditionEg := json% {
 }
 
 /--
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3039 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
 info: All theorems : [lt_three_of_eq_one_or_eq_two]
 ---
@@ -132,8 +132,8 @@ info: Try this:
   [apply] theorem lt_three_of_eq_one_or_eq_two : ∀ (n : ℕ), n = (1 : ℕ) ∨ n = (2 : ℕ) → n < (3 : ℕ) :=
       by
       intro n a_12668439849020315063
-      if condition_14691614299444739208 : n = (1 : ℕ) then grind only
-      else if condition_7564640483750226922 : n = (2 : ℕ) then grind only else grind only
+      if condition_10475179556260154818 : n = (1 : ℕ) then grind only
+      else if condition_14572146439477332121 : n = (2 : ℕ) then grind only else grind only
       done
 -/
 #guard_msgs in
@@ -177,13 +177,13 @@ def patternEg' := json% {
 }
 
 /--
-warning: Found 3040 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3254 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3040 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3254 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3040 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3254 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
-warning: Found 3040 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
+warning: Found 3254 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
 ---
 info: All theorems : [lt_five_of_eq_one_or_eq_four]
 ---

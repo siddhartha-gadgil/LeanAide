@@ -1,5 +1,6 @@
 import LeanAideCore.SimpleFrontend
 import LeanAideCore.Aides
+import LeanAide.Config
 import Mathlib
 
 open LeanAide Lean Meta Elab
@@ -280,11 +281,11 @@ info: New definition: mWCs with value fun 𝕜 [NontriviallyNormedField 𝕜] E 
     (@mWCs._proof_3 E inst_1) (@mWCs._proof_3 E inst_1)
 ---
 info: New definition: MWc with value fun 𝕜 [inst : NontriviallyNormedField 𝕜] {E} [inst_1 : NormedAddCommGroup E] [inst_2 : NormedSpace 𝕜 E] {H}
-    [TopologicalSpace H] f hsource htarget hcont hcont_inv =>
+    [inst_3 : TopologicalSpace H] f hsource htarget hcont hcont_inv =>
   { toPartialEquiv := f, source_eq := hsource,
     convex_range' := @MWc._proof_1 𝕜 inst E inst_1 inst_2 H f hsource htarget,
     nonempty_interior' := @MWc._proof_2 E inst_1 H f hsource htarget, continuous_toFun := hcont,
-    continuous_invFun := hcont_inv }
+    continuous_invFun := @MWc._proof_3 E inst_1 H inst_3 f hcont_inv }
 -/
 #guard_msgs in
 #new_defs "def MWc (𝕜 : Type u_1) [NontriviallyNormedField 𝕜] {E : Type u_2} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type u_3} [TopologicalSpace H] (f : PartialEquiv H E) (hsource : f.source = Set.univ) (htarget : f.target = Set.univ) (hcont : Continuous ↑f) (hcont_inv : Continuous ↑f.symm) :
