@@ -5,7 +5,7 @@ set_option autoImplicit false
 set_option linter.unusedTactic false
 set_option linter.unreachableTactic false
 
-
+#stopLogs
 def induction_eg := json% {
   "theorem" : {
     "claim" : "∀ f: ℕ → ℕ, f 0 = 0 → (∀ n: ℕ, f (n + 1) = f n + 1) → ∀ n: ℕ, f n = n",
@@ -18,14 +18,6 @@ def induction_eg := json% {
 }
 
 /--
-warning: Found 3252 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3252 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3252 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3252 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
 info: All theorems : [eq_id_of_zero_eq_zero_succ_eq_add_one]
 ---
 info: Try this:
@@ -38,7 +30,7 @@ info: Try this:
       | succ n ih => grind only [#2bb0]
       done
 -/
-#guard_msgs in
+#guard_msgs (info) in
 #codegen induction_eg
 
 theorem forall_nat_cast_succ_eq_add_one_then_eq_id :
@@ -68,14 +60,6 @@ def pattern_eg := json% {
 }
 
 /--
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
 info: All theorems : [iterate_one_add_apply_zero]
 ---
 info: Try this:
@@ -88,7 +72,7 @@ info: Try this:
         simp only [Function.iterate_succ, add_left_iterate, Lake.FamilyOut.fam_eq, smul_eq_mul, mul_one,
           Function.comp_apply, add_zero, Nat.add_left_cancel_iff]
 -/
-#guard_msgs in
+#guard_msgs (info) in
 #codegen pattern_eg
 
 example : ∀ n : ℕ, n = 1  ∨ n = 2 → n < 3 := by
@@ -114,18 +98,6 @@ def multiConditionEg := json% {
 }
 
 /--
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3253 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
 info: All theorems : [lt_three_of_eq_one_or_eq_two]
 ---
 info: Try this:
@@ -136,7 +108,7 @@ info: Try this:
       else if condition_14572146439477332121 : n = (2 : ℕ) then grind only else grind only
       done
 -/
-#guard_msgs in
+#guard_msgs (info) in
 #codegen multiConditionEg
 
 -- Output:
@@ -177,14 +149,6 @@ def patternEg' := json% {
 }
 
 /--
-warning: Found 3254 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3254 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3254 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
-warning: Found 3254 unindexed premises in the environment, which exceeds the maximum number of new premises (2048). Discarding premises beyond this limit
----
 info: All theorems : [lt_five_of_eq_one_or_eq_four]
 ---
 info: Try this:
@@ -195,7 +159,7 @@ info: Try this:
       | 1 => simp only [Nat.one_lt_ofNat]
       | 4 => simp only [Nat.lt_add_one]
 -/
-#guard_msgs in
+#guard_msgs (info) in
 #codegen patternEg'
 
 -- Output:

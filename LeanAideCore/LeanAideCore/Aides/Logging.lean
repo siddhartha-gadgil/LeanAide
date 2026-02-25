@@ -42,6 +42,7 @@ inductive LogConfigModify where
   | removeLogFromIO (name : Name) : LogConfigModify
   | addLogToFile (name : Name) : LogConfigModify
   | removeLogFromFile (name : Name) : LogConfigModify
+  | stopLogs : LogConfigModify
   deriving Inhabited
 
 namespace LogConfig
@@ -59,6 +60,8 @@ def modify (cfg : LogConfig) (modif : LogConfigModify) : LogConfig :=
       name :: cfg.logsToFile }
   | LogConfigModify.removeLogFromFile name =>
     { cfg with logsToFile := cfg.logsToFile.filter (· ≠ name) }
+  | LogConfigModify.stopLogs =>
+    { logsToIO := [], logsToFile := [] }
 end LogConfig
 
 initialize logConfigExt : SimpleScopedEnvExtension LogConfigModify LogConfig ←
@@ -89,6 +92,9 @@ elab "#logFile " name:ident : command => do
 elab "#noLogFile " name:ident : command => do
   let logName := name.getId
   logConfigExt.add (LogConfigModify.removeLogFromFile logName)
+
+elab "#stopLogs" : command => do
+  logConfigExt.add LogConfigModify.stopLogs
 
 def traceAide (tag : Name) (msg : String) : CoreM Unit := do
 -- always print trace
