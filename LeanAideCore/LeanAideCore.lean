@@ -17,4 +17,4 @@ import LeanAideCore.Discussion
 import LeanAideCore.KernelGenerators
 import LeanAideCore.JsonSchemas
 import LeanAideCore.DocumentSchema
-import LeanAideCore.CodegenCore
+-- import LeanAideCore.CodegenCore
