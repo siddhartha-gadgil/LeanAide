@@ -117,20 +117,21 @@ Given a function *name*, a `CodeGenerator`, an optional goal, a syntax category,
 -/
 def codeFromFunc (goal? : Option MVarId) (translator: CodeGenerator) (f: Name) (kind : SyntaxNodeKinds) (source: Json) :
     TranslateM (Option (TSyntax kind)) := do
-  let expectedType := Expr.forallE Name.anonymous (Expr.const `LeanAide.CodeGenerator [])
-      (Expr.forallE Name.anonymous ((Expr.const `Option [Level.zero]).app (Expr.const `Lean.MVarId []))
-        (Expr.forallE `kind (Expr.const `Lean.SyntaxNodeKinds [])
-          (Expr.forallE Name.anonymous (Expr.const `Lean.Json [])
-            ((Expr.const `LeanAide.TranslateM []).app
-              ((Expr.const `Option [Level.zero]).app ((Expr.const `Lean.TSyntax []).app (Expr.bvar 1))))
-            BinderInfo.default)
-          BinderInfo.default)
-        BinderInfo.default)
-      BinderInfo.default
-  let f := mkConst f
-  let code ←
-    unsafe evalExpr
-      (CodeGenerator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
+  -- let expectedType := Expr.forallE Name.anonymous (Expr.const `LeanAide.CodeGenerator [])
+  --     (Expr.forallE Name.anonymous ((Expr.const `Option [Level.zero]).app (Expr.const `Lean.MVarId []))
+  --       (Expr.forallE `kind (Expr.const `Lean.SyntaxNodeKinds [])
+  --         (Expr.forallE Name.anonymous (Expr.const `Lean.Json [])
+  --           ((Expr.const `LeanAide.TranslateM []).app
+  --             ((Expr.const `Option [Level.zero]).app ((Expr.const `Lean.TSyntax []).app (Expr.bvar 1))))
+  --           BinderInfo.default)
+  --         BinderInfo.default)
+  --       BinderInfo.default)
+  --     BinderInfo.default
+  let code ← unsafe evalConst (CodeGenerator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) f
+  -- let f := mkConst f
+  -- let code ←
+  --   unsafe evalExpr
+  --     (CodeGenerator → Option MVarId  → (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))) expectedType f
   code translator goal? kind source
 
 /--
