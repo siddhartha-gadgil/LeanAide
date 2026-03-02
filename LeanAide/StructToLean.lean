@@ -1,5 +1,6 @@
 import Lean
 import Mathlib
+import LeanAideCore.CodegenCore
 import LeanCodePrompts.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
@@ -105,198 +106,6 @@ def contextStatementOfJson (js: Json) : Option String :=
     | _ => none
   | _ => none
 
-partial def getVars (type: Expr) : MetaM <| List Name := do
-  match type with
-  | .forallE n type body bi => do
-    withLocalDecl n  bi type fun x => do
-      let type' := body.instantiate1 x
-      let names ← getVars type'
-      return n::names
-  | _ => return []
-
-
-def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
-  let lctx ← getLCtx
-  match lctx.findFromUserName? name with
-  | some (.cdecl _ fVarId _ dtype ..) =>
-    let check ← isDefEq dtype type
-    logInfo m!"Checking {dtype} and {type} gives {check}"
-    if check
-      then return fVarId
-      else return none
-  | _ =>
-    if ← isProp type then
-      lctx.decls.findSomeM? fun decl =>
-        match decl with
-        | some <| .cdecl _ fVarId _ dtype .. => do
-          let check ← isDefEq dtype type
-          traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
-          if check then pure <| some fVarId
-          else pure none
-        | _ => pure none
-    else
-      return none
-
-
-partial def dropLocalContext (type: Expr) : MetaM Expr := do
-  match type with
-  | .forallE name binderType body _ => do
-    let lctx ← getLCtx
-    match lctx.findFromUserName? name with
-    | some (.cdecl _ fVarId _ dtype ..) =>
-      let check ← match dtype, binderType with
-      | .sort _, .sort _ => pure true
-      | _, _ =>   isDefEq dtype binderType
-        traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 (mkFVar fVarId)
-        dropLocalContext body'
-      else
-        traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
-        return type
-    | some (.ldecl _ _ _ dtype value ..) =>
-      let check ← isDefEq dtype binderType
-      traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 value
-        dropLocalContext body'
-      else
-        traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
-        return type
-    | none =>
-      match ← findLocalDecl? name binderType with
-      | some fVarId =>
-        let body' := body.instantiate1 (mkFVar fVarId)
-        dropLocalContext body'
-      | none =>
-        return type
-  | .letE name ltype value body _ =>
-    let lctx ← getLCtx
-    match lctx.findFromUserName? name with
-    | some (.ldecl _ _ _ dtype dvalue ..) =>
-      let check ← isDefEq dtype ltype <&&> isDefEq dvalue value
-      -- logInfo m!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 value
-        dropLocalContext body'
-      else
-        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
-        return type
-    | _ =>
-      withLetDecl name ltype value fun x => do
-          let body' := body.instantiate1 x
-          let inner ← dropLocalContext body'
-          mkLetFVars #[x] inner
-  | _ => return type
-
-partial def fillLocalContext (expr: Expr) : MetaM Expr := do
-  match expr with
-  | .lam name binderType body _ => do
-    let lctx ← getLCtx
-    match lctx.findFromUserName? name with
-    | some (.cdecl _ fVarId _ dtype ..) =>
-      let check ← isDefEq dtype binderType
-      -- logInfo m!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 (mkFVar fVarId)
-        fillLocalContext body'
-      else
-        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
-        return expr
-    | some (.ldecl _ _ _ dtype value ..) =>
-      let check ← isDefEq dtype binderType
-      -- logInfo m!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 value
-        fillLocalContext body'
-      else
-        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
-        return expr
-    | _ => return expr
-  | .letE name type value body _ =>
-    let lctx ← getLCtx
-    match lctx.findFromUserName? name with
-    | some (.ldecl _ _ _ dtype dvalue ..) =>
-      let check ← isDefEq dtype type <&&> isDefEq dvalue value
-      -- logInfo m!"Checking {dtype} and {type} gives {check}"
-      if check then
-          let body' := body.instantiate1 dvalue
-          fillLocalContext body'
-      else
-        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
-        return expr
-    | _ =>
-      withLetDecl name type value fun x => do
-          let body' := body.instantiate1 x
-          let inner ← fillLocalContext body'
-          mkLetFVars #[x] inner
-  | _ => return expr
-
-
-
-open Lean Meta Tactic
-
-def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
-| `(command|def $name  : $type := $value) => do
-  let typeElab ← elabType type
-  let type ← dropLocalContext typeElab
-  let type ← delabDetailed type
-  `(command|def $name : $type := $value)
-| `(command|theorem $name  : $type := $value) => do
-  let typeElab ← elabType type
-  let type ← dropLocalContext typeElab
-  let type ← delabDetailed type
-  `(command|theorem $name : $type := $value)
-| stx => return stx
-
-example (p: ∃ n m : Nat, n + m = 3): True := by
-  let ⟨n, m, h⟩ := p
-  exact trivial
-
-open Lean.Parser.Term
-/--
-Convert theorem or definition to `have` or `let`
--/
-def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
-  match cmd with
-  | `(command| theorem $name:ident $args:bracketedBinder* : $type := $value) =>
-      let mut letArgs := #[]
-      for arg in args do
-        let arg' ← `(letIdBinder| $arg:bracketedBinder)
-        letArgs := letArgs.push arg'
-      `(tactic| have $name $letArgs* : $type := $value)
-  | `(command| def $name:ident $args:bracketedBinder* : $type := $value) =>
-      let mut letArgs := #[]
-      for arg in args do
-        let arg' ← `(letIdBinder| $arg:bracketedBinder)
-        letArgs := letArgs.push arg'
-      `(tactic| let $name $letArgs* : $type := $value)
-  | `(command| def $name:ident $args:bracketedBinder* := $value) =>
-      let mut letArgs := #[]
-      for arg in args do
-        let arg' ← `(letIdBinder| $arg:bracketedBinder)
-        letArgs := letArgs.push arg'
-      `(tactic| let $name $letArgs*  := $value)
-  | `(command| noncomputable def $name:ident $args:bracketedBinder* : $type := $value) =>
-      let mut letArgs := #[]
-      for arg in args do
-        let arg' ← `(letIdBinder| $arg:bracketedBinder)
-        letArgs := letArgs.push arg'
-      `(tactic| let $name $letArgs* : $type := $value)
-  | `(command| noncomputable def $name:ident $args:bracketedBinder* := $value) =>
-      let mut letArgs := #[]
-      for arg in args do
-        let arg' ← `(letIdBinder| $arg:bracketedBinder)
-        letArgs := letArgs.push arg'
-      `(tactic| let $name $letArgs*  := $value)
-  | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
-  | _ => `(tactic| sorry)
-
-def commandSeqToTacticSeq (cmdSeq: TSyntax ``commandSeq) : TermElabM <| TSyntax ``tacticSeq := do
-  let cmds := getCommands cmdSeq
-  let tactics ← cmds.mapM commandToTactic
-  `(tacticSeq| $tactics:tactic*)
-
 /--
 Converts definition to `use`
 -/
@@ -309,6 +118,7 @@ def commandToUseTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
   | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
   | _ => throwError s!"could not parse the definition {← PrettyPrinter.ppCommand cmd} in commandToUseTactic"
 
+open Lean.Parser.Tactic Term
 
 def inductionCase (name: String)(condition: String)
     (pf: Array Syntax.Tactic) : TermElabM Syntax.Tactic := do
@@ -361,6 +171,8 @@ def inductionCasesSkeleton (name: String)
 
 
 namespace CodeGenerator
+
+open Codegen
 
 def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator): TranslateM (Except (Array ElabError) Expr) := do
   let mut context := #[]
