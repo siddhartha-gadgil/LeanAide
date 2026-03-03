@@ -62,31 +62,14 @@ syntax (name:= tryThiswrap) "try_this" "(" tacticSeq ")" (" then " "(" tacticSeq
       traceAide `leanaide.interpreter.debug s!"try_this failed: {← e.toMessageData.toString}"
   | _ => throwError "unexpected syntax in try_this"
 
-open LeanSearchClient LibrarySuggestions in
-def stateSearchSuggestions  (leanVersion := "v4.22.0") : Selector := fun goal config =>
-   do
+open LibrarySuggestions in
+def suggestionsForGoal (goal: MVarId) (maxSuggestions: Nat := 30) : MetaM (Array Name) := do
   try
-    let fmt ← ppGoal goal
-    let res ← queryStateSearch fmt.pretty config.maxSuggestions leanVersion
-    return (res.map fun r => {name := r.name.toName, score := 0.8})
-  catch e =>
-    traceAide `leanaide.interpreter.info s!"Error querying StateSearch for goal {← PrettyPrinter.ppExpr <| ← goal.getType}: {← e.toMessageData.toString}"
-    return #[]
-
-#print LibrarySuggestions.Selector
-
-set_library_suggestions stateSearchSuggestions
-
-open LeanSearchClient LibrarySuggestions in
-def suggestionsForGoal (goal: MVarId) (maxSuggestions: Nat := 15) (leanVersion := "v4.22.0") : MetaM (Array Name) := do
-  try
-    let fmt ← ppGoal goal
-    let res ← queryStateSearch fmt.pretty maxSuggestions leanVersion
     let selector ← getSelector
     let defaultSelector := Cloud.premiseSelector <|> mepoSelector (useRarity := true) (p := 0.6) (c := 0.9)
     let selector := selector.getD defaultSelector
-    let suggestions ← selector goal {maxSuggestions := 40}
-    return (res.map fun r => r.name.toName) ++ (suggestions.map fun s => s.name)
+    let suggestions ← selector goal {maxSuggestions := maxSuggestions}
+    return (suggestions.map fun s => s.name)
   catch e =>
     traceAide `leanaide.interpreter.info s!"Error querying StateSearch for goal {← PrettyPrinter.ppExpr <| ← goal.getType}: {← e.toMessageData.toString}"
     return #[]
@@ -99,12 +82,12 @@ def checkGrind (name: Name) : MetaM Bool := do
   let l ← checkElabFrontM (← ppCommand stx).pretty
   return l.isEmpty
 
-def suggestionsForGrind (goal: MVarId) (maxSuggestions: Nat := 5) (leanVersion := "v4.22.0") : MetaM (Array Name) := do
-  let all ← suggestionsForGoal goal maxSuggestions leanVersion
+def suggestionsForGrind (goal: MVarId) (maxSuggestions: Nat := 15)  : MetaM (Array Name) := do
+  let all ← suggestionsForGoal goal maxSuggestions
   all.filterM fun name => checkGrind name
 
-def grindWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions: Nat := 5) (leanVersion := "v4.22.0") : MetaM (TSyntax ``tacticSeq) := do
-  let names ← suggestionsForGrind goal maxSuggestions leanVersion
+def grindWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions: Nat := 15)  : MetaM (TSyntax ``tacticSeq) := do
+  let names ← suggestionsForGrind goal maxSuggestions
   let names := names ++ localNames
   let params : Array (TSyntax ``grindParam) ← names.mapM fun
     name => do
@@ -112,8 +95,8 @@ def grindWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestion
       `(grindParam| $id:ident)
   `(tacticSeq| grind? [$params,*])
 
-def simpWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions: Nat := 5) (leanVersion := "v4.22.0") : MetaM (TSyntax ``tacticSeq) := do
-  let names ← suggestionsForGoal goal maxSuggestions leanVersion
+def simpWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions: Nat := 15) : MetaM (TSyntax ``tacticSeq) := do
+  let names ← suggestionsForGoal goal maxSuggestions
   let names := names ++ localNames
   let params : Array (TSyntax ``simpLemma) ← names.mapM fun
     name => do
