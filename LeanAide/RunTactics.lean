@@ -63,6 +63,21 @@ syntax (name:= tryThiswrap) "try_this" "(" tacticSeq ")" (" then " "(" tacticSeq
   | _ => throwError "unexpected syntax in try_this"
 
 open LeanSearchClient LibrarySuggestions in
+def stateSearchSuggestions  (leanVersion := "v4.22.0") : Selector := fun goal config =>
+   do
+  try
+    let fmt ← ppGoal goal
+    let res ← queryStateSearch fmt.pretty config.maxSuggestions leanVersion
+    return (res.map fun r => {name := r.name.toName, score := 0.8})
+  catch e =>
+    traceAide `leanaide.interpreter.info s!"Error querying StateSearch for goal {← PrettyPrinter.ppExpr <| ← goal.getType}: {← e.toMessageData.toString}"
+    return #[]
+
+#print LibrarySuggestions.Selector
+
+set_library_suggestions stateSearchSuggestions
+
+open LeanSearchClient LibrarySuggestions in
 def suggestionsForGoal (goal: MVarId) (maxSuggestions: Nat := 15) (leanVersion := "v4.22.0") : MetaM (Array Name) := do
   try
     let fmt ← ppGoal goal
