@@ -36,7 +36,7 @@ def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment 
   if modifyEnv then setEnv env
   return (env, msgs)
 
-variable [LeanAideBaseDir]
+-- variable [LeanAideBaseDir]
 
 def runFrontEndForMessages (input: String) : MetaM MessageLog := do
   let cacheFile := (← cachePath) / "frontend" / s!"{input.hash}_{← leanToolchain}.json"

@@ -15,7 +15,7 @@ variable [LeanAideBaseDir]
 Extracts the content of the message field from a JSON object,
 following the OpenAI API format.
 -/
-def getMessageContents (json: Json) : CoreM (Array String) := do
+def getMessageContents (json: Json) : MetaM (Array String) := do
   let outArr : Array String ←
     match json.getArr? with
     | Except.ok arr =>
@@ -158,7 +158,7 @@ def addKeyOpt (key?: Option String) (cs : ChatServer) : ChatServer :=
   | some key => addKey key cs
   | none => cs
 
-def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
+def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM Json := do
   let stopJs := Json.mkObj <| if params.stopTokens.isEmpty then [] else
     [("stop", Json.arr <| params.stopTokens |>.map Json.str)]
   let dataJs := Json.mkObj [("model", server.model), ("messages", messages)
@@ -199,7 +199,7 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM 
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
     return .null
 
-def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Json := do
+def query (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM Json := do
   traceAide `leanaide.llm.info s!"Querying: {toJson server |>.compress}"
   -- logInfo s!"Querying {server.model}"
   let file : System.FilePath :=
@@ -225,7 +225,7 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : CoreM Jso
     return result
 
 def pollCacheQuery (server: ChatServer)(messages : Json)
-    (params : ChatParams) (retries: Nat) : CoreM Json := do
+    (params : ChatParams) (retries: Nat) : MetaM Json := do
   let key := (server, messages, params)
   let cache ← queryCache.get
   match cache.get? key with
@@ -243,7 +243,7 @@ def pollCacheQuery (server: ChatServer)(messages : Json)
       pollCacheQuery server messages params k
 
 def cachedQuery (server: ChatServer)(messages : Json)
-    (params : ChatParams) : CoreM Json := do
+    (params : ChatParams) : MetaM Json := do
   let key := (server, messages, params)
   let queue ← pendingQueries.get
   if queue.contains key then
@@ -505,7 +505,7 @@ namespace ChatServer
 def completions (server: ChatServer)
   (queryString: String)(sysPrompt: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (history: Array ChatPair := #[]): CoreM (Array String) := do
+  (history: Array ChatPair := #[]): MetaM (Array String) := do
   let messages ←  mkMessages queryString history sysPrompt server.messageBuilder
   let data ← ChatServer.query server messages params
   match data.getObjVal? "choices" with
@@ -518,50 +518,50 @@ def completions (server: ChatServer)
 def mathCompletions (server: ChatServer)
   (queryString: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (history: Array ChatPair := #[]): CoreM (Array String) := do
+  (history: Array ChatPair := #[]): MetaM (Array String) := do
   let sysPrompt ← mathPrompt
   ChatServer.completions server queryString sysPrompt n params history
 
 def prove (server: ChatServer)
   (thm: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let queryString ← fromTemplate "prove" [("theorem", thm)]
   ChatServer.mathCompletions server queryString n params examples
 
 def proveForFormalization (server: ChatServer)
   (thm statement definitions: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let queryString ← fromTemplate "prove_theorem_for_formalization" [("theorem", thm),  ("statement", statement), ("definitions", definitions), ("proof_guidelines", Resources.proofGuidelines)]
   ChatServer.mathCompletions server queryString n params examples
 
 def jsonStructured (server: ChatServer)
   (document: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array Json) := do
+  (examples: Array ChatPair := #[]): MetaM (Array Json) := do
   let queryString ← fromTemplate "json_structured" [("document", document), ("schema", Resources.paperStructure.pretty)]
   let outs ← ChatServer.mathCompletions server queryString n params examples
-  outs.mapM extractJsonM
+  outs.mapM fun js ↦ extractJsonM js
 
 def prove_with_outline (server: ChatServer)
   (thm outline: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let queryString ← fromTemplate "prove_with_outline" [("theorem", thm), ("outline", outline)]
   ChatServer.mathCompletions server queryString n params examples
 
 def solve (server: ChatServer)
   (problem: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let queryString ← fromTemplate "solve" [("problem", problem)]
   ChatServer.mathCompletions server queryString n params examples
 
 def checkEquivalence
   (thm1 thm2 : String) (defBlob? : Option String) (server: ChatServer := ChatServer.openAI "o3-mini")
   (params: ChatParams := {})
-  (examples: Array ChatPair := #[]): CoreM (Array <| Bool × String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array <| Bool × String) := do
   let queryString ←
     match defBlob? with
     | none =>
@@ -576,7 +576,7 @@ def checkEquivalence
 def mathTerms (server: ChatServer)
     (statement : String)(n: Nat := 3)
     (params: ChatParams := {n := n, stopTokens := #[]})
-    (examples: Array ChatPair := #[]): CoreM (Array (Array String)) := do
+    (examples: Array ChatPair := #[]): MetaM (Array (Array String)) := do
     let queryString ← fromTemplate "math_terms" [("statement", statement)]
     let responses ← ChatServer.mathCompletions server queryString n params examples
     return responses.filterMap getTerms
@@ -587,7 +587,7 @@ def mathTerms (server: ChatServer)
 def solution_to_theory (server: ChatServer)
   (problem solution: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let queryString ← fromTemplate "solution_to_theory" [("problem", problem), ("solution", solution)]
   ChatServer.mathCompletions server queryString n params examples
 
@@ -595,7 +595,7 @@ def structuredProof (server: ChatServer)
   (pf: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})
   (alertErrors : Bool := false)
-  : CoreM (Array Json) := do
+  : MetaM (Array Json) := do
   let instructions ← MathDoc.instructions alertErrors
   let init : ChatPair := {
     user := instructions
@@ -603,12 +603,12 @@ def structuredProof (server: ChatServer)
   }
   let examples := #[init]
   let outs ← ChatServer.mathCompletions server pf n params examples
-  outs.mapM extractJsonM
+  outs.mapM fun js ↦ extractJsonM js
 
 def structuredProofRaw (server: ChatServer)
   (pf: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  : CoreM (Array String) := do
+  : MetaM (Array String) := do
   let instructions ← jsonProofInstructions
   let init : ChatPair := {
     user := instructions
@@ -621,7 +621,7 @@ def structuredProofRaw (server: ChatServer)
 def structuredProofFromSolution (server: ChatServer)
   (problem solution: String)(n: Nat := 1)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]) : CoreM (Array Json) := do
+  (examples: Array ChatPair := #[]) : MetaM (Array Json) := do
   let theories ← solution_to_theory server problem solution n params examples
   let results ← theories.mapM (structuredProof server)
   return results.foldl (· ++ ·) #[]
@@ -630,14 +630,14 @@ def structuredProofFromStatement (server: ChatServer)
   (statement: String)(n m: Nat := 1)
   (params: ChatParams := {n := m, stopTokens := #[]})
   (examples: Array ChatPair := #[]) :
-    CoreM (Array (String × Array Json)) := do
+    MetaM (Array (String × Array Json)) := do
   let proofs ← server.prove statement n params examples
   let theories := proofs.map fun pf => (pf, s!"## Theorem : {statement}\n##Proof: {pf}")
   theories.mapM fun (pf, thmPf) => do
     pure (pf, ← structuredProof server thmPf)
 
 def theoremName (server: ChatServer)
-  (statement: String): CoreM Name := do
+  (statement: String): MetaM Name := do
     let query := s!"Give a name following the conventions of the Lean Prover 4 and Mathlib for the theorem: \n{statement}\n\nUse snakecase and ensure that there are no whitespaces. Give ONLY the name of the theorem."
     let namesArr ←  server.mathCompletions query 1
     let llm_name := namesArr[0]! |>.replace "`" ""
@@ -647,7 +647,7 @@ def theoremName (server: ChatServer)
     newName name
 
 def fullStatement (server: ChatServer)
-  (statement: String): CoreM String := do
+  (statement: String): MetaM String := do
     let query := s!"Rewrite the following in typical mathematical English using LaTeX if necessary:\n{statement}\nGive ONLY the English statement."
     let statementsArr ←  server.mathCompletions query 1
     return statementsArr[0]? |>.getD statement
@@ -656,7 +656,7 @@ def fullStatement (server: ChatServer)
 -- def structuredProofFull (server: ChatServer)
 --   (pf: String)(n: Nat := 1)
 --   (params: ChatParams := {n := n, stopTokens := #[]})
---   (examples: Array ChatPair := #[]): CoreM (Array Json) := do
+--   (examples: Array ChatPair := #[]): MetaM (Array Json) := do
 --   let queryString ← structuredProofQueryFull pf
 --   let outs ← ChatServer.mathCompletions server queryString n params examples
 --   return outs.map extractJson
@@ -665,49 +665,49 @@ def fullStatement (server: ChatServer)
 -- def make_structured (server: ChatServer)
 --   (text: String)(n: Nat := 3)
 --   (params: ChatParams := {n := n, stopTokens := #[]})
---   (examples: Array ChatPair := #[]): CoreM (Array String) := do
+--   (examples: Array ChatPair := #[]): MetaM (Array String) := do
 --   let queryString ← fromTemplate "make_structured" [("text", text)]
 --   ChatServer.mathCompletions server queryString n params examples
 
 def informalize (server: ChatServer)
   (code: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let text ← fromTemplate "informalize" [("code", code)]
   ChatServer.completions server text (← sysPrompt) n params examples
 
 def add_statements (server: ChatServer)
   (text: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let queryString ← fromTemplate "add_statements" [("json", text)]
   ChatServer.mathCompletions server queryString n params examples
 
 def expand_deductions (server: ChatServer)
   (text: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let queryString ← fromTemplate "expand_deductions" [("json", text)]
   ChatServer.mathCompletions server queryString n params examples
 
 def expand_observations (server: ChatServer)
   (text: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let queryString ← fromTemplate "expand_observations" [("json", text)]
   ChatServer.mathCompletions server queryString n params examples
 
 def expand_justifications (server: ChatServer)
   (text: String)(n: Nat := 3)
   (params: ChatParams := {n := n, stopTokens := #[]})
-  (examples: Array ChatPair := #[]): CoreM (Array String) := do
+  (examples: Array ChatPair := #[]): MetaM (Array String) := do
   let queryString ← fromTemplate "expand_justifications" [("json", text)]
   ChatServer.mathCompletions server queryString n params examples
 
 def summarize (server: ChatServer)
   (text: String)
   (examples: Array ChatPair := #[])(n: Nat := 3)
-  : CoreM (Array String) := do
+  : MetaM (Array String) := do
   let queryString ← fromTemplate "summarize" [("text", text)]
   ChatServer.mathCompletions server queryString n {n := n, stopTokens := #[]} examples
 
