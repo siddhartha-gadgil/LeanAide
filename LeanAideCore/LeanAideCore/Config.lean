@@ -63,9 +63,44 @@ def logTimed (message: String) : IO Unit := do
   | _ =>
     return ()
 
+def getBaseDir : MetaM System.FilePath := do
+  try
+  let inst ← synthInstance (mkConst ``LeanAideBaseDir)
+  let e ← mkAppOptM ``LeanAideBaseDir.baseDir #[some inst]
+  let baseDir ← unsafe evalExpr (IO System.FilePath) (← mkAppM ``IO #[mkConst ``System.FilePath]) e
+  return (← baseDir)
+  catch _ =>
+    logWarning "Could not get base directory from LeanAideBaseDir instance, falling back to current directory"
+    IO.currentDir
+
 
 def resourcesDir : IO System.FilePath := do
   let base ← baseDir
   return base / "resources"
 
+
+def baseDirImpl : IO System.FilePath := do
+  let pathLeanAidePackages := System.mkFilePath [".lake","packages","leanaide"]
+  let leanAide := System.mkFilePath ["LeanAide"]
+  let resources := System.mkFilePath ["resources"]
+  if (← (((← IO.currentDir).join leanAide).pathExists)) &&
+  (← (((← IO.currentDir).join resources).pathExists)) then
+    return (← IO.currentDir)
+  else if (← ((pathLeanAidePackages.join leanAide).pathExists)) && (← ((pathLeanAidePackages.join resources).pathExists)) then
+    return pathLeanAidePackages
+  else
+    throw (IO.userError "LeanAide not found.")
+
+
+def leanAidePath : IO System.FilePath := do
+  return (← baseDir) / ".lake" /"packages" /"leanaide"
+
+def cachePath : MetaM System.FilePath := do
+  let path : System.FilePath := (← getBaseDir) /  ".leanaide_cache"
+  if ← path.pathExists then
+    return path
+  else
+    return (← IO.currentDir) / path
 -- #eval resourcesDir
+
+-- #eval getBaseDir

@@ -15,15 +15,7 @@ variable [LeanAideBaseDir]
 
 -- #eval show% five + 3
 
-def leanAidePath : IO System.FilePath := do
-  return (← baseDir) / ".lake" /"packages" /"leanaide"
 
-def cachePath : IO System.FilePath := do
-  let path : System.FilePath := (← baseDir) /  ".leanaide_cache"
-  if ← path.pathExists then
-    return path
-  else
-    return (← leanAidePath) / path
 
 -- #eval cachePath
 
