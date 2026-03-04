@@ -1,7 +1,10 @@
 import Lean
 import Std
+import LeanAideCore.ConfigExts
 open Lean Meta
 
+
+open LeanAide
 initialize
   registerTraceClass `leanaide.translate.info
   registerTraceClass `leanaide.translate.debug
@@ -104,3 +107,12 @@ def cachePath : MetaM System.FilePath := do
 -- #eval resourcesDir
 
 -- #eval getBaseDir
+
+-- #eval topCodeM
+
+-- #topCode ["imp?"] ["Hello world!", "Hi"]
+
+-- #eval topCodeM
+
+
+def topCode := topCodeData.toString

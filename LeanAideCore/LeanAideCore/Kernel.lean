@@ -917,7 +917,7 @@ syntax (name := writeCmd) "#write" term "to_file" filepath "from" ident : comman
       x?
     match result? with
     | some result =>
-      Command.liftTermElabM do IO.FS.writeFile file <| topCode ++ (← showCommandSeq result)
+      Command.liftTermElabM do IO.FS.writeFile file <| (← topCodeM) ++ (← showCommandSeq result)
       logInfo s!"Result for {name} written to {file}."
     | none =>
       logInfo s!"Result for {name} not ready yet. Please try again later."

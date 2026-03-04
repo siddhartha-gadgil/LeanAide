@@ -246,13 +246,11 @@ def frontendCodeForTactics (mvarId : MVarId) (tactics : Array Syntax.Tactic): Te
   let termView ← PrettyPrinter.ppTerm <| ← `(by $tacticCode)
   logInfo m!"Tactic proof: {termView}"
   let egCode := s!"example : {typeView} := {termView}"
-  -- let code := topCode ++ egCode
   return egCode
 
 def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
     mvarId.withContext do
   let egCode ← frontendCodeForTactics mvarId tactics
-  -- let code := topCode ++ egCode
   traceAide `leanaide.interpreter.info s!"Running frontend with code:\n{egCode}"
   let msgs' ← runFrontEndForMessages egCode
   traceAide `leanaide.interpreter.info s!"Ran frontend, Messages:"

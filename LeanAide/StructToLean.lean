@@ -1172,7 +1172,7 @@ def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
       for s in sorries do
         fmt := fmt ++ "\n "++ s!"* `{← PrettyPrinter.ppExpr s}`".replace "\n" " "
     fmt := fmt ++ "\n-/\n"
-    return (topCode ++ fmt, names[0]!)
+    return ((← topCodeM) ++ fmt, names[0]!)
 
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format × Name := do
