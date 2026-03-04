@@ -4,7 +4,6 @@ import Lean.Elab
 import LeanAide.Aides
 import LeanAide.TheoremElab
 import LeanAide.AesopTacticRuleSet
-import Mathlib.Tactic
 open Lean Meta Elab Parser Tactic
 
 namespace LeanAide
@@ -24,7 +23,7 @@ elab "add_aesop_power_tactics" tacs:tactic,* : command => do
 /-!
 ## Equality of statements
 
-An API based on Aesop. Should use a refined conguration for `aesop` to make it more effective.
+An API based on `grind`.
 -/
 
 def provedEqual (e₁ e₂ : Expr) : MetaM Bool :=
@@ -33,7 +32,7 @@ def provedEqual (e₁ e₂ : Expr) : MetaM Bool :=
   let type ← mkEq e₁ e₂
   let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
-  let stx ← `(tactic| aesop)
+  let stx ← `(tactic| grind)
   let res ←  runTactic mvarId stx
   let (remaining, _) := res
   return remaining.isEmpty
@@ -45,7 +44,7 @@ def provedEquiv (e₁ e₂ : Expr) : TermElabM Bool :=
   let type ← mkAppM ``Iff #[e₁, e₂]
   let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
-  let stx ← `(tactic| aesop)
+  let stx ← `(tactic| grind)
   mvarId.withContext do
     checkTacticSafe mvarId stx
   catch _ => pure false
@@ -56,7 +55,7 @@ def provedSufficient (e₁ e₂ : Expr) : TermElabM Bool :=
   let type ← mkArrow e₁ e₂
   let mvar ← mkFreshExprMVar <| some type
   let mvarId := mvar.mvarId!
-  let stx ← `(tactic| aesop)
+  let stx ← `(tactic| grind)
   mvarId.withContext do
     checkTacticSafe mvarId stx
 
@@ -156,11 +155,12 @@ def groupThmsSortCore(ss: Array String)
     (groupThmsSort ss levelNames).run'.run'
 
 example : (∀ {A: Sort}, False → A) ↔ (∀ {A: Sort}, false = true → A) := by
-  aesop
+  grind
 
 example : (∀ (a b c: Nat),
   a + (b + c) = (a + b) + c) ↔ (∀ (a b c: Nat), (a + b) + c = a + (b + c)) := by
-  aesop
+  grind
 
+#eval compareThms "(s: String)(a b c: Nat): a + (b + c) = (a + b) + c" "(b a c: Nat): (a + b) + c = a + (b + c)"
 
--- #eval compareThms "(s: String)(a b c: Nat): a + (b + c) = (a + b) + c" "(b a c: Nat): (a + b) + c = a + (b + c)"
+#check Lean.Parser.Category.theorem_statement
