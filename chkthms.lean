@@ -1,7 +1,7 @@
 import Lean.Meta
 import LeanCodePrompts
 import LeanAide.TheoremElab
-import LeanAide.TheoremElabCheck
+import LeanAideCore.TheoremElabCheck
 import LeanCodePrompts.Makecaps
 import LeanAide.Config
 open Lean LeanAide
@@ -35,7 +35,7 @@ def main (args: List String) : IO Unit := do
   initSearchPath (← Lean.findSysroot)
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
-    {module:= `LeanAide.TheoremElab}, {module:= `LeanAide.TheoremElabCheck},
+    {module:= `LeanAide.TheoremElab}, {module:= `LeanAideCore.TheoremElabCheck},
     {module := `Mathlib}] {}
   match args with
   | [] => IO.println chkDocs

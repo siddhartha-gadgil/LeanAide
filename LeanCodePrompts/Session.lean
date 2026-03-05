@@ -1,6 +1,6 @@
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Aides
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 import LeanAide.PutnamBench
 /-!
 # Translation Session

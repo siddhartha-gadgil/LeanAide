@@ -22,7 +22,7 @@ def environment' : IO Environment := do
   importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
 
-    {module:= `DataGenAide.ConstDeps},
+    {module:= `LeanAideCore.ConstDeps},
     {module := `Mathlib}] {}
 
 def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}, maxHeartbeats := 100000000000, maxRecDepth := 1000000, openDecls := [Lean.OpenDecl.simple `LeanAide.Meta []]

@@ -1,9 +1,10 @@
 import Lean
 import Mathlib
+import LeanAideCore.ConfigExts
 
 open Lean Meta Elab Term Nat
 
-
+namespace LeanAide
 
 
 def existsUniqueSeqTerm (xs : List (TSyntax `Lean.binderIdent)) (type prop : Syntax.Term) : MetaM Syntax.Term := do
@@ -13,15 +14,19 @@ def existsUniqueSeqTerm (xs : List (TSyntax `Lean.binderIdent)) (type prop : Syn
     let tailTerm ← existsUniqueSeqTerm t type prop
     `(∃! ($h : $type), $tailTerm)
 
-
-mutual
-
-partial def fixSyntaxStep? (stx: Syntax.Term) :
-  MetaM <| Option Syntax.Term := do
+@[syntax_fix]
+partial def fixExistsUniqueSyntaxStep? (stx: Syntax) :
+  MetaM <| Option Syntax := do
   match stx with
   | `(∃! ($xs* : $type), $value) =>
-    let value ← fixSyntax value
+    let value ← fixSyntax value -- recursive call for combining from extension
     existsUniqueSeqTerm xs.toList type ⟨value⟩
+  | _  => return none
+
+@[syntax_fix]
+partial def fixFactorySyntaxStep? (stx: Syntax) :
+  MetaM <| Option Syntax := do
+  match stx with
   | `($n:ident) =>
     let n := n.getId.toString
     if n.endsWith "!" then
@@ -31,34 +36,31 @@ partial def fixSyntaxStep? (stx: Syntax.Term) :
       return some <| ← `(($n)!)
     else
       return none
-  | _  => return none
-
-partial def fixSyntax (stx: Syntax.Term) : MetaM Syntax.Term := do
-  match ← fixSyntaxStep? stx with
-  | some newStx => return newStx
-  | none =>
-    match stx.raw with
-    | .node info kind args =>
-      let newArgs ← args.mapM fun arg => do
-         pure (← fixSyntax ⟨arg⟩).raw
-      return {raw := Syntax.node info kind newArgs}
-    | s => return ⟨s⟩
-end
+  | _ => return none
 
 elab "ex_uniq" t:term : term => do
   let newTerm ← fixSyntax t
   let type ← elabTerm newTerm none
   return type
 
--- #check ex_uniq (∃! (x y : Nat), x + y = 0)
+/-- info: ∃! x, ∃! y, x + y = 0 : Prop -/
+#guard_msgs in
+#check ex_uniq (∃! (x y : Nat), x + y = 0)
 
--- set_option pp.funBinderTypes true
--- #check ex_uniq (∃! (x y : Nat), x + y = 0)
+set_option pp.funBinderTypes true
+/-- info: ∃! x : ℕ, ∃! y : ℕ, x + y = 0 : Prop -/
+#guard_msgs in
+#check ex_uniq (∃! (x y : Nat), x + y = 0)
 
--- #check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n))
+/-- info: ∀ (n : ℕ), ∃! x : ℕ, ∃! y : ℕ, x + y = n : Prop -/
+#guard_msgs in
+#check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n))
 
 
--- #check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n
---   ∧ (∃! (z w : Nat), z + w = x + y)))
+#check ex_uniq (∀ n: Nat, (∃! (x y : Nat), x + y = n
+  ∧ (∃! (z w : Nat), z + w = x + y)))
 
--- #eval ex_uniq (fun (n: Nat) ↦ ((n! + 1)! + 1!)) <| 2
+set_option linter.unusedVariables false in
+/-- info: 7 -/
+#guard_msgs in
+#eval ex_uniq (fun (n: Nat) ↦ ((n! + 1)! + 1!)) <| 2

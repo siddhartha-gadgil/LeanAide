@@ -2,7 +2,7 @@ import Mathlib
 import LeanAide.TheoremElab
 import LeanAideCore.SimpleFrontend
 import LeanAideCore.TranslateM
-import LeanAide.TheoremElabCheck
+import LeanAideCore.TheoremElabCheck
 
 set_option linter.unusedVariables false
 

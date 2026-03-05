@@ -1,5 +1,5 @@
 import Lean
-import DataGenAide.ConstDeps
+import LeanAideCore.ConstDeps
 import LeanAide.VerboseDelabs
 import DataGenAide.PremiseData
 

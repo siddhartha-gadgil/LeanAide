@@ -1,20 +1,19 @@
 import Lean
 import Lean.Meta
 import Lean.Parser
-import LeanAide.TheoremElab
-import LeanAide.TheoremElabCheck
-import LeanAide.TheoremEquality
-import LeanAide.IP
+import LeanAideCore.TheoremElab
+import LeanAideCore.TheoremElabCheck
+import LeanAideCore.TheoremEquality
+-- import LeanAide.IP
 import LeanAide.PromptBuilder
-import LeanCodePrompts.SpawnNearestEmbeddings
+-- import LeanCodePrompts.SpawnNearestEmbeddings
 import Lean.Meta.Tactic.TryThis
-import Batteries.Util.Pickle
-import LeanCodePrompts.ChatClient
+import LeanAideCore.ChatClient
 import LeanAideCore.StatementSyntax
 import LeanAideCore.TranslateM
 import LeanAide.PromptBuilder
 import LeanAideCore.SimpleFrontend
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 
 open Lean Meta Elab Parser Command
 open LeanAide.Meta

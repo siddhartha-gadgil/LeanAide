@@ -1,6 +1,6 @@
 import Lean.Meta
 import LeanAide.Config
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 open Lean LeanAide.Meta
 
 set_option maxHeartbeats 10000000
@@ -32,7 +32,7 @@ def main : IO Unit := do
   let env ←
     importModules (loadExts := true) #[
     {module := `Mathlib},
-    {module := `DataGenAide.ConstDeps}] {}
+    {module := `LeanAideCore.ConstDeps}] {}
   let dataPath : System.FilePath := (← resourcesDir)/ "mathlib4-descs.jsonl"
   let jsData ←
       IO.FS.lines dataPath

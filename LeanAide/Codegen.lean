@@ -56,13 +56,6 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     -- traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
     return (← appendTacticSeqSeq accum code, none)
   | none => do
-  -- logToStdErr `leanaide.translate.info "Trying automation tactics"
-  -- match ← runTacticsAndGetTryThis? (← goal.getType) #[← `(tactic| hammer {aesopPremises := 5, autoPremises := 0})] (strict := true) with
-  -- | some autoTacs => do
-  --   let autoTac ← `(tacticSeq| $autoTacs*)
-  --   traceAide `leanaide.codegen.info s!"automation closes the goal"
-  --   return (← appendTactics accum autoTac, none)
-  -- | none => do
   traceAide `leanaide.codegen.info "No exact or automation tactics found, trying sources"
   match sources with
   | [] => do
@@ -117,6 +110,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           let newAccum ← appendTacticSeqSeq accum code
           getCodeTacticsAux translator newGoal sources newAccum
 
+
 def findTactics? (goal :  MVarId):
     TranslateM (Option (TSyntax ``tacticSeq)) := goal.withContext do
   traceAide `leanaide.codegen.info "Trying automation tactics"
@@ -124,8 +118,7 @@ def findTactics? (goal :  MVarId):
   traceAide `leanaide.codegen.info s!"previous definitions/theorems names: {localNames}"
   let grindWs ← grindWithSuggestions goal (← localNames.filterM fun n => checkGrind n)
   let simpWs ← simpWithSuggestions goal localNames
-  runTacticsAndFindTryThis? goal [← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try?), grindWs, simpWs, ← `(tacticSeq| try simp; exact?), ← `(tacticSeq| hammer {aesopPremises := 5, autoPremises := 0}),
-  ← `(tacticSeq| try_this (constructor) then (grind?))] (strict := true)
+  runTacticsAndFindTryThis? goal ([← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try?), grindWs, simpWs, ← `(tacticSeq| try simp; exact?)] ++ (← getAutoTactics).toList) (strict := true)
 
 def findTacticsI (goal :  MVarId):
     TranslateM (Array (Syntax.Tactic)) := goal.withContext do
@@ -247,6 +240,13 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
 
 end Codegen
+
+set_option linter.unreachableTactic false in
+set_option linter.unusedTactic false in
+#add_auto_tactics [hammer {aesopPremises := 5, autoPremises := 0}, try_this (constructor) then (grind?)]
+
+-- #eval getAutoTactics
+
 
 open Command Elab Term Tactic Codegen
 -- @[command_elab codegenCmd]

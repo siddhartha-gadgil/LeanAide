@@ -1,5 +1,5 @@
 import LeanCodePrompts.NearestEmbeddings
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 import LeanAide.Aides
 import Lean.Data.Json
 import Batteries.Util.Pickle
