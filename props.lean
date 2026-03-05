@@ -20,7 +20,7 @@ def environment : IO Environment := do
 def environment' : IO Environment := do
   importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `DataGenAide.ConstDeps},
+    {module:= `LeanAideCore.ConstDeps},
     {module := `Mathlib}] {}
 
 
