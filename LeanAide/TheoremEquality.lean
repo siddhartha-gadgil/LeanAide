@@ -3,7 +3,6 @@ import Lean.Meta
 import Lean.Elab
 import LeanAide.Aides
 import LeanAide.TheoremElab
-import LeanAide.AesopTacticRuleSet
 open Lean Meta Elab Parser Tactic
 
 namespace LeanAide
@@ -161,6 +160,6 @@ example : (∀ (a b c: Nat),
   a + (b + c) = (a + b) + c) ↔ (∀ (a b c: Nat), (a + b) + c = a + (b + c)) := by
   grind
 
--- #eval compareThms "(s: String)(a b c: Nat): a + (b + c) = (a + b) + c" "(b a c: Nat): (a + b) + c = a + (b + c)"
+#eval compareThms "(s: String)(a b c: Nat): a + (b + c) = (a + b) + c" "(b a c: Nat): (a + b) + c = a + (b + c)"
 
 -- #check Lean.Parser.Category.theorem_statement

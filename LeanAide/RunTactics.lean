@@ -1,8 +1,8 @@
 import Lean
-import LeanAide.Aides
+import LeanAideCore.Aides
 import LeanAideCore.SimpleFrontend
 import LeanAideCore.RunTactics
-import LeanSearchClient
+-- import LeanSearchClient
 import Hammer
 
 open Lean Meta Elab Term PrettyPrinter Nat Tactic

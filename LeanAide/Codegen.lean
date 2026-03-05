@@ -110,11 +110,6 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           let newAccum ← appendTacticSeqSeq accum code
           getCodeTacticsAux translator newGoal sources newAccum
 
-set_option linter.unreachableTactic false in
-set_option linter.unusedTactic false in
-#add_auto_tactics [hammer {aesopPremises := 5, autoPremises := 0}, try_this (constructor) then (grind?)]
-
-#eval getAutoTactics
 
 def findTactics? (goal :  MVarId):
     TranslateM (Option (TSyntax ``tacticSeq)) := goal.withContext do
@@ -245,6 +240,13 @@ def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
       s!"codegen: contextCode expected an array of JSON objects, but got {source}"
 
 end Codegen
+
+set_option linter.unreachableTactic false in
+set_option linter.unusedTactic false in
+#add_auto_tactics [hammer {aesopPremises := 5, autoPremises := 0}, try_this (constructor) then (grind?)]
+
+-- #eval getAutoTactics
+
 
 open Command Elab Term Tactic Codegen
 -- @[command_elab codegenCmd]
