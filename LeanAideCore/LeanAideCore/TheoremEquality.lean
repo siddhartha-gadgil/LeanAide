@@ -1,23 +1,11 @@
 import Lean
 import Lean.Meta
 import Lean.Elab
-import LeanAide.Aides
-import LeanAide.TheoremElab
+import LeanAideCore.Aides
+import LeanAideCore.TheoremElab
 open Lean Meta Elab Parser Tactic
 
 namespace LeanAide
-
-macro "add_aesop_power_tactic" tac:tactic : command =>
-  let decl := mkIdentFrom tac.raw (`Aesop ++ (.mkSimple tac.raw.reprint.get!) ++ `tactic)
-  `(command|
-      @[aesop unsafe tactic (rule_sets [PowerTactic])] def $decl : TacticM Unit :=
-        `(tactic| $tac) >>= evalTactic ∘ TSyntax.raw)
-
-elab "add_aesop_power_tactics" tacs:tactic,* : command => do
-  for tac in tacs.getElems do
-    `(command| add_aesop_power_tactic $tac) >>= Command.elabCommand ∘ TSyntax.raw
-
--- add_aesop_power_tactics gcongr, ring, linarith, norm_num, positivity, polyrith, ext, norm_cast
 
 /-!
 ## Equality of statements

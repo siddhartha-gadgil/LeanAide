@@ -1,14 +1,13 @@
 import Lean
 import Lean.Meta
 import Lean.Parser
-import LeanAide.TheoremElab
-import LeanAide.TheoremElabCheck
-import LeanAide.TheoremEquality
+import LeanAideCore.TheoremElab
+import LeanAideCore.TheoremElabCheck
+import LeanAideCore.TheoremEquality
 -- import LeanAide.IP
 import LeanAide.PromptBuilder
 -- import LeanCodePrompts.SpawnNearestEmbeddings
 import Lean.Meta.Tactic.TryThis
-import Batteries.Util.Pickle
 import LeanAideCore.ChatClient
 import LeanAideCore.StatementSyntax
 import LeanAideCore.TranslateM

@@ -1,8 +1,8 @@
 import Lean
 import Lean.Meta
 import LeanAide.TheoremElab
-import LeanAide.TheoremEquality
-import LeanAide.TheoremElabCheck
+import LeanAideCore.TheoremEquality
+import LeanAideCore.TheoremElabCheck
 
 -- import Mathlib.Mathport.Rename
 

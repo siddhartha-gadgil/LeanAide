@@ -1,5 +1,5 @@
 import Mathlib
-import LeanAide.TheoremElab
+import LeanAideCore.TheoremElab
 import LeanAideCore.SimpleFrontend
 import LeanAideCore.TranslateM
 open Lean Meta Elab Term
@@ -44,12 +44,12 @@ def elabThm4Aux (s : String)
         match ← elabFrontTheoremExprM s with
         | Except.error err₂ =>
           let res := .parsed s "" err₂ ctx?
-          appendLog "elab_errors" <| toJson res
+          traceAide `leanaide.elaboration.info (toJson res).compress
           return Except.error res
         | Except.ok e => return Except.ok e
       else
         let res := .parsed s "" frontEndErrs ctx?
-        appendLog "elab_errors" <| toJson res
+        traceAide `leanaide.elaboration.info (toJson res).compress
         return Except.error res
     -- | Except.ok e => return  Except.ok e
 
