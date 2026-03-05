@@ -1,6 +1,6 @@
 import Lean.Meta
 import LeanAide.Config
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 open Lean LeanAide.Meta
 
 set_option maxHeartbeats 10000000

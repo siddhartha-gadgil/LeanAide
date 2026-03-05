@@ -13,7 +13,7 @@ import LeanAideCore.StatementSyntax
 import LeanAideCore.TranslateM
 import LeanAide.PromptBuilder
 import LeanAideCore.SimpleFrontend
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 
 open Lean Meta Elab Parser Command
 open LeanAide.Meta

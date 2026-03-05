@@ -1,9 +1,9 @@
 import Lean
 import LeanAide.Aides
 import LeanAideCore.TranslateM
-import LeanCodePrompts.SimilaritySearch
+import LeanAideCore.SimilaritySearch
 import LeanCodePrompts.SpawnNearestEmbeddings
-import LeanCodePrompts.ChatClient
+import LeanAideCore.ChatClient
 import LeanAideCore.PromptExampleBuilder
 import LeanAideCore.Translator
 import Mathlib

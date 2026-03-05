@@ -148,6 +148,6 @@ example : (∀ (a b c: Nat),
   a + (b + c) = (a + b) + c) ↔ (∀ (a b c: Nat), (a + b) + c = a + (b + c)) := by
   grind
 
-#eval compareThms "(s: String)(a b c: Nat): a + (b + c) = (a + b) + c" "(b a c: Nat): (a + b) + c = a + (b + c)"
+-- #eval compareThms "(s: String)(a b c: Nat): a + (b + c) = (a + b) + c" "(b a c: Nat): (a + b) + c = a + (b + c)"
 
 -- #check Lean.Parser.Category.theorem_statement
