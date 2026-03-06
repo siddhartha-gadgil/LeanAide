@@ -1,3 +1,8 @@
 [submodule "lean3-statement-translation-tool"]
 	path = lean3-statement-translation-tool
 	url = https://github.com/0art0/lean3-statement-translation-tool
+[submodule "dumb-server"]
+	path = js-server
+	url = https://codeberg.org/shubhamkumar13/dumb-server.git
+[submodule "js-server"]
+	branch = alpha/v1
