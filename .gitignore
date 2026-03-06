@@ -93,3 +93,6 @@ tmp/
 .envrc
 resources/mathlib4-prompts.jsonl
 resources/mathlib4-descs.jsonl
+
+# remove node_modules in js-server
+./js-server/node_modules/*
