@@ -137,6 +137,16 @@ structure ChatMessage where
 
 structure ChatCompletionRequest where
   model : String
+  messages : Json
+  n : Option Nat := none -- number of chat completion choices
+  reasoning_effort : Option ReasoningEffort := none
+  response_format : Option ResponseFormat := none
+  temperature : Option JsonNumber := none
+  max_completion_tokens : Option Nat := none
+  deriving ToJson, Inhabited, Repr
+
+structure ChatCompletionRequest' where
+  model : String
   messages : Array ChatMessage
   n : Option Nat := none -- number of chat completion choices
   reasoning_effort : Option ReasoningEffort := none
@@ -152,7 +162,7 @@ structure ChatCompletionResponse where
   model : String
   choices : Array Json
   usage : Option Json
-  deriving FromJson, Inhabited, Repr
+  deriving FromJson, ToJson, Inhabited, Repr
 
 #eval (default : ChatCompletionResponse)
 
@@ -180,7 +190,7 @@ structure APIResponse where
   created_at : Nat
   output : Array Json
   usage : Option Json
-  deriving FromJson, Inhabited, Repr
+  deriving FromJson, ToJson, Inhabited, Repr
 
 /- API Call Method -/
 
@@ -203,6 +213,7 @@ def runCurl (client : Client) (method : String) (endpoint : String) (body : Opti
     -- throw <| IO.userError s!"Curl failed with code {out.exitCode}: {out.stderr}"
   return .ok out.stdout
 
+-- Do Logging here!
 def parseJson! {α} [FromJson α] [Inhabited α] (result : Except String String) : IO α := do
   match result with
   | .error _ => return default
