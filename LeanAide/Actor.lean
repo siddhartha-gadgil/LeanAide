@@ -1,6 +1,5 @@
 import LeanAideCore.TranslatorParams
 import LeanAideCore.Translate
-import LeanAide.StructToLean
 import LeanAideCore.TranslatorParams
 import LeanAide.Codegen
 import LeanAide.PaperCodes
