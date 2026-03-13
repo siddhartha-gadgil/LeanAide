@@ -9,7 +9,7 @@ syntax (name := translationComment) "//-" commentBody : command
 def translationCommentElab : CommandElab := fun _ ↦ pure ()
 
 def extractTranslationCommentBody : TSyntax ``translationComment → String
-  | ⟨.node _ _ #[_, .atom _ doc]⟩ => doc.dropRight 2
+  | ⟨.node _ _ #[_, .atom _ doc]⟩ => doc.dropEnd 2
   | stx => panic! s!"Ill-formed translation comment syntax: {stx}."
 
 def dummyTranslateStatement (_stmt : String) : TermElabM String :=

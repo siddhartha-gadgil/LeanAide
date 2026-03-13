@@ -53,7 +53,7 @@ def performCodeAction {T : Type _} (iparams : Interface.Params T) : CodeActionPr
     match input? with
       | some (txt, ⟨start, stop⟩) => return {
           range :=
-            ⟨text.leanPosToLspPos <| text.toPosition start, 
+            ⟨text.leanPosToLspPos <| text.toPosition start,
             text.leanPosToLspPos <| text.toPosition stop⟩
           newText := ← do
             let output ← EIO.toIO (fun _ => IO.userError "Action failed.") <|
@@ -62,10 +62,10 @@ def performCodeAction {T : Type _} (iparams : Interface.Params T) : CodeActionPr
       | none => throw <| IO.userError "Parsing input failed."
 
   let ca : CodeAction := { title := iparams.title, kind? := "quickfix" }
-  return #[{ 
-    eager := ca, 
-    lazy? := some $ return { ca with 
-      edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit} 
+  return #[{
+    eager := ca,
+    lazy? := some $ return { ca with
+      edit? := WorkspaceEdit.ofTextEdit params.textDocument.uri $ ← edit}
     }]
 
 partial def String.Iterator.findFirst? : String.Iterator → String → Option String.Pos
@@ -97,7 +97,7 @@ partial def nearestComment (source : String)
 def extractCommentText? (comment : String) : Option String := do
   guard $ comment.startsWith "/-"
   guard $ comment.endsWith "-/"
-  let text := comment |>.drop 2 |>.dropRight 2
+  let text := comment |>.drop 2 |>.dropEnd 2
   let c := text.front
   if c.isAlphanum || c.isWhitespace then
     return text

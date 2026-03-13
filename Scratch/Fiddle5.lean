@@ -33,7 +33,7 @@ open Lean Meta Elab
 elab doc:docComment "#quote" n:ident : command =>
   Command.liftTermElabM do
   let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
+  let text := text.drop 4 |>.dropEnd 4
   logInfoAt n m!"{text}"
   return ()
 
@@ -46,7 +46,7 @@ Yes, it works, including *emphasis* and **bold**.
 
 macro doc:docComment "#quote" n:ident : command =>
   let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
+  let text := text.drop 4 |>.dropEnd 4
   let textStx := Syntax.mkStrLit text
   `(command| def $n := $textStx)
 

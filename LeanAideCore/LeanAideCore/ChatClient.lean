@@ -10,7 +10,7 @@ namespace LeanAide
 
 #logIO leanaide.llm.info
 
-variable [LeanAideBaseDir]
+-- variable [LeanAideBaseDir]
 /--
 Extracts the content of the message field from a JSON object,
 following the OpenAI API format.
@@ -190,13 +190,12 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM 
   traceAide `leanaide.llm.info s!"Response: {output}" -- uncomment for debugging
   match Lean.Json.parse output with
   | Except.ok j =>
-    appendLog "chat_queries"
-      (Json.mkObj [("query", queryJs), ("success", true), ("response", j)])
+    traceAide `leanaide.llm.info
+      (Json.mkObj [("query", queryJs), ("success", true), ("response", j)]).compress
     return j
   | Except.error e =>
     traceAide `leanaide.llm.info s!"Error parsing JSON: {e}; source: {output}"
-    appendLog "chat_queries"
-      (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
+    traceAide `leanaide.llm.info (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)]).compress
     return .null
 
 def query (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM Json := do
@@ -261,7 +260,7 @@ def cachedQuery (server: ChatServer)(messages : Json)
         q.filter (· != key)
       return j
 
-def dataPath (server: ChatServer) : IO  FilePath := do
+def dataPath (server: ChatServer) : MetaM  FilePath := do
   match server with
   | azure deployment _ _ => do
     let path := (← llmDir) / "azure" / deployment
@@ -273,14 +272,14 @@ def dataPath (server: ChatServer) : IO  FilePath := do
     return path
 
 def dump (server: ChatServer)(data : Json)
-    (name: String) (task : String): IO Unit := do
+    (name: String) (task : String): MetaM Unit := do
   let path ← dataPath server
   let path := path / name
   IO.FS.createDirAll path
   IO.FS.writeFile (path / s!"{task}.json") <| data.pretty
 
 def load (server: ChatServer)(name: String)
-    (task : String) : IO Json := do
+    (task : String) : MetaM Json := do
   let path ← dataPath server
   let path := path / name / s!"{task}.json"
   let js ← IO.FS.readFile path
