@@ -1,7 +1,7 @@
 import Lean
 import Mathlib
 import LeanAideCore.CodegenCore
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
 import LeanAide.AutoTactic

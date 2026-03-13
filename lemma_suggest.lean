@@ -26,7 +26,7 @@ unsafe def main  : IO Unit := do
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate}] {}
+    {module:= `LeanAideCore.Translate}] {}
   let source ← IO.FS.readFile ("rawdata" / "premises" / "ident_pairs" / "more-frequencies.json")
   let outDir : System.FilePath := "rawdata" / "premises" / "lemma_predictions"
   if !(← outDir.pathExists) then

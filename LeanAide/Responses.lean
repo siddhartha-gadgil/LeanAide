@@ -1,5 +1,5 @@
 import LeanAide.TranslatorParams
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanAide.StructToLean
 import LeanAide.TranslatorParams
 import LeanAide.Codegen

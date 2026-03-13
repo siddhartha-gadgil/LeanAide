@@ -1,5 +1,5 @@
 import LeanAideCore.PromptBuilder
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 namespace LeanAide
 open Lean
 

@@ -1,5 +1,5 @@
 import Mathlib
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanCodePrompts.Autocorrect
 
 -- #eval elabThm "{K : Type u} [Field K] : is_ring K"

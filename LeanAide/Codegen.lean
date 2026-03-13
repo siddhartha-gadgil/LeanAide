@@ -1,7 +1,7 @@
 import Lean
 import Qq
 import LeanAide.Aides
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanAide.RunTactics
 import LeanAide.AutoTactic
 import LeanAideCore.Syntax

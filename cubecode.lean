@@ -14,7 +14,7 @@ def main : IO Unit := do
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.StructToLean},
-    {module:= `LeanCodePrompts.Translate},
+    {module:= `LeanAideCore.Translate},
     {module := `Mathlib}] {}
   let core : CoreM <| Option String := cubeCodeCore
   let io? :=

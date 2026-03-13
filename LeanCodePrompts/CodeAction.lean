@@ -1,5 +1,5 @@
 import Lean
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import Batteries.CodeAction.Misc
 
 open Lean Std Parser CodeAction Elab Command Server Lsp RequestM Snapshots

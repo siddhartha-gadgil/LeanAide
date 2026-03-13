@@ -1,4 +1,4 @@
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanAide.Aides
 import LeanAideCore.Descriptions
 

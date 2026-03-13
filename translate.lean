@@ -32,7 +32,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
         IO.FS.createDirAll dir
   let env ← importModules (loadExts := true)  #[{module := `Mathlib, importAll := true},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate},
+    {module:= `LeanAideCore.Translate},
     {module := `LeanAide.TheoremElab}] {}
   -- let text := "example : ∀ (G : Type) [Group G], ∀ a b : G, a * b = b * a := by sorry"
   -- let (_, logs) ← simpleRunFrontend text env

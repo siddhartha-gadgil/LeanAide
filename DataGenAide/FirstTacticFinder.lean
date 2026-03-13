@@ -1,6 +1,6 @@
 import DataGenAide.FirstTacticData
 
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import Lean
 
 open Lean Meta Elab Tactic Parser

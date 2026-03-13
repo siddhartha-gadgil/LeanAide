@@ -1,5 +1,5 @@
 import Lean.Meta
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanAide.Config
 import LeanAide.TranslatorParams
 import Cli
@@ -265,7 +265,7 @@ def launchProcess (p : Parsed) : IO UInt32 := do
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate},
+    {module:= `LeanAideCore.Translate},
     {module:= `LeanAide.StructToLean},
     {module:= `LeanAide.PaperCodes},
     {module:= `LeanAide.Responses},
