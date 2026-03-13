@@ -1,7 +1,7 @@
 import Lean
 import Lean.Meta
 import Init.System
-import LeanAide.Aides
+import LeanAideCore.Aides
 import LeanAideCore.StatementSyntax
 import LeanAideCore.DefData
 import LeanAideCore.Sorries

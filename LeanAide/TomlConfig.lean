@@ -1,5 +1,5 @@
 import Lake.Load.Toml
-import LeanAide.PromptBuilder
+import LeanAideCore.PromptBuilder
 
 open Lean Parser Lake
 open System (FilePath)

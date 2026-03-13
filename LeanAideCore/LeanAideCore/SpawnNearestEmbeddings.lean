@@ -1,7 +1,7 @@
 import Lean
-import Mathlib.Tactic
-import LeanAide.Config
-import LeanCodePrompts.NearestEmbeddings
+-- import Mathlib.Tactic
+import LeanAideCore.Config
+import LeanAideCore.NearestEmbeddings
 open Lean
 
 def getNearestEmbeddingsExe
@@ -16,7 +16,7 @@ def getNearestEmbeddingsExe
   let jsQuery := Json.mkObj
     [("n" , numSim), ("docString", query), ("descField", descField),
     ("penalty", Json.num p)]
-  logTimed "sending query"
+  -- logTimed "sending query"
   if !(← exePath.pathExists) then
     let _ ←  IO.Process.run {cmd := "lake", args := #["build",  "nearest_embeddings"], cwd := "."}
   let cmd := exePath.toString
@@ -25,7 +25,7 @@ def getNearestEmbeddingsExe
       IO.Process.run {cmd := cmd, args := #[jsQuery.compress]}
     else
       IO.Process.run {cmd := "lake", args := #["exe",  "nearest_embeddings", jsQuery.compress], cwd := "."}
-  logTimed "got response"
+  -- logTimed "got response"
   return inp
 
 def getNearestEmbeddingsFull
@@ -36,7 +36,7 @@ def getNearestEmbeddingsFull
   | none =>
     getNearestEmbeddingsExe query numSim penalty descField
   | some data =>
-    logTimed s!"got data for {descField}"
+    -- logTimed s!"got data for {descField}"
     -- logToStdErr `leanaide.translate.info s!"Have embedding data for {descField}"
     let embs ←
       nearestDocsToDocFromEmb data queryRes? numSim (penalty := penalty)

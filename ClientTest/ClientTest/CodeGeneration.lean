@@ -5,7 +5,7 @@ import Mathlib
 
 open LeanAide Lean Meta Elab Parser Tactic
 set_option linter.unusedTactic false
-
+set_option linter.unusedVariables false
 #leanaide_connect
 
 open Nat
@@ -208,13 +208,7 @@ info: Try this:
   ]
 }
 
-/--
-info: Automation tactics found for a⁻¹ = 1, closing goal
----
-warning: unused variable `inst`
-
-Note: This linter can be disabled with `set_option linter.unusedVariables false`
--/
+/-- info: Automation tactics found for a⁻¹ = 1, closing goal -/
 #guard_msgs in
   theorem inv_eq_one_of_eq_one : ∀ {G : Type u} [inst : Group G] {a : G}, a = 1 → a⁻¹ = 1 :=
     by

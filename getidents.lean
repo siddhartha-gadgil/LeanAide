@@ -1,5 +1,5 @@
 import LeanAide.IdentData
-import DataGenAide.ConstDeps
+import LeanAideCore.ConstDeps
 import Lean.Meta
 import LeanAide.Config
 open Lean Meta LeanAide.Meta
@@ -14,7 +14,7 @@ def init : IO Unit := do
 
 def environment : IO Environment := do
   importModules (loadExts := true) #[{module := `Mathlib},
-    {module:= `DataGenAide.ConstDeps},
+    {module:= `LeanAideCore.ConstDeps},
     {module:= `LeanAide.IdentData},
     {module:= `LeanAide.Aides},
     {module := `Mathlib}] {}
@@ -22,7 +22,7 @@ def environment : IO Environment := do
 def environment' : IO Environment := do
   importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `DataGenAide.ConstDeps},
+    {module:= `LeanAideCore.ConstDeps},
     {module := `Mathlib}] {}
 
 

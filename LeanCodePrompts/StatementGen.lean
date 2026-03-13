@@ -1,4 +1,4 @@
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import Lean
 import Lean.Meta
 open Lean Meta Elab

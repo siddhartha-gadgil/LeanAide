@@ -1,10 +1,9 @@
-import LeanAide.TranslatorParams
-import LeanCodePrompts.Translate
-import LeanAide.StructToLean
-import LeanAide.TranslatorParams
+import LeanAideCore.TranslatorParams
+import LeanAideCore.Translate
+import LeanAideCore.TranslatorParams
 import LeanAide.Codegen
 import LeanAide.PaperCodes
-import LeanAide.ResponseExt
+import LeanAideCore.ResponseExt
 import LeanAideCore.Kernel
 import Lean
 
@@ -458,7 +457,7 @@ def leanFromStructuredJsonTask (data: Json) (translator : Translator) : Translat
         let code ←
           PrettyPrinter.ppCategory ``commandSeq codeStx
         return Json.mkObj
-          [("result", "success"), ("document_code", code.pretty), ("declarations", toJson declarations), ("top_code", topCode)]
+          [("result", "success"), ("document_code", code.pretty), ("declarations", toJson declarations), ("top_code", ← topCodeM)]
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]

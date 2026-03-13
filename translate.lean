@@ -2,8 +2,8 @@ import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
-import LeanAide.PromptBuilder
-import LeanAide.TranslatorParams
+import LeanAideCore.PromptBuilder
+import LeanAideCore.TranslatorParams
 import Mathlib
 import Cli
 open Lean Cli LeanAide.Meta LeanAide Translator Translate
@@ -32,7 +32,7 @@ unsafe def runTranslate (p : Parsed) : IO UInt32 := do
         IO.FS.createDirAll dir
   let env ← importModules (loadExts := true)  #[{module := `Mathlib, importAll := true},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate},
+    {module:= `LeanAideCore.Translate},
     {module := `LeanAide.TheoremElab}] {}
   -- let text := "example : ∀ (G : Type) [Group G], ∀ a b : G, a * b = b * a := by sorry"
   -- let (_, logs) ← simpleRunFrontend text env

@@ -1,4 +1,4 @@
-import LeanAide.PromptBuilder
+import LeanAideCore.PromptBuilder
 -- import LeanAide.TomlConfig
 import Cli
 

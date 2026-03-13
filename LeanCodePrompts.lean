@@ -1,3 +1,3 @@
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 
 def hello := "world"

@@ -18,7 +18,7 @@ def main (args: List String) : IO Unit := do
     {module := `LeanCodePrompts.Basic},
     {module:= `LeanAide.TheoremElab},
 
-    {module:= `LeanCodePrompts.Translate},
+    {module:= `LeanAideCore.Translate},
     {module := `Mathlib}] {}
   let core := elabThmSplitCore start? size?
   let io? :=

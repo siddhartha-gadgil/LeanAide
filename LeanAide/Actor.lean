@@ -1,11 +1,11 @@
-import LeanAide.TranslatorParams
-import LeanCodePrompts.Translate
+import LeanAideCore.TranslatorParams
+import LeanAideCore.Translate
 import LeanAide.StructToLean
-import LeanAide.TranslatorParams
+import LeanAideCore.TranslatorParams
 import LeanAide.Codegen
 import LeanAide.PaperCodes
 import LeanAide.Responses
-import LeanAide.ResponseExt
+import LeanAideCore.ResponseExt
 import Lean
 
 namespace LeanAide.Actor

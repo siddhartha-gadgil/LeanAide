@@ -2,7 +2,7 @@ import Lean.Meta
 import LeanCodePrompts
 import LeanAide.TheoremElab
 import LeanAide.Config
-open Lean
+open Lean LeanAide
 
 set_option maxHeartbeats 10000000
 set_option maxRecDepth 1000

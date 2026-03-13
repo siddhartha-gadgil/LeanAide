@@ -1,6 +1,6 @@
 import Lean
 import Qq
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 
 open Lean Meta Qq
 

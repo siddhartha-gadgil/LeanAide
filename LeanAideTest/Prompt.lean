@@ -1,5 +1,5 @@
 import Mathlib
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 
 open LeanAide Translate Translator
 

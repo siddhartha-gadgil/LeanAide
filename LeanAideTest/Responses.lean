@@ -1,5 +1,5 @@
 import LeanAide.Responses
-import LeanAide.ResponseExt
+import LeanAideCore.ResponseExt
 
 namespace LeanAide
 

@@ -1,7 +1,7 @@
 import Lean.Meta
 -- import LeanCodePrompts
 import LeanAide.Config
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 open Lean LeanAide.Meta LeanAide.Translator
 
 set_option maxHeartbeats 10000000
@@ -20,7 +20,7 @@ def main : IO Unit := do
   let env ←
     importModules (loadExts := true) #[
     {module := `Mathlib},
-    {module := `DataGenAide.ConstDeps}] {}
+    {module := `LeanAideCore.ConstDeps}] {}
   let outpath : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descriptions.jsonl")
   let preread ← if ← outpath.pathExists then
       IO.FS.lines outpath

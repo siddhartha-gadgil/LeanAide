@@ -1,4 +1,4 @@
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 
 open Lean Meta Elab Term Tactic  Parser Command
 

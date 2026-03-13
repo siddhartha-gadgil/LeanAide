@@ -1,7 +1,6 @@
 import Lean
-import LeanAide.Aides
-import LeanCodePrompts.EpsilonClusters
-import Mathlib
+import LeanAideCore.Aides
+import LeanAideCore.EpsilonClusters
 open Std Lean LeanAide
 
 def distL2Sq' (v₁ : FloatArray) (v₂ : Array Float) : Float :=

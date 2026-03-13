@@ -1,6 +1,6 @@
 import Lean
 import Mathlib
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
 open LeanAide.Meta

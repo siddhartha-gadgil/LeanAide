@@ -1,6 +1,6 @@
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanAide.Aides
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 
 open Lean Meta Elab
 open LeanAide.Meta

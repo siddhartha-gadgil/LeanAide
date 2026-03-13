@@ -100,8 +100,7 @@ def retranslators (useLLMs: Bool) : MetaM (Array (ElabError → Translator → T
     else
       names.filter fun (_, level) => level ≠ .general
   names.mapM fun (n, level) => do
-    let f := Lean.mkConst n
-    let f ← unsafe evalExpr (RetranslateLevel.defType level) (RetranslateLevel.defTypeExpr level) f
+    let f ← unsafe evalConst (RetranslateLevel.defType level) n
     pure <| RetranslateLevel.liftToGeneral translateFn? level f
 
 def retranslateFromErrorsAux (errors: Array ElabError) (attempts: Array (ElabError → Translator → TranslateM (Except (Array ElabError) Expr))) (translator: Translator := {}):
@@ -140,8 +139,8 @@ def retranslateSimplePrompts : MetaM (Array (String → Option String)) := do
   let names := retranslateExt.getState (← getEnv)
   names.filterMapM fun (n, level) => do
     if level = .simple then
-      let f := Lean.mkConst n
-      unsafe evalExpr (String → Option String) q(String → Option String) f
+      let f ← unsafe evalConst (String → Option String) n
+      pure <| some f
     else
       pure none
 
@@ -149,20 +148,15 @@ def allRetranslatePrompts (s: String) : MetaM (Array String) := do
   let prompts ← retranslateSimplePrompts
   return prompts.filterMap fun prompt? => prompt? s
 
-
-
-
-
 def retranslateSpecialPrompts : MetaM (Array (ElabError → Option String)) := do
   let names := retranslateExt.getState (← getEnv)
   names.mapM fun (n, level) => do
     if level = .simple then
-      let f := Lean.mkConst n
-      let f ← unsafe evalExpr (String → Option String) q(String → Option String) f
+      let f ← unsafe evalConst (String → Option String) n
       pure <| fun e => f e.text
     else
-      let f := Lean.mkConst n
-      unsafe evalExpr (ElabError → Option String) q(ElabError → Option String) f
+      let f ← unsafe evalConst (ElabError → Option String) n
+      pure f
 
 
 def retranslateFromSpecilaErrorsAux (ss: Array ElabError) (prompts: Array (ElabError → Option String)) (translator: Translator := {}) (n: Nat := 3) :
