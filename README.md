@@ -35,12 +35,13 @@ First clone the repository. Next, from the root of the repository, run the follo
 
 ```bash
 lake exe cache get # download prebuilt mathlib binaries
-lake build mathlib
 lake build
-lake exe fetch_embeddings
+cd LeanAideCore
+lake build
+cd ..
 ```
 
-Our translation is based on `GPT 4o` from OpenAI, but you can use alternative models (including local ones). Note that we also use embeddings from OpenAI, so you will need an OpenAI API key unless you set up an *example server* as descried below. Here, we assume you have an OpenAI API key.
+Our translation is based on `GPT 5` from OpenAI, but you can use alternative models (including local ones). Note that we also use embeddings from OpenAI, so you will need an OpenAI API key unless you set up an *example server* as descried below. Here, we assume you have an OpenAI API key.
 
 To get started please configure environment variables using the following bash commands or equivalent in your system at the base of the repository (the angle brackets are **not** to be included in the command), and then launch VS code. 
 
