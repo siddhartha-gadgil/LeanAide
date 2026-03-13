@@ -6,8 +6,8 @@ open Lean Meta System
 
 variable [LeanAideBaseDir]
 
-def llmDir : IO System.FilePath := do
-  return (← baseDir) / "llm_data"
+def llmDir : MetaM System.FilePath := do
+  return (← getBaseDir) / "llm_data"
 
 def promptTemplates : IO Json := do
   let path := (← resourcesDir) / "templates.json"
@@ -57,8 +57,8 @@ def jsonProofTemplateFull  : IO String := do
   let path := (← resourcesDir) / "JsonTemplate.md"
   IO.FS.readFile path
 
-def jsonProofInstructions : IO String := do
-  let path := (← resourcesDir) / "ProofJsonShorter.md"
+def jsonProofInstructions : MetaM String := do
+  let path := (← getResourcesDir) / "ProofJsonShorter.md"
   IO.FS.readFile path
 
 def structuredProofQueryFull (pf: String) : IO String := do

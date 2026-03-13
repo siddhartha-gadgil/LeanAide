@@ -1,4 +1,4 @@
-import LeanAide.TheoremElab
+import LeanAideCore.TheoremElab
 import LeanAideCore.ChatClient
 import LeanAideCore.PromptBuilder
 import LeanAideCore.ConstDeps
@@ -321,9 +321,9 @@ def modulePairs : CoreM <| Array (Name × Array Name × Array String) := do
   return withDocs.map
       (fun (name, data, docs) => (name, data.constNames, docs))
 
-def descCachePath : IO System.FilePath := do return (← baseDir) / "rawdata"/ "premises" / "ident_pairs"/"extra-descriptions.jsonl"
+def descCachePath : MetaM System.FilePath := do return (← getBaseDir) / "rawdata"/ "premises" / "ident_pairs"/"extra-descriptions.jsonl"
 
-def getCachedDescriptions : IO (Array Json) := do
+def getCachedDescriptions : MetaM (Array Json) := do
   let path ← descCachePath
   if ← path.pathExists then
     let lines ← IO.FS.lines path
@@ -331,7 +331,7 @@ def getCachedDescriptions : IO (Array Json) := do
     return jsons
   else return #[]
 
-def cacheDescription (js: Json) : IO Unit := do
+def cacheDescription (js: Json) : MetaM Unit := do
   let path ← descCachePath
   let jsStr := js.compress
   if ← path.pathExists then
@@ -339,7 +339,7 @@ def cacheDescription (js: Json) : IO Unit := do
     h.putStrLn jsStr
   else IO.FS.writeFile path (jsStr ++ "\n")
 
-def getCachedDescriptionsMap : IO (Std.HashMap String Json) := do
+def getCachedDescriptionsMap : MetaM (Std.HashMap String Json) := do
   let cached ← getCachedDescriptions
   let pairs := cached.filterMap fun js => do
     let name? := js.getObjValAs? String "name" |>.toOption

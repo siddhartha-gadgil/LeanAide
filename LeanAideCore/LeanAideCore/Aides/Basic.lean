@@ -281,7 +281,7 @@ def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : 
   else
     let head := (String.Pos.Raw.extract input) 0 s.pos
     let stx := stack.back!
-    return Except.ok (stx, head, input.drop head.length)
+    return Except.ok (stx, head, input.drop head.length )
 
 partial def polyParser (parser: Parser) (input: String) (fileName := "<input>") : MetaM <| Option  Syntax := do
   -- logInfo s!"parsing {input}"
@@ -450,7 +450,7 @@ def colEqSegments (s: String) : List String :=
   match pieces with
   | [] => []
   | head :: tail =>
-    tail.scanl' (fun acc x => acc ++ ":=" ++ x) head |>.map (String.trim)
+    tail.scanl' (fun acc x => acc ++ ":=" ++ x) head |>.map (fun s ↦  s.trim)
 
 def splitColEqSegments (ss: Array String) : Array String :=
   ss.toList.flatMap colEqSegments |>.toArray
@@ -478,12 +478,12 @@ def extractJsonM (s: String) : CoreM Json :=
   match Json.parse code with
   | Except.ok j => do
     -- logInfo s!"parsed JSON: {j}"
-    appendLog "json_parsed" j
+    -- appendLog "json_parsed" j
     return j
   | Except.error e => do
     logWarning  m!"Error parsing JSON: {e}"
-    appendLog "json_error" (Json.str code)
-    appendLog "json_error" (Json.str e)
+    -- appendLog "json_error" (Json.str code)
+    -- appendLog "json_error" (Json.str e)
     return Json.str code
 
 

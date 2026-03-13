@@ -26,10 +26,10 @@ open Translate
 #logIO leanaide.frontend.info
 #logIO leanaide.translate.info
 
-@[default_instance]
-instance : Add ℤ := inferInstance
-@[default_instance]
-instance : Semiring ℤ := inferInstance
+-- @[default_instance]
+-- instance : Add ℤ := inferInstance
+-- @[default_instance]
+-- instance : Semiring ℤ := inferInstance
 
 -- example : {n | Odd n}.Infinite := by sorry
 
@@ -86,8 +86,10 @@ def getEnvPrompts (moduleNames : Array Name := .empty) (useMain? : Bool := true)
         | .thmInfo _  => some "theorem"
         |     _       => none
     ) | pure none
-    let some type ← try? (Format.pretty <$> PrettyPrinter.ppExpr ci.type) | pure none
-    return some ⟨docstring, s!"{kind} : {type} :="⟩
+    let type ←
+      try some (Format.pretty <$> PrettyPrinter.ppExpr ci.type)
+      catch _ => none
+    return some ⟨docstring, s!"{kind} : {← type} :="⟩
 
 
 def Translator.getMessages (s: String) (translator : Translator)
@@ -174,8 +176,8 @@ def bestElab (output: Array String) : TranslateM Expr := do
         errors := errors.push <|
             Json.mkObj [("parsed", true),
               ("syntax", stx.reprint.get!), ("output", Json.str out)]
-    let errorJson := Json.arr errors
-    appendLog "translate_fail_error" errorJson
+    -- let errorJson := Json.arr errors
+    -- appendLog "translate_fail_error" errorJson
     mkAppM ``sorryAx #[(mkSort levelZero), mkConst ``true]
   else
     traceAide `leanaide.translate.debug  "elaborated outputs, starting majority voting"
@@ -575,8 +577,8 @@ def findTheorem? (s: String)(translator: Translator := {}) : TranslateM (Option 
     js.getObjValAs? String "type" |>.toOption.get!))
   matchElab? output thmPairs
 
-def findTheorems (s: String)(numLeanSearch : ℕ := 8)
-  (numMoogle : ℕ := 0) : TranslateM (List Name) := do
+def findTheorems (s: String)(numLeanSearch : Nat := 8)
+  (numMoogle : Nat := 0) : TranslateM (List Name) := do
   let translator : Translator := {pb := PromptExampleBuilder.searchBuilder numLeanSearch numMoogle}
   let (js, _, prompts) ← translator.getLeanCodeJson s
   let output ← getMessageContents js
@@ -614,7 +616,7 @@ def nearbyDefs
     let closureNames ←  bestDefsInConsts numClosure searchNames.toList 1
     return defNames ++ closureNames
 
-def matchingTheoremsAI (s: String)(n: ℕ := 3)(qp: CodeGenerator) : TranslateM (List Name) := do
+def matchingTheoremsAI (s: String)(n: Nat := 3)(qp: CodeGenerator) : TranslateM (List Name) := do
     let chunk ← nearbyTheoremsChunk s qp.numLeanSearch qp.numMoogle
     let prompt := s!"The following are some theorems in Lean with informal statements as documentation strings\n\n{chunk}\n\n---\n¬List the names of theorems that are equivalent to the following informal statement:\n\n{s}.\n\nOutput ONLY a (possibly empty) list of names."
     let completions ← qp.server.completions prompt (← sysPrompt) n qp.params
@@ -632,7 +634,7 @@ def matchingTheoremsAI (s: String)(n: ℕ := 3)(qp: CodeGenerator) : TranslateM 
       pure <| js.getObjValAs? String "name" |>.toOption |>.map (·.toName)
     return checked ++ names.toList
 
-def matchingTheorems (s: String)(n: ℕ := 3)(qp: CodeGenerator)  : TranslateM (List Name) := do
+def matchingTheorems (s: String)(n: Nat := 3)(qp: CodeGenerator)  : TranslateM (List Name) := do
   let elabMatch ← findTheorems s qp.numLeanSearch qp.numMoogle
   if elabMatch.isEmpty then
     matchingTheoremsAI  s n qp
@@ -658,7 +660,7 @@ def translateViewVerboseM (s: String)(translator : Translator) :   TranslateM ((
     let res? ← bestElab? output
     match res? with
     | Except.error err =>
-      appendLog "translate_fail" <| toJson err
+      -- appendLog "translate_fail" <| toJson err
       logError s prompt err
       return (none, output, prompt)
     | Except.ok res =>
@@ -672,7 +674,7 @@ def translateM (s: String)(translator: Translator)  :
   let res? ← bestElab? output
   match res? with
   | Except.error err =>
-    appendLog "translate_fail" <| toJson err
+    -- appendLog "translate_fail" <| toJson err
     return (Except.error err,  prompt)
   | Except.ok res =>
     if translator.roundTripSelect then
