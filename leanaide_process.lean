@@ -1,7 +1,7 @@
 import Lean.Meta
 import LeanAideCore.Translate
 import LeanAide.Config
-import LeanAide.TranslatorParams
+import LeanAideCore.TranslatorParams
 import Cli
 import LeanAide.Actor
 import LeanAide.StructToLean
