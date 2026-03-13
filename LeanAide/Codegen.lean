@@ -264,6 +264,18 @@ def elabCodegenCmdImpl' : CommandElab
 | _ => throwUnsupportedSyntax
 
 
+/--
+Converts definition to `use`
+-/
+def commandToUseTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
+  match cmd with
+  | `(command| def $_:ident $_:bracketedBinder* : $_ := $value) =>
+      `(tactic| use $value:term)
+  | `(command| def $_:ident $_:bracketedBinder* := $value) =>
+      `(tactic| use $value:term)
+  | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
+  | _ => throwError s!"could not parse the definition {← PrettyPrinter.ppCommand cmd} in commandToUseTactic"
+
 /-!
 Resolving existential theorems:
 * We have a series of let statements, each of which introduces a variable and a proof that it exists.

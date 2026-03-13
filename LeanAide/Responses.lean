@@ -8,7 +8,7 @@ import LeanAideCore.Kernel
 import Lean
 
 namespace LeanAide
-open LeanAide Lean
+open LeanAide Lean Codegen
 
 /-!
 Executing various tasks with Json input and output. These are for the server. We may switch to an attribute based system instead of case-based.
@@ -453,7 +453,7 @@ def leanFromStructuredJsonTask (data: Json) (translator : Translator) : Translat
         let some codeStx ←  Codegen.getCode qp none ``commandSeq js |
           throwError "Did not obtain code"
         let declarations :=
-          CodeGenerator.namesFromCommands <| getCommands codeStx
+          namesFromCommands <| getCommands codeStx
         let code ←
           PrettyPrinter.ppCategory ``commandSeq codeStx
         return Json.mkObj

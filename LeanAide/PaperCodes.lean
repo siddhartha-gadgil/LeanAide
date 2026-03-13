@@ -1,5 +1,5 @@
 import LeanAide.Codegen
-import LeanAide.StructToLean
+-- import LeanAide.StructToLean
 import Hammer
 /-!
 # Code generation for LeanAide "PaperStructure" schema
@@ -129,7 +129,7 @@ def resolveIntros (goal: MVarId) (names: List Name) : TranslateM <| MVarId × (A
     let introTerm ← elabTerm (mkIdent n) none
     let introType ← inferType introTerm
     let introTypeStx ← delabDetailed introType
-    let resolved ← CodeGenerator.resolveExistsHave introTypeStx (mkIdent n)
+    let resolved ← resolveExistsHave introTypeStx (mkIdent n)
     tacs := tacs ++ resolved
   return (goal, tacs)
 
@@ -149,7 +149,7 @@ def recallTheoremsAux : List DefData → TranslateM (Array Syntax.Tactic)
       let typeStx ← delabDetailed thmType
       let thmStx ← delabDetailed thm
       let head ← `(tactic| have $quotId : $typeStx := $thmStx)
-      let exs ← CodeGenerator.resolveExistsHave typeStx
+      let exs ← resolveExistsHave typeStx
       pure <| #[head] ++ exs
       else pure #[]
     return topTacs ++ tailTacs
@@ -616,7 +616,7 @@ where
         name
     traceAide `leanaide.papercodes.info s!"codegen: Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
-    let label := js.getObjString? "label" |>.getD name.toString
+    let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?, ← isProp type)
@@ -729,7 +729,7 @@ where
           let head ←
             `(command| theorem $name : $typeStx := by $proofStx)
           let resolvedCmds ←
-            CodeGenerator.cmdResolveExistsHave typeStx
+            cmdResolveExistsHave typeStx
           mkCommandSeq <| #[head] ++ resolvedCmds
         catch e =>
           let innerMsg ←  e.toMessageData.format
@@ -943,19 +943,19 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
   match s, js with
   | ``tacticSeq, js => do
     let statement := statement js
-    match js.getObjString? "value" with
-    | none =>
+    match js.getObjValAs? String "value" with
+    | .error _ =>
       -- If there is no value, we do not need to return a value
-      traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjString? "variable_name" |>.getD ""}"
+      traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjValAs? String "variable_name" |>.toOption.getD ""}"
       addPrelude statement
       return none
-    | some value =>
+    | .ok value =>
       match goal? with
       | some goal =>
         match (← goal.getType).app2? ``Exists with
         | some (_, .lam name _ _ _) =>
             traceAide `leanaide.papercodes.info s!"goal is a there exists statement"
-            if name.toString == (js.getObjString? "variable_name" |>.getD "") then
+            if name.toString == (js.getObjValAs? String "variable_name" |>.toOption.getD "") then
               traceAide `leanaide.papercodes.info s!"binderName {name.toString} same as variable_name"
               let useStx ← commandToUseTactic (← defStx translator js statement value)
               let usestxs := #[useStx]
@@ -970,13 +970,13 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
       return some <| ← `(tacticSeq| $stxs*)
   | ``commandSeq, js => do
     let statement := statement js
-    match js.getObjString? "value" with
-    | none =>
+    match js.getObjValAs? String "value" with
+    | .error _ =>
       -- If there is no value, we do not need to return a value
-      traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjString? "variable_name" |>.getD ""}"
+      traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjValAs? String "variable_name" |>.toOption.getD ""}"
       addPrelude statement
       return none
-    | some value =>
+    | .ok value =>
       let defStx ←
           defStx translator js statement value
       let stxs := #[defStx]
@@ -999,18 +999,18 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
       match js.getObjValAs? String "statement" with
       | Except.ok s => s
       | Except.error _ =>
-        let varSegment := match js.getObjString? "variable_name" with
-        | some "<anonymous>" => "We have "
-        | some v => s!"Let {v} be"
-        | _ => "We have "
+        let varSegment := match js.getObjValAs? String "variable_name" with
+        | .ok "<anonymous>" => "We have "
+        | .ok v => s!"Let {v} be"
+        | .error _ => "We have "
         let kindSegment := match js.getObjValAs? String "variable_type" with
-          | Except.ok k => s!"a {k}"
-          | Except.error _ => s!""
-        let valueSegment := match js.getObjString? "value" with
-          | some v => s!"{v}"
-          | _ => ""
-        let propertySegment := match js.getObjString? "properties", js.getObjString? "variable_name" with
-          | some p, some v =>
+          | .ok k => s!"a {k}"
+          | .error _ => s!""
+        let valueSegment := match js.getObjValAs? String "value" with
+          | .ok v => s!"{v}"
+          | .error _ => ""
+        let propertySegment := match js.getObjValAs? String "properties", js.getObjValAs? String "variable_name" with
+          | .ok p, .ok v =>
             if v != "<anonymous>"
               then s!"(such that) ({v} is) {p}"
               else s!"(such that) {p}"
@@ -1019,10 +1019,10 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
     defStx (translator: CodeGenerator) (js: Json) (statement: String)  (value: String) : TranslateM Syntax.Command :=
       withoutModifyingState do
         let statement' ← withPreludes statement
-        let varName ← match js.getObjString? "variable_name" with
-        | some "<anonymous>" => pure "_"
-        | some v => pure v
-        | _ => throwError s!"codegen: no 'variable_name' found in 'let_statement' for {js}"
+        let varName ← match js.getObjValAs? String "variable_name" with
+        | .ok "<anonymous>" => pure "_"
+        | .ok v => pure v
+        | .error _ => throwError s!"codegen: no 'variable_name' found in 'let_statement' for {js}"
         let statement' := statement'.trim ++ "\n" ++ s!"Define ONLY the term {varName} with value {value}. Other terms have been defined already."
 
         let stx? ← translator.translateDefCmdM? statement'
@@ -1095,16 +1095,16 @@ def someCode (translator : CodeGenerator := {})(goal : Option (MVarId)) : (kind:
     match js.getObjValAs? String "statement" with
     | Except.ok s => s
     | Except.error _ =>
-      let varSegment := match js.getObjString? "variable_name" with
-      | some "<anonymous>" => "We have "
-      | some v => s!"Let {v} be"
-      | _ => "We have "
+      let varSegment := match js.getObjValAs? String "variable_name" with
+      | .ok "<anonymous>" => "We have "
+      | .ok v => s!"Let {v} be"
+      | .error _ => "We have "
     let kindSegment := match js.getObjValAs? String "variable_kind" with
-      | Except.ok k => s!"a {k}"
-      | Except.error _ => s!""
-    let propertySegment := match js.getObjString? "properties" with
-      | some p => s!"(such that) {p}"
-      | _ => ""
+      | .ok k => s!"a {k}"
+      | .error _ => s!""
+    let propertySegment := match js.getObjValAs? String "properties" with
+      | .ok p => s!"(such that) {p}"
+      | .error _ => ""
     s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
   let assJs := Json.mkObj [
     ("type", "assert_statement"),
@@ -1243,7 +1243,7 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   addDefn dfn
   -- dfn.addDeclaration
   let resolvedCmds ←
-    CodeGenerator.cmdResolveExistsHave stx
+    cmdResolveExistsHave stx
   mkCommandSeq <| #[head] ++ resolvedCmds
 | _, ``tacticSeq, js => do
   let (stx, tac, _) ← typeStx js
@@ -1251,7 +1251,7 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let headTac ← `(tactic| have $name : $stx := by $tac)
   traceAide `leanaide.papercodes.info s!"codegen: assertionCode: headTac: {← PrettyPrinter.ppTactic headTac}"
-  let resTacs ← CodeGenerator.resolveExistsHave stx
+  let resTacs ← resolveExistsHave stx
   traceAide `leanaide.papercodes.info s!"codegen: assertionCode: resolved exists have tactics (size {resTacs.size})"
   let tacSeq := #[headTac] ++ resTacs
   `(tacticSeq| $tacSeq*)
@@ -1545,7 +1545,7 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
   let [thenGoal, elseGoal] ←
     runAndGetMVars goal #[tac] 2 | throwError "codegen:  `if _ then _ else _` failed to get two goals, goal: {← ppExpr <| ← goal.getType}"
   let resolution ←
-    CodeGenerator.resolveExistsHave conditionStx conditionId
+    resolveExistsHave conditionStx conditionId
   let .ok trueCaseProof := js.getObjValAs? Json "true_case_proof" | throwError
     s!"codegen: no 'true_case_proof' found in 'condition_cases_proof'"
   let .ok falseCaseProof := js.getObjValAs? Json "false_case_proof" | throwError
@@ -1597,7 +1597,7 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
     let [thenGoal, elseGoal] ←
       runAndGetMVars goal #[tac] 2 | throwError "codegen:  `if _ then _ else _` failed to get two goals, goal: {← ppExpr <| ← goal.getType}"
     let resolution ←
-      CodeGenerator.resolveExistsHave conditionStx conditionId
+      resolveExistsHave conditionStx conditionId
     let thenGoal ← if resolution.isEmpty then
       pure thenGoal
     else
@@ -1889,7 +1889,7 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
     let [thenGoal, elseGoal] ←
       runAndGetMVars goal #[tac] 2 | throwError "codegen:  `if _ then _ else _` failed to get two goals, goal: {← ppExpr <| ← goal.getType}"
     let resolution ←
-      CodeGenerator.resolveExistsHave conditionStx conditionId
+      resolveExistsHave conditionStx conditionId
     let thenGoal ← if resolution.isEmpty then
       pure thenGoal
     else

@@ -311,6 +311,77 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
 
 open Lean Meta Tactic Elab Term
 
+partial def existsVarTypesStx (type: Syntax.Term) : MetaM <| Option (Array <| Syntax.Ident × Syntax.Term) := do
+  match type with
+  | `(∃ $n:ident, $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
+  | `(∃ ($n:ident: $_), $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
+  | `(∃ $n:ident: $_, $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
+  | `(∃ $n:ident $ms*, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ $ms':binderIdent*, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
+  | `(∃ ($n:ident :  $_) $ms*, $t) => do
+    let t' ← `(∃ $ms*, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
+  | `(∃ ($n:ident $ms* : $type), $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ $ms':binderIdent* : $type, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
+  | `(∃ $n:ident $ms* : $type, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ $ms':binderIdent* : $type, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
+  | _ =>
+    -- logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
+    return none
+
+
+def resolveExistsHave (type : Syntax.Term) (typeTerm? : Option Syntax.Term :=none) : TermElabM <| Array Syntax.Tactic := do
+  let existsVarTypes? ← existsVarTypesStx type
+  let existsVarTypes := existsVarTypes?.getD #[]
+  let existsVarTypeIdents ←  existsVarTypes.mapM fun (n, t) => do
+    let fmt ← ppTerm {env := ← getEnv} t
+    let hash₀ := hash fmt.pretty
+    let tId : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+    pure (n, tId)
+  let fmt ← ppTerm {env := ← getEnv} type
+  let hash₀ := hash fmt.pretty
+  let typeIdent : Syntax.Term := typeTerm?.getD <| mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let rhsIdents :=
+    #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
+  (existsVarTypeIdents.zip rhsIdents).mapM
+    fun ((name, tId), rhs) =>
+      `(tactic| let ⟨$name, $tId⟩  := $rhs:term)
+
+def cmdResolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Command := do
+  let existsVarTypes? ← existsVarTypesStx type
+  let existsVarTypes := existsVarTypes?.getD #[]
+  let mut cmds : Array Syntax.Command := #[]
+  let existsVarTypeIdents : Array (Ident ×  Ident × Term) ← existsVarTypes.mapM fun (n, t) => do
+    let fmt ← ppTerm {env := ← getEnv} t
+    let hash₀ := hash fmt.pretty
+    let tId  := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+    pure (n, tId, type)
+  let fmt ← ppTerm {env := ← getEnv} type
+  let hash₀ := hash fmt.pretty
+  let typeIdent : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let mut prevTypeIdent := typeIdent
+  let hIdent := mkIdent `h
+  for (name, tId, type) in existsVarTypeIdents do
+    let defCmd ←
+      `(command| def $name  := match $prevTypeIdent:term with
+        | ⟨$hIdent, _⟩ => $hIdent)
+    cmds := cmds.push defCmd
+    let thmCmd ← `(command| theorem $tId : $type  := match $prevTypeIdent:term with
+        | ⟨_, $hIdent⟩ => $hIdent)
+    cmds := cmds.push thmCmd
+    prevTypeIdent := tId
+  return cmds
+
+
 def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
 | `(command|def $name  : $type := $value) => do
   let typeElab ← elabType type
@@ -372,3 +443,49 @@ def commandSeqToTacticSeq (cmdSeq: TSyntax ``commandSeq) : TermElabM <| TSyntax 
   let cmds := getCommands cmdSeq
   let tactics ← cmds.mapM commandToTactic
   `(tacticSeq| $tactics:tactic*)
+
+def namesFromCommands (cmds: Array Syntax.Command) : Array Name :=
+  cmds.foldl (fun acc cmd =>
+    match cmd with
+    | `(command| theorem $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
+    | `(command| def $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
+    | _ => acc) #[]
+
+
+
+end Codegen
+open Codegen
+
+def orAllSimple (terms: List Syntax.Term) : Syntax.Term :=
+  match terms with
+  | [] => mkIdent `False
+  | [h] => h
+  | h :: t =>
+      -- let t' : List Syntax.Term := t.map fun term => ⟨term⟩
+    t.foldl (fun acc cond => Syntax.mkApp (mkIdent `or) #[acc, cond]) h
+
+def orAllSimpleExpr (terms: List Expr) : MetaM Expr := do
+  match terms with
+  | [] => return mkConst ``False
+  | [h] => return h
+  | h :: t =>
+    let mut result := h
+    for term in t do
+      result ← mkAppM ``Or #[result, term]
+    return result
+
+
+partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
+  match goal with
+  | .forallE name type _ bi =>
+    withLocalDecl name bi type fun x => do
+      let inner ← orAllWithGoal terms type
+      mkForallFVars #[x] inner
+  | _ =>
+    let terms ← terms.mapM dropLocalContext
+    orAllSimpleExpr terms
+
+
+def matchAltTac := Lean.Parser.Term.matchAlt (rhsParser := Lean.Parser.Tactic.matchRhs)
+
+end LeanAide
