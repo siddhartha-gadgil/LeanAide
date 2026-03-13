@@ -1,6 +1,6 @@
 import LeanAide.TheoremElab
 import LeanAideCore.ChatClient
-import LeanAide.PromptBuilder
+import LeanAideCore.PromptBuilder
 import LeanAideCore.ConstDeps
 open Lean Meta Elab
 

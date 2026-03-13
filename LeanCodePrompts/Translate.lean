@@ -5,13 +5,13 @@ import LeanAideCore.TheoremElab
 import LeanAideCore.TheoremElabCheck
 import LeanAideCore.TheoremEquality
 -- import LeanAide.IP
-import LeanAide.PromptBuilder
+import LeanAideCore.PromptBuilder
 -- import LeanCodePrompts.SpawnNearestEmbeddings
 import Lean.Meta.Tactic.TryThis
 import LeanAideCore.ChatClient
 import LeanAideCore.StatementSyntax
 import LeanAideCore.TranslateM
-import LeanAide.PromptBuilder
+import LeanAideCore.PromptBuilder
 import LeanAideCore.SimpleFrontend
 import LeanAideCore.Descriptions
 
