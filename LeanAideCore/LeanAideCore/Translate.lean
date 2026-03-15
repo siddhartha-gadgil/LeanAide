@@ -176,7 +176,7 @@ def bestElab (output: Array String) : TranslateM Expr := do
         errors := errors.push <|
             Json.mkObj [("parsed", true),
               ("syntax", stx.reprint.get!), ("output", Json.str out)]
-    let errorJson := Json.arr errors
+    -- let errorJson := Json.arr errors
     -- appendLog "translate_fail_error" errorJson
     mkAppM ``sorryAx #[(mkSort levelZero), mkConst ``true]
   else
@@ -389,7 +389,7 @@ def jsonToExprFallback (json: Json)(greedy: Bool)(splitOutput := false) : Transl
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal
-  let s := (s.dropEnd 2).trim
+  let s := (s.dropEnd 2).trimAscii
   -- querying codex
   let (js, _) ←
     Translator.getLeanCodeJson  s.toString {} |>.run' {}

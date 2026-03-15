@@ -4,7 +4,6 @@ import LeanAide.Config
 import LeanAideCore.TranslatorParams
 import Cli
 import LeanAide.Actor
-import LeanAide.StructToLean
 import LeanAideCore.TaskStatus
 open Lean Cli LeanAide.Meta LeanAide Translator Std.Internal.IO Async
 
@@ -266,7 +265,6 @@ def launchProcess (p : Parsed) : IO UInt32 := do
     importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanAideCore.Translate},
-    {module:= `LeanAide.StructToLean},
     {module:= `LeanAide.PaperCodes},
     {module:= `LeanAide.Responses},
     {module := `LeanAideCore}] {}
