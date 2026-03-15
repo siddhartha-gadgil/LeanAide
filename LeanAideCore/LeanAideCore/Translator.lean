@@ -166,73 +166,59 @@ def CodeGenerator.default : CodeGenerator :=
 
 register_option lean_aide.translate.prompt_size : Nat :=
   { defValue := 8
-    group := "lean_aide.translate"
     descr := "Number of document strings in a prompt (default 8)" }
 
 register_option lean_aide.translate.concise_desc_size : Nat :=
   { defValue := 4
-    group := "lean_aide.translate"
     descr := "Number of concise descriptions in a prompt (default 4)" }
 
 register_option lean_aide.translate.desc_size : Nat :=
   { defValue := 4
-    group := "lean_aide.translate"
     descr := "Number of descriptions in a prompt (default 4)" }
 
 
 register_option lean_aide.translate.choices : Nat :=
   { defValue := 8
-    group := "lean_aide.translate"
     descr := "Number of outputs to request in a query (default 8)." }
 
 register_option lean_aide.translate.use_defintions : Bool :=
   { defValue := true
-    group := "lean_aide.translate"
     descr := "Whether to use docstrings of definitions (in addition to theorems)." }
 
 register_option lean_aide.translate.definition_penalty : Nat :=
   { defValue := 20
-    group := "lean_aide.translate"
     descr := "Penalty for a prompt being from a definition scaled by 10" }
 
 register_option lean_aide.translate.model : String :=
   { defValue := "gpt-5"
-    group := "lean_aide.translate"
     descr := "Model to use (gpt-5.1)." }
 
 register_option lean_aide.translate.azure : Bool :=
   { defValue := false
-    group := "lean_aide.translate"
     descr := "Whether to use Azure OpenAI." }
 
 register_option lean_aide.translate.url? : String :=
   { defValue := ""
-    group := "lean_aide.translate"
     descr := "Local or generic url to query. Empty string for none" }
 
 register_option lean_aide.translate.authkey? : String :=
   { defValue := ""
-    group := "lean_aide.translate"
     descr := "Authentication key for OpenAI or generic model" }
 
 register_option lean_aide.translate.examples_url? : String :=
   { defValue := ""
-    group := "lean_aide.translate"
     descr := "Local or generic url to query for embeddings. Empty string for none" }
 
 register_option lean_aide.translate.greedy : Bool :=
   { defValue := false
-    group := "lean_aide.translate"
     descr := "Whether to choose the first elaboration." }
 
 register_option lean_aide.translate.has_sysprompt : Bool :=
   { defValue := true
-    group := "lean_aide.translate"
     descr := "Whether the server has a system prompt." }
 
 register_option lean_aide.translate.temperature10 : Int :=
   { defValue := 10
-    group := "lean_aide.translate"
     descr := "temperature * 10." }
 
 /--

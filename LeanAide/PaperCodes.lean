@@ -229,13 +229,13 @@ def leanCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKin
 | _, ``tacticSeq, js => do
   let .ok code := js.getStr? | throwError "'lean' must have 'lean' field"
   let code := if code.startsWith "\"" then code.drop 1 else code
-  let code := if code.endsWith "\"" then code.dropRight 1 else code
-  parseTacticSeq code
+  let code := if code.endsWith "\"" then code.dropEnd 1 else code
+  parseTacticSeq code.toString
 | _, ``commandSeq, js => do
   let .ok code := js.getStr? | throwError "'lean' must have 'lean' field"
   let code := if code.startsWith "\"" then code.drop 1 else code
-  let code := if code.endsWith "\"" then code.dropRight 1 else code
-  let cmdSeq ← parseCommandSeq code
+  let code := if code.endsWith "\"" then code.dropEnd 1 else code
+  let cmdSeq ← parseCommandSeq code.toString
   let cmds := getCommands  cmdSeq
   for cmd in cmds do
     runCommand cmd
@@ -1015,7 +1015,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
               then s!"(such that) ({v} is) {p}"
               else s!"(such that) {p}"
           | _, _ => ""
-        s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
+        s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trimAscii.toString ++ "."
     defStx (translator: CodeGenerator) (js: Json) (statement: String)  (value: String) : TranslateM Syntax.Command :=
       withoutModifyingState do
         let statement' ← withPreludes statement
@@ -1023,7 +1023,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
         | .ok "<anonymous>" => pure "_"
         | .ok v => pure v
         | .error _ => throwError s!"codegen: no 'variable_name' found in 'let_statement' for {js}"
-        let statement' := statement'.trim ++ "\n" ++ s!"Define ONLY the term {varName} with value {value}. Other terms have been defined already."
+        let statement' := statement'.trimAscii.toString ++ "\n" ++ s!"Define ONLY the term {varName} with value {value}. Other terms have been defined already."
 
         let stx? ← translator.translateDefCmdM? statement'
         match stx? with
@@ -1105,7 +1105,7 @@ def someCode (translator : CodeGenerator := {})(goal : Option (MVarId)) : (kind:
     let propertySegment := match js.getObjValAs? String "properties" with
       | .ok p => s!"(such that) {p}"
       | .error _ => ""
-    s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
+    s!"{varSegment} {kindSegment} {propertySegment}".trimAscii.toString ++ "."
   let assJs := Json.mkObj [
     ("type", "assert_statement"),
     ("claim", .str statement)
