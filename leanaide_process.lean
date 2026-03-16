@@ -3,7 +3,7 @@ import LeanAideCore.Translate
 import LeanAide.Config
 import LeanAide.TranslatorParams
 import Cli
-import LeanAide.Actor
+import LeanAideCore.Actor
 import LeanAideCore.TaskStatus
 open Lean Cli LeanAide.Meta LeanAide Translator Std.Internal.IO Async
 
@@ -69,7 +69,7 @@ def spawnTaskAsync (js : Json) (translator : Translator) (ctx : Core.Context) (e
           logIO `leanaide.tasks.warning s!"Failed to post results to {url} for token {hash}: {e}"
       | none => pure ()
       states.addResult hash res
-    let prios :=
+    let prios := fun _ ↦
           (js.getObjValAs? Task.Priority "priority").toOption |>.getD prios
     logToStdErr `leanaide.tasks.info s!"Spawning async task with token {hash}"
     TranslateM.runBackgroundChain js (Actor.response translator) none ctx env callback chains prios
