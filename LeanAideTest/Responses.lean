@@ -1,4 +1,4 @@
-import LeanAide.Responses
+import LeanAideCore.Responses
 import LeanAideCore.ResponseExt
 
 namespace LeanAide

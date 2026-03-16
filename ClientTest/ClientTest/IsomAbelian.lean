@@ -163,6 +163,32 @@ example := codegen% egIsomorphicToAbelian
 
 #codegen_async tokenTest
 
+  theorem assert_11185360892913963714 :
+      ∀ {G : Type u_1} [inst : Group G] {H : Type u_2} [inst_1 : Group H] (f : G ≃* H),
+        (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → Function.Bijective (⇑f.toMonoidHom : G → H) :=
+    by grind only [MulEquiv.coe_toMonoidHom, MulEquiv.bijective]
+  theorem assert_12581320960456658752 :
+      ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),
+        (∀ (g1 g2 : G), g1 * g2 = g2 * g1) →
+          ∀ (g1 g2 : G),
+            (f.toMonoidHom : G → H) (g1 * g2) =
+              (f.toMonoidHom : G → H) g1 * (f.toMonoidHom : G → H) g2 :=
+    by simp only [MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe, map_mul, implies_true]
+  #check "Obtained definition"
+  theorem groupIso.underlying_hom_inv :
+      ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H)
+        (hcomm : ∀ g1 g2 : G, g1 * g2 = g2 * g1),
+        let f_hom : G →* H := f.toMonoidHom
+        let f_inv : H → G := fun h => f.symm h
+        (∀ h : H, f_hom (f_inv h) = h) ∧ (∀ g : G, f_inv (f_hom g) = g) :=
+    by sorry
+  theorem is_commutative_of_mul_equiv :
+      ∀ {G : Type u_1} [inst : Group G] {H : Type u_2} [inst_1 : Group H] (f : G ≃* H),
+        (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), x * y = y * x :=
+    by
+    intro G inst H inst_1 f a_11936962758669720682 x y
+    sorry
+
   theorem assert_1316498616452051197 :
       ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),
         (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → Function.Bijective (⇑f.toMonoidHom : G → H) :=
@@ -197,7 +223,7 @@ example := codegen% egIsomorphicToAbelian
     repeat (sorry)
     trace
       "Finished Automation Tactics   simp?\n  try simp?; exact?\n  grind?\n  hammer {aesopPremises := 0, autoPremises := 0} for goal: ∀ {G : Type u_1} {H : Type u_2} [inst : Group G] [inst_1 : Group H] (f : G ≃* H),\n  (∀ (g1 g2 : G), g1 * g2 = g2 * g1) →\n    ∃ f_inv, (∀ (h : H), f.toMonoidHom (f_inv h) = h) ∧ ∀ (g : G), f_inv (f.toMonoidHom g) = g"
-  theorem is_commutative_of_mul_equiv :
+  theorem is_commutative_of_mul_equiv' :
       ∀ {G : Type u_1} [inst : Group G] {H : Type u_2} [inst_1 : Group H] (f : G ≃* H),
         (∀ (g1 g2 : G), g1 * g2 = g2 * g1) → ∀ (x y : H), x * y = y * x :=
     by

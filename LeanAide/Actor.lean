@@ -1,9 +1,9 @@
-import LeanAideCore.TranslatorParams
+import LeanAide.TranslatorParams
 import LeanAideCore.Translate
-import LeanAideCore.TranslatorParams
+import LeanAide.TranslatorParams
 import LeanAide.Codegen
 import LeanAide.PaperCodes
-import LeanAide.Responses
+import LeanAideCore.Responses
 import LeanAideCore.ResponseExt
 import Lean
 

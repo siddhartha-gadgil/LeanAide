@@ -1,7 +1,7 @@
 import Lean.Meta
 import LeanAideCore.Translate
 import LeanAide.Config
-import LeanAideCore.TranslatorParams
+import LeanAide.TranslatorParams
 import Cli
 import LeanAide.Actor
 import LeanAideCore.TaskStatus
@@ -266,7 +266,7 @@ def launchProcess (p : Parsed) : IO UInt32 := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanAideCore.Translate},
     {module:= `LeanAide.PaperCodes},
-    {module:= `LeanAide.Responses},
+    {module:= `LeanAideCore.Responses},
     {module := `LeanAideCore}] {}
   let stdin ←  IO.getStdin
   let stdout ← IO.getStdout

@@ -1,8 +1,6 @@
-import LeanAide.TranslatorParams
 import LeanAideCore.Translate
-import LeanAide.TranslatorParams
-import LeanAide.Codegen
-import LeanAide.PaperCodes
+import LeanAideCore.CodegenCore
+import LeanAideCore.PaperCodes
 import LeanAideCore.ResponseExt
 import LeanAideCore.Kernel
 import Lean
@@ -234,7 +232,7 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
         let typeStx ← delabDetailed translation
         let thmFmt ← PrettyPrinter.ppExpr translation
         let pf? ←
-          getQuickTactics? mvar.mvarId! <||> getHammerTactics? mvar.mvarId!
+          getQuickTactics? mvar.mvarId!
         let name? := data.getObjValAs? Name "theorem_name" |>.toOption
         let name := name?.getD (← try
           translator.server.theoremName text
@@ -504,7 +502,7 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
                 let thmFmt ← PrettyPrinter.ppExpr expr
                 let mvar ← Lean.Meta.mkFreshExprMVar expr
                 let pf? ←
-                  getQuickTactics? mvar.mvarId! <||> getHammerTactics? mvar.mvarId!
+                  getQuickTactics? mvar.mvarId!
                 let name ← try
                   translator.server.theoremName desc
                   catch e =>
@@ -584,7 +582,7 @@ instance kernel : Kernel := {
       let thmFmt ← PrettyPrinter.ppExpr translation
       let mvar ← Lean.Meta.mkFreshExprMVar translation
       let pf? ←
-        getQuickTactics? mvar.mvarId! <||> getHammerTactics? mvar.mvarId!
+        getQuickTactics? mvar.mvarId!
       let name := name?.getD (← try
         translator.server.theoremName text
         catch e =>
