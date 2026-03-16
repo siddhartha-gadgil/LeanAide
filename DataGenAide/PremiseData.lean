@@ -66,7 +66,7 @@ instance [ToJsonM α] : ToJsonM (Array α) where
 def termToString : Syntax.Term → CoreM String :=
     fun t => do
         let stx ← ppTerm t
-        return stx.pretty.trim
+        return stx.pretty.trimAscii.toString
 
 /-- Syntax as json -/
 instance : ToJsonM Syntax.Term := ⟨fun (d: Syntax.Term) ↦ do
@@ -115,37 +115,37 @@ def declToString : Syntax → CoreM String := fun d => do
     match d with
     -- | `(letDecl|$_:ident : $_ := $_) =>
     --     let fmt ← ppCategory `letDecl d
-    --     return fmt.pretty.trim
-    --     -- let type := (← ppTerm type).pretty.trim
-    --     -- let val := (← ppTerm val).pretty.trim
+    --     return fmt.pretty.trimAscii.toString
+    --     -- let type := (← ppTerm type).pretty.trimAscii.toString
+    --     -- let val := (← ppTerm val).pretty.trimAscii.toString
     --     -- -- return s!"{n.getId.toString} : {type} := {val}"
     -- | _ =>
     --     IO.println s!"Trying to show: {d.reprint.get!}"
     --     let fmt ← ppCategory `bracketedBinderF d
-    --     return fmt.pretty.trim
+    --     return fmt.pretty.trimAscii.toString
     | `(funBinder|($n:ident : $type:term)) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"({n.getId.toString} : {type})"
     | `(funImplicitBinder|{$n:ident : $type:term}) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return "{" ++ s!"{n.getId.toString} : {type}" ++ "}"
     | `(instBinder|[$n:ident : $type:term]) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"[{n.getId.toString} : {type}]"
     | `(instBinder|[$type:term]) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"[{type}]"
     | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"⦃{n.getId.toString} : {type}⦄"
     | `(funBinder|(_ : $type:term)) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"(_ : {type})"
     | `(funImplicitBinder|{_ : $type:term}) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return "{" ++ s!"_ : {type}" ++ "}"
     -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
-    --     let type := (← ppTerm type).pretty.trim
+    --     let type := (← ppTerm type).pretty.trimAscii.toString
     --     return s!"⦃_ : {type}⦄"
     | stx =>
         let fallback := stx.reprint.get!
@@ -156,32 +156,32 @@ def declToString : Syntax → CoreM String := fun d => do
 def declToThmHead : Syntax → CoreM String := fun d => do
     match d with
     | `(letDecl|$n:ident : $type := $val) =>
-        let type := (← ppTerm type).pretty.trim
-        let val := (← ppTerm val).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
+        let val := (← ppTerm val).pretty.trimAscii.toString
         return s!"let {n.getId.toString} : {type} := {val}; "
     | `(funBinder|($n:ident : $type:term)) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"({n.getId.toString} : {type}) → "
     | `(funImplicitBinder|{$n:ident : $type:term}) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return "{" ++ s!"{n.getId.toString} : {type}" ++ "} → "
     | `(instBinder|[$n:ident : $type:term]) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"[{n.getId.toString} : {type}] → "
     | `(instBinder|[$type:term]) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"[{type}] → "
     | `(funStrictImplicitBinder|⦃$n:ident : $type:term⦄) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"⦃{n.getId.toString} : {type}⦄ → "
     | `(funBinder|(_ : $type:term)) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return s!"(_ : {type}) → "
     | `(funImplicitBinder|{_ : $type:term}) =>
-        let type := (← ppTerm type).pretty.trim
+        let type := (← ppTerm type).pretty.trimAscii.toString
         return "{" ++ s!"_ : {type}" ++ "} → "
     -- | `(funStrictImplicitBinder|⦃_ : $type:term⦄) =>
-    --     let type := (← ppTerm type).pretty.trim
+    --     let type := (← ppTerm type).pretty.trimAscii.toString
     --     return s!"⦃_ : {type}⦄ → "
     | stx =>
         let fallback := stx.reprint.get! ++ " → "

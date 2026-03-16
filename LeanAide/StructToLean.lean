@@ -75,7 +75,7 @@ def contextStatementOfJson (js: Json) : Option String :=
     let propertySegment := match v.getObjString? "properties" with
       | some p => s!"(such that) {p}"
       | _ => ""
-    return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
+    return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trimAscii.toString ++ "."
   | some ("some", v) =>
     let varSegment := "There exists some " ++
       match v.getObjString? "variable" with
@@ -88,7 +88,7 @@ def contextStatementOfJson (js: Json) : Option String :=
     let propertySegment := match v.getObjString? "properties" with
       | some p => s!"(such that) {p}"
       | _ => ""
-    return s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
+    return s!"{varSegment} {kindSegment} {propertySegment}".trimAscii.toString ++ "."
   | some ("cases", v) =>
     match v.getObjValAs? String "on" with
     | Except.ok s => some <| "We consider cases based on " ++ (addFullStop s)
@@ -180,7 +180,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
   -- logToStdErr `leanaide.translate.info s!"Full statement: {fullStatement}"
   let translator := qp.toTranslator
   let type? ← Translator.translateToProp?
-    fullStatement.trim {translator with params:={translator.params with n := 5}}
+    fullStatement.trimAscii.toString {translator with params:={translator.params with n := 5}}
   -- logToStdErr `leanaide.translate.info s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   match type? with
   | Except.error e => do

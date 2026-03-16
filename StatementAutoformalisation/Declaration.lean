@@ -95,7 +95,7 @@ def DeclarationWithDocstring.envDecls (moduleNames : Array Name := .empty) (useM
 def Declaration.toType (decl : Declaration) : String :=
   let ns := if decl.openNamespaces.isEmpty then "" else "open " ++ decl.openNamespaces.joinWith " " ++ " in "
   let type :=
-    if decl.args.trim = "" then decl.type
+    if decl.args.trimAscii.toString = "" then decl.type
     else s!"∀ {decl.args}, {decl.type}"
   ns ++ type
 

@@ -570,7 +570,7 @@ def checkEquivalence
   let responses ← ChatServer.mathCompletions server queryString 1 params examples
   -- logToStdErr `leanaide.translate.info responses
   return responses.map fun s =>
-    ((s.toLower.trim.splitOn "true").length > 1, s)
+    ((s.toLower.trimAscii.toString.splitOn "true").length > 1, s)
 
 def mathTerms (server: ChatServer)
     (statement : String)(n: Nat := 3)
@@ -640,7 +640,7 @@ def theoremName (server: ChatServer)
     let query := s!"Give a name following the conventions of the Lean Prover 4 and Mathlib for the theorem: \n{statement}\n\nUse snakecase and ensure that there are no whitespaces. Give ONLY the name of the theorem."
     let namesArr ←  server.mathCompletions query 1
     let llm_name := namesArr[0]! |>.replace "`" ""
-          |>.replace "\""  "" |>.trim
+          |>.replace "\""  "" |>.trimAscii.toString
         -- logInfo llm_name
     let name := llm_name.toName
     newName name

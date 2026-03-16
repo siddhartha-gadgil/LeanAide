@@ -168,7 +168,7 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
   logToStdErr `leanaide.tasks.info "Server ready. Waiting for input..."
   let inp ← getLine ()
-  if inp.trim.isEmpty then
+  if inp.trimAscii.toString.isEmpty then
     process_loop env getLine putStrLn translator states chains
   else
   match Json.parse inp with

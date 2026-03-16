@@ -222,7 +222,7 @@ where
         return ()
       cumTacs := cumTacs.push tacticCode
       if (← getUnsolvedGoals).isEmpty then
-        unless tacticCode.raw.reprint.get!.trim.endsWith "sorry" do
+        unless tacticCode.raw.reprint.get!.trimAscii.toString.endsWith "sorry" do
           if fromBy then
             TryThis.addSuggestion stx (← `(by $[$cumTacs]*))
           else
