@@ -223,7 +223,6 @@ register_option lean_aide.translate.temperature10 : Int :=
 
 register_option lean_aide.translate.reasoning_effort : String :=
   { defValue := "medium"
-    group := "lean_aide.translate"
     descr := "Reasoning Effort" }
 
 /--
