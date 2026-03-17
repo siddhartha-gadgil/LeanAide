@@ -38,7 +38,6 @@ class LeanAideBaseDir where
 def baseDir [inst: LeanAideBaseDir] : IO System.FilePath := do
   inst.baseDir
 
-variable [LeanAideBaseDir]
 
 def leanAideLogging? : CoreM (Option String) := do
   let loggingEnabled : Bool := leanaide.logging.get (← getOptions)
@@ -47,6 +46,10 @@ def leanAideLogging? : CoreM (Option String) := do
 
 def leanAideLoggingIO? : IO (Option String) := do
   IO.getEnv "LEANAIDE_LOGGING"
+
+-- Behaves badly under imports
+section brittle
+variable [LeanAideBaseDir]
 
 def logHandle : IO IO.FS.Handle := do
   let logPath : System.FilePath :=
@@ -65,6 +68,12 @@ def logTimed (message: String) : IO Unit := do
   | _ =>
     return ()
 
+def resourcesDir : IO System.FilePath := do
+  let base ← baseDir
+  return base / "resources"
+
+end brittle
+
 def getBaseDir : MetaM System.FilePath := do
   try
   let inst ← synthInstance (mkConst ``LeanAideBaseDir)
@@ -76,9 +85,6 @@ def getBaseDir : MetaM System.FilePath := do
     IO.currentDir
 
 
-def resourcesDir : IO System.FilePath := do
-  let base ← baseDir
-  return base / "resources"
 
 
 def baseDirImpl : IO System.FilePath := do
@@ -94,8 +100,8 @@ def baseDirImpl : IO System.FilePath := do
     throw (IO.userError "LeanAide not found.")
 
 
-def leanAidePath : IO System.FilePath := do
-  return (← baseDir) / ".lake" /"packages" /"leanaide"
+def leanAidePath : MetaM System.FilePath := do
+  return (← getBaseDir) / ".lake" /"packages" /"leanaide"
 
 def cachePath : MetaM System.FilePath := do
   let path : System.FilePath := (← getBaseDir) /  ".leanaide_cache"
@@ -106,6 +112,9 @@ def cachePath : MetaM System.FilePath := do
     if ← path.pathExists then
       return path
     else
+      let h ← IO.FS.Handle.mk ".gitignore" IO.FS.Mode.append
+      h.putStrLn ".leanaide_cache/"
+      h.flush
       IO.FS.createDirAll path
       IO.FS.createDirAll (path / "frontend")
       IO.FS.createDirAll (path / "chat")

@@ -26,7 +26,13 @@ def logFile (name : Name)(msg : String) : IO Unit := do
   let timeStr ← timestamp
   let now ← Std.Time.PlainDateTime.now
   let date := now.format "uuuu-MM-dd"
-  let logFilePath := System.mkFilePath [".logs", s!"{date}.log"]
+  let logDir := System.mkFilePath [".logs"]
+  let logFilePath := logDir / s!"{date}.log"
+  if !(← logDir.pathExists) then
+    IO.FS.createDirAll logDir
+    let h ← IO.FS.Handle.mk ".gitignore" IO.FS.Mode.append
+    h.putStrLn ".logs/"
+    h.flush
   let handle ← IO.FS.Handle.mk logFilePath IO.FS.Mode.append
   let message := m!"[{timeStr}] [{name}] {msg.replace "\n" ("\n" ++ s!"[{timeStr}] [{name}] ")}"
   handle.putStrLn (← message.toString)

@@ -5,7 +5,7 @@ import Lean
 open Lean
 
 namespace LeanAide
-variable [LeanAideBaseDir]
+-- variable [LeanAideBaseDir]
 
 open Translate
 inductive RelevantDefs where

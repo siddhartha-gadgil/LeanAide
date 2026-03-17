@@ -413,7 +413,7 @@ end MathParaStructure
 
 variable [LeanAideBaseDir]
 
-def writeMathDoc : IO Unit := do
+def writeMathDoc : MetaM Unit := do
   let dir := (← resourcesDir)
   IO.FS.writeFile (dir/"MathDoc.md")
     (MathParaStructure.mathDoc.toIndendentList |>.render)

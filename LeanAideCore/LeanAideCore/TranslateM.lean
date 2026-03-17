@@ -7,7 +7,7 @@ import LeanAideCore.ChatClient
 
 open Lean Meta Elab Term
 namespace LeanAide
-variable [LeanAideBaseDir]
+-- variable [LeanAideBaseDir]
 
 /--
 Text source for a definition.

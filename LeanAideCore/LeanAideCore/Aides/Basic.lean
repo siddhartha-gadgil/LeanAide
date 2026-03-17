@@ -8,7 +8,7 @@ import Std
 
 open Lean Meta Elab Parser Tactic
 
-variable [LeanAideBaseDir]
+-- variable [LeanAideBaseDir]
 
 
 -- def five  := 5
@@ -19,7 +19,7 @@ variable [LeanAideBaseDir]
 
 -- #eval cachePath
 
-def reroutePath (fp : System.FilePath) : IO System.FilePath := do
+def reroutePath (fp : System.FilePath) : MetaM System.FilePath := do
   if ← fp.pathExists then
     return fp
   else
@@ -39,9 +39,9 @@ def getDelabBound : MetaM UInt32 := do
 def setDelabBound (n: UInt32) : MetaM Unit := do
    delab_bound.set n
 
-def picklePath (descField : String) : IO System.FilePath := do
+def picklePath (descField : String) : MetaM System.FilePath := do
   let name := if descField == "docString" then "prompts" else descField
-  return (← baseDir)/".lake"/ "build" / "lib" /
+  return (← getBaseDir)/".lake"/ "build" / "lib" /
     s!"mathlib4-{name}-embeddings-{← leanToolchain}.olean"
 
 
@@ -55,15 +55,15 @@ open Std.Time.Timestamp in
 def showDate : IO String := now.map (·.toPlainDateAssumingUTC.format "uuuu-MM-dd")
 
 
-def appendLog (logFile: String) (content : Json) (force: Bool := false) : CoreM Unit := do
+def appendLog (logFile: String) (content : Json) (force: Bool := false) : MetaM Unit := do
   if force then go logFile content
   else
     match (← leanAideLogging?) with
     | some "0" => return ()
     | some _ => go logFile content
     | none => return ()
-  where go (logFile: String) (content: Json) : IO Unit := do
-    let dir : System.FilePath := (← baseDir) / "leanaide_logs"
+  where go (logFile: String) (content: Json) : MetaM Unit := do
+    let dir : System.FilePath := (← getBaseDir) / "leanaide_logs"
     if !(← dir.pathExists) then
       IO.FS.createDirAll dir
     let fname : System.FilePath := dir / (logFile ++ "-" ++ (← showDate) ++ ".jsonl")
