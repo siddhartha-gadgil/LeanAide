@@ -1,7 +1,7 @@
-import LeanAide.TheoremElab
-import LeanCodePrompts.ChatClient
-import LeanAide.PromptBuilder
-import DataGenAide.ConstDeps
+import LeanAideCore.TheoremElab
+import LeanAideCore.ChatClient
+import LeanAideCore.PromptBuilder
+import LeanAideCore.ConstDeps
 open Lean Meta Elab
 
 namespace LeanAide.Meta
@@ -90,7 +90,7 @@ def describeTheoremPrompt (name: Name) :
       return (← fromTemplate "describe_theorem" [("theorem", statement)], statement)
     else
       let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-      return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+      return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trimAscii.toString)],
       statement)
 
 def describeAnonymousTheoremPrompt (type: Expr) :
@@ -103,7 +103,7 @@ def describeAnonymousTheoremPrompt (type: Expr) :
   | none =>
     return some (← fromTemplate "state_theorem" [("theorem", statement)], statement, none)
   | some defsBlob =>
-    return some (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+    return some (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trimAscii.toString)],
     statement, some defsBlob)
 
 def describeDefPrompt (type val: Expr) (name: Name) :
@@ -132,7 +132,7 @@ def describeDefPrompt (type val: Expr) (name: Name) :
       | none =>
         mkStatement n (← PrettyPrinter.delab info.type) none false (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
     let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-    return some (← fromTemplate "state_def_with_defs" [("defn", statement), ("definitions", defsBlob.trim)],
+    return some (← fromTemplate "state_def_with_defs" [("defn", statement), ("definitions", defsBlob.trimAscii.toString)],
     statement, some defsBlob)
 
 
@@ -157,7 +157,7 @@ def proveAnonymousTheoremPrompt (type: Expr) :
       | none =>
         mkStatement n (← PrettyPrinter.delab info.type) none false (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
     let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-    return some (← fromTemplate "prove_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+    return some (← fromTemplate "prove_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trimAscii.toString)],
     statement, some defsBlob)
 
 
@@ -321,9 +321,9 @@ def modulePairs : CoreM <| Array (Name × Array Name × Array String) := do
   return withDocs.map
       (fun (name, data, docs) => (name, data.constNames, docs))
 
-def descCachePath : IO System.FilePath := do return (← baseDir) / "rawdata"/ "premises" / "ident_pairs"/"extra-descriptions.jsonl"
+def descCachePath : MetaM System.FilePath := do return (← getBaseDir) / "rawdata"/ "premises" / "ident_pairs"/"extra-descriptions.jsonl"
 
-def getCachedDescriptions : IO (Array Json) := do
+def getCachedDescriptions : MetaM (Array Json) := do
   let path ← descCachePath
   if ← path.pathExists then
     let lines ← IO.FS.lines path
@@ -331,7 +331,7 @@ def getCachedDescriptions : IO (Array Json) := do
     return jsons
   else return #[]
 
-def cacheDescription (js: Json) : IO Unit := do
+def cacheDescription (js: Json) : MetaM Unit := do
   let path ← descCachePath
   let jsStr := js.compress
   if ← path.pathExists then
@@ -339,7 +339,7 @@ def cacheDescription (js: Json) : IO Unit := do
     h.putStrLn jsStr
   else IO.FS.writeFile path (jsStr ++ "\n")
 
-def getCachedDescriptionsMap : IO (Std.HashMap String Json) := do
+def getCachedDescriptionsMap : MetaM (Std.HashMap String Json) := do
   let cached ← getCachedDescriptions
   let pairs := cached.filterMap fun js => do
     let name? := js.getObjValAs? String "name" |>.toOption

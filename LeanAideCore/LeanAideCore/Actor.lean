@@ -1,11 +1,8 @@
-import LeanAide.TranslatorParams
-import LeanCodePrompts.Translate
-import LeanAide.StructToLean
-import LeanAide.TranslatorParams
-import LeanAide.Codegen
-import LeanAide.PaperCodes
-import LeanAide.Responses
-import LeanAide.ResponseExt
+import LeanAideCore.Translate
+import LeanAideCore.CodegenCore
+import LeanAideCore.PaperCodes
+import LeanAideCore.Responses
+import LeanAideCore.ResponseExt
 import Lean
 
 namespace LeanAide.Actor
@@ -31,7 +28,6 @@ def runTaskList (data: Json) (translator : Translator) : List String →  Transl
 | (task :: tasks) => do
   let data := data.setObjValAs! "task" (Json.str task)
   let result ← runTask data translator
-  appendLog "server" (force := true) <| Json.mkObj [("data", data), ("output", result)]
   match result.getObjVal? "result" with
   | Except.error e =>
     return data.mergeObj <| Json.mkObj [("result", "error"), ("error", s!"error in task {task}: {e}")]
@@ -50,7 +46,6 @@ def runTaskChain (data: Json) (translator : Translator) : List (String × Json) 
   logToStdErr `leanaide.translate.info s!"running task {task}"
   let translator ← translator.patch config
   let result ← runTask data translator
-  appendLog "server" (force := true) <| Json.mkObj [("data", data), ("output", result)]
   match result.getObjVal? "result" with
   | Except.error e =>
     return data.mergeObj <| Json.mkObj [("result", "error"), ("error", s!"error in task {task}: {e}")]
@@ -72,7 +67,6 @@ def response (translator : Translator)(data: Json)  :
     | Except.ok tasks => runTaskChain data translator tasks
     | _ =>
       let result ← runTask data translator
-      appendLog "server" (force:=true) <| Json.mkObj [("data", data), ("output", result)]
       return result.mergeObj data
 
 

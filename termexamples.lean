@@ -1,7 +1,7 @@
 import Lean.Meta
 -- import LeanCodePrompts
 import LeanAide.Config
-import DataGenAide.ConstDeps
+import LeanAideCore.ConstDeps
 import DataGenAide.PremiseData
 open Lean LeanAide.Meta
 
@@ -17,7 +17,7 @@ def main : IO Unit := do
   let env ←
     importModules (loadExts := true) #[
     {module := `Mathlib},
-    {module := `DataGenAide.ConstDeps}] {}
+    {module := `LeanAideCore.ConstDeps}] {}
   logToStdErr `leanaide.translate.info "Seeking term kind examples..."
   let core := termKindExamplesCore
   let l ← core.run' coreContext {env := env} |>.runToIO'

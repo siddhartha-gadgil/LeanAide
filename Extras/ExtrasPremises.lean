@@ -379,7 +379,7 @@ partial def Lean.Syntax.terms (stx: Syntax)(maxDepth?: Option Nat := none) :
         let argTerms := argTerms.toList.join
         match head? with
         | some head =>
-            return (head.trim, 0, stx.idents.map (·.1)) ::
+            return (head.trimAscii.toString, 0, stx.idents.map (·.1)) ::
                  (argTerms.map (fun (s, m, l) => (s, m + 1, l)))
         | none =>
             return (argTerms.map (fun (s, m, l) => (s, m + 1, l)))

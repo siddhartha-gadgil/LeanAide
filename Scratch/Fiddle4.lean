@@ -289,7 +289,7 @@ open Command
   fun stx => Command.liftTermElabM do
   match stx with
   | `(command| #proof $t:proofBodyInit ∎) =>
-    let s := stx.getArgs[1]!.reprint.get!.trim
+    let s := stx.getArgs[1]!.reprint.get!.trimAscii.toString
     logInfo m!"Syntax: {stx}"
     let stx' := mkProofStx "Some proof."
     logInfo m!"Extract: {s}"

@@ -8,7 +8,7 @@ import Std
 
 open Lean Meta Elab Parser Tactic
 
-variable [LeanAideBaseDir]
+-- variable [LeanAideBaseDir]
 
 
 -- def five  := 5
@@ -19,7 +19,7 @@ variable [LeanAideBaseDir]
 
 -- #eval cachePath
 
-def reroutePath (fp : System.FilePath) : IO System.FilePath := do
+def reroutePath (fp : System.FilePath) : MetaM System.FilePath := do
   if ← fp.pathExists then
     return fp
   else
@@ -27,7 +27,7 @@ def reroutePath (fp : System.FilePath) : IO System.FilePath := do
 
 def leanToolchain : IO String := do
   let inp ← IO.FS.readFile "lean-toolchain"
-  return inp.trim.drop ("leanprover/lean4:".length)
+  return inp.trimAscii.drop ("leanprover/lean4:".length) |>.toString
 
 -- #eval leanToolchain
 
@@ -39,9 +39,9 @@ def getDelabBound : MetaM UInt32 := do
 def setDelabBound (n: UInt32) : MetaM Unit := do
    delab_bound.set n
 
-def picklePath (descField : String) : IO System.FilePath := do
+def picklePath (descField : String) : MetaM System.FilePath := do
   let name := if descField == "docString" then "prompts" else descField
-  return (← baseDir)/".lake"/ "build" / "lib" /
+  return (← getBaseDir)/".lake"/ "build" / "lib" /
     s!"mathlib4-{name}-embeddings-{← leanToolchain}.olean"
 
 
@@ -55,15 +55,15 @@ open Std.Time.Timestamp in
 def showDate : IO String := now.map (·.toPlainDateAssumingUTC.format "uuuu-MM-dd")
 
 
-def appendLog (logFile: String) (content : Json) (force: Bool := false) : CoreM Unit := do
+def appendLog (logFile: String) (content : Json) (force: Bool := false) : MetaM Unit := do
   if force then go logFile content
   else
     match (← leanAideLogging?) with
     | some "0" => return ()
     | some _ => go logFile content
     | none => return ()
-  where go (logFile: String) (content: Json) : IO Unit := do
-    let dir : System.FilePath := (← baseDir) / "leanaide_logs"
+  where go (logFile: String) (content: Json) : MetaM Unit := do
+    let dir : System.FilePath := (← getBaseDir) / "leanaide_logs"
     if !(← dir.pathExists) then
       IO.FS.createDirAll dir
     let fname : System.FilePath := dir / (logFile ++ "-" ++ (← showDate) ++ ".jsonl")
@@ -196,11 +196,11 @@ def openAIKey : IO String := do
       | none =>
           let path : System.FilePath := "private" / "OPENAI_API_KEY"
           if (← path.pathExists) then
-            return (← IO.FS.readFile path).trim
+            return (← IO.FS.readFile path).trimAscii.toString
           else
           let path : System.FilePath := "rawdata" / "OPENAI_API_KEY"
           if (← path.pathExists) then
-            return (← IO.FS.readFile path).trim
+            return (← IO.FS.readFile path).trimAscii.toString
           else
             IO.throwServerError "OPENAI_API_KEY not set"
 
@@ -212,7 +212,7 @@ def geminiAPIKey : IO String := do
       | none =>
           let path : System.FilePath := "private" / "GEMINI_API_KEY"
           if (← path.pathExists) then
-            return (← IO.FS.readFile path).trim
+            return (← IO.FS.readFile path).trimAscii.toString
           else
             panic! "GEMINI_API_KEY not set"
 
@@ -241,7 +241,7 @@ def projectID : IO String := do
 
 def gitHash : IO String := do
   let hash ← IO.Process.output { cmd := "git", args := #["rev-parse", "--short", "HEAD"] }
-  return hash.stdout.trim
+  return hash.stdout.trimAscii.toString
 
 
 def codeBlock (code: String) (s: String) : String :=
@@ -262,12 +262,12 @@ def extractLean (s: String) : String :=
 
 def extractJson (s: String) : Json :=
   let code := codeBlock? "json" s |>.getD s
-  let code := code.trim
+  let code := code.trimAscii
   let code' :=
     code.replace "\n" " " |>.replace "\t" " " |>.replace "\\" "\\\\"
   match Json.parse code' with
   | Except.ok j => j
-  | Except.error _ => Json.str code
+  | Except.error _ => Json.str code.toString
 
 def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : MetaM <| Except String (Syntax × String × String) := do
   let env ← getEnv
@@ -281,7 +281,7 @@ def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : 
   else
     let head := (String.Pos.Raw.extract input) 0 s.pos
     let stx := stack.back!
-    return Except.ok (stx, head, input.drop head.length)
+    return Except.ok (stx, head, input.drop head.length |>.toString)
 
 partial def polyParser (parser: Parser) (input: String) (fileName := "<input>") : MetaM <| Option  Syntax := do
   -- logInfo s!"parsing {input}"
@@ -290,20 +290,20 @@ partial def polyParser (parser: Parser) (input: String) (fileName := "<input>") 
     -- logInfo s!"parsed {stx}"
     return some stx
   | Except.error _ =>
-    let tail := input.dropWhile (fun c => c != '\n') |>.drop 1 |>.trim
+    let tail := input.dropWhile (fun c => c != '\n') |>.drop 1 |>.trimAscii
     if tail.isEmpty then
       -- logInfo "no more input; tail empty"
       return none
     else
-      return (← polyParser parser tail fileName)
+      return (← polyParser parser tail.toString fileName)
 
 partial def lineBlocks (input: String) : List String :=
   let tail := input.dropWhile (fun c => c != '\n') |>.drop 1
     if tail.isEmpty then
       [input]
     else
-      let tailBlocks := lineBlocks tail
-      let head := input.takeWhile (fun c => c != '\n')
+      let tailBlocks := lineBlocks tail.toString
+      let head := input.takeWhile (fun c => c != '\n') |>.toString
       head :: (tailBlocks.map (fun b => head ++ "\n" ++ b)) ++ tailBlocks
 
 
@@ -388,8 +388,8 @@ partial def shrink (s: String) : String :=
                 |>.replace " }" "}"
                 |>.replace "[ " "["
                 |>.replace " ]" "]"
-                |>.trim
-    if step == s then s else shrink step
+                |>.trimAscii
+    if step == s then s else shrink step.toString
 
 
 def runTacticToCore (mvarId: MVarId) (stx: Syntax)
@@ -450,7 +450,7 @@ def colEqSegments (s: String) : List String :=
   match pieces with
   | [] => []
   | head :: tail =>
-    tail.scanl' (fun acc x => acc ++ ":=" ++ x) head |>.map (String.trim)
+    tail.scanl' (fun acc x => acc ++ ":=" ++ x) head |>.map (fun s ↦  s.trimAscii.toString)
 
 def splitColEqSegments (ss: Array String) : Array String :=
   ss.toList.flatMap colEqSegments |>.toArray
@@ -474,16 +474,16 @@ def newName (base: Name) : CoreM Name := do
 
 def extractJsonM (s: String) : CoreM Json :=
   let code := codeBlock? "json" s |>.getD s
-  let code := code.trim
+  let code := code.trimAscii.toString
   match Json.parse code with
   | Except.ok j => do
     -- logInfo s!"parsed JSON: {j}"
-    appendLog "json_parsed" j
+    -- appendLog "json_parsed" j
     return j
   | Except.error e => do
     logWarning  m!"Error parsing JSON: {e}"
-    appendLog "json_error" (Json.str code)
-    appendLog "json_error" (Json.str e)
+    -- appendLog "json_error" (Json.str code)
+    -- appendLog "json_error" (Json.str e)
     return Json.str code
 
 
@@ -606,12 +606,5 @@ def pythonPath : IO String := do
   return "python3"
 
 -- #eval pythonPath
-
-def topCode := "import Mathlib
-universe u v w u_1 u_2 u_3 u₁ u₂ u₃
-set_option maxHeartbeats 10000000
-set_option linter.unreachableTactic false
-open scoped Nat
-"
 
 end LeanAide

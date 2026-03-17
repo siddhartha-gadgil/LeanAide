@@ -11,7 +11,7 @@ namespace LeanAide
 
 #logIO leanaide.llm.info
 
-variable [LeanAideBaseDir]
+-- variable [LeanAideBaseDir]
 /--
 Extracts the content of the message field from a JSON object,
 following the OpenAI API format.
@@ -192,13 +192,12 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM 
   traceAide `leanaide.llm.info s!"Response: {output}" -- uncomment for debugging
   match Lean.Json.parse output with
   | Except.ok j =>
-    appendLog "chat_queries"
-      (Json.mkObj [("query", queryJs), ("success", true), ("response", j)])
+    traceAide `leanaide.llm.info
+      (Json.mkObj [("query", queryJs), ("success", true), ("response", j)]).compress
     return j
   | Except.error e =>
     traceAide `leanaide.llm.info s!"Error parsing JSON: {e}; source: {output}"
-    appendLog "chat_queries"
-      (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
+    traceAide `leanaide.llm.info (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)]).compress
     return .null
 
 def queryAux' (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM Json := do
@@ -241,8 +240,10 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM Jso
   else
     -- traceAide `leanaide.llm.info s!"Querying server"
     -- logInfo s!"Querying server"
-    let result ← queryAux' server messages params
+    traceAide `leanaide.llm.info s!"No cache: {file}"
+    let result ←  queryAux' server messages params
     IO.FS.writeFile file result.pretty
+    traceAide `leanaide.llm.info s!"Query result cached at {file}"
     return result
 
 def pollCacheQuery (server: ChatServer)(messages : Json)
@@ -282,7 +283,7 @@ def cachedQuery (server: ChatServer)(messages : Json)
         q.filter (· != key)
       return j
 
-def dataPath (server: ChatServer) : IO  FilePath := do
+def dataPath (server: ChatServer) : MetaM  FilePath := do
   match server with
   | azure deployment _ _ => do
     let path := (← llmDir) / "azure" / deployment
@@ -294,14 +295,14 @@ def dataPath (server: ChatServer) : IO  FilePath := do
     return path
 
 def dump (server: ChatServer)(data : Json)
-    (name: String) (task : String): IO Unit := do
+    (name: String) (task : String): MetaM Unit := do
   let path ← dataPath server
   let path := path / name
   IO.FS.createDirAll path
   IO.FS.writeFile (path / s!"{task}.json") <| data.pretty
 
 def load (server: ChatServer)(name: String)
-    (task : String) : IO Json := do
+    (task : String) : MetaM Json := do
   let path ← dataPath server
   let path := path / name / s!"{task}.json"
   let js ← IO.FS.readFile path
@@ -592,7 +593,7 @@ def checkEquivalence
   let responses ← ChatServer.mathCompletions server queryString 1 params examples
   -- logToStdErr `leanaide.translate.info responses
   return responses.map fun s =>
-    ((s.toLower.trim.splitOn "true").length > 1, s)
+    ((s.toLower.trimAscii.toString.splitOn "true").length > 1, s)
 
 def mathTerms (server: ChatServer)
     (statement : String)(n: Nat := 3)
@@ -660,12 +661,16 @@ def structuredProofFromStatement (server: ChatServer)
 def theoremName (server: ChatServer)
   (statement: String): MetaM Name := do
     let query := s!"Give a name following the conventions of the Lean Prover 4 and Mathlib for the theorem: \n{statement}\n\nUse snakecase and ensure that there are no whitespaces. Give ONLY the name of the theorem."
-    let namesArr ←  server.mathCompletions query 1
-    let llm_name := namesArr[0]! |>.replace "`" ""
-          |>.replace "\""  "" |>.trim
+    let namesArr ←
+      try
+        server.mathCompletions query 1
+       catch _ => pure #[]
+    let llm_name? := namesArr[0]?.map fun s =>s.replace "`" ""
+          |>.replace "\""  "" |>.trimAscii.toString
         -- logInfo llm_name
+    let llm_name := llm_name? |>.getD s!"unnamed_theorem_{hash statement}"
     let name := llm_name.toName
-    newName name
+    return name
 
 def fullStatement (server: ChatServer)
   (statement: String): MetaM String := do

@@ -1,8 +1,8 @@
 import Lean
-import Qq
-import LeanCodePrompts.Translate
+-- import Qq
+import LeanAideCore.Translate
 
-open Lean Meta Qq
+open Lean Meta
 
 namespace LeanAide
 
@@ -26,7 +26,8 @@ initialize registerBuiltinAttribute {
   descr := "Lean response given task name"
   add := fun decl stx kind => MetaM.run' do
     let declTy := (← getConstInfo decl).type
-    let expectedType : Q(Type) := q(Json → Translator → TranslateM (Json))
+    let expectedType : Expr ← mkArrow (mkConst ``Json) (← mkArrow (mkConst ``Translator) (mkApp (mkConst ``TranslateM) (mkConst ``Json)))
+    -- q(Json → Translator → TranslateM (Json))
     unless ← isDefEq declTy expectedType do
       throwError
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
@@ -44,11 +45,8 @@ def responseMatches (key: String) : CoreM Name := do
 
 def responseFromFunc  (translator: Translator) (f: Name) (source: Json) :
     TranslateM (Json) := do
-  let expectedType : Q(Type) := q(Json → Translator → TranslateM (Json))
-  let f := mkConst f
   let response ←
-    unsafe evalExpr
-      (Json → Translator → TranslateM (Json)) expectedType f
+    unsafe evalConst (Json → Translator → TranslateM (Json)) f
   response source translator
 
 def responseFromTask (task: String) (translator: Translator)

@@ -4,7 +4,6 @@ LeanAide or Lean**AI**de (accidental pun) is work in progress to build AI based 
 
 We now (as of early February 2025, modified September 2025) have a convenient way to use LeanAide in your own projects, using a *server-client* setup which we outline below.
 
-
 ## Example usage
 
 The most convenient way to use LeanAide is with syntax we provide that gives code-actions. We have syntax for translating theorems and definitions from natural language to Lean, and for adding documentation strings to theorems and definitions. For example, the following code in a Lean file (with correct dependencies) will give code actions:
@@ -35,12 +34,13 @@ First clone the repository. Next, from the root of the repository, run the follo
 
 ```bash
 lake exe cache get # download prebuilt mathlib binaries
-lake build mathlib
 lake build
-lake exe fetch_embeddings
+cd LeanAideCore
+lake build
+cd ..
 ```
 
-Our translation is based on `GPT 4o` from OpenAI, but you can use alternative models (including local ones). Note that we also use embeddings from OpenAI, so you will need an OpenAI API key unless you set up an *example server* as descried below. Here, we assume you have an OpenAI API key.
+Our translation is based on `GPT 5` from OpenAI, but you can use alternative models (including local ones). Note that we also use embeddings from OpenAI, so you will need an OpenAI API key unless you set up an *example server* as descried below. Here, we assume you have an OpenAI API key.
 
 To get started please configure environment variables using the following bash commands or equivalent in your system at the base of the repository (the angle brackets are **not** to be included in the command), and then launch VS code. 
 

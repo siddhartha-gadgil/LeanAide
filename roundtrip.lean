@@ -2,7 +2,7 @@ import Lean.Meta
 import LeanCodePrompts
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Config
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 import Cli
 open Lean Cli LeanAide.Meta LeanAide
 
@@ -49,8 +49,8 @@ def runTranslate (p : Parsed) : IO UInt32 := do
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanCodePrompts.Translate},
-    {module:= `LeanAide.Descriptions}] {}
+    {module:= `LeanAideCore.Translate},
+    {module:= `LeanAideCore.Descriptions}] {}
   -- withUnpickle (← picklePath "docString")
   --   <|fun (docStringData : EmbedData) => do
   -- withUnpickle (← picklePath "description")

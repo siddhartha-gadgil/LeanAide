@@ -1,6 +1,6 @@
 import Lean.Meta
 import LeanAide.Config
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 open Lean LeanAide.Meta
 
 set_option maxHeartbeats 10000000
@@ -21,8 +21,8 @@ def block? (name: Name)(js: Json) : IO <| Option String := do
       | Except.error _ =>
         IO.throwServerError "No concise description for {name}"
     let statement := statement.replace ":= by sorry" ""
-    let statement := statement.replace "by sorry" "" |>.trim
-    let statement := if statement.endsWith ":=" then statement.dropRight 2 else statement
+    let statement := statement.replace "by sorry" "" |>.trimAscii.toString
+    let statement := if statement.endsWith ":=" then statement.dropEnd 2 else statement
     let statement := if (statement.splitOn "/--").length > 0 then statement.splitOn "-/" |>.getD 1 (statement) else statement
     return some s!"<tr><td><h4><code>{name}</code></h4>\n<h5>{statement}</h5>\n<p>{desc}</p>\n<p>More concisely: <em>{concise}</em></p>\n</td></tr>\n"
   | _, _ => return none
@@ -32,7 +32,7 @@ def main : IO Unit := do
   let env ←
     importModules (loadExts := true) #[
     {module := `Mathlib},
-    {module := `DataGenAide.ConstDeps}] {}
+    {module := `LeanAideCore.ConstDeps}] {}
   let dataPath : System.FilePath := (← resourcesDir)/ "mathlib4-descs.jsonl"
   let jsData ←
       IO.FS.lines dataPath

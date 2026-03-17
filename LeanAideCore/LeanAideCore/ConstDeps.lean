@@ -1,7 +1,7 @@
 import Lean
 import Lean.Meta
 import Init.System
-import LeanAide.Aides
+import LeanAideCore.Aides
 import LeanAideCore.StatementSyntax
 import LeanAideCore.DefData
 import LeanAideCore.Sorries
@@ -92,13 +92,13 @@ elab "show_sorries#" n:ident : term => do
 
 
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 def withSorry (n: Nat) : Nat := match n with
   | 0 => by sorry
   | k + 1 => by sorry
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 def withSorry' (n m: Nat) : n + m = m + n := by
   induction n with
@@ -422,7 +422,7 @@ def getPropMapStr : MetaM <| Std.HashMap String (String × String) := do
           IO.println s!"count: {count}"
           IO.println s!"skipped: {skipped}"
         if isProp then
-          m := m.insert name.toString.trim (fmt.pretty, statement)
+          m := m.insert name.toString.trimAscii.toString (fmt.pretty, statement)
         count := count + 1
       catch e =>
         let msg := e.toMessageData

@@ -1,4 +1,4 @@
-import LeanAide.PromptBuilder
+import LeanAideCore.PromptBuilder
 -- import LeanAide.TomlConfig
 import Cli
 
@@ -62,15 +62,7 @@ def Translator.ofCli (p: Parsed) : IO Translator :=
   let translator : Translator := {pb := pb, server := chatServer, params := chatParams}
   return translator
 
-def Translator.patch (translator: Translator) (data: Json) : CoreM Translator :=
-  match data.getObjVal? "translator" with
-  | Except.ok config => do
-    traceAide `leanaide.translate.info s!"Patching translator with config: {config}"
-    let json := (toJson translator).mergeObj config
-    return fromJson? (α := Translator) json |>.toOption.getD translator
-  | _ => do
-    traceAide `leanaide.translate.info s!"No translator config found in data: {data}"
-    return translator
+
 
 def launch (_ : Parsed) : IO UInt32 := return 0
 

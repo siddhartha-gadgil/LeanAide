@@ -1,6 +1,6 @@
 import Lean
 import Mathlib
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
 open LeanAide.Meta
@@ -147,7 +147,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String): TranslateM (Opti
   let fullStatement := context.foldr (· ++ " " ++ ·) s!"Then, {statement}"
   logToStdErr `leanaide.translate.info s!"Full statement: {fullStatement}"
   let type? ← translateToProp?
-    fullStatement.trim {}
+    fullStatement.trimAscii.toString {}
   let type? := type?.toOption
   -- logToStdErr `leanaide.translate.info s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   type?.mapM <| fun e => dropLocalContext e

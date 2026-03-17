@@ -1,6 +1,6 @@
 import DataGenAide.FirstTacticData
 
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import Lean
 
 open Lean Meta Elab Tactic Parser
@@ -268,7 +268,7 @@ def tacticList : TacticM <| List String := do
         (fullJson.getObjVal? "choices").toOption.getD (Json.arr #[])
   let arr ← jsonToExprStrArray outJson
   let arr := arr.map (fun s =>
-      if s.endsWith "<" then s.dropRight 1 |>.trim else s.trim)
+      if s.endsWith "<" then s.dropEnd 1 |>.trimAscii.toString else s.trimAscii.toString)
   return arr.toList.eraseDups
 
 elab "aide?" : tactic =>

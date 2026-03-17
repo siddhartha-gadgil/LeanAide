@@ -373,7 +373,7 @@ def stxPurged : MetaM Syntax := do
 
 def stxPurgedView : MetaM String := do
   let stx ← stxPurged
-  return stx.reprint.get!.trim
+  return stx.reprint.get!.trimAscii.toString
 
 #eval stxPurgedView
 

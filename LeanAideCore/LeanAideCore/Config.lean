@@ -1,7 +1,10 @@
 import Lean
 import Std
+import LeanAideCore.ConfigExts
 open Lean Meta
 
+
+open LeanAide
 initialize
   registerTraceClass `leanaide.translate.info
   registerTraceClass `leanaide.translate.debug
@@ -25,8 +28,7 @@ initialize
 
 register_option leanaide.logging : Bool :=
   { defValue := false
-    descr := "Enable LeanAide logging"
-    group := "LeanAide" }
+    descr := "Enable LeanAide logging"}
 
 initialize delab_bound : IO.Ref UInt32 ← IO.mkRef 50
 
@@ -36,7 +38,6 @@ class LeanAideBaseDir where
 def baseDir [inst: LeanAideBaseDir] : IO System.FilePath := do
   inst.baseDir
 
-variable [LeanAideBaseDir]
 
 def leanAideLogging? : CoreM (Option String) := do
   let loggingEnabled : Bool := leanaide.logging.get (← getOptions)
@@ -45,6 +46,10 @@ def leanAideLogging? : CoreM (Option String) := do
 
 def leanAideLoggingIO? : IO (Option String) := do
   IO.getEnv "LEANAIDE_LOGGING"
+
+-- Behaves badly under imports
+section brittle
+variable [LeanAideBaseDir]
 
 def logHandle : IO IO.FS.Handle := do
   let logPath : System.FilePath :=
@@ -63,6 +68,12 @@ def logTimed (message: String) : IO Unit := do
   | _ =>
     return ()
 
+def resourcesDir : IO System.FilePath := do
+  let base ← baseDir
+  return base / "resources"
+
+end brittle
+
 def getBaseDir : MetaM System.FilePath := do
   try
   let inst ← synthInstance (mkConst ``LeanAideBaseDir)
@@ -70,13 +81,9 @@ def getBaseDir : MetaM System.FilePath := do
   let baseDir ← unsafe evalExpr (IO System.FilePath) (← mkAppM ``IO #[mkConst ``System.FilePath]) e
   return (← baseDir)
   catch _ =>
-    logWarning "Could not get base directory from LeanAideBaseDir instance, falling back to current directory"
+    -- logWarning "Could not get base directory from LeanAideBaseDir instance, falling back to current directory"
     IO.currentDir
 
-
-def resourcesDir : IO System.FilePath := do
-  let base ← baseDir
-  return base / "resources"
 
 
 def baseDirImpl : IO System.FilePath := do
@@ -92,15 +99,44 @@ def baseDirImpl : IO System.FilePath := do
     throw (IO.userError "LeanAide not found.")
 
 
-def leanAidePath : IO System.FilePath := do
-  return (← baseDir) / ".lake" /"packages" /"leanaide"
+def leanAidePath : MetaM System.FilePath := do
+  return (← getBaseDir) / ".lake" /"packages" /"leanaide"
 
 def cachePath : MetaM System.FilePath := do
   let path : System.FilePath := (← getBaseDir) /  ".leanaide_cache"
   if ← path.pathExists then
     return path
   else
-    return (← IO.currentDir) / path
+    let path := (← IO.currentDir) / ".leanaide_cache"
+    if ← path.pathExists then
+      return path
+    else
+      let h ← IO.FS.Handle.mk ".gitignore" IO.FS.Mode.append
+      h.putStrLn ""
+      h.putStrLn ".leanaide_cache/"
+      h.flush
+      IO.FS.createDirAll path
+      IO.FS.createDirAll (path / "frontend")
+      IO.FS.createDirAll (path / "chat")
+      IO.FS.createDirAll (path / "prompt")
+      IO.FS.createDirAll (path / "tasks")
+      return path
+
+def getResourcesDir : MetaM System.FilePath := do
+  let path : System.FilePath := (← getBaseDir) /  "resources"
+  if ← path.pathExists then
+    return path
+  else
+    return (← IO.currentDir) / "resources"
 -- #eval resourcesDir
 
 -- #eval getBaseDir
+
+-- #eval topCodeM
+
+-- #topCode ["imp?"] ["Hello world!", "Hi"]
+
+-- #eval topCodeM
+
+
+def topCode := topCodeData.toString

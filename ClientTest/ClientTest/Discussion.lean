@@ -1,6 +1,6 @@
 import LeanAideCore.Syntax
 import LeanAideCore
--- import LeanAide.Responses
+-- import LeanAideCore.Responses
 import Mathlib
 namespace LeanAide
 

@@ -1,6 +1,6 @@
 import LeanCodePrompts.BatchTranslate
 import LeanAide.Aides
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 import LeanAide.PutnamBench
 /-!
 # Translation Session
@@ -27,7 +27,7 @@ Commands need to be designed for more complex tasks:
 
 open Lean Meta Elab
 open LeanAide.Meta
-namespace LeanAide.Translate
+namespace LeanAideCore.Translate
 
 structure SessionM.State where
   server : ChatServer := ChatServer.default
@@ -357,7 +357,7 @@ macro "#session" n:ident ":=" t:term : command => do
   -- discard docsText
 
 /-
-def LeanAide.Translate.eg' : Session :=
+def LeanAideCore.Translate.eg' : Session :=
 do
   consider "There are infinitely many odd numbers"
   setRoundTrip true
@@ -408,7 +408,7 @@ def quas : (N : Nat) → Prop :=
   addPromptByDef {name := "δ", type := "ℕ → ℕ", docString := "The greatest odd divisor of a positive integer.", isProp := false}
   discard <|  docs "There are infinitely many odd numbers"
 
-end LeanAide.Translate
+end LeanAideCore.Translate
 
 #check ExistsUnique
 

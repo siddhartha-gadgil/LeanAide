@@ -1,7 +1,7 @@
 import Lean.Meta
 -- import LeanCodePrompts
 import LeanAide.Config
-import LeanAide.Descriptions
+import LeanAideCore.Descriptions
 open Lean LeanAide.Meta LeanAide
 
 set_option maxHeartbeats 10000000
@@ -13,12 +13,12 @@ def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", posi
 
 def main : IO Unit := do
   let names ← IO.FS.lines ((← resourcesDir) / "doconly_names.txt")
-  let names := names.map (fun s => s.trim)
+  let names := names.map (fun s => s.trimAscii.toString)
   initSearchPath (← Lean.findSysroot)
   let env ←
     importModules (loadExts := true) #[
     {module := `Mathlib},
-    {module := `DataGenAide.ConstDeps}] {}
+    {module := `LeanAideCore.ConstDeps}] {}
   let outpath : System.FilePath := ("rawdata"/ "premises" / "ident_pairs"/"descriptions_docs.jsonl")
   let preread ← if ← outpath.pathExists then
       IO.FS.lines outpath

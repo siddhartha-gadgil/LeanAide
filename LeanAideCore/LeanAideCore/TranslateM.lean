@@ -7,7 +7,7 @@ import LeanAideCore.ChatClient
 
 open Lean Meta Elab Term
 namespace LeanAide
-variable [LeanAideBaseDir]
+-- variable [LeanAideBaseDir]
 
 /--
 Text source for a definition.
@@ -229,17 +229,18 @@ def uploadDesciptions (file: System.FilePath) : TranslateM Unit := do
     | Except.error _ => continue
 
 def preloadDescriptions : TranslateM Unit := do
-  if (← ((← resourcesDir) / "mathlib4-prompts.jsonl").pathExists) then
-    uploadDesciptions <| (← resourcesDir) / "mathlib4-prompts.jsonl"
+  let resourcesDir ← getResourcesDir
+  if (← (resourcesDir / "mathlib4-prompts.jsonl").pathExists) then
+    uploadDesciptions <| resourcesDir / "mathlib4-prompts.jsonl"
   else
-     let _ ← IO.Process.output {cmd:= "curl", args := #["--output", ((← resourcesDir) / "mathlib4-prompts.jsonl").toString, "https://storage.googleapis.com/leanaide_data/mathlib4-prompts.jsonl"]}
-     uploadDesciptions <| (← resourcesDir) / "mathlib4-prompts.jsonl"
+     let _ ← IO.Process.output {cmd:= "curl", args := #["--output", (resourcesDir / "mathlib4-prompts.jsonl").toString, "https://storage.googleapis.com/leanaide_data/mathlib4-prompts.jsonl"]}
+     uploadDesciptions <| resourcesDir   / "mathlib4-prompts.jsonl"
 
-  if (← ((← resourcesDir) / "mathlib4-descs.jsonl").pathExists) then
-    uploadDesciptions <| (← resourcesDir) / "mathlib4-descs.jsonl"
+  if (← (resourcesDir / "mathlib4-descs.jsonl").pathExists) then
+    uploadDesciptions <| resourcesDir / "mathlib4-descs.jsonl"
   else
-     let _ ← IO.Process.output {cmd:= "curl", args := #["--output", ((← resourcesDir) / "mathlib4-descs.jsonl").toString, "https://storage.googleapis.com/leanaide_data/mathlib4-descs.jsonl"]}
-     uploadDesciptions <| (← resourcesDir) / "mathlib4-descs.jsonl"
+     let _ ← IO.Process.output {cmd:= "curl", args := #["--output", (resourcesDir / "mathlib4-descs.jsonl").toString, "https://storage.googleapis.com/leanaide_data/mathlib4-descs.jsonl"]}
+     uploadDesciptions <| resourcesDir / "mathlib4-descs.jsonl"
 
 def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   let m ← getDescMap

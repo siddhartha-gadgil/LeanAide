@@ -1,6 +1,6 @@
 import LeanSlides
 import Mathlib
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 
 #set_pandoc_options "-V" "theme=white"
 
@@ -24,23 +24,23 @@ import LeanCodePrompts.Translate
   mathematical statements from natural language
   to Lean code.
 - The tool is itself written in `Lean 4`.
-- At its core, `LeanAIde` relies on a 
+- At its core, `LeanAIde` relies on a
   large language model for translation.
 - Various optimisations to the input and output of
-  the language model are used to push up 
-  the success rate of translation. 
+  the language model are used to push up
+  the success rate of translation.
 
 -/
 
 /-! ## A quick demonstration of the tool -/
-theorem infinitude_odds : ∀ (n : ℕ), ∃ m, m > n ∧ Odd m := 
+theorem infinitude_odds : ∀ (n : ℕ), ∃ m, m > n ∧ Odd m :=
   by sorry
 
 #slides Prompting /-!
 
 # Prompting
 
-The prompting style used to query 
+The prompting style used to query
 a language model can have a
 strong effect on the output.
 
@@ -58,7 +58,7 @@ elab "#nearest_docstrings" stmt:str n:num : command => do
   let embeddingsRaw ← getNearestEmbeddingsFull stmt.getString n.getNat
   let embeddingsJson ← IO.ofExcept <| Lean.Json.parse embeddingsRaw >>= Lean.Json.getArr?
   for embedding in embeddingsJson do
-    IO.println embedding 
+    IO.println embedding
 
 #nearest_docstrings "Every even number can be written as the sum of two primes" 6
 
@@ -75,7 +75,7 @@ elab "#nearest_docstrings" stmt:str n:num : command => do
 # Sentence embeddings
 
 Sentence embeddings are numerical representations of text
-as vectors of real numbers in a way that captures 
+as vectors of real numbers in a way that captures
 semantic relationships between them.
 
 The embedding of the input statement is computed (using OpenAI embeddings)
@@ -85,8 +85,8 @@ and compared with stored embeddings of
 # Prompting
 
 The prompt to the language model is assembled from the sentence embeddings
-as an alternating dialogue of 
-doc-strings ("from the user") and 
+as an alternating dialogue of
+doc-strings ("from the user") and
 their corresponding Lean formal statements ("from the assistant").
 
 This is sent as a query to the `OpenAI GPT-3.5 Turbo` or `GPT-4` language model via an API call.
@@ -107,8 +107,8 @@ this is a very strong condition.
 
 After post-processing and filtering, the final output is picked by *majority voting*, i.e.,
 
-- the statements are clustered by proved equivalence using 
-the `aesop` automation tool and 
+- the statements are clustered by proved equivalence using
+the `aesop` automation tool and
 - a representative of the most common translation is then presented to the user.
 
 -/
@@ -167,7 +167,7 @@ various undergraduate pure mathematics textbooks.
 def randomFileLine (filePath : System.FilePath) : IO String := do
   let file ← IO.FS.readFile filePath
   let lines := file.split (· = '\n')
-  let idx ← IO.rand 0 (lines.length - 1) 
+  let idx ← IO.rand 0 (lines.length - 1)
   return lines[idx]!
 
 #eval randomFileLine "data/silly-prompts.txt"
@@ -203,11 +203,11 @@ vastly more approachable.
 
 # References
 
-- Zhangir Azerbayev and Edward W. Ayers. lean-chat: user guide. Lean. 2023. 
+- Zhangir Azerbayev and Edward W. Ayers. lean-chat: user guide. Lean. 2023.
   url: https://github.com/zhangir-azerbayev/lean-chat.
 - Zhangir Azerbayev et al. ProofNet: Autoformalizing and Formally Proving
   Undergraduate-Level Mathematics. 2023. arXiv: 2302.12433 [cs.CL].
-- Naman Jain et al. “Jigsaw: Large language models meet program synthesis”. 
+- Naman Jain et al. “Jigsaw: Large language models meet program synthesis”.
   In: Proceedings of the 44th International Conference on Software
   Engineering. 2022, pp. 1219–1231.
 
@@ -227,7 +227,7 @@ vastly more approachable.
 
 - Qingxiang Wang et al. “Exploration of neural machine translation in autoformalization of mathematics in Mizar”. In: Proceedings of the 9th ACM
  SIGPLAN International Conference on Certified Programs and Proofs. 2020,pp. 85–98.
-- Yuhuai Wu et al. “Autoformalization with large language models”. 
+- Yuhuai Wu et al. “Autoformalization with large language models”.
   In: Advances in Neural Information Processing Systems 35 (2022), pp. 32353–32368.
 - Jannis Limperg and Asta Halkjær From. “Aesop: White-Box Best-First
   Proof Search for Lean”. In: Proceedings of the 12th ACM SIGPLAN In-

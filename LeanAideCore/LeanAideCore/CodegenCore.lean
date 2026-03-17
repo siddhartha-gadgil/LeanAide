@@ -1,6 +1,7 @@
 import Lean
 import LeanAideCore.Aides
 import LeanAideCore.Syntax
+import LeanAideCore.RunTactics
 
 /-!
 ## Code generation from JSON data
@@ -180,6 +181,219 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
     throwError
       s!"codegen: no key or type found in JSON object {source} and no codegen functions returned a result"
 
+open Parser.Tactic
+/--
+Helper function to append tactics obtained from JSON sources to an existing sequence of tactics.
+-/
+def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
+  (sources: List Json) (accum: TSyntax ``tacticSeq) :
+    TranslateM ((TSyntax ``tacticSeq) × Option MVarId) :=
+  goal.withContext do
+  traceAide `leanaide.codegen.info "Trying assumptions"
+  try
+    goal.assumption
+    return (← appendTacticSeqSeq accum (← `(tacticSeq| assumption)), none)
+  catch _ =>
+  traceAide `leanaide.codegen.info "Trying exact tactics or automation"
+  match ← getQuickTactics? goal with
+  | some code => do
+    traceAide `leanaide.codegen.info s!"exact tactics found for goal: {← ppExpr <| ← goal.getType}"
+    -- traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+    return (← appendTacticSeqSeq accum code, none)
+  | none => do
+  traceAide `leanaide.codegen.info "No exact or automation tactics found, trying sources"
+  match sources with
+  | [] => do
+    return (accum, goal)
+  | source::sources => do
+    let code? ← try
+        getCode translator (some goal) ``tacticSeq source
+      catch e =>
+        let err ←   e.toMessageData.toString
+        traceAide `leanaide.codegen.info err
+        --let sourceId := mkIdent (s!"error_source_{hash source}").toName
+        let strLit := Syntax.mkStrLit s!"Error in processing:{source.pretty}"
+        let sourceTacs ← `(tacticSeq| trace $strLit)
+          -- try
+          --  let stx ← getJsonSyntax source
+          --  `(tacticSeq| let $sourceId : Json := json% $stx; sorry)
+          -- catch _ =>
+          --  let strLit := Syntax.mkStrLit (source.pretty)
+          --  `(tacticSeq| let $sourceId : String := $strLit; sorry)
+        -- let errs := "Error: " ++  err |>.splitOn "\n"
+        -- let errStxs : List Syntax.Tactic ←
+        --   errs.mapM fun err =>
+        --   let errStx := Syntax.mkStrLit <| err
+        --   `(tactic| trace $errStx)
+        -- let errStxs := errStxs.toArray
+        -- pure <| some <| ← `(tacticSeq| $errStxs*)
+        pure <| some <| sourceTacs
+    match code? with
+    | none => do -- pure side effect, no code generated
+      getCodeTacticsAux translator goal sources accum
+    | some code => do
+      if (getTactics code).isEmpty then
+        -- no tactics generated, but side effect
+        getCodeTacticsAux translator goal sources accum
+      else
+        if ← endsWithDone code then
+          -- the tactics are "done", so we can return the accumulated tactics
+          traceAide `leanaide.codegen.info s!"goal still open after tactics, but tactics end with 'done' so no further tactics generated."
+          traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
+          traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+          return (← appendTacticSeqSeq accum code, none)
+        else
+            -- continue with the next source
+        let goal? ← runForSingleGoal goal code
+        match goal? with
+        | none => do -- tactics closed the goal
+          traceAide `leanaide.codegen.info s!"goal closed by tactics"
+          traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
+          traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+          return (← appendTacticSeqSeq accum code, none)
+        | some newGoal => do
+          let newAccum ← appendTacticSeqSeq accum code
+          getCodeTacticsAux translator newGoal sources newAccum
+
+
+
+def findTactics? (goal :  MVarId):
+    TranslateM (Option (TSyntax ``tacticSeq)) := goal.withContext do
+  traceAide `leanaide.codegen.info "Trying automation tactics"
+  let localNames  ← Translate.defsNames
+  traceAide `leanaide.codegen.info s!"previous definitions/theorems names: {localNames}"
+  let grindWs ← grindWithSuggestions goal (← localNames.filterM fun n => checkGrind n)
+  let simpWs ← simpWithSuggestions goal localNames
+  runTacticsAndFindTryThis? goal ([← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try?), grindWs, simpWs, ← `(tacticSeq| try simp; exact?)] ++ (← getAutoTactics).toList) (strict := true)
+
+def findTacticsI (goal :  MVarId):
+    TranslateM (Array (Syntax.Tactic)) := goal.withContext do
+  let tacs? ← findTactics? goal
+  let defaultTacs ← `(tacticSeq| repeat (sorry))
+  return getTactics <| tacs?.getD defaultTacs
+
+/--
+Empty tactic sequence, used as an initial value for accumulating tactics.
+-/
+def emptyTacs : CoreM (TSyntax ``tacticSeq) := do
+  let xs: Array (TSyntax `tactic) := #[]
+  `(tacticSeq| $xs*)
+
+
+/--
+Obtain a sequence of tactics to apply to a goal, given a list of JSON sources. The function first tries to find exact tactics for the goal type, then checks for automation tactics, and finally processes the sources to generate a sequence of tactics.
+-/
+def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
+  (sources: List Json) :
+    TranslateM (TSyntax ``tacticSeq) := goal.withContext do
+  match ← findTactics? goal with
+  | some autoTacs => do
+    -- let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
+    let autoTacs :=
+      (getTactics autoTacs)
+    let autoTac ← `(tacticSeq| $autoTacs*)
+    traceAide `leanaide.codegen.info s!"automation closes the goal"
+    return autoTac
+  | none => do
+  let accum ← emptyTacs
+  let (tacs, goal?) ←
+     getCodeTacticsAux translator goal sources accum
+  match goal? with
+  | none => do
+    return tacs
+  | some goal => goal.withContext do
+    if ← goal.isAssigned then
+      return tacs
+    else
+    traceAide `leanaide.codegen.info s!"goal still open after tactics: {← ppExpr <| ← goal.getType}"
+    traceAide `leanaide.codegen.info "Local context:"
+    let lctx ← getLCtx
+    for decl in lctx do
+      traceAide `leanaide.codegen.info s!"{decl.userName} : {← ppExpr <| decl.type}"
+    let autoTacs ←
+      findTacticsI goal
+    traceAide `leanaide.codegen.info s!"auto tactics:"
+    for tac in autoTacs do
+      traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
+    appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
+
+
+/--
+Given a `CodeGenerator`, an optional goal, and a list of JSON sources, this function generates a sequence of commands. It processes each source, attempting to generate code for each one. If no code is generated, it continues to the next source. The final result is a sequence of commands that can be executed in Lean.
+-/
+def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
+  (sources: List Json) :
+    TranslateM (TSyntax ``commandSeq) := withoutModifyingState do
+  let mut accum : Array <| TSyntax ``commandSeq := #[]
+  for source in sources do
+    let code? ←
+      try
+        -- Translate.withDeferredTheorems do
+          getCode translator goal? ``commandSeq source
+      catch e =>
+        let err ←   e.toMessageData.toString
+        let errs := "Error: " ++  err |>.splitOn "\n"
+        let errStxs : List Syntax.Command ←
+          errs.mapM fun err =>
+          let errStx := Syntax.mkStrLit <| err
+          `(command| #check $errStx)
+        let errStxs := errStxs.toArray
+        pure <| some <| ← `(commandSeq| $errStxs*)
+
+    match code? with
+    | none => do -- error with obtaining commands
+      continue
+    | some code => do
+      accum := accum.push code
+  if accum.isEmpty then
+    let empty : Array <| TSyntax `command := #[]
+    `(commandSeq| $empty*)
+  else
+    let res ← flattenCommandSeq accum
+    Translate.addCommands res
+    return res
+
+
+/--
+No code generation function, used when no code is expected to be generated from the JSON object. It returns `none` for the given syntax category.
+-/
+def noCode : CodeGenerator → Option MVarId  →
+  (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
+  return none
+
+/--
+Placeholder function for code generation that is not implemented yet. It logs a warning and returns `none` for the given syntax category. This is used to indicate that the code generation for a specific key or category is not yet implemented.
+-/
+def notImplementedCode (name: String) : CodeGenerator → Option MVarId  →
+  (kind : SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun _ _ _ _  => do
+  traceAide `leanaide.codegen.info s!"{name} not implemented"
+  logWarning m!"codegen: {name} not implemented"
+  return none
+
+macro "#notImplementedCode" name:str : command => do
+  let thmName := mkIdent <| (name.getString ++ "Impl").toName
+  `(command | @[codegen $name]
+  def $thmName := notImplementedCode $name)
+
+/--
+Generate code for a context run, which is expected to be a pure side effect without returning any code. It processes an array of JSON objects and logs a warning if any code is generated.
+-/
+def contextRun (translator: CodeGenerator) (goal? : Option MVarId)
+  (kind: SyntaxNodeKinds) (source: Json) :
+    TranslateM Unit := do
+  match source.getArr?  with
+  | .ok sources => do
+    for source in sources do
+      let _code ← getCode translator goal? kind source
+      -- unless code.isNone do
+      --   traceAide `leanaide.codegen.info s!"contextCode expected pure side effect, but got {code}"
+      --   logWarning m!"codegen: contextCode expected pure side effect, but got {code}"
+    return
+  | .error _ => do
+    throwError
+      s!"codegen: contextCode expected an array of JSON objects, but got {source}"
+
+
 partial def getVars (type: Expr) : MetaM <| List Name := do
   match type with
   | .forallE n type body bi => do
@@ -311,6 +525,77 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
 
 open Lean Meta Tactic Elab Term
 
+partial def existsVarTypesStx (type: Syntax.Term) : MetaM <| Option (Array <| Syntax.Ident × Syntax.Term) := do
+  match type with
+  | `(∃ $n:ident, $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
+  | `(∃ ($n:ident: $_), $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
+  | `(∃ $n:ident: $_, $t) => do
+    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
+  | `(∃ $n:ident $ms*, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ $ms':binderIdent*, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
+  | `(∃ ($n:ident :  $_) $ms*, $t) => do
+    let t' ← `(∃ $ms*, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
+  | `(∃ ($n:ident $ms* : $type), $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ $ms':binderIdent* : $type, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
+  | `(∃ $n:ident $ms* : $type, $t) => do
+    let ms' := ms.toList.toArray
+    let t' ← `(∃ $ms':binderIdent* : $type, $t)
+    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
+  | _ =>
+    -- logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
+    return none
+
+
+def resolveExistsHave (type : Syntax.Term) (typeTerm? : Option Syntax.Term :=none) : TermElabM <| Array Syntax.Tactic := do
+  let existsVarTypes? ← existsVarTypesStx type
+  let existsVarTypes := existsVarTypes?.getD #[]
+  let existsVarTypeIdents ←  existsVarTypes.mapM fun (n, t) => do
+    let fmt ← ppTerm {env := ← getEnv} t
+    let hash₀ := hash fmt.pretty
+    let tId : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+    pure (n, tId)
+  let fmt ← ppTerm {env := ← getEnv} type
+  let hash₀ := hash fmt.pretty
+  let typeIdent : Syntax.Term := typeTerm?.getD <| mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let rhsIdents :=
+    #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
+  (existsVarTypeIdents.zip rhsIdents).mapM
+    fun ((name, tId), rhs) =>
+      `(tactic| let ⟨$name, $tId⟩  := $rhs:term)
+
+def cmdResolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Command := do
+  let existsVarTypes? ← existsVarTypesStx type
+  let existsVarTypes := existsVarTypes?.getD #[]
+  let mut cmds : Array Syntax.Command := #[]
+  let existsVarTypeIdents : Array (Ident ×  Ident × Term) ← existsVarTypes.mapM fun (n, t) => do
+    let fmt ← ppTerm {env := ← getEnv} t
+    let hash₀ := hash fmt.pretty
+    let tId  := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+    pure (n, tId, type)
+  let fmt ← ppTerm {env := ← getEnv} type
+  let hash₀ := hash fmt.pretty
+  let typeIdent : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  let mut prevTypeIdent := typeIdent
+  let hIdent := mkIdent `h
+  for (name, tId, type) in existsVarTypeIdents do
+    let defCmd ←
+      `(command| def $name  := match $prevTypeIdent:term with
+        | ⟨$hIdent, _⟩ => $hIdent)
+    cmds := cmds.push defCmd
+    let thmCmd ← `(command| theorem $tId : $type  := match $prevTypeIdent:term with
+        | ⟨_, $hIdent⟩ => $hIdent)
+    cmds := cmds.push thmCmd
+    prevTypeIdent := tId
+  return cmds
+
+
 def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
 | `(command|def $name  : $type := $value) => do
   let typeElab ← elabType type
@@ -372,3 +657,49 @@ def commandSeqToTacticSeq (cmdSeq: TSyntax ``commandSeq) : TermElabM <| TSyntax 
   let cmds := getCommands cmdSeq
   let tactics ← cmds.mapM commandToTactic
   `(tacticSeq| $tactics:tactic*)
+
+def namesFromCommands (cmds: Array Syntax.Command) : Array Name :=
+  cmds.foldl (fun acc cmd =>
+    match cmd with
+    | `(command| theorem $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
+    | `(command| def $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
+    | _ => acc) #[]
+
+
+
+end Codegen
+open Codegen
+
+def orAllSimple (terms: List Syntax.Term) : Syntax.Term :=
+  match terms with
+  | [] => mkIdent `False
+  | [h] => h
+  | h :: t =>
+      -- let t' : List Syntax.Term := t.map fun term => ⟨term⟩
+    t.foldl (fun acc cond => Syntax.mkApp (mkIdent `or) #[acc, cond]) h
+
+def orAllSimpleExpr (terms: List Expr) : MetaM Expr := do
+  match terms with
+  | [] => return mkConst ``False
+  | [h] => return h
+  | h :: t =>
+    let mut result := h
+    for term in t do
+      result ← mkAppM ``Or #[result, term]
+    return result
+
+
+partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
+  match goal with
+  | .forallE name type _ bi =>
+    withLocalDecl name bi type fun x => do
+      let inner ← orAllWithGoal terms type
+      mkForallFVars #[x] inner
+  | _ =>
+    let terms ← terms.mapM dropLocalContext
+    orAllSimpleExpr terms
+
+
+def matchAltTac := Lean.Parser.Term.matchAlt (rhsParser := Lean.Parser.Tactic.matchRhs)
+
+end LeanAide

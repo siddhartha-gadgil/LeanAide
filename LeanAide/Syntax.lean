@@ -1,8 +1,8 @@
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import Lean
 import LeanAideCore.Syntax
 import LeanAideCore.Kernel
-import LeanAide.Responses
+import LeanAideCore.Responses
 
 open Lean Meta Elab Term PrettyPrinter Tactic Command Parser
 

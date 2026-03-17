@@ -1,7 +1,7 @@
 import Lean.Meta
 -- import LeanCodePrompts
 import LeanAide.Config
-import DataGenAide.ConstDeps
+import LeanAideCore.ConstDeps
 import DataGenAide.CheckDescs
 open Lean LeanAide Meta
 
@@ -18,7 +18,7 @@ unsafe def main : IO Unit := do
   let env ←
     importModules (loadExts := true) #[
     {module := `Mathlib},
-    {module := `DataGenAide.ConstDeps}] {}
+    {module := `LeanAideCore.ConstDeps}] {}
   let lines ← IO.FS.lines ((← resourcesDir) / "mathlib4-descs.jsonl")
   let jsLines := lines.filterMap fun line =>
     (Json.parse line).toOption

@@ -1,7 +1,6 @@
 import Lean
-import Mathlib
 import LeanAideCore.CodegenCore
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 import LeanAide.AesopSyntax
 import LeanAide.CheckedSorry
 import LeanAide.AutoTactic
@@ -76,7 +75,7 @@ def contextStatementOfJson (js: Json) : Option String :=
     let propertySegment := match v.getObjString? "properties" with
       | some p => s!"(such that) {p}"
       | _ => ""
-    return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trim ++ "."
+    return s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trimAscii.toString ++ "."
   | some ("some", v) =>
     let varSegment := "There exists some " ++
       match v.getObjString? "variable" with
@@ -89,7 +88,7 @@ def contextStatementOfJson (js: Json) : Option String :=
     let propertySegment := match v.getObjString? "properties" with
       | some p => s!"(such that) {p}"
       | _ => ""
-    return s!"{varSegment} {kindSegment} {propertySegment}".trim ++ "."
+    return s!"{varSegment} {kindSegment} {propertySegment}".trimAscii.toString ++ "."
   | some ("cases", v) =>
     match v.getObjValAs? String "on" with
     | Except.ok s => some <| "We consider cases based on " ++ (addFullStop s)
@@ -105,18 +104,6 @@ def contextStatementOfJson (js: Json) : Option String :=
       "Consider the case " ++ (addFullStop p)
     | _ => none
   | _ => none
-
-/--
-Converts definition to `use`
--/
-def commandToUseTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
-  match cmd with
-  | `(command| def $_:ident $_:bracketedBinder* : $_ := $value) =>
-      `(tactic| use $value:term)
-  | `(command| def $_:ident $_:bracketedBinder* := $value) =>
-      `(tactic| use $value:term)
-  | `(command| #note [$s,*]) => `(tactic| #note [$s,*])
-  | _ => throwError s!"could not parse the definition {← PrettyPrinter.ppCommand cmd} in commandToUseTactic"
 
 open Lean.Parser.Tactic Term
 
@@ -193,7 +180,7 @@ def theoremExprInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerato
   -- logToStdErr `leanaide.translate.info s!"Full statement: {fullStatement}"
   let translator := qp.toTranslator
   let type? ← Translator.translateToProp?
-    fullStatement.trim {translator with params:={translator.params with n := 5}}
+    fullStatement.trimAscii.toString {translator with params:={translator.params with n := 5}}
   -- logToStdErr `leanaide.translate.info s!"Type: {← type?.mapM fun e => PrettyPrinter.ppExpr e}"
   match type? with
   | Except.error e => do
@@ -234,9 +221,6 @@ def defnInContext? (ctx: Array Json)(statement: String) (qp: CodeGenerator) : Tr
     mkNoteCmd s!"Failed to parse definition {fullStatement}: {repr e}"
   | Except.ok cmd => return cmd
 
-
-
-def matchAltTac := Term.matchAlt (rhsParser := matchRhs)
 
 def matchCasesSkeleton (discr: String)
     (pats: Array <| String) : TermElabM Syntax.Tactic := do
@@ -305,36 +289,6 @@ def matchCases (discr: String)
   let discrTerm' : Syntax.Term := ⟨discrTerm⟩
   `(tactic| match $discrTerm':term with $alts':matchAlt*)
 
-
-def orAllSimple (terms: List Syntax.Term) : Syntax.Term :=
-  match terms with
-  | [] => mkIdent `False
-  | [h] => h
-  | h :: t =>
-      let t' : List Syntax.Term := t.map fun term => ⟨term⟩
-    t'.foldl (fun acc cond => Syntax.mkApp (mkIdent `or) #[acc, cond]) h
-
-def orAllSimpleExpr (terms: List Expr) : MetaM Expr := do
-  match terms with
-  | [] => return mkConst ``False
-  | [h] => return h
-  | h :: t =>
-    let mut result := h
-    for term in t do
-      result ← mkAppM ``Or #[result, term]
-    return result
-
-
-partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
-  match goal with
-  | .forallE name type _ bi =>
-    withLocalDecl name bi type fun x => do
-      let inner ← orAllWithGoal terms type
-      mkForallFVars #[x] inner
-  | _ =>
-    let terms ← terms.mapM dropLocalContext
-    orAllSimpleExpr terms
-
 def exhaustiveType (goal: MVarId)(context : Array Json) (conds: List <| String)
     (qp: CodeGenerator)  : TranslateM Expr := goal.withContext do
   let condExprs ←  conds.filterMapM fun cond => do
@@ -401,33 +355,6 @@ partial def existsVars (type: Syntax.Term) : MetaM <| Option (Array Syntax.Term)
     return some <| #[n] ++ ((← existsVars t').getD #[])
   | _ =>
     logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
-    return none
-
-partial def existsVarTypesStx (type: Syntax.Term) : MetaM <| Option (Array <| Syntax.Ident × Syntax.Term) := do
-  match type with
-  | `(∃ $n:ident, $t) => do
-    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
-  | `(∃ ($n:ident: $_), $t) => do
-    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
-  | `(∃ $n:ident: $_, $t) => do
-    return some <| #[(n, t)] ++ ((← existsVarTypesStx t).getD #[])
-  | `(∃ $n:ident $ms*, $t) => do
-    let ms' := ms.toList.toArray
-    let t' ← `(∃ $ms':binderIdent*, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
-  | `(∃ ($n:ident :  $_) $ms*, $t) => do
-    let t' ← `(∃ $ms*, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
-  | `(∃ ($n:ident $ms* : $type), $t) => do
-    let ms' := ms.toList.toArray
-    let t' ← `(∃ $ms':binderIdent* : $type, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
-  | `(∃ $n:ident $ms* : $type, $t) => do
-    let ms' := ms.toList.toArray
-    let t' ← `(∃ $ms':binderIdent* : $type, $t)
-    return some <| #[(n, t')] ++ ((← existsVarTypesStx t').getD #[])
-  | _ =>
-    -- logInfo s!"No vars in {type}, i.e., {← ppTerm {env := ← getEnv} type}"
     return none
 
 open LeanAide.CodeGenerator
@@ -511,48 +438,6 @@ elab "#tactic_trythis" goal:term "by" tacticCode:tactic "log" : command =>
     | none => do
       logInfo "No tactics found"
       return ()
-
-def resolveExistsHave (type : Syntax.Term) (typeTerm? : Option Syntax.Term :=none) : TermElabM <| Array Syntax.Tactic := do
-  let existsVarTypes? ← existsVarTypesStx type
-  let existsVarTypes := existsVarTypes?.getD #[]
-  let existsVarTypeIdents ←  existsVarTypes.mapM fun (n, t) => do
-    let fmt ← ppTerm {env := ← getEnv} t
-    let hash₀ := hash fmt.pretty
-    let tId : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
-    pure (n, tId)
-  let fmt ← ppTerm {env := ← getEnv} type
-  let hash₀ := hash fmt.pretty
-  let typeIdent : Syntax.Term := typeTerm?.getD <| mkIdent <| Name.mkSimple s!"assert_{hash₀}"
-  let rhsIdents :=
-    #[typeIdent] ++ existsVarTypeIdents.map fun (_, tId) => tId
-  (existsVarTypeIdents.zip rhsIdents).mapM
-    fun ((name, tId), rhs) =>
-      `(tactic| let ⟨$name, $tId⟩  := $rhs:term)
-
-def cmdResolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Command := do
-  let existsVarTypes? ← existsVarTypesStx type
-  let existsVarTypes := existsVarTypes?.getD #[]
-  let mut cmds : Array Syntax.Command := #[]
-  let existsFst := mkIdent ``Exists.fst
-  let existsSnd := mkIdent ``Exists.snd
-  let existsVarTypeIdents : Array (Ident ×  Ident × Term) ← existsVarTypes.mapM fun (n, t) => do
-    let fmt ← ppTerm {env := ← getEnv} t
-    let hash₀ := hash fmt.pretty
-    let tId  := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
-    pure (n, tId, type)
-  let fmt ← ppTerm {env := ← getEnv} type
-  let hash₀ := hash fmt.pretty
-  let typeIdent : Syntax.Term := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
-  let mut prevTypeIdent := typeIdent
-  for (name, tId, type) in existsVarTypeIdents do
-    let defCmd ←
-      `(command| def $name  := $existsFst $prevTypeIdent:term)
-    cmds := cmds.push defCmd
-    let thmCmd ← `(command| theorem $tId : $type  := $existsSnd $prevTypeIdent:term)
-    cmds := cmds.push thmCmd
-    prevTypeIdent := tId
-  return cmds
-
 
 def haveForAssertion (goal: Expr)
   (premises: List Name) :
@@ -1125,13 +1010,6 @@ def mathDocumentCommands (doc: Json) (qp: CodeGenerator) :
       return cmds?.getD #[← mkNoteCmd "No commands found"]
     | _ => return #[← mkNoteCmd "No math document found"]
 
-def namesFromCommands (cmds: Array Syntax.Command) : Array Name :=
-  cmds.foldl (fun acc cmd =>
-    match cmd with
-    | `(command| theorem $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
-    | `(command| def $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
-    | _ => acc) #[]
-
 def mathDocumentCode (doc: Json) (qp: CodeGenerator) :
   TranslateM <| Format × Array Name := do
     let cmds ←
@@ -1172,7 +1050,7 @@ def thmProofStrucToCode (thm pf: String) (js: Json) (qp: CodeGenerator):
       for s in sorries do
         fmt := fmt ++ "\n "++ s!"* `{← PrettyPrinter.ppExpr s}`".replace "\n" " "
     fmt := fmt ++ "\n-/\n"
-    return (topCode ++ fmt, names[0]!)
+    return ((← topCodeM) ++ fmt, names[0]!)
 
 def statementToCode (s: String) (qp: CodeGenerator) :
   TranslateM <| Format × Name := do

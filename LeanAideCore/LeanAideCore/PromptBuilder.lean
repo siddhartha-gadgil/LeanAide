@@ -1,12 +1,11 @@
 import Lean
-import LeanAide.Aides
+import LeanAideCore.Aides
 import LeanAideCore.TranslateM
-import LeanCodePrompts.SimilaritySearch
-import LeanCodePrompts.SpawnNearestEmbeddings
-import LeanCodePrompts.ChatClient
+import LeanAideCore.SimilaritySearch
+import LeanAideCore.SpawnNearestEmbeddings
+import LeanAideCore.ChatClient
 import LeanAideCore.PromptExampleBuilder
 import LeanAideCore.Translator
-import Mathlib
 open Lean Meta Elab Term
 
 namespace LeanAide
@@ -345,8 +344,8 @@ partial def signature (pb: PromptExampleBuilder) : String := match pb with
 | .fixed ps => s!"fixed${ps.size}"
 | .generic url _ _ n =>
     s!"generic${url}_${n}"
-| .sequence pbs => (pbs.map signature).foldl (· ++ "-" ++ ·) "" |>.drop 1
-| .blend pbs => (pbs.map signature).foldl (· ++ "~" ++ ·) "" |>.drop 1
+| .sequence pbs => (pbs.map signature).foldl (· ++ "-" ++ ·) "" |>.drop 1 |>.toString
+| .blend pbs => (pbs.map signature).foldl (· ++ "~" ++ ·) "" |>.drop 1 |>.toString
 
 -- #eval signature <| searchBuilder 3 4
 

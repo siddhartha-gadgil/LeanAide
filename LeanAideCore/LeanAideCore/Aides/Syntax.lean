@@ -81,7 +81,7 @@ def endsWithDone (t: TSyntax ``tacticSeq) : MetaM Bool := do
   match getTactics t |>.back? with
   | some t =>
     let fmt ← PrettyPrinter.ppTactic t
-    pure <| fmt.pretty.trim.endsWith "done"
+    pure <| fmt.pretty.trimAscii.toString.endsWith "done"
   | _ => pure false
 
 declare_syntax_cat tacticSeqCategory

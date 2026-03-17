@@ -27,8 +27,8 @@ macro "#start_chat" n:ident s:term : command =>
 
 macro doc:docComment "#query" ppSpace n:ident : command =>
   let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
-  let textStx := Syntax.mkStrLit text
+  let text := text.drop 4 |>.dropEnd 4
+  let textStx := Syntax.mkStrLit text.toString
   `(command| def $n : Query := { message := $textStx} )
 
 def mkQueryCmd (s: String) (name: Name)  : CoreM Syntax.Command :=
@@ -38,8 +38,8 @@ def mkQueryCmd (s: String) (name: Name)  : CoreM Syntax.Command :=
 
 macro doc:docComment "#response" ppSpace name:ident : command =>
   let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
-  let textStx := Syntax.mkStrLit text
+  let text := text.drop 4 |>.dropEnd 4
+  let textStx := Syntax.mkStrLit text.toString
   let name := name.getId
   let nameStx := mkIdent name
   `(command| def $nameStx : Response := { message := $textStx} )
@@ -51,8 +51,8 @@ def mkResponseCmd (s: String) (name: Name)  : CoreM Syntax.Command :=
 
 macro doc:docComment "#proof_document" ppSpace n:ident : command =>
   let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
-  let textStx := Syntax.mkStrLit text
+  let text := text.drop 4 |>.dropEnd 4
+  let textStx := Syntax.mkStrLit text.toString
   let name := n.getId
   let nameStx := mkIdent name
   let docName := pruneName name

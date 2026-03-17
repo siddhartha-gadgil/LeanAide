@@ -1,6 +1,6 @@
 import LeanCodePrompts.Session
 import Mathlib
-open LeanAide.Translate Session
+open LeanAideCore.Translate Session
 
 #check Session
 

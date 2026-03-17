@@ -1,8 +1,8 @@
 import Mathlib
-import LeanAide.Actor
+import LeanAideCore.Actor
 import LeanAide.ReTranslate
 import LeanAide.ReTranslators
-import LeanCodePrompts.Translate
+import LeanAideCore.Translate
 
 open LeanAide Lean Meta Translate
 

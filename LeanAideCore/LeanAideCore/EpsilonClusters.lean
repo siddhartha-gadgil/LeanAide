@@ -1,7 +1,6 @@
 import Lean.Data
-import LeanAide.Aides
+import LeanAideCore.Aides
 import LeanAideCore.Aides.Logging
-import Mathlib
 open Lean LeanAide
 
 def insertByMemo (l: Array <| α × Float)(cost : α → Float)(sizeBound: Nat)

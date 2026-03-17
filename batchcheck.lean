@@ -1,6 +1,6 @@
 import Lean.Meta
 import LeanAide.TheoremElab
-import LeanAide.TheoremEquality
+import LeanAideCore.TheoremEquality
 import LeanAide.Config
 open Lean
 
@@ -14,7 +14,7 @@ def main (args: List String) : IO Unit := do
   let env ←
     importModules (loadExts := true) #[{module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
-    {module:= `LeanAide.TheoremEquality},
+    {module:= `LeanAideCore.TheoremEquality},
     {module := `Mathlib}] {}
 
   let (inpName, outName) :=

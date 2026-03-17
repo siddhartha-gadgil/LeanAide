@@ -1,6 +1,6 @@
 import LeanAide
 import LeanAideCore.Syntax
-import LeanAide.Responses
+import LeanAideCore.Responses
 import Mathlib
 import Lean
 import Qq
