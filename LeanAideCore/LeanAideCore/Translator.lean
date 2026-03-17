@@ -235,6 +235,11 @@ register_option lean_aide.translate.temperature10 : Int :=
     group := "lean_aide.translate"
     descr := "temperature * 10." }
 
+register_option lean_aide.translate.reasoning_effort : String :=
+  { defValue := "medium"
+    group := "lean_aide.translate"
+    descr := "Reasoning Effort" }
+
 /--
 Number of similar sentences to query in interactive mode
 -/
@@ -250,6 +255,16 @@ def conciseDescSize : CoreM Nat := do
 def descSize : CoreM Nat := do
   return  lean_aide.translate.desc_size.get (← getOptions)
 
+def toReasoningEffort (s : String) : Option OpenAI.ReasoningEffort :=
+  if s == "none" then some .none
+  else if s == "minimal" then some .minimal
+  else if s == "low" then some .low
+  else if s == "medium" then some .medium
+  else if s == "high" then some .high
+  else if s == "xhigh" then some .xhigh
+  else if s == "default" then none
+  else none
+
 /--
 Parameters for a chat query in interactive mode
 -/
@@ -257,7 +272,8 @@ def chatParams : CoreM ChatParams := do
   let opts ← getOptions
   return {
     n := lean_aide.translate.choices.get opts,
-    temp := {mantissa:= lean_aide.translate.temperature10.get opts, exponent :=1}
+    temp := {mantissa:= lean_aide.translate.temperature10.get opts, exponent :=1},
+    reasoningEffort := toReasoningEffort <| lean_aide.translate.reasoning_effort.get opts
   }
 
 def greedy : CoreM Bool := do
