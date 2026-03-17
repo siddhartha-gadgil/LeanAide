@@ -12,7 +12,7 @@ These can be headed with `theorem`, `def`, `example` or nothing and may or may n
 namespace LeanAide
 
 
-def thmsPrompt : IO (Array String) := do
+def thmsPrompt : MetaM (Array String) := do
   let file ← reroutePath <| System.mkFilePath ["extra_resources/thms.txt"]
   IO.FS.lines file
 open Lean.Parser.Category
