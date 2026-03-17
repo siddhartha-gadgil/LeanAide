@@ -593,8 +593,8 @@ where
     let thm ← withPreludes claim
     let name := (js.getObjValAs? Name "name").toOption.getD <| ← translator.server.theoremName thm
     traceAide `leanaide.papercodes.info s!"Theorem name from server: {name} for {thm}"
-    let name ← newName name
-    traceAide `leanaide.papercodes.info s!"New name: {name} for {thm}"
+    -- let name ← newName name
+    -- traceAide `leanaide.papercodes.info s!"New name: {name} for {thm}"
     let name :=
       if name.toString = "[anonymous]" then
 
