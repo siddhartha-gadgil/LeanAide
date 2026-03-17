@@ -431,7 +431,7 @@ def historyM {α : Type } (d : Discussion α ) :
   | edit _ d => d.historyM
 where
   addQuery (h: List ChatPair) (sp? : Option String) (q: String) : (List ChatPair) × Option String :=
-    let sp? := sp?.map (fun s => s.trim ++ "\n")
+    let sp? := sp?.map (fun s => s.trimAscii.toString ++ "\n")
     let sp := sp?.getD ""
     (h, some (sp ++ q))
   addResponse (h: List ChatPair) (sp? : Option String) (r: String) : (List ChatPair) × Option String :=

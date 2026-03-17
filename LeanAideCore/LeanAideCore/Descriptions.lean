@@ -90,7 +90,7 @@ def describeTheoremPrompt (name: Name) :
       return (← fromTemplate "describe_theorem" [("theorem", statement)], statement)
     else
       let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-      return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+      return (← fromTemplate "describe_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trimAscii.toString)],
       statement)
 
 def describeAnonymousTheoremPrompt (type: Expr) :
@@ -103,7 +103,7 @@ def describeAnonymousTheoremPrompt (type: Expr) :
   | none =>
     return some (← fromTemplate "state_theorem" [("theorem", statement)], statement, none)
   | some defsBlob =>
-    return some (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+    return some (← fromTemplate "state_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trimAscii.toString)],
     statement, some defsBlob)
 
 def describeDefPrompt (type val: Expr) (name: Name) :
@@ -132,7 +132,7 @@ def describeDefPrompt (type val: Expr) (name: Name) :
       | none =>
         mkStatement n (← PrettyPrinter.delab info.type) none false (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
     let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-    return some (← fromTemplate "state_def_with_defs" [("defn", statement), ("definitions", defsBlob.trim)],
+    return some (← fromTemplate "state_def_with_defs" [("defn", statement), ("definitions", defsBlob.trimAscii.toString)],
     statement, some defsBlob)
 
 
@@ -157,7 +157,7 @@ def proveAnonymousTheoremPrompt (type: Expr) :
       | none =>
         mkStatement n (← PrettyPrinter.delab info.type) none false (isNoncomputable := Lean.isNoncomputable (← getEnv) n)
     let defsBlob := defsStrs.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
-    return some (← fromTemplate "prove_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trim)],
+    return some (← fromTemplate "prove_theorem_with_defs" [("theorem", statement), ("definitions", defsBlob.trimAscii.toString)],
     statement, some defsBlob)
 
 

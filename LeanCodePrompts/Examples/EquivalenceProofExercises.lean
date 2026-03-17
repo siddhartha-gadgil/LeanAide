@@ -136,9 +136,9 @@ example : (Unit) → (∀ {η : Type u_1} (G : Type u_2) [inst : Group G] {Γ : 
 -- #eval do
 --   let l ← getFileThmInfo
 --   --let l' := l.map Prod.fst |>.map Lean.Name.toString |>.qsort
---   -- return l'.groupBy $ λ s s' => s.dropRight 1 == s'.dropRight 1
+--   -- return l'.groupBy $ λ s s' => s.dropEnd 1 == s'.dropEnd 1
 --   return 1
 
 -- #eval [1, 1, 2, 2].groupBy (· = ·)
 
--- #eval (Lean.Name.toString `fermat_two_square0).dropRight 1
+-- #eval (Lean.Name.toString `fermat_two_square0).dropEnd 1

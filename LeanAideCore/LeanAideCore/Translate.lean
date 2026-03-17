@@ -389,10 +389,10 @@ def jsonToExprFallback (json: Json)(greedy: Bool)(splitOutput := false) : Transl
 /-- translation from a comment-like syntax to a theorem statement -/
 elab "//-" cb:commentBody  : term => do
   let s := cb.raw.getAtomVal
-  let s := (s.dropRight 2).trim
+  let s := (s.dropEnd 2).trimAscii
   -- querying codex
   let (js, _) ←
-    Translator.getLeanCodeJson  s {} |>.run' {}
+    Translator.getLeanCodeJson  s.toString {} |>.run' {}
   -- filtering, autocorrection and selection
   let e ←
     jsonToExpr' js true !(← chatParams).stopColEq |>.run' {}

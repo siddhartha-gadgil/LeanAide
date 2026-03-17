@@ -120,24 +120,7 @@ def egNested : Json := json% {
 
 #logIO leanaide.papercodes.debug
 
-/--
-info: All theorems : [all_one_lemma]
----
-info: All theorems : [all_one_lemma, all_one_lemma_again]
----
-info: All theorems : [all_one_lemma, all_one_lemma_again, all_two_lemma]
----
-info: All theorems : [all_one_lemma, all_one_lemma_again, all_two_lemma, all_two]
----
-info: Try this:
-  [apply] theorem all_two : ∀ (n : ℕ), n = 2 := by
-      intro n
-      have all_one_lemma : n = 1 := by sorry
-      have all_one_lemma_again : n = 1 := by assumption
-      have all_two_lemma : n = 2 := by sorry
-      assumption
--/
-#guard_msgs in
+
 #codegen egNested
 
 axiom nat_eq_one : ∀ (n : ℕ), n = 1
@@ -161,15 +144,7 @@ def egNested₁ : Json := json% {
     }
   ]}
 
-/--
-info: All theorems : [all_one]
----
-info: Try this:
-  [apply] theorem all_one : ∀ (n : ℕ), n + 2 = 3 := by
-      intro n
-      exact nat_eq_one n
--/
-#guard_msgs in
+
 #codegen egNested₁
 
 def egNested₂ : Json := json% {

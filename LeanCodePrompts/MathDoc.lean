@@ -331,7 +331,7 @@ def toIndendentList (p: MathParaStructure) (optional : Bool := false)
     | k + 1 =>
       let fields := elemMap.getD fieldType []
       let names := fields.map (fun elem => elem.name)
-      let namesBlob := names.foldl (fun acc elem => acc ++ s!"`{elem}`" ++ ", ") "" |>.dropRight 2
+      let namesBlob := names.foldl (fun acc elem => acc ++ s!"`{elem}`" ++ ", ") "" |>.dropEnd 2
       let innerList :=
         fields.map (fun elem => toIndendentList elem false elemMap k)
       let inner := innerList.foldl (fun acc elem => acc.append elem) nil
@@ -344,7 +344,7 @@ def toIndendentList (p: MathParaStructure) (optional : Bool := false)
     | 0 => kvLine name.toString (suppress description) optional
     | k + 1 =>
       let names := choices.map (fun elem => elem.name)
-      let namesBlob := names.foldl (fun acc elem => acc ++ s!"`{elem}`" ++ ", ") "" |>.dropRight 2
+      let namesBlob := names.foldl (fun acc elem => acc ++ s!"`{elem}`" ++ ", ") "" |>.dropEnd 2
       let body := description ++ s!" Give a JSON object with exactly one *key-value pair*, with the *key* one of {namesBlob}."
       let innerList :=
         choices.map (fun elem => toIndendentList elem false elemMap k)

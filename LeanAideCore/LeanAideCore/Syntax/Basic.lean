@@ -11,23 +11,23 @@ syntax (name := quoteCommand) docComment "#quote" ppSpace (ident)? ("<|" term ";
 macro_rules
 | `(command|$doc:docComment #quote $n:ident) =>
   let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
-  let textStx := Syntax.mkStrLit text
+  let text := text.drop 4 |>.dropEnd 4
+  let textStx := Syntax.mkStrLit text.toString
   `(command| def $n := $textStx)
 | `(command|$doc:docComment #quote) =>
   let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
-  let textStx := Syntax.mkStrLit text
+  let text := text.drop 4 |>.dropEnd 4
+  let textStx := Syntax.mkStrLit text.toString
   `(command| example := $textStx)
 | `(command|$doc:docComment #quote $n:ident <| $t:term ;) =>
   let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
-  let textStx := Syntax.mkStrLit text
+  let text := text.drop 4 |>.dropEnd 4
+  let textStx := Syntax.mkStrLit text.toString
   `(command| def $n := $t $textStx)
 | `(command|$doc:docComment #quote <|$t:term ;) =>
   let text := doc.raw.reprint.get!
-  let text := text.drop 4 |>.dropRight 4
-  let textStx := Syntax.mkStrLit text
+  let text := text.drop 4 |>.dropEnd 4
+  let textStx := Syntax.mkStrLit text.toString
   `(command| example := $t $textStx)
 
 
@@ -71,7 +71,7 @@ syntax (name:= loadFile) "#load_file" (ppSpace ident)? (ppSpace filepath)? : com
         else
           logWarning s!"Failed to read file: {filePath}"
         return
-    let content := "\n" ++ content.trim ++ "\n"
+    let content := "\n" ++ content.trimAscii ++ "\n"
     let name := id.getId
     let textCmd ← mkQuoteCmd content name
     TryThis.addSuggestion (header := "Load source:\n") stx textCmd
@@ -92,7 +92,7 @@ syntax (name:= loadFile) "#load_file" (ppSpace ident)? (ppSpace filepath)? : com
         else
           logWarning s!"Failed to read file: {filePath}"
         return
-    let content := "\n" ++ content.trim ++ "\n"
+    let content := "\n" ++ content.trimAscii ++ "\n"
     let name := filePath.fileName.getD "source"
     let textCmd ← mkQuoteCmd content name.toName
     TryThis.addSuggestion (header := "Load source:\n") stx textCmd

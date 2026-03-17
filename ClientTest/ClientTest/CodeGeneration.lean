@@ -39,9 +39,9 @@ info: Try this:
       by
       intro G inst a h₁
       simp [*]
-    theorem inv_eq_self_of_eq_one : ∀ {G : Type u_1} [inst : Group G] {e : G}, e = (1 : G) → e⁻¹ = e :=
+    theorem inv_eq_self_of_eq_one : ∀ {G : Type u} [inst : Group G] {e : G}, e = (1 : G) → e⁻¹ = e :=
       by
-      intro G inst e h₂
+      intro G inst e a_15908840719738463421
       simp [*]
 -/
 #guard_msgs in
@@ -318,7 +318,7 @@ info: Try this:
 ---
 warning: aesop: failed to prove the goal after exhaustive search.
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example: ∀ (N : ℤ), N % 10 = 0 ∨ N % 10 = 5 → 5 ∣ N := by

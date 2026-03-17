@@ -30,7 +30,7 @@ partial def fixFactorySyntaxStep? (stx: Syntax) :
   | `($n:ident) =>
     let n := n.getId.toString
     if n.endsWith "!" then
-      let n := n.dropRight 1
+      let n := n.dropEnd 1
       let n := n.toName
       let n := mkIdent n
       return some <| ← `(($n)!)

@@ -14,7 +14,7 @@ partial def getDefs (js: Json) : Array String :=
   match js with
   | Json.str s =>
     if s.startsWith head then
-      #[(s.drop head.length)]
+      #[(s.drop head.length).toString]
     else
       #[]
   | Json.obj kvs =>

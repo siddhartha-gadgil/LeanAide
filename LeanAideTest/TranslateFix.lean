@@ -1,5 +1,5 @@
 import Mathlib
-import LeanAide.Actor
+import LeanAideCore.Actor
 import LeanAide.ReTranslate
 import LeanAide.ReTranslators
 import LeanAideCore.Translate

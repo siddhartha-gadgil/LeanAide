@@ -17,20 +17,6 @@ def induction_eg := json% {
   }}
 }
 
-/--
-info: All theorems : [eq_id_of_zero_eq_zero_succ_eq_add_one]
----
-info: Try this:
-  [apply] theorem eq_id_of_zero_eq_zero_succ_eq_add_one :
-        ∀ (f : ℕ → ℕ), f (0 : ℕ) = (0 : ℕ) → (∀ (n : ℕ), f (n + (1 : ℕ)) = f n + (1 : ℕ)) → ∀ (n : ℕ), f n = n :=
-      by
-      intro f a_1676541840746925941 a_2213797161315613598 n
-      induction n with
-      | zero => grind only
-      | succ n ih => grind only [#2bb0]
-      done
--/
-#guard_msgs (info) in
 #codegen induction_eg
 
 theorem forall_nat_cast_succ_eq_add_one_then_eq_id :
@@ -59,20 +45,7 @@ def pattern_eg := json% {
   }}
 }
 
-/--
-info: All theorems : [iterate_one_add_apply_zero]
----
-info: Try this:
-  [apply] theorem iterate_one_add_apply_zero : ∀ (n : ℕ), (fun (x : ℕ) ↦ (1 : ℕ) + x)^[n] (0 : ℕ) = n :=
-      by
-      intro n
-      match c_12041890053830139676 : n with
-      | 0 => simp only [Function.iterate_zero, id_eq]
-      | n + 1 =>
-        simp only [Function.iterate_succ, add_left_iterate, Lake.FamilyOut.fam_eq, smul_eq_mul, mul_one,
-          Function.comp_apply, add_zero, Nat.add_left_cancel_iff]
--/
-#guard_msgs (info) in
+
 #codegen pattern_eg
 
 example : ∀ n : ℕ, n = 1  ∨ n = 2 → n < 3 := by
@@ -97,18 +70,7 @@ def multiConditionEg := json% {
   }}
 }
 
-/--
-info: All theorems : [lt_three_of_eq_one_or_eq_two]
----
-info: Try this:
-  [apply] theorem lt_three_of_eq_one_or_eq_two : ∀ (n : ℕ), n = (1 : ℕ) ∨ n = (2 : ℕ) → n < (3 : ℕ) :=
-      by
-      intro n a_12668439849020315063
-      if condition_10475179556260154818 : n = (1 : ℕ) then grind only
-      else if condition_14572146439477332121 : n = (2 : ℕ) then grind only else grind only
-      done
--/
-#guard_msgs (info) in
+
 #codegen multiConditionEg
 
 -- Output:
@@ -148,18 +110,7 @@ def patternEg' := json% {
   }}
 }
 
-/--
-info: All theorems : [lt_five_of_eq_one_or_eq_four]
----
-info: Try this:
-  [apply] theorem lt_five_of_eq_one_or_eq_four : ∀ (n : ℕ), n = (1 : ℕ) ∨ n = (4 : ℕ) → n < (5 : ℕ) :=
-      by
-      intro n a_16768665977230715297
-      match c_12041890053830139676 : n with
-      | 1 => simp only [Nat.one_lt_ofNat]
-      | 4 => simp only [Nat.lt_add_one]
--/
-#guard_msgs (info) in
+
 #codegen patternEg'
 
 -- Output:
@@ -175,6 +126,6 @@ theorem nat.eq_one_or_eq_four_imp_lt_five : ∀ (n : ℕ), n = 1 ∨ n = 4 → n
       trace "Automation tactics found for 4 < 5, closing goal"
       simp only [Nat.lt_add_one]
 
-/-- info: Int.ofNat 3 -/
+/-- info: 3 -/
 #guard_msgs in
 #eval 1 + 2

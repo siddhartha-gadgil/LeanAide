@@ -28,8 +28,7 @@ initialize
 
 register_option leanaide.logging : Bool :=
   { defValue := false
-    descr := "Enable LeanAide logging"
-    group := "LeanAide" }
+    descr := "Enable LeanAide logging"}
 
 initialize delab_bound : IO.Ref UInt32 ← IO.mkRef 50
 

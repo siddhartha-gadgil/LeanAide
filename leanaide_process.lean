@@ -1,9 +1,9 @@
 import Lean.Meta
 import LeanAideCore.Translate
 import LeanAide.Config
-import LeanAideCore.TranslatorParams
+import LeanAide.TranslatorParams
 import Cli
-import LeanAide.Actor
+import LeanAideCore.Actor
 import LeanAideCore.TaskStatus
 open Lean Cli LeanAide.Meta LeanAide Translator Std.Internal.IO Async
 
@@ -69,7 +69,7 @@ def spawnTaskAsync (js : Json) (translator : Translator) (ctx : Core.Context) (e
           logIO `leanaide.tasks.warning s!"Failed to post results to {url} for token {hash}: {e}"
       | none => pure ()
       states.addResult hash res
-    let prios :=
+    let prios := fun _ ↦
           (js.getObjValAs? Task.Priority "priority").toOption |>.getD prios
     logToStdErr `leanaide.tasks.info s!"Spawning async task with token {hash}"
     TranslateM.runBackgroundChain js (Actor.response translator) none ctx env callback chains prios
@@ -168,7 +168,7 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
   logToStdErr `leanaide.tasks.info "Server ready. Waiting for input..."
   let inp ← getLine ()
-  if inp.trim.isEmpty then
+  if inp.trimAscii.toString.isEmpty then
     process_loop env getLine putStrLn translator states chains
   else
   match Json.parse inp with
@@ -266,7 +266,7 @@ def launchProcess (p : Parsed) : IO UInt32 := do
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanAideCore.Translate},
     {module:= `LeanAide.PaperCodes},
-    {module:= `LeanAide.Responses},
+    {module:= `LeanAideCore.Responses},
     {module := `LeanAideCore}] {}
   let stdin ←  IO.getStdin
   let stdout ← IO.getStdout

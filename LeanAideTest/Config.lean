@@ -2,7 +2,7 @@ import LeanAideCore.Aides.Toml
 import LeanAideCore.Translator
 import LeanAideCore.Config
 import LeanAide.JsonDiff
-import LeanAideCore.TranslatorParams
+import LeanAide.TranslatorParams
 
 open Lean
 

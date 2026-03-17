@@ -13,7 +13,7 @@ def coreContext : Core.Context := {fileName := "", fileMap := {source:= "", posi
 
 def main : IO Unit := do
   let names ← IO.FS.lines ((← resourcesDir) / "doconly_names.txt")
-  let names := names.map (fun s => s.trim)
+  let names := names.map (fun s => s.trimAscii.toString)
   initSearchPath (← Lean.findSysroot)
   let env ←
     importModules (loadExts := true) #[

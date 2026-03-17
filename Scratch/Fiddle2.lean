@@ -39,7 +39,7 @@ def colEqSegments (s: String) : List String :=
   match pieces with
   | [] => []
   | head :: tail =>
-    tail.scanl (fun acc x => acc ++ ":=" ++ x) head |>.map (String.trim)
+    tail.scanl (fun acc x => acc ++ ":=" ++ x) head |>.map (String.trimAscii.toString)
 
 #eval colEqSegments "def strange : let this := that; List this := other"
 

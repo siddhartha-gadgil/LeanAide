@@ -18,7 +18,7 @@ def translateWithDataM (s: String)(translator: Translator)  (repeats: Nat := 0)(
     let (js,prompt, _) ← translator.getLeanCodeJson s
     pure (← getMessageContents js, some prompt)
   | some f =>
-    let res? := f.get? s.trim
+    let res? := f.get? s.trimAscii.toString
     match res? with
     | none =>
       throwError s!"no data for {s}"

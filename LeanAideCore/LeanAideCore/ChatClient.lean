@@ -219,8 +219,10 @@ def query (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM Jso
   else
     -- traceAide `leanaide.llm.info s!"Querying server"
     -- logInfo s!"Querying server"
+    traceAide `leanaide.llm.info s!"No cache: {file}"
     let result ←  queryAux server messages params
     IO.FS.writeFile file result.pretty
+    traceAide `leanaide.llm.info s!"Query result cached at {file}"
     return result
 
 def pollCacheQuery (server: ChatServer)(messages : Json)
@@ -570,7 +572,7 @@ def checkEquivalence
   let responses ← ChatServer.mathCompletions server queryString 1 params examples
   -- logToStdErr `leanaide.translate.info responses
   return responses.map fun s =>
-    ((s.toLower.trim.splitOn "true").length > 1, s)
+    ((s.toLower.trimAscii.toString.splitOn "true").length > 1, s)
 
 def mathTerms (server: ChatServer)
     (statement : String)(n: Nat := 3)
@@ -638,12 +640,16 @@ def structuredProofFromStatement (server: ChatServer)
 def theoremName (server: ChatServer)
   (statement: String): MetaM Name := do
     let query := s!"Give a name following the conventions of the Lean Prover 4 and Mathlib for the theorem: \n{statement}\n\nUse snakecase and ensure that there are no whitespaces. Give ONLY the name of the theorem."
-    let namesArr ←  server.mathCompletions query 1
-    let llm_name := namesArr[0]! |>.replace "`" ""
-          |>.replace "\""  "" |>.trim
+    let namesArr ←
+      try
+        server.mathCompletions query 1
+       catch _ => pure #[]
+    let llm_name? := namesArr[0]?.map fun s =>s.replace "`" ""
+          |>.replace "\""  "" |>.trimAscii.toString
         -- logInfo llm_name
+    let llm_name := llm_name? |>.getD s!"unnamed_theorem_{hash statement}"
     let name := llm_name.toName
-    newName name
+    return name
 
 def fullStatement (server: ChatServer)
   (statement: String): MetaM String := do

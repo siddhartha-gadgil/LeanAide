@@ -15,7 +15,7 @@ def textEdits (text: FileMap) : IO <| Array TextEdit := do
       let checkStart : Bool :=
         match s.preScript with
           | none => false
-          | some pre => pre.trim == current.trim
+          | some pre => pre.trimAscii.toString == current.trimAscii.toString
       let edit : TextEdit := {
         range := ⟨text.leanPosToLspPos <| text.toPosition k.pos, text.leanPosToLspPos <| text.toPosition tailPos⟩
         newText :=

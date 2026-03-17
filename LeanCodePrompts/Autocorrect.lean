@@ -84,7 +84,7 @@ def caseNames : MetaM (Std.HashMap String String) := do
 --         IO.FS.lines (← reroutePath <| System.mkFilePath ["extra_resources", "x_names.txt"])
 --       let mut m : Std.HashMap String String := Std.HashMap.empty
 --       for xname in lines do
---         m := m.insert (xname.dropRight 1) xname
+--         m := m.insert (xname.dropEnd 1) xname
 --       xNameCache.set m
 --       return m
 --   else return cache
@@ -96,7 +96,7 @@ def caseNames : MetaM (Std.HashMap String String) := do
 --         IO.FS.lines (← reroutePath <| System.mkFilePath ["extra_resources", "xx_names.txt"])
 --       let mut m : Std.HashMap String String := Std.HashMap.empty
 --       for xxname in lines do
---         m := m.insert (xxname.dropRight 2) xxname
+--         m := m.insert (xxname.dropEnd 2) xxname
 --       xxNameCache.set m
 --       return m
 --   else return cache
@@ -222,7 +222,7 @@ def identErr (err: String) : Option String :=
   let head := "unknown identifier '"
   let tail := "' (during elaboration)"
   if err.startsWith head && err.endsWith tail then
-    some <| (err.drop (head.length)).dropRight (tail.length)
+    some <| (err.drop (head.length)).dropEnd (tail.length)
   else
     none
 

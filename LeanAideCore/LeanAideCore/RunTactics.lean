@@ -260,7 +260,7 @@ def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): 
 
 def getTacticsFromMessageData? (s: String) :
     MetaM <| Option (Array Syntax.Tactic × Bool) := do
-  let s := s.trim
+  let s := s.trimAscii.toString
   if s.startsWith "Try this:" || s.startsWith "Try these:" then
     -- let s' := (s.splitOn "[apply] ")[1]!
     let ss := (s.splitOn "[apply] ").drop 1
