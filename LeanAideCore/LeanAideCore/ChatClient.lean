@@ -42,7 +42,7 @@ structure ChatParams where
   temp : JsonNumber := 1.0
   stopTokens : Array String :=  #[]
   maxTokens : Nat := 1600
-  reasoningEffort : Option ReasoningEffort := some .medium
+  reasoningEffort : Option ReasoningEffort := none
   deriving Repr, Hashable, FromJson, ToJson, DecidableEq
 
 instance : Inhabited ChatParams := ⟨{}⟩
@@ -201,23 +201,20 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM 
       (Json.mkObj [("query", queryJs), ("success", false), ("error", e), ("response", output)])
     return .null
 
-#check ToMessageData
-
 def queryAux' (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM Json := do
   let data : ChatCompletionRequest := {
     model := server.model,
     messages := messages,
     n := params.n,
     temperature := params.temp,
-    reasoning_effort := some .medium
+    reasoning_effort := params.reasoningEffort
   }
   -- let data := if params.stopTokens.isEmpty then data
   --   else {data with stop := params.stopTokens}
   trace[Translate.info] "Model query: {toJson data}"
   -- logInfo s!"Querying {server.model} with {data}"
-  let client : Client := {apiKey := ← openAIKey}
   let start ← IO.monoMsNow
-  let output ← Chat.create client data
+  let output ← Chat.create data
   trace[Translate.info] "Model response: {toJson output}"
   traceAide `leanaide.llm.info s!"Received response at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
   traceAide `leanaide.llm.info s!"Response: {toJson output}" -- uncomment for debugging
