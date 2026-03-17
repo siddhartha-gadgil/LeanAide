@@ -102,7 +102,16 @@ def cachePath : MetaM System.FilePath := do
   if ← path.pathExists then
     return path
   else
-    return (← IO.currentDir) / ".leanaide_cache"
+    let path := (← IO.currentDir) / ".leanaide_cache"
+    if ← path.pathExists then
+      return path
+    else
+      IO.FS.createDirAll path
+      IO.FS.createDirAll (path / "frontend")
+      IO.FS.createDirAll (path / "chat")
+      IO.FS.createDirAll (path / "prompt")
+      IO.FS.createDirAll (path / "tasks")
+      return path
 
 def getResourcesDir : MetaM System.FilePath := do
   let path : System.FilePath := (← getBaseDir) /  "resources"

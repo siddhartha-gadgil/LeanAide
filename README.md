@@ -4,7 +4,6 @@ LeanAide or Lean**AI**de (accidental pun) is work in progress to build AI based 
 
 We now (as of early February 2025, modified September 2025) have a convenient way to use LeanAide in your own projects, using a *server-client* setup which we outline below.
 
-
 ## Example usage
 
 The most convenient way to use LeanAide is with syntax we provide that gives code-actions. We have syntax for translating theorems and definitions from natural language to Lean, and for adding documentation strings to theorems and definitions. For example, the following code in a Lean file (with correct dependencies) will give code actions:
