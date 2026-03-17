@@ -31,6 +31,7 @@ def logFile (name : Name)(msg : String) : IO Unit := do
   if !(← logDir.pathExists) then
     IO.FS.createDirAll logDir
     let h ← IO.FS.Handle.mk ".gitignore" IO.FS.Mode.append
+    h.putStrLn ""
     h.putStrLn ".logs/"
     h.flush
   let handle ← IO.FS.Handle.mk logFilePath IO.FS.Mode.append

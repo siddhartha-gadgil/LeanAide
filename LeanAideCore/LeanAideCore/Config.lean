@@ -112,6 +112,7 @@ def cachePath : MetaM System.FilePath := do
       return path
     else
       let h ← IO.FS.Handle.mk ".gitignore" IO.FS.Mode.append
+      h.putStrLn ""
       h.putStrLn ".leanaide_cache/"
       h.flush
       IO.FS.createDirAll path
