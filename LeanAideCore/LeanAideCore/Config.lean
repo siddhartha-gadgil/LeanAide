@@ -81,9 +81,8 @@ def getBaseDir : MetaM System.FilePath := do
   let baseDir ← unsafe evalExpr (IO System.FilePath) (← mkAppM ``IO #[mkConst ``System.FilePath]) e
   return (← baseDir)
   catch _ =>
-    logWarning "Could not get base directory from LeanAideBaseDir instance, falling back to current directory"
+    -- logWarning "Could not get base directory from LeanAideBaseDir instance, falling back to current directory"
     IO.currentDir
-
 
 
 
