@@ -40,8 +40,6 @@ instance : Inhabited Client where
     baseUrl := "https://api.openai.com/v1"
   }
 
-#eval (default : Client)
-
 inductive Role where
   | developer | system | user | assistant | tool | function
   deriving Inhabited, Repr, ToJson, FromJson
