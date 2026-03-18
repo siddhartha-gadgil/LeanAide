@@ -149,6 +149,9 @@ structure ChatMessage where
   name : Option String := none
   deriving FromJson, ToJson, Inhabited, Repr
 
+def mkMsg (role : Role) (msg : String) : ChatMessage :=
+  { role := role, content := .str msg }
+
 structure ChatCompletionRequest where
   model : String := "gpt-5"
   messages : Json
