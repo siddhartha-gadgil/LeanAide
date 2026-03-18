@@ -222,7 +222,7 @@ register_option lean_aide.translate.temperature10 : Int :=
     descr := "temperature * 10." }
 
 register_option lean_aide.translate.reasoning_effort : String :=
-  { defValue := "medium"
+  { defValue := "default"
     descr := "Reasoning Effort" }
 
 /--
