@@ -150,7 +150,7 @@ structure ChatMessage where
   deriving FromJson, ToJson, Inhabited, Repr
 
 structure ChatCompletionRequest where
-  model : String
+  model : String := "gpt-5"
   messages : Json
   n : Option Nat := none -- number of chat completion choices
   reasoning_effort : Option ReasoningEffort := none
