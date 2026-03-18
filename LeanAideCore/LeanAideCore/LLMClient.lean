@@ -44,16 +44,7 @@ instance : Inhabited Client where
 
 inductive Role where
   | developer | system | user | assistant | tool | function
-  deriving Inhabited, Repr, FromJson
-
-instance : ToJson Role where
-  toJson
-    | .developer => "developer"
-    | .system    => "system"
-    | .user      => "user"
-    | .assistant => "assistant"
-    | .tool      => "tool"
-    | .function  => "function"
+  deriving Inhabited, Repr, ToJson, FromJson
 
 inductive ReasoningEffort where
   | none | minimal | low | medium | high | xhigh
@@ -170,14 +161,39 @@ structure ChatCompletionRequest where
   max_completion_tokens : Option Nat := none
   deriving FromJson, ToJson, Inhabited, Repr
 
+structure ChatCompletionMessage where
+  content : String
+  role : Role
+  deriving FromJson, ToJson, Inhabited, Repr
+
+structure Choice where
+  message : ChatCompletionMessage
+  index : Nat
+  deriving FromJson, ToJson, Inhabited, Repr
+
 structure ChatCompletionResponse where
   id : String
   object : String
   created : Nat
   model : String
-  choices : Array Json
+  choices : Array Choice
   usage : Option Json
   deriving FromJson, ToJson, Inhabited, Repr
+
+namespace ChatCompletionResponse
+
+def getChoiceIndex? (resp : ChatCompletionResponse) (i : Nat) : Option Choice :=
+  resp.choices.find? (fun c => c.index == i)
+
+def getContentIndex? (resp : ChatCompletionResponse) (i : Nat) : Option String :=
+  match resp.getChoiceIndex? i with
+  | none => none
+  | some choice => choice.message.content
+
+def getContents (resp : ChatCompletionResponse) : Array String :=
+  resp.choices.map fun choice => choice.message.content
+
+end ChatCompletionResponse
 
 /- Responses API -/
 
@@ -220,6 +236,8 @@ def runCurl (client : Client) (method : String) (endpoint : String) (body : Opti
   if let some payload := body then
     args := args.push "-d" |>.push (payload.compress)
 
+  traceAide `leanaide.llm.info s!"OpenAI API Call Payload: {body.getD Json.null}"
+
   let out ← IO.Process.output { cmd := "curl", args := args }
   if out.exitCode != 0 then
     traceAide `leanaide.llm.info s!"Curl failed with code {out.exitCode}: {out.stderr}"
@@ -227,7 +245,7 @@ def runCurl (client : Client) (method : String) (endpoint : String) (body : Opti
     return .error out.stderr
   return .ok out.stdout
 
-def parseJson! {α} [FromJson α] [Inhabited α] (result : Except String String) : MetaM α := do
+def parseJson {α} [FromJson α] [Inhabited α] (result : Except String String) : MetaM α := do
   match result with
   | .error _ => return default
   | .ok raw =>
@@ -238,7 +256,7 @@ def parseJson! {α} [FromJson α] [Inhabited α] (result : Except String String)
     | .ok js => match fromJson? js with
               | .error e =>
                 traceAide `leanaide.llm.info s!"Failed to parse JSON into struct: {e}; source: {js}"
-                throwError s!"Failed to parse JSON into struct: {e}\nPayload: {js}"
+                return default
               | .ok val => return val
 
 def checkClient (client : Client) : IO Client := do
@@ -254,28 +272,28 @@ def create (req : ChatCompletionRequest) (client : Client := default) : MetaM Ch
   let client ← checkClient client
   let reqJs := removeNulls <| toJson req
   let result ← runCurl client "POST" "/chat/completions" reqJs
-  parseJson! result
+  parseJson result
 
 def list (client : Client := default) : MetaM Json := do
   let client ← checkClient client
   let result ← runCurl client "GET" "/chat/completions"
-  parseJson! result
+  parseJson result
 
 def get (id : String) (client : Client := default) : MetaM Json := do
   let client ← checkClient client
   let result ← runCurl client "GET" s!"/chat/completions/{id}"
-  parseJson! result
+  parseJson result
 
 def update (id : String) (metadata : Json) (client : Client := default) : MetaM Json := do
   let client ← checkClient client
   let payload := Json.mkObj [("metadata", metadata)]
   let result ← runCurl client "POST" s!"/chat/completions/{id}" payload
-  parseJson! result
+  parseJson result
 
 def delete (id : String) (client : Client := default) : MetaM Json := do
   let client ← checkClient client
   let result ← runCurl client "DELETE" s!"/chat/completions/{id}"
-  parseJson! result
+  parseJson result
 
 end Chat
 
@@ -287,28 +305,28 @@ def create (req : ResponseRequest) (client : Client := default) : MetaM APIRespo
   let client ← checkClient client
   let reqJs := removeNulls <| toJson req
   let result ← runCurl client "POST" "/responses" reqJs
-  parseJson! result
+  parseJson result
 
 def get (id : String) (client : Client := default) : MetaM APIResponse := do
   let client ← checkClient client
   let result ← runCurl client "GET" s!"/responses/{id}"
-  parseJson! result
+  parseJson result
 
 def cancel (id : String) (client : Client := default) : MetaM Json := do
   let client ← checkClient client
   let result ← runCurl client "POST" s!"/responses/{id}/cancel" (Json.mkObj [])
-  parseJson! result
+  parseJson result
 
 def delete (id : String) (client : Client := default) : MetaM Json := do
   let client ← checkClient client
   let result ← runCurl client "DELETE" s!"/responses/{id}"
-  parseJson! result
+  parseJson result
 
 def compact (id : String) (client : Client := default) : MetaM Json := do
   let client ← checkClient client
   let payload := Json.mkObj [("response_id", toJson id)]
   let result ← runCurl client "POST" "/responses/compact" payload
-  parseJson! result
+  parseJson result
 
 end Responses
 
