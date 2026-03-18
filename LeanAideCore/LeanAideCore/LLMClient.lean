@@ -26,7 +26,7 @@ partial def removeNulls (js : Json) : Json :=
 namespace OpenAI
 
 structure Client where
-  apiKey : Option String := none
+  apiKey : String := ""
   organization : Option String := none
   project : Option String := none
   baseUrl : String := "https://api.openai.com/v1"
@@ -34,7 +34,7 @@ structure Client where
 
 instance : Inhabited Client where
   default := {
-    apiKey := none,
+    apiKey := "",
     organization := none,
     project := none,
     baseUrl := "https://api.openai.com/v1"
@@ -243,8 +243,8 @@ def parseJson! {α} [FromJson α] [Inhabited α] (result : Except String String)
 
 def checkClient (client : Client) : IO Client := do
   match client.apiKey with
-  | none => return {client with apiKey := ← openAIKey}
-  | some _ => return client
+  | "" => return {client with apiKey := ← openAIKey}
+  | _ => return client
 
 /- Chat Completions Endpoints -/
 
