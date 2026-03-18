@@ -208,6 +208,7 @@ def queryAux' (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM
     temperature := params.temp,
     reasoning_effort := params.reasoningEffort
   }
+  traceAide `leanaide.llm.info s!"Reasoning Effort: {toJson params.reasoningEffort}"
   -- let data := if params.stopTokens.isEmpty then data
   --   else {data with stop := params.stopTokens}
   trace[Translate.info] "Model query: {toJson data}"
