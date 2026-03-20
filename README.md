@@ -9,21 +9,21 @@ We now (as of early February 2025, modified September 2025) have a convenient wa
 The most convenient way to use LeanAide is with syntax we provide that gives code-actions. We have syntax for translating theorems and definitions from natural language to Lean, and for adding documentation strings to theorems and definitions. For example, the following code in a Lean file (with correct dependencies) will give code actions:
 
 ```lean
-import LeanAideTools
 import Mathlib
+import LeanAideCore.Translate
+import LeanAide.Syntax
 
-#theorem "There are infinitely many odd numbers"
+set_option lean_aide.translate.greedy true
 
-#def "A number is defined to be cube-free if it is not divisible by the cube of a prime number"
+#theorem silly : "If a vector space has dimension `2` then it is finite dimensional." >>
+  translate_theorem
+
+#theorem : "There are infinitely many odd numbers." >> translate_theorem
+
+#def "A group is said to be sane if every proper normal subgroup is cyclic." >> translate_definition
 
 #doc
-theorem InfiniteOddNumbers : {n  ∣  Odd n}.Infinite := by sorry
-```
-
-We also provide syntax for generating/completing proofs. For now this is slow and not of good quality. Experiments and feedback are welcome. The first of the examples below uses a command and the second uses a tactic.
-
-```lean
-#prove "The product of two successive natural numbers is even"
+theorem InfiniteOddNumbers : ∀ n:ℕ, ∃ m:ℕ, m > n ∧ Odd m := by sorry
 ```
 
 ## Setting up LeanAide
