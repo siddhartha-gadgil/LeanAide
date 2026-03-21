@@ -3,6 +3,9 @@ import LeanAideCore.Translate
 import LeanAide.Config
 import LeanAide.TranslatorParams
 import LeanAide.WithMathlib
+import LeanAide.Responses
+import LeanAide.PaperCodes
+import LeanAide.Codegen
 import Mathlib
 import Cli
 import LeanAideCore.Actor
@@ -271,7 +274,8 @@ def launchProcess (p : Parsed) : IO UInt32 := do
     {module:= `LeanAide.WithMathlib},
     {module:= `LeanAideCore.Translate},
     {module:= `LeanAide.PaperCodes},
-    {module:= `LeanAideCore.Responses},
+    {module:= `LeanAide.Responses},
+    {module:= `LeanAide.Codegen},
     {module := `LeanAideCore}] {}
   let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}}
   let core := minFac4M

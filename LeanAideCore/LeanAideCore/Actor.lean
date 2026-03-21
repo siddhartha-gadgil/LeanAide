@@ -8,12 +8,13 @@ import Lean
 namespace LeanAide.Actor
 open LeanAide Lean
 
-
 /--
 Executing a task with Json input and output. These are for the server. When a task fails, the rest of the tasks are not executed. Results are accumulated in the output.
 -/
 def runTask (data: Json) (translator : Translator) : TranslateM Json := do
   let translator ←  translator.patch data
+  let IOlogs := logsToIO (← getEnv)
+  IO.eprintln s!"logging IO tasks: {IOlogs}"
   match data.getObjVal? "task" with
   | Except.error e  => return Json.mkObj [("result", "error"), ("error", s!"no task found: {e}")]
   | Except.ok (.str task) =>
