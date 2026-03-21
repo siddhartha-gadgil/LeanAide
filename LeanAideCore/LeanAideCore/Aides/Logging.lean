@@ -112,8 +112,8 @@ def traceAide (tag : Name) (msg : String) : CoreM Unit := do
   let fileLogs := logsToFile env
   if tag ∈ ioLogs then
     logIO tag msg
-  -- else
-  --   logToStdErr `leanaide.translate.info s!"{tag} suppressed IO log, logs : {ioLogs}"
+  else
+    logToStdErr `leanaide.translate.info s!"{tag} suppressed IO log, logs : {ioLogs}"
   if tag ∈ fileLogs ∨ tag ∈ ioLogs then
     logFile tag msg
 

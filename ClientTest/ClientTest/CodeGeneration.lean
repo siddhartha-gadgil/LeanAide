@@ -32,19 +32,6 @@ def egTheorem : Json :=
 --   }
 
 
-/--
-info: Try this:
-  [apply] ⏎
-    theorem inv_eq_one_of_eq_one : ∀ {G : Type u} [inst : Group G] {a : G}, a = (1 : G) → a⁻¹ = (1 : G) :=
-      by
-      intro G inst a h₁
-      simp [*]
-    theorem inv_eq_self_of_eq_one : ∀ {G : Type u} [inst : Group G] {e : G}, e = (1 : G) → e⁻¹ = e :=
-      by
-      intro G inst e a_15908840719738463421
-      simp [*]
--/
-#guard_msgs in
 #codegen {
   "document": [
     {

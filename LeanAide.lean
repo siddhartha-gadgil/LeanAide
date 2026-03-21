@@ -3,3 +3,4 @@ import LeanAide.TheoremElab
 import LeanAide.Syntax
 import LeanAide.PaperCodes
 import LeanAideCore.Actor
+import LeanAide.Config
