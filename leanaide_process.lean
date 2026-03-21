@@ -264,18 +264,26 @@ def launchProcess (p : Parsed) : IO UInt32 := do
   let translator : Translator ←  Translator.ofCli p
   -- logToStdErr `leanaide.translate.info <| toJson translator
   let env ←
-    importModules (loadExts := true) #[{module := `Mathlib},
+    importModules (loadExts := true) #[
+    {module := `LeanAideCore},
+    {module := `Mathlib},
     {module:= `LeanAide.TheoremElab},
     {module:= `LeanAide.WithMathlib},
     {module:= `LeanAideCore.Translate},
     {module:= `LeanAide.PaperCodes},
     {module:= `LeanAideCore.Responses},
     {module := `LeanAideCore}] {}
-  let core := minFac4M
   let ctx: Core.Context := {fileName := "", fileMap := {source:= "", positions := #[]}}
+  let core := minFac4M
   let result ←
       core.run' ctx {env := env} |>.runToIO'
   logToStdErr `leanaide.translate.info s!"Ran successfully with Mathlib: {result}"
+  let core := egSuggestionsCore
+  let result ←
+      core.run' ctx {env := env} |>.runToIO'
+  logToStdErr `leanaide.translate.info s!"Ran successfully with Mathlib: {result}"
+
+
   let stdin ←  IO.getStdin
   let stdout ← IO.getStdout
   let getLine : Unit → IO String := fun _ => stdin.getLine
