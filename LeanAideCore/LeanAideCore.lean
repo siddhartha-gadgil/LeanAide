@@ -20,3 +20,4 @@ import LeanAideCore.DocumentSchema
 import LeanAideCore.CodegenCore
 import LeanAideCore.ConfigExts
 import LeanAideCore.PromptBuilder
+import LeanAideCore.TheoremElab
