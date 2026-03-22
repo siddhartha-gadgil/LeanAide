@@ -12,16 +12,17 @@ variable [LeanAideBaseDir]
 
 deriving instance Repr for Lean.Json
 
-partial def removeNulls (js : Json) : Json :=
-  match js with
-  | Json.obj tmap =>
-    let filtered := tmap.foldl (init := {}) fun tm key value =>
-      match value with
-      | Json.null => tm
-      | _         => tm.insert key (removeNulls value)
-    Json.obj filtered
-  | Json.arr a => Json.arr (a.map removeNulls)
-  | _ => js
+def optJson {α} [ToJson α] (k : String) (v : Option α) : Option (String × Json) :=
+  v.bind fun val =>
+    let j := toJson val
+    if j == Json.mkObj [] || j == Json.null then none
+    else some (k, j)
+
+def reqJson {α} [ToJson α] (k : String) (v : α) : Option (String × Json) :=
+  some (k, toJson v)
+
+def dropNulls (fields : List (Option (String × Json))) : Json :=
+  Json.mkObj (fields.filterMap id)
 
 namespace OpenAI
 
@@ -46,32 +47,42 @@ inductive Role where
 
 inductive ReasoningEffort where
   | none | minimal | low | medium | high | xhigh
-  deriving Inhabited, Repr, Hashable, FromJson, DecidableEq
-
-instance : ToJson ReasoningEffort where
-  toJson
-    | .none    => "none"
-    | .minimal => "minimal"
-    | .low     => "low"
-    | .medium  => "medium"
-    | .high    => "high"
-    | .xhigh   => "xhigh"
+  deriving Inhabited, Repr, Hashable, ToJson, FromJson, DecidableEq
 
 structure Reasoning where
   effort : Option ReasoningEffort := none
   summary : Option String := none -- "auto" or "detailed" or "concise"
-  deriving Inhabited, Repr, ToJson
+  deriving Inhabited, Repr
+
+instance : ToJson Reasoning where
+  toJson s := dropNulls [
+    optJson "effort" s.effort,
+    optJson "summary" s.summary
+  ]
 
 structure ImageUrl where
   url : String
   detail : Option String := none -- "auto" or "low" or "high"
-  deriving ToJson, FromJson, Repr, Inhabited
+  deriving FromJson, Repr, Inhabited
+
+instance : ToJson ImageUrl where
+  toJson s := dropNulls [
+    reqJson "url" s.url,
+    optJson "detail" s.detail
+  ]
 
 structure FileInput where
   file_id : Option String := none
   file_data : Option String := none -- base64 encoded
   filename : Option String := none
-  deriving ToJson, FromJson, Repr, Inhabited
+  deriving FromJson, Repr, Inhabited
+
+instance : ToJson FileInput where
+  toJson s := dropNulls [
+    optJson "file_id" s.file_id,
+    optJson "file_data" s.file_data,
+    optJson "filename" s.filename
+  ]
 
 inductive ContentPart where
   | text (text : String)
@@ -90,7 +101,7 @@ instance : ToJson ContentPart where
 inductive Content where
   | str (s : String)
   | parts (p : Array ContentPart)
-  deriving Inhabited, Repr, FromJson, ToJson
+  deriving Inhabited, Repr, FromJson
 
 instance : ToJson Content where
   toJson
@@ -102,13 +113,21 @@ structure JSONSchema where
   schema : Json
   description : Option String := none
   strict : Option Bool := none
-  deriving ToJson, FromJson, Inhabited, Repr
+  deriving FromJson, Inhabited, Repr
+
+instance : ToJson JSONSchema where
+  toJson s := dropNulls [
+    reqJson "name" s.name,
+    reqJson "schema" s.schema,
+    optJson "description" s.description,
+    optJson "strict" s.strict
+  ]
 
 inductive ResponseFormat where
   | text
   | jsonObject
   | jsonSchema (schema : JSONSchema)
-  deriving Repr, FromJson, ToJson
+  deriving Repr, FromJson
 
 instance : ToJson ResponseFormat where
   toJson
@@ -122,7 +141,16 @@ structure JSONSchemaConfig where
   schema : Json
   description : Option String := none
   strict : Option Bool := none
-  deriving ToJson, FromJson, Inhabited, Repr
+  deriving FromJson, Inhabited, Repr
+
+instance : ToJson JSONSchemaConfig where
+  toJson s := dropNulls [
+    reqJson "type" s.type,
+    reqJson "name" s.name,
+    reqJson "schema" s.schema,
+    optJson "description" s.description,
+    optJson "strict" s.strict
+  ]
 
 inductive ResponseFormatTextConfig where
   | text
@@ -139,7 +167,13 @@ instance : ToJson ResponseFormatTextConfig where
 structure ResponseTextConfig where
   format : Option ResponseFormatTextConfig := none
   verbosity : Option String := none -- "low" or "medium" or "high"
-  deriving Inhabited, ToJson, Repr
+  deriving Inhabited, Repr
+
+instance : ToJson ResponseTextConfig where
+  toJson s := dropNulls [
+    optJson "format" s.format,
+    optJson "verbosity" s.verbosity
+  ]
 
 /- Chat Completions API -/
 
@@ -147,7 +181,14 @@ structure ChatMessage where
   role : Role
   content : Content
   name : Option String := none
-  deriving FromJson, ToJson, Inhabited, Repr
+  deriving FromJson, Inhabited, Repr
+
+instance : ToJson ChatMessage where
+  toJson s := dropNulls [
+    reqJson "role" s.role,
+    reqJson "content" s.content,
+    optJson "name" s.name
+  ]
 
 def mkMsg (role : Role) (msg : String) : ChatMessage :=
   { role := role, content := .str msg }
@@ -160,7 +201,18 @@ structure ChatCompletionRequest where
   response_format : Option ResponseFormat := none
   temperature : Option JsonNumber := none
   max_completion_tokens : Option Nat := none
-  deriving FromJson, ToJson, Inhabited, Repr
+  deriving FromJson, Inhabited, Repr
+
+instance : ToJson ChatCompletionRequest where
+  toJson s := dropNulls [
+    reqJson "model" s.model,
+    reqJson "messages" s.messages,
+    optJson "n" s.n,
+    optJson "reasoning_effort" s.reasoning_effort,
+    optJson "response_format" s.response_format,
+    optJson "temperature" s.temperature,
+    optJson "max_completion_tokens" s.max_completion_tokens
+  ]
 
 structure ChatCompletionMessage where
   content : String
@@ -203,7 +255,15 @@ structure ResponseInputMessage where
   content : Content
   phase : Option String := none
   type : String := "message"
-  deriving ToJson, Inhabited, Repr
+  deriving Inhabited, Repr
+
+instance : ToJson ResponseInputMessage where
+  toJson s := dropNulls [
+    reqJson "role" s.role,
+    reqJson "content" s.content,
+    optJson "phase" s.phase,
+    reqJson "type" s.type
+  ]
 
 structure ResponseRequest where
   model : Option String := none
@@ -212,7 +272,17 @@ structure ResponseRequest where
   reasoning : Option Reasoning := none
   text : Option ResponseTextConfig := none -- contains response format
   tools : Option Json := none -- have to expand this
-  deriving ToJson, Inhabited, Repr
+  deriving Inhabited, Repr
+
+instance : ToJson ResponseRequest where
+  toJson s := dropNulls [
+    reqJson "model" s.model,
+    reqJson "input" s.input,
+    optJson "background" s.background,
+    optJson "reasoning" s.reasoning,
+    optJson "text" s.text,
+    optJson "tools" s.tools
+  ]
 
 structure APIResponse where
   id : String
@@ -271,7 +341,7 @@ namespace Chat
 
 def create (req : ChatCompletionRequest) (client : Client := default) : MetaM ChatCompletionResponse := do
   let client ← checkClient client
-  let reqJs := removeNulls <| toJson req
+  let reqJs := toJson req
   let result ← runCurl client "POST" "/chat/completions" reqJs
   parseJson result
 
@@ -304,7 +374,7 @@ namespace Responses
 
 def create (req : ResponseRequest) (client : Client := default) : MetaM APIResponse := do
   let client ← checkClient client
-  let reqJs := removeNulls <| toJson req
+  let reqJs := toJson req
   let result ← runCurl client "POST" "/responses" reqJs
   parseJson result
 
