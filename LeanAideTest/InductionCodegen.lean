@@ -5,7 +5,7 @@ set_option autoImplicit false
 set_option linter.unusedTactic false
 set_option linter.unreachableTactic false
 
-#stopLogs
+-- #stopLogs
 def induction_eg := json% {
   "theorem" : {
     "claim" : "∀ f: ℕ → ℕ, f 0 = 0 → (∀ n: ℕ, f (n + 1) = f n + 1) → ∀ n: ℕ, f n = n",

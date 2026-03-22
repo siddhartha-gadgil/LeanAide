@@ -40,7 +40,7 @@ noncomputable def is_commutative_of_sq_is_monoid_hom :
       grind [mul_assoc]
     have assert_3794893689440862483 : ∀ (a b : G), b * a = a * b :=
       by
-      grind [mul_inv_cancel, mul_one]
+      grind (instances := 5000) [mul_inv_cancel, mul_one]
     have : CommGroup G :=
       by
       constructor

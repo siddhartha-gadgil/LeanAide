@@ -61,16 +61,17 @@ syntax (name:= tryThiswrap) "try_this" "(" tacticSeq ")" (" then " "(" tacticSeq
       traceAide `leanaide.interpreter.debug s!"try_this failed: {← e.toMessageData.toString}"
   | _ => throwError "unexpected syntax in try_this"
 
+-- Temporarily disabling this
 open LibrarySuggestions in
-def suggestionsForGoal (goal: MVarId) (maxSuggestions: Nat := 30) : MetaM (Array Name) := do
-  try
-    let selector ← getSelector
-    let defaultSelector := mepoSelector (useRarity := true) (p := 0.6) (c := 0.9)
-    let selector := selector.getD defaultSelector
-    let suggestions ← selector goal {maxSuggestions := maxSuggestions}
-    return (suggestions.map fun s => s.name)
-  catch e =>
-    traceAide `leanaide.interpreter.info s!"Error querying StateSearch for goal {← PrettyPrinter.ppExpr <| ← goal.getType}: {← e.toMessageData.toString}"
+def suggestionsForGoal (_goal: MVarId) (_maxSuggestions: Nat := 30) : MetaM (Array Name) := do
+  -- try
+  --   let selector ← getSelector
+  --   let defaultSelector := mepoSelector (useRarity := true) (p := 0.6) (c := 0.9)
+  --   let selector := selector.getD defaultSelector
+  --   let suggestions ← selector goal {maxSuggestions := maxSuggestions}
+  --   return (suggestions.map fun s => s.name)
+  -- catch e =>
+  --   traceAide `leanaide.interpreter.info s!"Error querying StateSearch for goal {← PrettyPrinter.ppExpr <| ← goal.getType}: {← e.toMessageData.toString}"
     return #[]
 
 open Parser.Tactic

@@ -1,7 +1,15 @@
 import LeanAideCore.Syntax
 import LeanAideCore
 import LeanAideCore.Responses
+import Mathlib
+
 namespace LeanAide
+
+universe u v w u_1 u_2 u_3 u₁ u₂ u₃
+@[default_instance]
+instance : Add ℤ := inferInstance
+@[default_instance]
+instance : Semiring ℤ := inferInstance
 
 open Meta
 
@@ -35,12 +43,12 @@ open LeanAide.Discussion
 -- #eval generateM "There are infinitely many odd numbers." Document
 
 /-- There are infinitely many odd numbers. -/
-#theorem_code infinitely_many_odd_numbers.theorem_code : {n | Odd n}.Infinite
+#theorem_code infinitely_many_odd_numbers.theorem_code : ∀ n:ℕ, ∃ m:ℕ, m > n ∧ Odd m
 
 #eval infinitely_many_odd_numbers.theorem_code
 
 
-
+example : {n : ℕ | Odd n}.Infinite := by sorry
 
 #start_chat chatEg
 
@@ -60,7 +68,7 @@ def chatEg₁ := chatEg + (thmText  "There are infinitely many odd numbers.")
 
 #eval chatEg₁
 
-#prove "There are infinitely many odd numbers." >> ProofDocument
+#prove "There are infinitely many odd natural numbers." >> ProofDocument
 
 namespace long_eg
 
