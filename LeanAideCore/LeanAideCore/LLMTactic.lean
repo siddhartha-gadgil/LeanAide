@@ -90,6 +90,7 @@ def llmSorryTactic : Tactic
       | none => throwError "Could not extract proof from the LLM response."
   | _ => throwError "Unexpected syntax"
 
-example : 4+1 =5 := by
+/-example : 4+1 =5 := by
   llm?
   sorry
+-/
