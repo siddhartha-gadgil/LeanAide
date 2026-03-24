@@ -194,7 +194,7 @@ def mkMsg (role : Role) (msg : String) : ChatMessage :=
   { role := role, content := .str msg }
 
 structure ChatCompletionRequest where
-  model : String := "gpt-5"
+  model : String := "gpt-5.4"
   messages : Json
   n : Option Nat := none -- number of chat completion choices
   reasoning_effort : Option ReasoningEffort := none

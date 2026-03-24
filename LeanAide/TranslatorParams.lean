@@ -42,7 +42,7 @@ def Translator.ofCli (p: Parsed) : IO Translator :=
   let temp : JsonNumber := ⟨temp10, 1⟩
   let gemini := p.hasFlag "gemini"
   let model := p.flag? "model" |>.map (fun s => s.as! String)
-    |>.getD (if gemini then "gemini-2.0-flash" else "gpt-5")
+    |>.getD (if gemini then "gemini-2.0-flash" else "gpt-5.4")
   let azure := p.hasFlag "azure"
   let maxTokens := p.flag? "max_tokens" |>.map (fun s => s.as! Nat)
     |>.getD 1600
@@ -79,7 +79,7 @@ def process : Cmd := `[Cli|
     moogle_prompts: Nat; "Number of examples from Moogle"
     n, num_responses : Nat;    "Number of responses to ask for (default 8)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 10)."
-    m, model : String ; "Model to be used (default `gpt-5.1`)"
+    m, model : String ; "Model to be used (default `gpt-5.4`)"
     azure; "Use Azure instead of OpenAI."
     gemini; "Use Gemini with OpenAI API."
     url : String; "URL to query (for a local server)."
@@ -98,7 +98,7 @@ def Translator.CliDefault := Translator.ofCli defParse
 
 def Translator.CliDefaultJson := json% {"useInstructions": false,
  "toChat": "simple",
- "server": {"openAI": {"model": "gpt-5", "authHeader?": null}},
+ "server": {"openAI": {"model": "gpt-5.4", "authHeader?": null}},
  "roundTripSelect": false,
  "roundTrip": false,
  "relDefs": {"seq": []},
