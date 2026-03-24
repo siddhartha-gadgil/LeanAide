@@ -86,14 +86,8 @@ def suggestionsForGrind (goal: MVarId) (maxSuggestions: Nat := 15)  : MetaM (Arr
   let all ← suggestionsForGoal goal maxSuggestions
   all.filterM fun name => checkGrind name
 
-def grindWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions: Nat := 15)  : MetaM (TSyntax ``tacticSeq) := do
-  let names ← suggestionsForGrind goal maxSuggestions
-  let names := names ++ localNames
-  let params : Array (TSyntax ``grindParam) ← names.mapM fun
-    name => do
-      let id := mkIdent name
-      `(grindParam| $id:ident)
-  `(tacticSeq| grind? [$params,*])
+def grindWithSuggestions : MetaM (TSyntax ``tacticSeq) := do
+  `(tacticSeq| grind? +locals +suggestions (instances := 5000)(splits := 5)(ematch := 10)(canonHeartbeats := 5000) (splitImp := true)(splitIndPred := true))
 
 def simpWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions: Nat := 15) : MetaM (TSyntax ``tacticSeq) := do
   let names ← suggestionsForGoal goal maxSuggestions
