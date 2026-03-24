@@ -38,6 +38,7 @@ set_option linter.unreachableTactic false in
 set_option linter.unusedTactic false in
 #add_auto_tactics [hammer {aesopPremises := 5, autoPremises := 0}, try_this (constructor) then (grind?)]
 
+
 -- #eval getAutoTactics
 
 

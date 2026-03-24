@@ -1,8 +1,6 @@
 import LeanAideCore.Aides
 import LeanAideCore.ChatClient
 import LeanAideCore.Translator
-import LeanAideCore.RunTactics
-import LeanAideCore.PaperCodes
 
 open Lean Meta Elab Tactic LeanAide ChatServer Nat
 syntax (name:=llmSyntax) "llm?" : tactic

@@ -2,6 +2,7 @@ import Lean
 import LeanAideCore.Aides
 import LeanAideCore.Syntax
 import LeanAideCore.RunTactics
+import LeanAideCore.LLMTactic
 
 /-!
 ## Code generation from JSON data
@@ -13,7 +14,6 @@ This module provides a way to generate Lean code from JSON data in an extensible
 open Lean Meta Elab LeanAide
 
 initialize registerTraceClass `LeanAide.Codegen
-
 namespace LeanAide
 
 instance : Repr SyntaxNodeKinds where
@@ -27,6 +27,8 @@ instance : ToString SyntaxNodeKinds where
     ToString.toString names
 
 namespace Codegen
+
+#add_auto_tactics [llm?]
 
 #logIO leanaide.codegen.info
 #logFile leanaide.codegen.info
