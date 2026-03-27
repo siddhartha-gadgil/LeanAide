@@ -257,8 +257,6 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           let newAccum ← appendTacticSeqSeq accum code
           getCodeTacticsAux translator newGoal sources newAccum
 
-
-
 def findTactics? (goal :  MVarId):
     TranslateM (Option (TSyntax ``tacticSeq)) := goal.withContext do
   traceAide `leanaide.codegen.info "Trying automation tactics"
