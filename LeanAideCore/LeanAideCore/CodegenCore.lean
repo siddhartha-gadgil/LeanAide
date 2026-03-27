@@ -264,7 +264,7 @@ def findTactics? (goal :  MVarId):
   traceAide `leanaide.codegen.info "Trying automation tactics"
   let localNames  ← Translate.defsNames
   traceAide `leanaide.codegen.info s!"previous definitions/theorems names: {localNames}"
-  let grindWs ← grindWithSuggestions goal (← localNames.filterM fun n => checkGrind n)
+  let grindWs ← grindWithSuggestions
   let simpWs ← simpWithSuggestions goal localNames
   runTacticsAndFindTryThis? goal ([← `(tacticSeq|  simp?), ← `(tacticSeq | grind?), ← `(tacticSeq| try?), grindWs, simpWs, ← `(tacticSeq| try simp; exact?)] ++ (← getAutoTactics).toList) (strict := true)
 

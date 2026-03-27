@@ -14,6 +14,9 @@ def TaskStatus.input : TaskStatus → Json
 | TaskStatus.running input => input
 | TaskStatus.completed input _ => input
 
+def TaskStatus.isRunning : TaskStatus → Bool
+| TaskStatus.running _ => true
+| TaskStatus.completed _ _ => false
 
 abbrev TasksState := Std.Mutex <| Std.HashMap UInt64 TaskStatus
 
@@ -47,6 +50,12 @@ def lookupJson (ts: TasksState) (hash: UInt64) : IO Json := do
   match state? with
   | some ts => return Json.mkObj [("result", "success"), ("status", toJson ts), ("hash", toJson hash)]
   | none => return Json.mkObj [("result", "error"), ("error", s!"no task found for hash {hash}")]
+
+def numRunning (ts: TasksState) : IO Nat :=
+  ts.atomically do
+    let m ← get
+    let l := m.toList
+    return l.filter (fun (_, status) => status.isRunning) |>.length
 
 end TasksState
 

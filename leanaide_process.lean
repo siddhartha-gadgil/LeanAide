@@ -85,23 +85,28 @@ def spawnTaskIO (js : Json) (translator : Translator) (ctx : Core.Context) (env 
     Async.toIO do
       spawnTaskAsync js translator ctx env states chains prios
 
-partial def asyncLoop (inputFn: Unit → Async Json) (outputFn : Json → Async Unit) (env: Environment)(translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit := do
-  let js ← inputFn ()
-  let mode? := js.getObjValAs? String "mode" |>.toOption
-  match mode? with
-  | some "quit" =>
-    logToStdErr `leanaide.translate.info "Exiting async loop..."
-    return ()
-  | some "sleep" =>
-    let duration := js.getObjValAs? Nat "duration" |>.toOption.getD 10
-    logToStdErr `leanaide.translate.debug s!"Sleeping for {duration} seconds..."
-    Async.sleep <| Std.Time.Millisecond.Offset.ofNat <| duration * 1000
-    logToStdErr `leanaide.translate.debug "Awake."
-    asyncLoop inputFn outputFn env translator ctx states chains
-  | _ =>
-    spawnTaskAsync js translator ctx
-      env states chains Task.Priority.default (some outputFn)
-    asyncLoop inputFn outputFn env translator ctx states chains
+partial def asyncLoop (inputFn: Unit → Async Json) (outputFn : Json → Async Unit) (env: Environment)(translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json))(maxProcesses duration : Nat) : Async Unit := do
+  if maxProcesses ≤ (← states.numRunning) then
+      logToStdErr `leanaide.translate.debug s!"Max processes reached ({maxProcesses}), sleeping for {duration} seconds..."
+      Async.sleep <| Std.Time.Millisecond.Offset.ofNat <| duration * 1000
+      asyncLoop inputFn outputFn env translator ctx states chains maxProcesses duration
+  else
+    let js ← inputFn ()
+    let mode? := js.getObjValAs? String "mode" |>.toOption
+    match mode? with
+    | some "quit" =>
+      logToStdErr `leanaide.translate.info "Exiting async loop..."
+      return ()
+    | some "sleep" =>
+      let duration := js.getObjValAs? Nat "duration" |>.toOption.getD 10
+      logToStdErr `leanaide.translate.debug s!"Sleeping for {duration} seconds..."
+      Async.sleep <| Std.Time.Millisecond.Offset.ofNat <| duration * 1000
+      logToStdErr `leanaide.translate.debug "Awake."
+      asyncLoop inputFn outputFn env translator ctx states chains maxProcesses duration
+    | _ => do
+      spawnTaskAsync js translator ctx
+          env states chains Task.Priority.default (some outputFn)
+      asyncLoop inputFn outputFn env translator ctx states chains maxProcesses duration
 
 open IO.FS
 def fileInputFn (path : System.FilePath) : IO (Unit → Async Json) := do
@@ -167,7 +172,7 @@ def testAsyncLoop  (env: Environment)
   (translator : Translator) (ctx : Core.Context) (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : Async Unit :=   do
     let inputFn ←  fileInputFn ("resources" / "test_task_sequence.jsonl")
     let outputFn ← fileOutputFn ("data" / "test_task_sequence_output.jsonl")
-    asyncLoop inputFn outputFn env translator ctx states chains
+    asyncLoop inputFn outputFn env translator ctx states chains 5 10
 
 partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putStrLn : String → IO Unit)
     (translator : Translator)  (states : TasksState) (chains : Json → Json → Array (Json → TranslateM Json)) : IO UInt32 := do
@@ -216,6 +221,8 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
       logToStdErr `leanaide.translate.debug "Awake."
     | some "spawn_worker" =>
       logToStdErr `leanaide.translate.info "Spawning worker process..."
+      let duration := js.getObjValAs? Nat "duration" |>.toOption.getD 10
+      let maxProcesses := js.getObjValAs? Nat "max_processes" |>.toOption.getD 5
       let inputFile? := js.getObjValAs? System.FilePath "input_file" |>.toOption
       let outputFile? := js.getObjValAs? System.FilePath "output_file" |>.toOption
       let inputUrl? := js.getObjValAs? String "input_url" |>.toOption
@@ -242,7 +249,7 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
             logToStdErr `leanaide.translate.warning "No output destination provided for worker, defaulting to file output with 'data/worker_output.jsonl'"
             fileOutputFn ("data" / "worker_output.jsonl")
         AsyncTask.block <| ←
-          Async.toIO do background <| asyncLoop inputFn outputFn env translator ctx states chains
+          Async.toIO do background <| asyncLoop inputFn outputFn env translator ctx states chains maxProcesses duration
 
     -- | some "worker" =>
     --   let .ok getWorkUrl :=
