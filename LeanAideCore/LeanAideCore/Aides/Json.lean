@@ -74,7 +74,7 @@ partial def patch (js diff : Json) : Json :=
         let v := patch v₁ v₂
         Json.mkObj [(k₁, v)]
       else
-        diff
+        js.mergeObj diff
     | _, _ =>
       let keys₁ := kvs₁.toArray.map (fun ⟨k, _⟩ => k)
       let updated := kvs₁.toArray.map fun ⟨k, v₁⟩ =>
@@ -90,7 +90,7 @@ partial def patch (js diff : Json) : Json :=
     if kvs₂.toArray.isEmpty then
       js
     else
-      diff
+      js.mergeObj diff
   | _, _ => diff
 
 partial def getPatch? (js₁ js₂ : Json) : Option Json :=

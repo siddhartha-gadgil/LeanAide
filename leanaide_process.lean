@@ -262,9 +262,10 @@ partial def process_loop (env: Environment)(getLine : Unit →  IO String) (putS
     | _ =>
       logToStdErr `leanaide.translate.info "Running in foreground"
       let core := Actor.response translator js |>.runToCore
+      logToStdErr `leanaide.translate.info s!"input: {js.pretty}"
       let result ←
         core.run' ctx {env := env} |>.runToIO'
-      logToStdErr `leanaide.translate.info "Ran successfully"
+      logToStdErr `leanaide.translate.info s!"Ran successfully, result: {result.pretty}"
       putStrLn <| result.compress
       logToStdErr `leanaide.translate.info "Output sent."
     process_loop env getLine putStrLn translator states chains

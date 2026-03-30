@@ -300,7 +300,7 @@ def Translator.patch (translator: Translator) (data: Json) : CoreM Translator :=
   match data.getObjVal? "translator" with
   | Except.ok config => do
     traceAide `leanaide.translate.info s!"Patching translator with config: {config}"
-    let json := (toJson translator).mergeObj config
+    let json := (toJson translator).patch config
     return fromJson? (α := Translator) json |>.toOption.getD translator
   | _ => do
     traceAide `leanaide.translate.info s!"No translator config found in data: {data}"
