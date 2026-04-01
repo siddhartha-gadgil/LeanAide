@@ -158,7 +158,7 @@ local instance : Hashable Float where
 namespace PromptExampleBuilder
 
 partial def num : PromptExampleBuilder →  Nat
-| similarSearch _ n => n
+| similarSearch _ n _ => n
 | embedSearch _ _ _ => 0 -- no longer supported
 | leansearch _ _ n => n
 | moogle _ _ n => n
@@ -196,10 +196,10 @@ partial def getPromptPairsOrderedAux (pb: PromptExampleBuilder)
   (query: String) : TranslateM ((Array (String × Json))) := do
   -- let dataMap ← getEmbedMap
   match pb with
-  | similarSearch descField n =>
+  | similarSearch descField n url? =>
       logToStdErr `leanaide.translate.info s!"similarSearch on {descField} with query: {query}"
       if n = 0 then return #[]
-      let out ← callSimilaritySearch query descField n
+      let out ← callSimilaritySearch query descField n url?
       match out with
       | Except.ok outJs =>
         match ← pairsFromEmbeddingJson outJs with
@@ -305,7 +305,7 @@ def getPromptPairs (pb: PromptExampleBuilder)
   return pairs.reverse
 
 partial def usedEmbeddings : PromptExampleBuilder → List String
-| .similarSearch d _ => [d]
+| .similarSearch d _ _ => [d]
 | .embedSearch _ _ _ => [] -- no longer supported
 | .blend pbs => pbs.map usedEmbeddings |>.flatten
 | .sequence pbs => pbs.map usedEmbeddings |>.flatten
@@ -313,7 +313,7 @@ partial def usedEmbeddings : PromptExampleBuilder → List String
 
 partial def simplify? (pb : PromptExampleBuilder): Option (PromptExampleBuilder) :=
 match pb with
-| .similarSearch _ n => if n > 0 then some pb else none
+| .similarSearch _ n _ => if n > 0 then some pb else none
 | .embedSearch _ _ _ =>  none -- no longer supported
 | .leansearch _ _ n => if n > 0 then some pb else none
 | .moogle _ _ n => if n > 0 then some pb else none
@@ -337,7 +337,7 @@ def simplify (pb : PromptExampleBuilder): PromptExampleBuilder :=
 -- #eval toJson (searchBuilder 3 4) |>.compress
 
 partial def signature (pb: PromptExampleBuilder) : String := match pb with
-| .similarSearch descField n => s!"{descField}${n}"
+| .similarSearch descField n _ => s!"{descField}${n}"
 | .embedSearch descField n _ => s!"{descField}${n}"
 | .leansearch _ _  n => s!"leansearch${n}"
 | .moogle _ _ n => s!"moogle${n}"

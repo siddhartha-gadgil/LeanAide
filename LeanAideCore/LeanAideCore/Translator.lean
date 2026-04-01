@@ -240,6 +240,10 @@ def conciseDescSize : CoreM Nat := do
 def descSize : CoreM Nat := do
   return  lean_aide.translate.desc_size.get (← getOptions)
 
+def embedUrl? : CoreM (Option String) := do
+  let url := lean_aide.translate.examples_url?.get (← getOptions)
+  if url.isEmpty then return none else return some url
+
 def toReasoningEffort (s : String) : Option OpenAI.ReasoningEffort :=
   if s == "none" then some .none
   else if s == "minimal" then some .minimal
@@ -286,7 +290,7 @@ def chatServer : CoreM ChatServer := do
       return ChatServer.generic model url none (← hasSysPrompt)
 
 def Translator.defaultM : CoreM Translator := do
-  return {server := ← chatServer, pb := PromptExampleBuilder.similarBuilder (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams, toChat := .simple}
+  return {server := ← chatServer, pb := PromptExampleBuilder.similarBuilder (← promptSize) (← conciseDescSize) (← descSize) (← embedUrl?), params := ← chatParams, toChat := .simple}
 
 def envPatch? : CoreM <| Option Json := do
   let translator₁ : Translator := {}

@@ -16,7 +16,7 @@ local instance : Hashable Float where
   field in the Lean 4 documentation. The `fixed` builder uses a fixed set of prompts.
 -/
 inductive PromptExampleBuilder where
-| similarSearch (descField : String) (n : Nat) : PromptExampleBuilder
+| similarSearch (descField : String) (n : Nat) (url : Option String) : PromptExampleBuilder
 | embedSearch (descField : String) (n: Nat) (penalty: Float := 1.0) : PromptExampleBuilder
 | leansearch (descFields : List String)
   (preferDocs: Bool := false) (n: Nat) : PromptExampleBuilder
@@ -47,11 +47,11 @@ namespace PromptExampleBuilder
 /--
   A `PromptExampleBuilder` that uses FAISS similarity search to search for a given field in the Lean 4 documentation.
 -/
-def similarBuilder (numSim numConcise numDesc: Nat) : PromptExampleBuilder :=
+def similarBuilder (numSim numConcise numDesc: Nat) (url? : Option String) : PromptExampleBuilder :=
   .blend [
-    .similarSearch "docString" numSim,
-    .similarSearch "concise-description" numConcise,
-    .similarSearch "description" numDesc]
+    .similarSearch "docString" numSim url?,
+    .similarSearch "concise-description" numConcise url?,
+    .similarSearch "description" numDesc url?]
 
 /--
   A `PromptExampleBuilder` that uses embeddings to search for a given field in the Lean 4 documentation.
@@ -79,7 +79,7 @@ def genericEmbedBuilder (url: String) (numSim numConcise numDesc: Nat)  (headers
 def mkSimilarBuilder (url?: Option String) (numSim numConcise numDesc: Nat) (headers : Array String := #[]) : PromptExampleBuilder :=
   match url? with
   | some url => genericEmbedBuilder url numSim numConcise numDesc headers
-  | none => similarBuilder numSim numConcise numDesc
+  | none => similarBuilder numSim numConcise numDesc url?
 
 @[deprecated mkSimilarBuilder (since := "2026-01-01")]
 def mkEmbedBuilder (url?: Option String) (numSim numConcise numDesc: Nat)  (headers : Array String := #[]) : PromptExampleBuilder :=
@@ -107,7 +107,7 @@ instance : Append PromptExampleBuilder :=
 The new default PromptExampleBuilder.
 -/
 def default :=
-  PromptExampleBuilder.similarBuilder 8 4 4 -- ++ .searchBuilder 4 4
+  PromptExampleBuilder.similarBuilder 8 4 4 none-- ++ .searchBuilder 4 4
 
 /--
 The classic default PromptExampleBuilder (which seems to work better).
@@ -122,7 +122,7 @@ partial def purge? (pb: PromptExampleBuilder) : Option PromptExampleBuilder :=
   | .sequence [] => none
   | .blend [] => none
   | .embedSearch _ 0 _ => none
-  | .similarSearch _ 0 => none
+  | .similarSearch _ 0 _ => none
   | .leansearch _ _ 0 => none
   | .moogle _ _ 0 => none
   | .sequence ps => some <| .sequence <| ps.filterMap purge?
