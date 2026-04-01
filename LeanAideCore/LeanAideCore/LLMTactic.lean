@@ -48,6 +48,7 @@ def llmTactic : Tactic
               if hasSorry then
                 throwError "The extracted proof still contains sorry."
               else
+                evalTactic leanproof
                 TryThis.addSuggestion stx leanproof
           | none => throwError "Could not extract tactics from the LLM response."
       | none => throwError "Could not extract proof from the LLM response."
@@ -83,6 +84,7 @@ def llmSorryTactic : Tactic
           let leanproof? ← getTacticsFromText? proof?
           match leanproof? with
           | some (leanproof, _) =>
+                evalTactic leanproof
                 TryThis.addSuggestion stx leanproof
           | none => throwError "Could not extract tactics from the LLM response."
       | none => throwError "Could not extract proof from the LLM response."
