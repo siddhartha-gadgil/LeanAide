@@ -222,7 +222,7 @@ register_option lean_aide.translate.temperature10 : Int :=
     descr := "temperature * 10." }
 
 register_option lean_aide.translate.reasoning_effort : String :=
-  { defValue := "default"
+  { defValue := "medium"
     descr := "Reasoning Effort" }
 
 /--
@@ -239,6 +239,10 @@ def conciseDescSize : CoreM Nat := do
 
 def descSize : CoreM Nat := do
   return  lean_aide.translate.desc_size.get (← getOptions)
+
+def embedUrl? : CoreM (Option String) := do
+  let url := lean_aide.translate.examples_url?.get (← getOptions)
+  if url.isEmpty then return none else return some url
 
 def toReasoningEffort (s : String) : Option OpenAI.ReasoningEffort :=
   if s == "none" then some .none
@@ -286,7 +290,7 @@ def chatServer : CoreM ChatServer := do
       return ChatServer.generic model url none (← hasSysPrompt)
 
 def Translator.defaultM : CoreM Translator := do
-  return {server := ← chatServer, pb := PromptExampleBuilder.similarBuilder (← promptSize) (← conciseDescSize) (← descSize), params := ← chatParams, toChat := .simple}
+  return {server := ← chatServer, pb := PromptExampleBuilder.similarBuilder (← promptSize) (← conciseDescSize) (← descSize) (← embedUrl?), params := ← chatParams, toChat := .simple}
 
 def envPatch? : CoreM <| Option Json := do
   let translator₁ : Translator := {}
@@ -300,7 +304,7 @@ def Translator.patch (translator: Translator) (data: Json) : CoreM Translator :=
   match data.getObjVal? "translator" with
   | Except.ok config => do
     traceAide `leanaide.translate.info s!"Patching translator with config: {config}"
-    let json := (toJson translator).mergeObj config
+    let json := (toJson translator).patch config
     return fromJson? (α := Translator) json |>.toOption.getD translator
   | _ => do
     traceAide `leanaide.translate.info s!"No translator config found in data: {data}"

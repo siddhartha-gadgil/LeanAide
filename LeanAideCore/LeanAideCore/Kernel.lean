@@ -300,7 +300,9 @@ def ping [pipe: LeanAidePipe] : MetaM Bool := do
   let response ← response req
   match response.getObjValAs? String "result" with
   | .ok "success" => return true
-  | _ => return false
+  | _ =>
+    logWarning m!"Ping failed, response: {response.pretty}"
+    return false
 
 /-!
 The various core functions of LeanAide, implemented via querying the LeanAide server. These are implemented using an encoding function that converts the input to JSON, a decoding function that converts the JSON response to the output, and a function that combines these two with a query to the server. This is done to allow for asynchronous queries later.
