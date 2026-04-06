@@ -225,6 +225,14 @@ register_option lean_aide.translate.reasoning_effort : String :=
   { defValue := "medium"
     descr := "Reasoning Effort" }
 
+register_option lean_aide.username : String :=
+  { defValue := ""
+    descr := "Username to use in conversations." }
+
+register_option lean_aide.password : String :=
+  { defValue := ""
+    descr := "Password to use in conversations." }
+
 /--
 Number of similar sentences to query in interactive mode
 -/
@@ -288,6 +296,21 @@ def chatServer : CoreM ChatServer := do
       return ChatServer.openAI model |>.addKeyOpt authKey?
     else
       return ChatServer.generic model url none (← hasSysPrompt)
+
+def getUserName : CoreM <| Option String := do
+  let name := lean_aide.username.get (← getOptions)
+  if name.isEmpty then return none else return some name
+
+def getPassword : CoreM <| Option String := do
+  let password := lean_aide.password.get (← getOptions)
+  if password.isEmpty then return none else return some password
+
+def getUserNamePassword : CoreM (Option (String × String)) := do
+  let name? ← getUserName
+  let password? ← getPassword
+  match name?, password? with
+  | some name, some password => return some (name, password)
+  | _, _ => return none
 
 def Translator.defaultM : CoreM Translator := do
   return {server := ← chatServer, pb := PromptExampleBuilder.similarBuilder (← promptSize) (← conciseDescSize) (← descSize) (← embedUrl?), params := ← chatParams, toChat := .simple}

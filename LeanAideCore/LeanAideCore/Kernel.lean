@@ -305,21 +305,41 @@ partial def pollServerAux (url: String)(token: UInt64) (duration: Nat := 10) : A
       Async.sleep <| Std.Time.Millisecond.Offset.ofNat <| duration * 1000
       pollServerAux url token duration
 
-def pollServer (url: String)(data: Json) (duration: Nat := 10) : Async Json := do
+def pollServer (url: String)(data: Json) (user? : Option String) (duration: Nat := 10) : Async Json := do
   let data := data.mergeObj <| Json.mkObj [("mode", "async")]
-  let output ← IO.Process.run {cmd := "curl", args := #[url, "-X", "POST", "-H", "Content-Type: application/json", "--data", data.compress]}
+  let args := #[url, "-X", "POST", "-H", "Content-Type: application/json", "--data", data.compress]
+  let args := match user? with
+    | some user =>
+      args ++ #["-u", user]
+    | none => args
+  let output ← IO.Process.run {cmd := "curl", args := args}
   let .ok response :=
     Json.parse output | IO.throwServerError s!"Failed to parse response: \n{output}"
   let .ok token := response.getObjValAs? UInt64 "token" | IO.throwServerError "response has no 'token' field"
   pollServerAux url token duration
 
+-- Polls if the "mode" is not "async", otherwise sends the request and returns the token.
 def fromUrlAsync (url: String) (duration: Nat := 10) : LeanAidePipe := {
   queryResponse (data: Json) := do
+    let user? := match ← getUserNamePassword with
+    | some (username, password) =>
+      some s!"{username}:{password}"
+    | none => none
     let data := match ← envPatch? with
       | some patch => data.patch <| Json.mkObj [("translator", patch)]
       | none => data
-    AsyncTask.block <| ←
-    Async.toIO do  pollServer url data duration
+    let async := match data.getObjValAs? String "mode" with
+      | .ok "async" => true
+      | .ok "lookup" => true
+      | _ => false
+    if async then
+      let output ← IO.Process.run {cmd := "curl", args := #[url, "-X", "POST", "-H", "Content-Type: application/json", "--data", data.compress]}
+      let .ok response :=
+        Json.parse output | throwError s!"Failed to parse response: \n{output}"
+      return response
+    else
+      AsyncTask.block <| ←
+      Async.toIO do  pollServer url data user? duration
 }
 
 instance [inst : LeanAideUrl] : LeanAidePipe := LeanAidePipe.fromUrlAsync inst.url
@@ -835,7 +855,7 @@ def mkQueryM {α : Type}(x : α) (β : Type) [TaskList α β] [JsonForTask α][F
   let pipe ← getPipeM
   let req := json.mergeObj (Json.mkObj [("mode", "async"), ("tasks", toJson taskList)])
   let json ← pipe.response req
-  let .ok token := json.getObjValAs? UInt64 "token" | throwError "response has no 'token' field"
+  let .ok token := json.getObjValAs? UInt64 "token" | throwError "response {json.pretty} has no 'token' field"
   return token
 
 def getQuery? (β : Type) (token: UInt64) [FromTaskJson β] : TermElabM (Option β) := do
