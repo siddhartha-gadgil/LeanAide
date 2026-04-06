@@ -5,6 +5,8 @@ import LeanAideCore.Translator
 import LeanAideCore.TaskStatus
 import LeanAideCore.Syntax.Basic
 
+open Std.Internal.IO Async
+
 
 open Lean Meta Elab Term Parser
 
@@ -274,6 +276,7 @@ class LeanAidePipe where
 class LeanAideUrl where
   url : String
 
+
 namespace LeanAidePipe
 
 /-- Create a `LeanAidePipe` from a URL, using `curl` to send requests. -/
@@ -288,6 +291,35 @@ def fromURL (url: String) : LeanAidePipe := {
     return response
 }
 
+
+partial def pollServerAux (url: String)(token: UInt64) (duration: Nat := 10) : Async Json := do
+  let req := Json.mkObj [("mode", "lookup"), ("token", toJson token)]
+  let output ← IO.Process.run {cmd := "curl", args := #[url, "-X", "POST", "-H", "Content-Type: application/json", "--data", req.compress]}
+  let .ok json :=
+      Json.parse output | IO.throwServerError s!"Failed to parse response: \n{output}"
+  let .ok status :=
+    json.getObjValAs? TaskStatus "status" | IO.throwServerError "response has no 'status' field"
+  match status with
+  | .completed _ result => return result
+  | .running _ =>
+      Async.sleep <| Std.Time.Millisecond.Offset.ofNat <| duration * 1000
+      pollServerAux url token duration
+
+def pollServer (url: String)(data: Json) (duration: Nat := 10) : Async Json := do
+  let output ← IO.Process.run {cmd := "curl", args := #[url, "-X", "POST", "-H", "Content-Type: application/json", "--data", data.compress]}
+  let .ok response :=
+    Json.parse output | IO.throwServerError s!"Failed to parse response: \n{output}"
+  let .ok token := response.getObjValAs? UInt64 "token" | IO.throwServerError "response has no 'token' field"
+  pollServerAux url token duration
+
+def fromUrlAsync (url: String) (duration: Nat := 10) : LeanAidePipe := {
+  queryResponse (data: Json) := do
+    let data := match ← envPatch? with
+      | some patch => data.patch <| Json.mkObj [("translator", patch)]
+      | none => data
+    AsyncTask.block <| ←
+    Async.toIO do  pollServer url data duration
+}
 
 instance [inst : LeanAideUrl] : LeanAidePipe := LeanAidePipe.fromURL inst.url
 
@@ -554,6 +586,7 @@ def mathQuery [pipe: LeanAidePipe] (query: String) (history : List ChatPair := [
   let req ← mathQueryEncode query history n
   let response ← response req
   mathQueryDecode response
+
 
 /--
 Update a deferred computation by querying the server with a token.
