@@ -306,6 +306,7 @@ partial def pollServerAux (url: String)(token: UInt64) (duration: Nat := 10) : A
       pollServerAux url token duration
 
 def pollServer (url: String)(data: Json) (duration: Nat := 10) : Async Json := do
+  let data := data.mergeObj <| Json.mkObj [("mode", "async")]
   let output ← IO.Process.run {cmd := "curl", args := #[url, "-X", "POST", "-H", "Content-Type: application/json", "--data", data.compress]}
   let .ok response :=
     Json.parse output | IO.throwServerError s!"Failed to parse response: \n{output}"
@@ -321,7 +322,7 @@ def fromUrlAsync (url: String) (duration: Nat := 10) : LeanAidePipe := {
     Async.toIO do  pollServer url data duration
 }
 
-instance [inst : LeanAideUrl] : LeanAidePipe := LeanAidePipe.fromURL inst.url
+instance [inst : LeanAideUrl] : LeanAidePipe := LeanAidePipe.fromUrlAsync inst.url
 
 /-- Response from a LeanAide pipe -/
 def response [pipe: LeanAidePipe] (req: Json) : MetaM Json :=
@@ -333,8 +334,11 @@ def ping [pipe: LeanAidePipe] : MetaM Bool := do
   match response.getObjValAs? String "result" with
   | .ok "success" => return true
   | _ =>
-    logWarning m!"Ping failed, response: {response.pretty}"
-    return false
+    match response.getObjValAs? String "token" with
+    | .ok _ => return true
+    | _ =>
+      logWarning m!"Ping failed, response: {response.pretty}"
+      return false
 
 /-!
 The various core functions of LeanAide, implemented via querying the LeanAide server. These are implemented using an encoding function that converts the input to JSON, a decoding function that converts the JSON response to the output, and a function that combines these two with a query to the server. This is done to allow for asynchronous queries later.
