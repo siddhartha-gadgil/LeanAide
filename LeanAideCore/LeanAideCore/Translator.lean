@@ -299,11 +299,11 @@ def chatServer : CoreM ChatServer := do
 
 def getUserName : CoreM <| Option String := do
   let name := lean_aide.username.get (← getOptions)
-  if name.isEmpty then return none else return some name
+  if name.isEmpty then IO.getEnv "LEANAIDE_USERNAME" else return some name
 
 def getPassword : CoreM <| Option String := do
   let password := lean_aide.password.get (← getOptions)
-  if password.isEmpty then return none else return some password
+  if password.isEmpty then IO.getEnv "LEANAIDE_PASSWORD" else return some password
 
 def getUserNamePassword : CoreM (Option (String × String)) := do
   let name? ← getUserName
