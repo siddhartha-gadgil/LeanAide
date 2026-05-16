@@ -1,4 +1,6 @@
-Yes. A good way to test a proof is not only to ask “does the argument prove the theorem?” but also to ask:
+# Mathematics stress tests
+
+A good way to test a proof is not only to ask “does the argument prove the theorem?” but also to ask:
 
 > Does the argument fail exactly where it should fail?
 

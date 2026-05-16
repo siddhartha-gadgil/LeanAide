@@ -1,4 +1,4 @@
-Research mathematicians rarely make “school-style” algebra mistakes in isolation; the more interesting errors are usually **structural**, **hypothesis-related**, or **conceptual**. Here is a taxonomy.
+# Research Mathematics Errors
 
 ## 1. Missing or weakened hypotheses
 
