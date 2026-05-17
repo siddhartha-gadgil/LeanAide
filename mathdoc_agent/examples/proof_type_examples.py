@@ -111,7 +111,9 @@ EXAMPLES: tuple[ProofExample, ...] = (
         structured_spec=StructuredProofRefinementSpec(
             strategy="construct a witness",
             summary="Use 2 as the witness.",
-            claim="There exists a prime number that is even.",
+            full_claim="There exists a prime number n such that n is even.",
+            variable_name="n",
+            claim="n is even and prime.",
             witness="2",
             components=[
                 ChildProofSpec(
@@ -220,7 +222,9 @@ EXAMPLES: tuple[ProofExample, ...] = (
         structured_spec=StructuredProofRefinementSpec(
             strategy="explicit construction",
             summary="Use the linear polynomial x-a and verify the required properties.",
-            claim="For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
+            full_claim="For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
+            variable_name="p",
+            claim="p is a nonzero polynomial such that p(a)=0.",
             construction="p(x)=x-a",
             components=[
                 ChildProofSpec(

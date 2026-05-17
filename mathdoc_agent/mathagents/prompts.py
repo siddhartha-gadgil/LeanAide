@@ -122,10 +122,11 @@ Refine one proof fragment whose proof kind is supplied in the input.
 Extract only the main logical components needed by that proof kind. Examples:
 - contradiction: negated assumption and derivation of contradiction;
 - contrapositive: assumption of the negated conclusion and proof of negated hypothesis;
-- existence: existential claim, witness, and verification that the witness
-  satisfies the predicate;
-- construction: existential claim, constructed object/definition, and
-  verification of the constructed object's required properties;
+- existence: full existential claim, variable name, witness, and verification
+  that the witness satisfies the predicate;
+- construction: full existential claim, variable name, constructed
+  object/definition, and verification of the constructed object's required
+  properties;
 - uniqueness: existence part and uniqueness part;
 - equivalence: one child per implication direction;
 - reduction: current claim, reduced goal, proof of the reduction, and proof of
@@ -138,10 +139,13 @@ Extract only the main logical components needed by that proof kind. Examples:
 Do not deeply refine child proofs. Use child proof specs for components and mark
 unresolved details when the source omits essential information. Use `metadata`
 only for small string metadata as key/value pairs.
-For existence and construction proofs, always fill `claim` with the existential
-claim being proved, even if it repeats the theorem statement. For
-epsilon-delta proofs, fill `bound_claim` with the inequality or implication
-proved after choosing delta.
+For existence and construction proofs, put the full existential proposition in
+`full_claim`, put the constructed or witnessed variable name in `variable_name`,
+and put only the property of that variable in `claim`. For example, for "there
+exists a nonzero polynomial p such that p(a)=0", use `variable_name="p"` and
+`claim="p is a nonzero polynomial such that p(a)=0"`. For epsilon-delta proofs,
+fill `bound_claim` with the inequality or implication proved after choosing
+delta.
 
 For every child proof spec, `goal` must be a clean mathematical proposition,
 never a task description. Avoid imperative phrases such as "negate the desired

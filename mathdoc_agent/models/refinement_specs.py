@@ -80,7 +80,9 @@ class StructuredProofRefinementSpec(BaseModel):
     conclusions: list[str] = Field(default_factory=list)
     witness: str | None = None
     contradiction_assumption: str | None = None
+    full_claim: str | None = None
     claim: str | None = None
+    variable_name: str | None = None
     bound_claim: str | None = None
     reduced_to: str | None = None
     proof_of_reduction: ChildProofSpec | None = None

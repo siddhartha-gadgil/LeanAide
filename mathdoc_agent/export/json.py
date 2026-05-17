@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from pydantic import BaseModel
@@ -467,6 +468,94 @@ def _required_claim(data: StructuredProofData, node: ProofNode) -> str:
     return data.claim or _claim_or_text(node)
 
 
+def _looks_existential(text: str | None) -> bool:
+    if not text:
+        return False
+    lowered = text.lower()
+    return "there exists" in lowered or "there is" in lowered or "∃" in text
+
+
+def _existential_full_claim(data: StructuredProofData, node: ProofNode) -> str:
+    if data.full_claim:
+        return data.full_claim
+    if _looks_existential(data.claim):
+        return data.claim or _claim_or_text(node)
+    return _claim_or_text(node)
+
+
+def _extract_existential_parts(text: str | None) -> tuple[str | None, str | None]:
+    if not text:
+        return None, None
+
+    symbolic = re.search(r"∃\s*([A-Za-z][A-Za-z0-9_']*)\s*,\s*(.+)", text)
+    if symbolic:
+        return symbolic.group(1), symbolic.group(2).strip()
+
+    prose = re.search(
+        r"\bthere exists\s+(?:a|an|some)?\s*(?P<description>.+?)\s+"
+        r"(?P<variable>[A-Za-z][A-Za-z0-9_']*)\s+"
+        r"(?P<link>such that|with|satisfying|so that)\s+(?P<property>.+)",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if prose:
+        variable = prose.group("variable")
+        description = prose.group("description").strip()
+        link = prose.group("link").lower()
+        prop = prose.group("property").strip().rstrip(".")
+        article = "an" if description[:1].lower() in {"a", "e", "i", "o", "u"} else "a"
+        if description.startswith(("a ", "an ")):
+            article = ""
+        description_part = f" {description}" if not article else f" {article} {description}"
+        return variable, f"{variable} is{description_part} {link} {prop}."
+
+    unbound = re.search(
+        r"\bthere exists\s+(?P<description>.+?)(?:\.|$)",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if unbound:
+        description = unbound.group("description").strip().rstrip(".")
+        return None, f"witness is {description}."
+
+    return None, None
+
+
+def _constructed_variable_name(data: StructuredProofData, full_claim: str | None) -> str | None:
+    if data.variable_name:
+        return data.variable_name
+    variable, _ = _extract_existential_parts(full_claim)
+    if variable:
+        return variable
+    construction = data.construction or data.witness
+    if not construction:
+        return None
+    match = re.search(r"\b([A-Za-z][A-Za-z0-9_']*)\s*(?:\(|:=|=)", construction)
+    if match:
+        return match.group(1)
+    match = re.search(r"\b(?:function|map|polynomial|object|element|number)\s+([A-Za-z][A-Za-z0-9_']*)\b", construction)
+    if match:
+        return match.group(1)
+    return None
+
+
+def _constructed_property_claim(data: StructuredProofData, node: ProofNode, full_claim: str | None) -> str | None:
+    if data.claim and not _looks_existential(data.claim):
+        return data.claim
+    _, property_claim = _extract_existential_parts(full_claim)
+    if property_claim:
+        variable_name = _constructed_variable_name(data, full_claim)
+        if variable_name:
+            return property_claim.replace("witness", variable_name, 1)
+        return property_claim
+    if data.conclusions:
+        return " and ".join(data.conclusions)
+    if data.claim and not _looks_existential(data.claim):
+        return data.claim
+    fallback = node.goal
+    return fallback if fallback and not _looks_existential(fallback) else None
+
+
 def _child_proof_object(node: ProofNode, *, claim_label: str | None = None) -> dict[str, Any]:
     return _proof_object(
         [_proof_node_data(child) for child in node.children],
@@ -587,11 +676,16 @@ def _proof_node_data(node: ProofNode) -> Any:
 
     if kind == ProofKind.existence.value:
         data = _structured_data(node)
-        if data.claim or data.witness:
+        if data.full_claim or data.claim or data.variable_name or data.witness:
+            full_claim = _existential_full_claim(data, node)
+            claim = _constructed_property_claim(data, node, full_claim)
+            variable_name = _constructed_variable_name(data, full_claim)
             return _without_none(
                 {
                     "type": "existence_proof",
-                    "claim": _required_claim(data, node),
+                    "full_claim": full_claim,
+                    "variable_name": variable_name,
+                    "claim": claim,
                     "witness": data.witness,
                     "proof": _child_proof_object(node),
                     "id": node.id,
@@ -601,11 +695,16 @@ def _proof_node_data(node: ProofNode) -> Any:
 
     if kind == ProofKind.construction.value:
         data = _structured_data(node)
-        if data.claim or data.construction:
+        if data.full_claim or data.claim or data.variable_name or data.construction:
+            full_claim = _existential_full_claim(data, node)
+            claim = _constructed_property_claim(data, node, full_claim)
+            variable_name = _constructed_variable_name(data, full_claim)
             return _without_none(
                 {
                     "type": "construction_proof",
-                    "claim": _required_claim(data, node),
+                    "full_claim": full_claim,
+                    "variable_name": variable_name,
+                    "claim": claim,
                     "construction": data.construction,
                     "verification": _child_proof_object(node),
                     "id": node.id,

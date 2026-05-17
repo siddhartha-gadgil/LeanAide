@@ -190,15 +190,20 @@ JSON type to match: `existence_proof`.
 
 Fields:
 
-- `claim`: required existential claim being proved.
+- `full_claim`: required existential claim being proved.
+- `variable_name`: name of the bound object in the existential claim.
+- `claim`: required property of `variable_name`, after the object is fixed.
 - `witness`: constructed witness.
 - `proof`: verification that the witness satisfies the predicate.
 
-Expected Lean behavior: use the witness, then generate tactics for the
-verification proof.
+Expected Lean behavior: treat `full_claim` as the ambient existential goal, use
+`witness` for the variable named by `variable_name`, then generate tactics for
+the verification proof of `claim`.
 
 Use this type when the main mathematical act is proving an already stated
-existential proposition, usually by providing a witness for `∃ x, P x`.
+existential proposition, usually by providing a witness for `∃ x, P x`. The
+field `claim` is not the existential proposition; it is the proposition to prove
+after the witness has been introduced.
 
 ### `uniqueness_proof`
 
@@ -220,19 +225,26 @@ JSON type to match: `construction_proof`.
 
 Fields:
 
-- `claim`: required existential claim or target property supplied by the
+- `full_claim`: required existential claim supplied by the construction.
+- `variable_name`: name of the object being constructed.
+- `claim`: required target property of `variable_name` supplied by the
   construction.
 - `construction`: constructed object or definition.
 - `verification`: proof that the construction has the required property.
 
-Expected Lean behavior: define or refine the constructed object, then discharge
-the verification goals.
+Expected Lean behavior: treat `full_claim` as the ambient existential goal,
+define or refine the constructed object named by `variable_name` using
+`construction`, then discharge the verification goals for `claim`.
 
 Use this type when the proof must build a mathematical object, map, structure,
 definition, or auxiliary datum that will be used as an object in the surrounding
 argument. Unlike `existence_proof`, the construction itself is first-class data;
-the existential claim records what property the constructed object is meant to
-certify.
+`full_claim` records the surrounding existential statement, while `claim`
+records what property the named constructed object is meant to certify. Both
+`existence_proof` and `construction_proof` use the same `full_claim` /
+`variable_name` / `claim` split; the difference is that `existence_proof`
+supplies an already available `witness`, while `construction_proof` supplies a
+first-class `construction` or definition for the object.
 
 ### `generic_element_proof`
 

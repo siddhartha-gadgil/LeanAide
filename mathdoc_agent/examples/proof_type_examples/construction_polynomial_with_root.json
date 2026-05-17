@@ -9,7 +9,9 @@
         "claim": "For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
         "proof": {
           "type": "construction_proof",
-          "claim": "For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
+          "full_claim": "For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
+          "variable_name": "p",
+          "claim": "p is a nonzero polynomial such that p(a)=0.",
           "construction": "p(x)=x-a",
           "verification": {
             "type": "proof",

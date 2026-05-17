@@ -82,6 +82,8 @@ class ProofTypeExampleTests(unittest.IsolatedAsyncioTestCase):
                     self.assertIn("proof_of_reduction", proof_root)
                     self.assertIn("proof", proof_root)
                 if proof_root["type"] == "existence_proof":
+                    self.assertIn("full_claim", proof_root)
+                    self.assertIn("variable_name", proof_root)
                     self.assertIn("claim", proof_root)
                     self.assertIn("witness", proof_root)
                     self.assertIn("proof", proof_root)
@@ -89,6 +91,8 @@ class ProofTypeExampleTests(unittest.IsolatedAsyncioTestCase):
                     self.assertIn("bound_claim", proof_root)
                     self.assertIn("bound_proof", proof_root)
                 if proof_root["type"] == "construction_proof":
+                    self.assertIn("full_claim", proof_root)
+                    self.assertIn("variable_name", proof_root)
                     self.assertIn("claim", proof_root)
                     self.assertIn("construction", proof_root)
                     self.assertIn("verification", proof_root)
@@ -102,6 +106,35 @@ class ProofTypeExampleTests(unittest.IsolatedAsyncioTestCase):
         for example in EXAMPLES:
             self.assertTrue((output_dir / f"{example.slug}.md").exists())
             self.assertTrue((output_dir / f"{example.slug}.json").exists())
+
+    def test_existence_proof_exports_full_claim_and_property_claim(self) -> None:
+        root = ProofNode(
+            id="existence.root",
+            kind=ProofKind.existence,
+            status=NodeStatus.resolved,
+            text="Take 2 as the witness and verify it has property P.",
+            goal="There exists a number n with property P.",
+            data=StructuredProofData(
+                claim="There exists a number n with property P.",
+                witness="2",
+            ).model_dump(),
+            children=[
+                ProofNode(
+                    id="existence.root.verify",
+                    kind=ProofKind.simple,
+                    status=NodeStatus.resolved,
+                    text="The witness 2 has property P.",
+                    goal="2 has property P.",
+                )
+            ],
+        )
+        exported = json.loads(to_json(ProofTree(id="existence", root=root)))
+        self.assertEqual(exported["type"], "existence_proof")
+        self.assertEqual(exported["full_claim"], "There exists a number n with property P.")
+        self.assertEqual(exported["variable_name"], "n")
+        self.assertEqual(exported["claim"], "n is a number with property P.")
+        self.assertEqual(exported["witness"], "2")
+        self.assertIn("proof", exported)
 
     def test_construction_proof_exports_required_claim(self) -> None:
         root = ProofNode(
@@ -126,7 +159,9 @@ class ProofTypeExampleTests(unittest.IsolatedAsyncioTestCase):
         )
         exported = json.loads(to_json(ProofTree(id="construction", root=root)))
         self.assertEqual(exported["type"], "construction_proof")
-        self.assertEqual(exported["claim"], "There exists a continuous function f with property P.")
+        self.assertEqual(exported["full_claim"], "There exists a continuous function f with property P.")
+        self.assertEqual(exported["variable_name"], "f")
+        self.assertEqual(exported["claim"], "f is a continuous function with property P.")
         self.assertEqual(exported["construction"], "the function f")
         self.assertIn("verification", exported)
 

@@ -9,7 +9,9 @@
         "claim": "There exists a prime number that is even.",
         "proof": {
           "type": "existence_proof",
-          "claim": "There exists a prime number that is even.",
+          "full_claim": "There exists a prime number n such that n is even.",
+          "variable_name": "n",
+          "claim": "n is even and prime.",
           "witness": "2",
           "proof": {
             "type": "proof",
