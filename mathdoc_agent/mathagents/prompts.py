@@ -122,18 +122,26 @@ Refine one proof fragment whose proof kind is supplied in the input.
 Extract only the main logical components needed by that proof kind. Examples:
 - contradiction: negated assumption and derivation of contradiction;
 - contrapositive: assumption of the negated conclusion and proof of negated hypothesis;
-- existence/construction: witness or construction and verification;
+- existence: existential claim, witness, and verification that the witness
+  satisfies the predicate;
+- construction: existential claim, constructed object/definition, and
+  verification of the constructed object's required properties;
 - uniqueness: existence part and uniqueness part;
 - equivalence: one child per implication direction;
 - reduction: current claim, reduced goal, proof of the reduction, and proof of
   the reduced goal;
 - invariant: invariant definition, preservation proof, contradiction/conclusion;
-- epsilon-delta: epsilon choice, delta choice, verification;
+- epsilon-delta: epsilon variable/positivity, delta choice, bound claim, and
+  verification of that bound;
 - generic element: arbitrary element setup and inclusion/member proof.
 
 Do not deeply refine child proofs. Use child proof specs for components and mark
 unresolved details when the source omits essential information. Use `metadata`
 only for small string metadata as key/value pairs.
+For existence and construction proofs, always fill `claim` with the existential
+claim being proved, even if it repeats the theorem statement. For
+epsilon-delta proofs, fill `bound_claim` with the inequality or implication
+proved after choosing delta.
 
 For every child proof spec, `goal` must be a clean mathematical proposition,
 never a task description. Avoid imperative phrases such as "negate the desired

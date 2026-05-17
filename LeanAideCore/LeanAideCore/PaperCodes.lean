@@ -1337,7 +1337,7 @@ def generalInductionCode (translator : CodeGenerator := {}) : Option MVarId → 
       let conditionType ← translator.translateToPropStrict condition
       let .ok proof := c.getObjValAs? Json "proof" | throwError
         s!"codegen: no 'proof' found in 'condition_case'"
-      let inductionHyps := c.getObjValAs? (Array String) "induction_hyps" |>.toOption |>.getD #[]
+      let inductionHyps := (c.getObjValAs? (Array String) "induction_hyps" |>.toOption |>.orElse fun _ =>  c.getObjValAs? (Array String) "induction_hypotheses" |>.toOption).getD #[]
       pure (conditionType, proof, inductionHyps)
   let tacs ← generalInductionAux translator goal cases inductionPrincipleNames.toArray
   appendTacticSeqSeq tacs <| ← `(tacticSeq| done)

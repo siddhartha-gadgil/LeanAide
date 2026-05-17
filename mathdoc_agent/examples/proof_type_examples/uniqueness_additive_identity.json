@@ -9,7 +9,6 @@
         "claim": "In a group, the additive identity is unique.",
         "proof": {
           "type": "Proof",
-          "claim_label": "In a group, the additive identity is unique.",
           "proof_steps": [
             {
               "type": "assert_statement",

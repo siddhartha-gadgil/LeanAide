@@ -6,19 +6,34 @@ import unittest
 from pathlib import Path
 
 from mathdoc_agent.examples.proof_type_examples import EXAMPLES, write_all_examples
-from mathdoc_agent.models.base import ProofKind
+from mathdoc_agent.export.json import to_json
+from mathdoc_agent.models.base import NodeStatus, ProofKind
+from mathdoc_agent.models.payloads import StructuredProofData
+from mathdoc_agent.models.proof import ProofNode, ProofTree
 
 
 EXPECTED_PROOF_TYPES = {
     ProofKind.contradiction: "contradiction_statement",
     ProofKind.contrapositive: "Proof",
-    ProofKind.existence: "Proof",
+    ProofKind.existence: "existence_proof",
     ProofKind.uniqueness: "Proof",
     ProofKind.equivalence: "bi-implication_cases_proof",
     ProofKind.generic_element: "Proof",
-    ProofKind.epsilon_delta: "Proof",
+    ProofKind.construction: "construction_proof",
+    ProofKind.epsilon_delta: "epsilon_delta_proof",
     ProofKind.invariant: "Proof",
     ProofKind.reduction: "reduction_proof",
+}
+
+PRIORITY_PROOF_KINDS = {
+    ProofKind.contrapositive,
+    ProofKind.existence,
+    ProofKind.generic_element,
+    ProofKind.epsilon_delta,
+    ProofKind.uniqueness,
+    ProofKind.construction,
+    ProofKind.invariant,
+    ProofKind.reduction,
 }
 
 
@@ -66,12 +81,54 @@ class ProofTypeExampleTests(unittest.IsolatedAsyncioTestCase):
                     self.assertIn("claim", proof_root)
                     self.assertIn("proof_of_reduction", proof_root)
                     self.assertIn("proof", proof_root)
+                if proof_root["type"] == "existence_proof":
+                    self.assertIn("claim", proof_root)
+                    self.assertIn("witness", proof_root)
+                    self.assertIn("proof", proof_root)
+                if proof_root["type"] == "epsilon_delta_proof":
+                    self.assertIn("bound_claim", proof_root)
+                    self.assertIn("bound_proof", proof_root)
+                if proof_root["type"] == "construction_proof":
+                    self.assertIn("claim", proof_root)
+                    self.assertIn("construction", proof_root)
+                    self.assertIn("verification", proof_root)
+
+    def test_priority_proof_kinds_have_examples(self) -> None:
+        present = {example.proof_kind for example in EXAMPLES}
+        self.assertLessEqual(PRIORITY_PROOF_KINDS, present)
 
     def test_saved_example_outputs_exist(self) -> None:
         output_dir = Path("mathdoc_agent/examples/proof_type_examples")
         for example in EXAMPLES:
             self.assertTrue((output_dir / f"{example.slug}.md").exists())
             self.assertTrue((output_dir / f"{example.slug}.json").exists())
+
+    def test_construction_proof_exports_required_claim(self) -> None:
+        root = ProofNode(
+            id="construction.root",
+            kind=ProofKind.construction,
+            status=NodeStatus.resolved,
+            text="Construct a function f and verify it is continuous.",
+            goal="There exists a continuous function f with property P.",
+            data=StructuredProofData(
+                claim="There exists a continuous function f with property P.",
+                construction="the function f",
+            ).model_dump(),
+            children=[
+                ProofNode(
+                    id="construction.root.verify",
+                    kind=ProofKind.simple,
+                    status=NodeStatus.resolved,
+                    text="The constructed function is continuous and has property P.",
+                    goal="f is continuous and has property P.",
+                )
+            ],
+        )
+        exported = json.loads(to_json(ProofTree(id="construction", root=root)))
+        self.assertEqual(exported["type"], "construction_proof")
+        self.assertEqual(exported["claim"], "There exists a continuous function f with property P.")
+        self.assertEqual(exported["construction"], "the function f")
+        self.assertIn("verification", exported)
 
 
 if __name__ == "__main__":

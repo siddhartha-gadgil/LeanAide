@@ -9,7 +9,6 @@
         "claim": "If n^2 is even, then n is even.",
         "proof": {
           "type": "Proof",
-          "claim_label": "If n^2 is even, then n is even.",
           "proof_steps": [
             {
               "type": "assert_statement",

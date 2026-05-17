@@ -8,18 +8,22 @@
         "header": "Theorem",
         "claim": "There exists a prime number that is even.",
         "proof": {
-          "type": "Proof",
-          "claim_label": "There exists a prime number that is even.",
-          "proof_steps": [
-            {
-              "type": "assert_statement",
-              "claim": "2 is prime and even.",
-              "proof_method": "direct proof",
-              "id": "existence_even_prime.root.existence_even_prime.proof.root.verify_witness",
-              "status": "resolved",
-              "text": "The witness 2 is prime and even."
-            }
-          ],
+          "type": "existence_proof",
+          "claim": "There exists a prime number that is even.",
+          "witness": "2",
+          "proof": {
+            "type": "Proof",
+            "proof_steps": [
+              {
+                "type": "assert_statement",
+                "claim": "2 is prime and even.",
+                "proof_method": "direct proof",
+                "id": "existence_even_prime.root.existence_even_prime.proof.root.verify_witness",
+                "status": "resolved",
+                "text": "The witness 2 is prime and even."
+              }
+            ]
+          },
           "id": "existence_even_prime.root.existence_even_prime.proof.root",
           "status": "resolved"
         },

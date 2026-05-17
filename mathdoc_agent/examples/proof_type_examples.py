@@ -111,6 +111,7 @@ EXAMPLES: tuple[ProofExample, ...] = (
         structured_spec=StructuredProofRefinementSpec(
             strategy="construct a witness",
             summary="Use 2 as the witness.",
+            claim="There exists a prime number that is even.",
             witness="2",
             components=[
                 ChildProofSpec(
@@ -207,6 +208,37 @@ EXAMPLES: tuple[ProofExample, ...] = (
         ),
     ),
     ProofExample(
+        slug="construction_polynomial_with_root",
+        title="Constructing a Polynomial with a Prescribed Root",
+        label="thm:polynomial_with_prescribed_root",
+        statement="For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
+        proof_kind=ProofKind.construction,
+        proof_text=(
+            "Construct the polynomial p(x)=x-a. This polynomial is nonzero, and evaluating at "
+            "x=a gives p(a)=a-a=0."
+        ),
+        structured_spec=StructuredProofRefinementSpec(
+            strategy="explicit construction",
+            summary="Use the linear polynomial x-a and verify the required properties.",
+            claim="For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
+            construction="p(x)=x-a",
+            components=[
+                ChildProofSpec(
+                    id_suffix="verify_nonzero",
+                    kind=ProofKind.simple,
+                    text="The polynomial p(x)=x-a is nonzero.",
+                    goal="p is nonzero.",
+                ),
+                ChildProofSpec(
+                    id_suffix="verify_root",
+                    kind=ProofKind.calculation,
+                    text="Evaluating at a gives p(a)=a-a=0.",
+                    goal="p(a)=0.",
+                ),
+            ],
+        ),
+    ),
+    ProofExample(
         slug="epsilon_delta_linear_limit",
         title="A Linear Epsilon-Delta Limit",
         label="thm:limit_two_x_at_three",
@@ -221,6 +253,7 @@ EXAMPLES: tuple[ProofExample, ...] = (
             summary="Given epsilon, choose delta=epsilon/2 and verify the bound.",
             assumptions=["epsilon > 0"],
             conclusions=["|2x-6| < epsilon"],
+            bound_claim="If |x-3| < delta, then |2x-6| < epsilon.",
             metadata=[MetadataEntry(key="delta", value="epsilon/2")],
             components=[
                 ChildProofSpec(
@@ -377,6 +410,14 @@ class CalculationAgent:
                     CalcStep(lhs="|2x-6|", relation=CalcRelation.eq, rhs="2|x-3|"),
                     CalcStep(lhs="2|x-3|", relation=CalcRelation.lt, rhs="2 delta"),
                     CalcStep(lhs="2 delta", relation=CalcRelation.eq, rhs="epsilon"),
+                ],
+            )
+        if "p(a)=a-a=0" in text:
+            return CalculationRefinementSpec(
+                calculation_kind="equality_chain",
+                steps=[
+                    CalcStep(lhs="p(a)", relation=CalcRelation.eq, rhs="a-a"),
+                    CalcStep(lhs="a-a", relation=CalcRelation.eq, rhs="0"),
                 ],
             )
         return CalculationRefinementSpec(

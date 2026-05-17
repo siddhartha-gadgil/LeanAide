@@ -458,6 +458,17 @@ def _structured_data(node: ProofNode) -> StructuredProofData:
         return StructuredProofData()
 
 
+def _required_claim(data: StructuredProofData, node: ProofNode) -> str:
+    return data.claim or _claim_or_text(node)
+
+
+def _child_proof_object(node: ProofNode, *, claim_label: str | None = None) -> dict[str, Any]:
+    return _proof_object(
+        [_proof_node_data(child) for child in node.children],
+        claim_label=claim_label,
+    )
+
+
 def _proof_node_data(node: ProofNode) -> Any:
     kind = kind_key(node.kind)
     if kind in {
@@ -564,6 +575,58 @@ def _proof_node_data(node: ProofNode) -> Any:
                 "type": "bi-implication_cases_proof",
                 "if_proof": _proof_node_data(node.children[0]),
                 "only_if_proof": _proof_node_data(node.children[1]),
+                "id": node.id,
+                "status": node.status.value,
+            }
+        )
+
+    if kind == ProofKind.existence.value:
+        data = _structured_data(node)
+        if data.claim or data.witness:
+            return _without_none(
+                {
+                    "type": "existence_proof",
+                    "claim": _required_claim(data, node),
+                    "witness": data.witness,
+                    "proof": _child_proof_object(node),
+                    "id": node.id,
+                    "status": node.status.value,
+                }
+            )
+
+    if kind == ProofKind.construction.value:
+        data = _structured_data(node)
+        if data.claim or data.construction:
+            return _without_none(
+                {
+                    "type": "construction_proof",
+                    "claim": _required_claim(data, node),
+                    "construction": data.construction,
+                    "verification": _child_proof_object(node),
+                    "id": node.id,
+                    "status": node.status.value,
+                }
+            )
+
+    if kind == ProofKind.epsilon_delta.value:
+        data = _structured_data(node)
+        delta = data.metadata.get("delta")
+        epsilon_var = data.metadata.get("epsilon_var") or data.metadata.get("epsilon") or "epsilon"
+        epsilon_positive = data.metadata.get("epsilon_positive")
+        if epsilon_positive is None:
+            epsilon_positive = next((item for item in data.assumptions if "epsilon" in item.lower() or "ε" in item), None)
+        delta_positive_proof = _proof_node_data(node.children[0]) if node.children else None
+        bound_proof_children = node.children[1:] if len(node.children) > 1 else node.children
+        bound_proof = _proof_object([_proof_node_data(child) for child in bound_proof_children])
+        return _without_none(
+            {
+                "type": "epsilon_delta_proof",
+                "epsilon_var": epsilon_var,
+                "epsilon_positive": epsilon_positive,
+                "delta": delta,
+                "delta_positive_proof": delta_positive_proof,
+                "bound_claim": data.bound_claim or (data.conclusions[0] if data.conclusions else node.goal),
+                "bound_proof": bound_proof,
                 "id": node.id,
                 "status": node.status.value,
             }

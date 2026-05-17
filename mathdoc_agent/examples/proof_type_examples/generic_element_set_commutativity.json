@@ -9,7 +9,6 @@
         "claim": "For sets A and B, A ∩ B = B ∩ A.",
         "proof": {
           "type": "Proof",
-          "claim_label": "For sets A and B, A ∩ B = B ∩ A.",
           "proof_steps": [
             {
               "type": "assert_statement",

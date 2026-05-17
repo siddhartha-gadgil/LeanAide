@@ -154,6 +154,7 @@ class StructuredProofData(ProofKindData):
     witness: Optional[str] = None
     contradiction_assumption: Optional[str] = None
     claim: Optional[str] = None
+    bound_claim: Optional[str] = None
     reduced_to: Optional[str] = None
     proof_of_reduction_id: Optional[str] = None
     proof_id: Optional[str] = None

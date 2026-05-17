@@ -81,6 +81,7 @@ class StructuredProofRefinementSpec(BaseModel):
     witness: str | None = None
     contradiction_assumption: str | None = None
     claim: str | None = None
+    bound_claim: str | None = None
     reduced_to: str | None = None
     proof_of_reduction: ChildProofSpec | None = None
     proof: ChildProofSpec | None = None

@@ -9,7 +9,6 @@
         "claim": "Starting from 0 and repeatedly adding or subtracting 2, one cannot reach 1.",
         "proof": {
           "type": "Proof",
-          "claim_label": "Starting from 0 and repeatedly adding or subtracting 2, one cannot reach 1.",
           "proof_steps": [
             {
               "type": "assert_statement",

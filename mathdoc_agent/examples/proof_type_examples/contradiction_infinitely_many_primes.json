@@ -14,9 +14,8 @@
             "type": "Proof",
             "proof_steps": [
               {
-                "type": "assert_statement",
-                "claim": "Assume the complete list of primes is p_1,...,p_r.",
-                "proof_method": "direct proof",
+                "type": "assume_statement",
+                "assumption": "the complete list of primes is p_1,...,p_r",
                 "id": "contradiction_infinitely_many_primes.root.contradiction_infinitely_many_primes.proof.root.assume_finite_list",
                 "status": "resolved",
                 "text": "Assume the complete list of primes is p_1,...,p_r."

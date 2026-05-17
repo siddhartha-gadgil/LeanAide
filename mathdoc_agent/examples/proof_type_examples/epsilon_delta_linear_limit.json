@@ -8,28 +8,34 @@
         "header": "Theorem",
         "claim": "The function f(x)=2x has limit 6 as x tends to 3.",
         "proof": {
-          "type": "Proof",
-          "claim_label": "The function f(x)=2x has limit 6 as x tends to 3.",
-          "proof_steps": [
-            {
-              "type": "assert_statement",
-              "claim": "Choose a positive delta.",
-              "proof_method": "direct proof",
-              "id": "epsilon_delta_linear_limit.root.epsilon_delta_linear_limit.proof.root.choose_delta",
-              "status": "resolved",
-              "text": "Given epsilon>0, choose delta=epsilon/2."
-            },
-            {
-              "type": "calculation",
-              "calculation_sequence": [
-                "|2x-6| = 2|x-3|",
-                "2|x-3| < 2 delta",
-                "2 delta = epsilon"
-              ],
-              "id": "epsilon_delta_linear_limit.root.epsilon_delta_linear_limit.proof.root.verify_bound",
-              "status": "resolved"
-            }
-          ],
+          "type": "epsilon_delta_proof",
+          "epsilon_var": "epsilon",
+          "epsilon_positive": "epsilon > 0",
+          "delta": "epsilon/2",
+          "delta_positive_proof": {
+            "type": "assert_statement",
+            "claim": "Given epsilon>0, choose delta=epsilon/2.",
+            "proof_method": "direct proof",
+            "id": "epsilon_delta_linear_limit.root.epsilon_delta_linear_limit.proof.root.choose_delta",
+            "status": "resolved",
+            "text": "Given epsilon>0, choose delta=epsilon/2."
+          },
+          "bound_claim": "If |x-3| < delta, then |2x-6| < epsilon.",
+          "bound_proof": {
+            "type": "Proof",
+            "proof_steps": [
+              {
+                "type": "calculation",
+                "calculation_sequence": [
+                  "|2x-6| = 2|x-3|",
+                  "2|x-3| < 2 delta",
+                  "2 delta = epsilon"
+                ],
+                "id": "epsilon_delta_linear_limit.root.epsilon_delta_linear_limit.proof.root.verify_bound",
+                "status": "resolved"
+              }
+            ]
+          },
           "id": "epsilon_delta_linear_limit.root.epsilon_delta_linear_limit.proof.root",
           "status": "resolved"
         },

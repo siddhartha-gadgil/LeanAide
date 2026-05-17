@@ -587,6 +587,9 @@ class StructuredProofHandler(ProofRefinementHandler[StructuredProofRefinementSpe
         for child in (proof_of_reduction, reduced_goal_proof):
             if child is not None and child.id not in {existing.id for existing in children}:
                 children.append(child)
+        claim = spec.claim
+        if self.kind in {ProofKind.existence.value, ProofKind.construction.value}:
+            claim = claim or node.goal
         data = StructuredProofData(
             strategy=spec.strategy,
             summary=spec.summary,
@@ -595,7 +598,8 @@ class StructuredProofHandler(ProofRefinementHandler[StructuredProofRefinementSpe
             conclusions=spec.conclusions,
             witness=spec.witness,
             contradiction_assumption=spec.contradiction_assumption,
-            claim=spec.claim,
+            claim=claim,
+            bound_claim=spec.bound_claim,
             reduced_to=spec.reduced_to,
             proof_of_reduction_id=proof_of_reduction.id if proof_of_reduction else None,
             proof_id=reduced_goal_proof.id if reduced_goal_proof else None,
@@ -636,6 +640,14 @@ class StructuredProofHandler(ProofRefinementHandler[StructuredProofRefinementSpe
                     severity="warning",
                     path="data.witness",
                     message="Existence proof has no explicit witness or witness subproof.",
+                )
+            )
+        if self.kind in {ProofKind.existence.value, ProofKind.construction.value} and not data.claim:
+            issues.append(
+                ValidationIssue(
+                    severity="error",
+                    path="data.claim",
+                    message="Existence and construction proofs must include the existential claim being proved.",
                 )
             )
         if self.kind == ProofKind.contradiction.value and not (data.contradiction_assumption or node.children):

@@ -101,6 +101,8 @@ Case fields:
 - `proof`: proof object.
 - `induction_hyps` or `induction_hypotheses`: induction hypotheses.
 
+#### Update: Added option
+
 ### `bi-implication_cases_proof`
 
 The schema comment mentions `antecedent` and `consequent`, but the codegen
@@ -108,6 +110,8 @@ implementation only requires `if_proof` and `only_if_proof`.
 
 Recommended action: keep Python as-is unless Lean codegen starts using the
 extra fields.
+
+#### Update: Nothing to do
 
 ## Dependency Field Support Needed
 
@@ -186,12 +190,15 @@ JSON type to match: `existence_proof`.
 
 Fields:
 
+- `claim`: required existential claim being proved.
 - `witness`: constructed witness.
 - `proof`: verification that the witness satisfies the predicate.
-- `claim`: optional existential claim.
 
 Expected Lean behavior: use the witness, then generate tactics for the
 verification proof.
+
+Use this type when the main mathematical act is proving an already stated
+existential proposition, usually by providing a witness for `∃ x, P x`.
 
 ### `uniqueness_proof`
 
@@ -213,12 +220,19 @@ JSON type to match: `construction_proof`.
 
 Fields:
 
+- `claim`: required existential claim or target property supplied by the
+  construction.
 - `construction`: constructed object or definition.
 - `verification`: proof that the construction has the required property.
-- `claim`: optional target statement.
 
 Expected Lean behavior: define or refine the constructed object, then discharge
 the verification goals.
+
+Use this type when the proof must build a mathematical object, map, structure,
+definition, or auxiliary datum that will be used as an object in the surrounding
+argument. Unlike `existence_proof`, the construction itself is first-class data;
+the existential claim records what property the constructed object is meant to
+certify.
 
 ### `generic_element_proof`
 
@@ -244,6 +258,7 @@ Fields:
 - `epsilon_positive`: positivity hypothesis for epsilon.
 - `delta`: chosen delta expression.
 - `delta_positive_proof`: proof that delta is positive.
+- `bound_claim`: bound or implication to prove after the delta is chosen.
 - `bound_proof`: proof of the required bound.
 
 Expected Lean behavior: introduce epsilon and its positivity hypothesis, use
