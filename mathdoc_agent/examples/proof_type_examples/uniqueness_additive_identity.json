@@ -3,12 +3,12 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:additive_identity_unique",
         "header": "Theorem",
         "claim": "In a group, the additive identity is unique.",
         "proof": {
-          "type": "Proof",
+          "type": "proof",
           "proof_steps": [
             {
               "type": "assert_statement",

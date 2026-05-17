@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:even_prime_exists",
         "header": "Theorem",
         "claim": "There exists a prime number that is even.",
@@ -12,7 +12,7 @@
           "claim": "There exists a prime number that is even.",
           "witness": "2",
           "proof": {
-            "type": "Proof",
+            "type": "proof",
             "proof_steps": [
               {
                 "type": "assert_statement",

@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:positivity_side_goal",
         "header": "Theorem",
         "claim": "If 0<x and 0<y, then 0<x*y.",

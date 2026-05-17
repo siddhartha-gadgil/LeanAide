@@ -124,7 +124,7 @@ def _replace_assertion_with_steps(root: Any, patch: ClaimPatchSpec) -> None:
     assertion_path = patch.path[: -len("/claim")]
     parent, key = _resolve_path(root, assertion_path)
     replacement = {
-        "type": "Proof",
+        "type": "proof",
         "proof_steps": [_step_data(step) for step in patch.proof_steps],
     }
     if isinstance(parent, list) and isinstance(key, int):

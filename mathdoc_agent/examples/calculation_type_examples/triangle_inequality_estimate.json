@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:triangle_inequality_estimate",
         "header": "Theorem",
         "claim": "|x+z|≤|x|+|z|.",

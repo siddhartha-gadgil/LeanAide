@@ -3,12 +3,12 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:intersection_comm",
         "header": "Theorem",
         "claim": "For sets A and B, A ∩ B = B ∩ A.",
         "proof": {
-          "type": "Proof",
+          "type": "proof",
           "proof_steps": [
             {
               "type": "assert_statement",

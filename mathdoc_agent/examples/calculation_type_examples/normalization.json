@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:normalization",
         "header": "Theorem",
         "claim": "(x+y)^2 normalizes to x^2+2*x*y+y^2.",

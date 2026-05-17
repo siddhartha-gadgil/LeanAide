@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:definition_unfolding",
         "header": "Theorem",
         "claim": "double x = x+x.",

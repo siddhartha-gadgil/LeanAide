@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:rewrite_by_lemma",
         "header": "Theorem",
         "claim": "x+0 = x.",

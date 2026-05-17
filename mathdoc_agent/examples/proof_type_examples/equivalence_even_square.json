@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:even_iff_square_even",
         "header": "Theorem",
         "claim": "For an integer n, n is even if and only if n^2 is even.",
@@ -18,7 +18,7 @@
             "text": "If n=2k then n^2=2(2k^2), so n^2 is even."
           },
           "only_if_proof": {
-            "type": "Proof",
+            "type": "proof",
             "claim_label": "n^2 even implies n even.",
             "proof_steps": [
               {

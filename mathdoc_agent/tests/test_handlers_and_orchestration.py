@@ -463,7 +463,7 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         )
         refined = await refine_proof_tree(tree, proof_registry(), max_iterations=5)
         exported = json.loads(to_json(refined))
-        self.assertEqual(exported["type"], "Proof")
+        self.assertEqual(exported["type"], "proof")
         self.assertGreaterEqual(len(exported["proof_steps"]), 5)
         self.assertTrue(any(step["type"] == "let_statement" for step in exported["proof_steps"]))
         self.assertTrue(any(step["type"] == "assume_statement" for step in exported["proof_steps"]))
@@ -500,7 +500,7 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(refined.root.status, NodeStatus.resolved)
         self.assertGreaterEqual(len(refined.root.children), 4)
         exported = json.loads(to_json(refined))
-        self.assertEqual(exported["type"], "Proof")
+        self.assertEqual(exported["type"], "proof")
         self.assertGreaterEqual(len(exported["proof_steps"]), 4)
         self.assertNotEqual(exported["proof_steps"][0].get("claim"), "The whole proof follows from all the preceding reasoning.")
 
@@ -521,10 +521,10 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             "document": {
                 "body": [
                     {
-                        "type": "Theorem",
+                        "type": "theorem",
                         "claim": "Choose a positive delta.",
                         "proof": {
-                            "type": "Proof",
+                            "type": "proof",
                             "proof_steps": [
                                 {
                                     "type": "assert_statement",
@@ -540,7 +540,7 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         theorem = audited["document"]["body"][0]
         self.assertEqual(theorem["claim"], "There exists δ > 0.")
         replacement = theorem["proof"]["proof_steps"][0]
-        self.assertEqual(replacement["type"], "Proof")
+        self.assertEqual(replacement["type"], "proof")
         self.assertEqual(
             [step["claim"] for step in replacement["proof_steps"]],
             ["x + 0 = x.", "The desired equality holds."],
@@ -589,18 +589,18 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         dumped = refined.model_dump()
         self.assertEqual(dumped["type"], "document")
         self.assertEqual(dumped["document"]["type"], "document")
-        self.assertEqual(dumped["document"]["body"][0]["type"], "Theorem")
+        self.assertEqual(dumped["document"]["body"][0]["type"], "theorem")
         self.assertEqual(refined.root.model_dump()["type"], "document")
-        self.assertEqual(theorem.model_dump()["type"], "Theorem")
+        self.assertEqual(theorem.model_dump()["type"], "theorem")
         self.assertIsNotNone(theorem.proof)
-        self.assertEqual(theorem.proof.model_dump()["type"], "ProofDetails")
+        self.assertEqual(theorem.proof.model_dump()["type"], "proof_details")
         self.assertEqual(theorem.proof.root.status, NodeStatus.resolved)
         self.assertEqual(theorem.proof.root.model_dump()["type"], "assert_statement")
         self.assertEqual(len(refined.run_log), 1)
         exported = json.loads(to_json(refined))
         self.assertEqual(set(exported.keys()), {"document"})
         self.assertEqual(exported["document"]["type"], "document")
-        self.assertEqual(exported["document"]["body"][0]["type"], "Theorem")
+        self.assertEqual(exported["document"]["body"][0]["type"], "theorem")
         self.assertEqual(exported["document"]["body"][0]["claim"], "P")
         self.assertNotIn("root", exported)
         self.assertNotIn("run_log", exported)
@@ -640,7 +640,7 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(theorem.proof.root.status, NodeStatus.resolved)
         body = json.loads(to_json(refined))["document"]["body"]
         self.assertEqual(len(body), 1)
-        self.assertEqual(body[0]["type"], "Theorem")
+        self.assertEqual(body[0]["type"], "theorem")
         self.assertIn("proof", body[0])
 
     def test_earlier_sibling_local_claim_is_in_context(self) -> None:
@@ -855,7 +855,7 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("claim_label", dumped)
 
         proof_step = exported["proof"]["proof_steps"][0]
-        self.assertEqual(proof_step["type"], "Theorem")
+        self.assertEqual(proof_step["type"], "theorem")
         self.assertEqual(proof_step["header"], "Claim")
         self.assertEqual(proof_step["claim"], "∃z∈X, z∈B(x,ε/3) ∧ z∈B(y,ε/3)")
         self.assertEqual(len(proof_step["proof"]["proof_steps"]), 1)

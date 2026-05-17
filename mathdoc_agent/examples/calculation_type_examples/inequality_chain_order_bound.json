@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:inequality_chain",
         "header": "Theorem",
         "claim": "If a ≤ b and b ≤ c, then a ≤ c.",

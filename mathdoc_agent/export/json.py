@@ -28,6 +28,11 @@ def _without_none(value: dict[str, Any]) -> dict[str, Any]:
     return {key: item for key, item in value.items() if item is not None}
 
 
+def _type_is(value: dict[str, Any], expected: str) -> bool:
+    type_value = value.get("type")
+    return isinstance(type_value, str) and type_value.lower() == expected
+
+
 def _statement_data(node: DocumentNode) -> StatementData | None:
     try:
         return StatementData.model_validate(node.data)
@@ -62,7 +67,7 @@ def _proof_details_data(proof: ProofTree | None) -> Any:
 
 def _attached_proof_details_data(proof: ProofTree | None) -> Any:
     details = _proof_details_data(proof)
-    if isinstance(details, dict) and details.get("type") == "Proof":
+    if isinstance(details, dict) and _type_is(details, "proof"):
         return {key: value for key, value in details.items() if key != "claim_label"}
     return details
 
@@ -205,7 +210,7 @@ def _clean_instructional_assertion(step: dict[str, Any]) -> dict[str, Any] | Non
 def _claim_step_from_proof(step: dict[str, Any], claim: str, proof_steps: list[Any]) -> dict[str, Any]:
     return _without_none(
         {
-            "type": "Theorem",
+            "type": "theorem",
             "label": step.get("id"),
             "header": "Claim",
             "claim": claim,
@@ -223,7 +228,7 @@ def _deduplicate_single_child_claim(claim: str, proof_steps: list[Any]) -> list[
     child = proof_steps[0]
     if not isinstance(child, dict):
         return proof_steps
-    if child.get("type") != "Theorem" or child.get("header") != "Claim" or child.get("claim") != claim:
+    if not _type_is(child, "theorem") or child.get("header") != "Claim" or child.get("claim") != claim:
         return proof_steps
     proof = child.get("proof")
     if isinstance(proof, dict) and isinstance(proof.get("proof_steps"), list):
@@ -241,7 +246,7 @@ def _flatten_proof_steps(steps: list[Any], *, assumed_claims: list[str] | None =
     assumed_claims = assumed_claims or []
     flattened: list[Any] = []
     for step in steps:
-        if isinstance(step, dict) and step.get("type") == "Proof":
+        if isinstance(step, dict) and _type_is(step, "proof"):
             nested = step.get("proof_steps")
             label = step.get("claim_label")
             if isinstance(nested, list) and (_is_instructional_claim(label) or label is None):
@@ -290,7 +295,7 @@ def _proof_object(
 ) -> dict[str, Any]:
     return _without_none(
         {
-            "type": "Proof",
+            "type": "proof",
             "claim_label": claim_label,
             "proof_steps": _flatten_proof_steps(steps, assumed_claims=assumed_claims),
         }
@@ -310,7 +315,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
         proof = _attached_proof_details_data(node.proof)
         return _without_none(
             {
-                "type": "Theorem",
+                "type": "theorem",
                 "label": node.label or node.id,
                 "header": _theorem_header(kind),
                 "claim": statement.statement if statement else node.text,
@@ -324,7 +329,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
     if kind == DocumentKind.definition.value:
         return _without_none(
             {
-                "type": "Definition",
+                "type": "definition",
                 "label": node.label or node.id,
                 "header": "Definition",
                 "definition": node.data.get("definiens") or node.text,
@@ -391,7 +396,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
     if kind in {DocumentKind.section.value, DocumentKind.subsection.value, DocumentKind.document.value}:
         return _without_none(
             {
-                "type": "Section" if kind != DocumentKind.document.value else "document",
+                "type": "section" if kind != DocumentKind.document.value else "document",
                 "label": node.label or node.id,
                 "level": 2 if kind == DocumentKind.subsection.value else 1,
                 "header": node.title or node.label or node.id,
@@ -403,7 +408,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
 
     return _without_none(
         {
-            "type": "Paragraph",
+            "type": "paragraph",
             "text": node.text,
             "id": node.id,
             "status": node.status.value,
@@ -419,7 +424,7 @@ def _simple_proof_data(node: ProofNode) -> dict[str, Any]:
     if node.children:
         return _without_none(
             {
-                "type": "Proof",
+                "type": "proof",
                 "claim_label": _proof_label(node),
                 "proof_steps": _flatten_proof_steps([_proof_node_data(child) for child in node.children]),
                 "id": node.id,
@@ -430,7 +435,7 @@ def _simple_proof_data(node: ProofNode) -> dict[str, Any]:
     if data.proof_steps:
         return _without_none(
             {
-                "type": "Proof",
+                "type": "proof",
                 "claim_label": _proof_label(node),
                 "proof_steps": _flatten_proof_steps([_logical_step_data(step) for step in data.proof_steps]),
                 "id": node.id,
@@ -673,7 +678,7 @@ def _proof_node_data(node: ProofNode) -> Any:
         proof_steps = [{"type": "assert_statement", "claim": _claim_or_text(node)}]
     return _without_none(
         {
-            "type": "Proof",
+            "type": "proof",
             "claim_label": _proof_label(node),
             "proof_steps": proof_steps,
             "id": node.id,

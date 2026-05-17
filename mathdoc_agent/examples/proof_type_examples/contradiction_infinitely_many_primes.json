@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:infinitely_many_primes",
         "header": "Theorem",
         "claim": "There are infinitely many prime numbers.",
@@ -11,7 +11,7 @@
           "type": "contradiction_statement",
           "assumption": "There are only finitely many prime numbers.",
           "proof": {
-            "type": "Proof",
+            "type": "proof",
             "proof_steps": [
               {
                 "type": "assume_statement",

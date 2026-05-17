@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:polynomial_with_prescribed_root",
         "header": "Theorem",
         "claim": "For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
@@ -12,7 +12,7 @@
           "claim": "For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
           "construction": "p(x)=x-a",
           "verification": {
-            "type": "Proof",
+            "type": "proof",
             "proof_steps": [
               {
                 "type": "assert_statement",

@@ -34,7 +34,7 @@ class CalculationTypeExampleTests(unittest.IsolatedAsyncioTestCase):
                 data = json.loads(json_path.read_text(encoding="utf-8"))
                 self.assertFalse(contains_key(data, "kind"))
                 theorem = data["document"]["body"][0]
-                self.assertEqual(theorem["type"], "Theorem")
+                self.assertEqual(theorem["type"], "theorem")
                 proof = theorem["proof"]
                 self.assertEqual(proof["type"], example.calculation_kind)
                 self.assertIn("steps", proof)

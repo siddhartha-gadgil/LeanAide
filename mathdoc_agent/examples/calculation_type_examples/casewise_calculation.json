@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:casewise_calculation",
         "header": "Theorem",
         "claim": "|x| equals x when x is nonnegative and -x otherwise.",

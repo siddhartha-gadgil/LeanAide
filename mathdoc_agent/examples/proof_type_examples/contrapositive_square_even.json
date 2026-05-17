@@ -3,12 +3,12 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:square_even_contrapositive",
         "header": "Theorem",
         "claim": "If n^2 is even, then n is even.",
         "proof": {
-          "type": "Proof",
+          "type": "proof",
           "proof_steps": [
             {
               "type": "assert_statement",

@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "source_id.root.theorem",
         "header": "Theorem",
         "claim": "Let $(X, d)$ be a metric space. Let $x$ and $y$ be two distinct points with distance $d(x, y) = \\epsilon > 0$. Then the open balls $B(x, \\epsilon/3)$ and $B(y, \\epsilon/3)$ do not intersect.",
@@ -11,7 +11,7 @@
           "type": "contradiction_statement",
           "assumption": "\\(B(x,\\varepsilon/3)\\cap B(y,\\varepsilon/3)\\neq\\varnothing\\), equivalently there exists \\(z\\in X\\) lying in both balls.",
           "proof": {
-            "type": "Proof",
+            "type": "proof",
             "proof_steps": [
               {
                 "type": "let_statement",

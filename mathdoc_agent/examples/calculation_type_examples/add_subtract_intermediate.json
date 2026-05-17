@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:add_subtract_intermediate",
         "header": "Theorem",
         "claim": "f x - f y can be split through an intermediate z.",

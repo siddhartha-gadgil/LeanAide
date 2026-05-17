@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "metric.root.theorem",
         "header": "Theorem",
         "claim": "Let $(X,d)$ be a metric space, and let $x,y\\in X$ be distinct points with $d(x,y)=\\epsilon>0$. Then the open balls $B(x,\\epsilon/3)$ and $B(y,\\epsilon/3)$ are disjoint.",
@@ -11,23 +11,23 @@
           "type": "contradiction_statement",
           "assumption": "B(x,\\varepsilon/3)\\cap B(y,\\varepsilon/3)\\ne\\varnothing",
           "proof": {
-            "type": "Proof",
+            "type": "proof",
             "proof_steps": [
               {
-                "type": "Theorem",
+                "type": "theorem",
                 "label": "metric.root.theorem.proof.root.intersection_assumption.witness_z",
                 "header": "Claim",
                 "claim": "\\(\\exists z\\in X\\, (z\\in B(x,\\varepsilon/3)\\land z\\in B(y,\\varepsilon/3))\\)",
                 "proof": {
-                  "type": "Proof",
+                  "type": "proof",
                   "proof_steps": [
                     {
-                      "type": "Theorem",
+                      "type": "theorem",
                       "label": "metric.root.theorem.proof.root.intersection_assumption.witness_z.witness",
                       "header": "Claim",
                       "claim": "\\(z\\in B(x,\\varepsilon/3)\\cap B(y,\\varepsilon/3)\\)",
                       "proof": {
-                        "type": "Proof",
+                        "type": "proof",
                         "proof_steps": [
                           {
                             "type": "assert_statement",
@@ -98,7 +98,7 @@
                 "type": "contradiction_statement",
                 "assumption": "\\(d(x,y)<2\\varepsilon/3\\)",
                 "proof": {
-                  "type": "Proof",
+                  "type": "proof",
                   "proof_steps": [
                     {
                       "type": "calculation_to_contradiction",

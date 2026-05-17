@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:extensionality_then_pointwise_calculation",
         "header": "Theorem",
         "claim": "Two functions are equal when their values agree pointwise.",

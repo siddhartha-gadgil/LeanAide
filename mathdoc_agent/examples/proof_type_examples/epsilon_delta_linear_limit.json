@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:limit_two_x_at_three",
         "header": "Theorem",
         "claim": "The function f(x)=2x has limit 6 as x tends to 3.",
@@ -22,7 +22,7 @@
           },
           "bound_claim": "If |x-3| < delta, then |2x-6| < epsilon.",
           "bound_proof": {
-            "type": "Proof",
+            "type": "proof",
             "proof_steps": [
               {
                 "type": "calculation",

@@ -14,14 +14,14 @@ from mathdoc_agent.models.proof import ProofNode, ProofTree
 
 EXPECTED_PROOF_TYPES = {
     ProofKind.contradiction: "contradiction_statement",
-    ProofKind.contrapositive: "Proof",
+    ProofKind.contrapositive: "proof",
     ProofKind.existence: "existence_proof",
-    ProofKind.uniqueness: "Proof",
+    ProofKind.uniqueness: "proof",
     ProofKind.equivalence: "bi-implication_cases_proof",
-    ProofKind.generic_element: "Proof",
+    ProofKind.generic_element: "proof",
     ProofKind.construction: "construction_proof",
     ProofKind.epsilon_delta: "epsilon_delta_proof",
-    ProofKind.invariant: "Proof",
+    ProofKind.invariant: "proof",
     ProofKind.reduction: "reduction_proof",
 }
 
@@ -63,17 +63,17 @@ class ProofTypeExampleTests(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(set(data.keys()), {"document"})
                 self.assertEqual(data["document"]["type"], "document")
                 theorem = data["document"]["body"][0]
-                self.assertEqual(theorem["type"], "Theorem")
+                self.assertEqual(theorem["type"], "theorem")
                 self.assertIn("claim", theorem)
                 self.assertNotIn("root", data)
                 self.assertNotIn("run_log", data)
                 proof_root = theorem["proof"]
                 self.assertEqual(proof_root["type"], EXPECTED_PROOF_TYPES[example.proof_kind])
                 self.assertEqual(proof_root["status"], "resolved")
-                if proof_root["type"] == "Proof":
+                if proof_root["type"] == "proof":
                     self.assertIn("proof_steps", proof_root)
                 if proof_root["type"] == "contradiction_statement":
-                    self.assertEqual(proof_root["proof"]["type"], "Proof")
+                    self.assertEqual(proof_root["proof"]["type"], "proof")
                     self.assertIn("proof_steps", proof_root["proof"])
                 if proof_root["type"] == "multi-condition_cases_proof":
                     self.assertNotIn("exhaustiveness", proof_root)

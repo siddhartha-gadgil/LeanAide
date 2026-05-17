@@ -3,12 +3,12 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:cannot_reach_one_by_twos",
         "header": "Theorem",
         "claim": "Starting from 0 and repeatedly adding or subtracting 2, one cannot reach 1.",
         "proof": {
-          "type": "Proof",
+          "type": "proof",
           "proof_steps": [
             {
               "type": "assert_statement",

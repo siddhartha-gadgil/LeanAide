@@ -3,12 +3,12 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:group-square-is-abelian",
         "header": "Theorem",
         "claim": "A group G satisfying (a*b)^2 = a^2*b^2 for all a, b in G is Abelian.",
         "proof": {
-          "type": "Proof",
+          "type": "proof",
           "claim_label": "A group G satisfying (a*b)^2 = a^2*b^2 for all a, b in G is Abelian.",
           "proof_steps": [
             {

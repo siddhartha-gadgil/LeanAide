@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:equality_chain",
         "header": "Theorem",
         "claim": "The expression (x+1)^2 equals x^2+2*x+1.",

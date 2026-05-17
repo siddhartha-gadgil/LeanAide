@@ -13,11 +13,11 @@ The public JSON export is intended to be close to `resources/PaperStructure.json
 It uses `type` discriminators such as:
 
 - `document`
-- `Theorem`
+- `theorem`
 - `structure-definition`
 - `instance-definition`
 - `inductive-type-definition`
-- `ProofDetails`
+- `proof_details`
 - `induction_proof`
 - `multi-condition_cases_proof`
 - `assert_statement`
@@ -26,7 +26,7 @@ Internal Python models still use `kind` for handler dispatch, but
 `mathdoc_agent.export.json.to_json` removes internal `kind` fields from exported
 JSON.
 
-`Paragraph` is reserved for genuinely non-mathematical prose: motivation,
+`paragraph` is reserved for genuinely non-mathematical prose: motivation,
 history, transitions, or commentary that makes no mathematical assertion and
 introduces no mathematical object. Mathematical content should be represented as
 definitions, theorem-like statements, structure/instance/inductive definitions,

@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "calc:monotonicity_step",
         "header": "Theorem",
         "claim": "If a≤b, then a+c≤b+c.",

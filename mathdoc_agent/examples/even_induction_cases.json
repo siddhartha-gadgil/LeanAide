@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:even_or_next_even",
         "header": "Theorem",
         "claim": "For every natural number n, either n is even or n+1 is even.",
@@ -25,9 +25,34 @@
                 "type": "case",
                 "condition": "n is even",
                 "proof": {
-                  "type": "assert_statement",
-                  "claim": "Either n+1 is even or n+2 is even.",
-                  "proof_method": "direct proof",
+                  "type": "proof",
+                  "claim_label": "Either n+1 is even or n+2 is even.",
+                  "proof_steps": [
+                    {
+                      "type": "assert_statement",
+                      "claim": "Case 1: n is even.",
+                      "proof_method": "direct proof",
+                      "id": "even_induction_cases.root.thm_even_or_next_even.proof.root.step_cases.case_n_even.step1",
+                      "status": "resolved",
+                      "text": "Case 1: n is even."
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "Then n=2k for some k, so n+2=2(k+1) is even.",
+                      "proof_method": "direct proof",
+                      "id": "even_induction_cases.root.thm_even_or_next_even.proof.root.step_cases.case_n_even.step2",
+                      "status": "resolved",
+                      "text": "Then n=2k for some k, so n+2=2(k+1) is even."
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "Thus the right disjunct of the goal, n+2 is even, holds.",
+                      "proof_method": "direct proof",
+                      "id": "even_induction_cases.root.thm_even_or_next_even.proof.root.step_cases.case_n_even.step3",
+                      "status": "resolved",
+                      "text": "Thus the right disjunct of the goal, n+2 is even, holds."
+                    }
+                  ],
                   "id": "even_induction_cases.root.thm_even_or_next_even.proof.root.step_cases.case_n_even",
                   "status": "resolved",
                   "text": "Case 1: n is even. Then n=2k for some k, so n+2=2(k+1) is even. Thus the right disjunct of the goal, n+2 is even, holds."

@@ -3,7 +3,7 @@
     "type": "document",
     "body": [
       {
-        "type": "Theorem",
+        "type": "theorem",
         "label": "thm:continuous_bounded_interval",
         "header": "Theorem",
         "claim": "Every continuous real-valued function on [0,1] is bounded.",

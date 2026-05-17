@@ -14,7 +14,7 @@ definition, structure-definition, instance-definition,
 inductive-type-definition, theorem/lemma/proposition/corollary/local_claim,
 calculation_block, proof, example, remark, or unknown. Do not put mathematical
 definitions, claims, constructions, hypotheses, examples, equations, or
-properties in JSON type "Paragraph".
+properties in JSON type "paragraph".
 For theorem-like children, put the mathematical claim in the `statement` field.
 The `statement` field must be a mathematical assertion, not an instruction to
 the reader or prover. Do not write imperative/task text such as "show that",
