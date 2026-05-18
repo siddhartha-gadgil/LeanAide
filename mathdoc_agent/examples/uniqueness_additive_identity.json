@@ -1,0 +1,98 @@
+{
+  "document": {
+    "type": "document",
+    "body": [
+      {
+        "type": "theorem",
+        "label": "thm:unique_additive_identity",
+        "header": "Theorem",
+        "claim": "In an additive group, there is a unique additive identity.",
+        "proof": {
+          "type": "uniqueness_proof",
+          "existence_proof": {
+            "type": "existence_proof",
+            "full_claim": "There exists an element e such that e is an additive identity.",
+            "variable_name": "e",
+            "claim": "e is an additive identity.",
+            "witness": "0",
+            "proof": {
+              "type": "proof",
+              "proof_steps": [
+                {
+                  "type": "assert_statement",
+                  "claim": "0 is an additive identity.",
+                  "proof_method": "direct proof",
+                  "id": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root.existence.verify_identity",
+                  "status": "resolved",
+                  "text": "The element 0 is an additive identity."
+                }
+              ]
+            },
+            "id": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root.existence",
+            "status": "resolved"
+          },
+          "uniqueness_proof": {
+            "type": "proof",
+            "proof_steps": [
+              {
+                "type": "theorem",
+                "label": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root.uniqueness",
+                "header": "Claim",
+                "claim": "Any two additive identities are equal.",
+                "proof": {
+                  "type": "proof",
+                  "proof_steps": [
+                    {
+                      "type": "assume_statement",
+                      "assumption": "e and e' are both additive identities",
+                      "id": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root.uniqueness.step1",
+                      "status": "resolved",
+                      "text": "Suppose e and e' are both additive identities."
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "Since e is an identity, e+e'=e'.",
+                      "proof_method": "direct proof",
+                      "id": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root.uniqueness.step2",
+                      "status": "resolved",
+                      "text": "Since e is an identity, e+e'=e'."
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "Since e' is an identity, e+e'=e.",
+                      "proof_method": "direct proof",
+                      "id": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root.uniqueness.step3",
+                      "status": "resolved",
+                      "text": "Since e' is an identity, e+e'=e."
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "Hence e=e'.",
+                      "proof_method": "direct proof",
+                      "id": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root.uniqueness.step4",
+                      "status": "resolved",
+                      "text": "Hence e=e'."
+                    }
+                  ]
+                },
+                "id": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root.uniqueness",
+                "status": "resolved",
+                "text": "Suppose e and e' are both additive identities. Since e is an identity, e+e'=e'. Since e' is an identity, e+e'=e. Hence e=e'."
+              }
+            ]
+          },
+          "candidate_variables": [
+            "e",
+            "e'"
+          ],
+          "claim": "There is a unique additive identity.",
+          "id": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root",
+          "status": "resolved"
+        },
+        "id": "uniqueness_additive_identity.root.thm_unique_additive_identity",
+        "status": "resolved"
+      }
+    ],
+    "title": "Uniqueness of the Additive Identity"
+  }
+}

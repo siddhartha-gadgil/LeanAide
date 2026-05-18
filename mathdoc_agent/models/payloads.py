@@ -156,6 +156,7 @@ class StructuredProofData(ProofKindData):
     full_claim: Optional[str] = None
     claim: Optional[str] = None
     variable_name: Optional[str] = None
+    candidate_variables: list[str] = Field(default_factory=list)
     bound_claim: Optional[str] = None
     reduced_to: Optional[str] = None
     proof_of_reduction_id: Optional[str] = None

@@ -602,6 +602,7 @@ class StructuredProofHandler(ProofRefinementHandler[StructuredProofRefinementSpe
             full_claim=full_claim,
             claim=claim,
             variable_name=spec.variable_name,
+            candidate_variables=spec.candidate_variables,
             bound_claim=spec.bound_claim,
             reduced_to=spec.reduced_to,
             proof_of_reduction_id=proof_of_reduction.id if proof_of_reduction else None,

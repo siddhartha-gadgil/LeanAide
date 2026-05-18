@@ -83,6 +83,7 @@ class StructuredProofRefinementSpec(BaseModel):
     full_claim: str | None = None
     claim: str | None = None
     variable_name: str | None = None
+    candidate_variables: list[str] = Field(default_factory=list)
     bound_claim: str | None = None
     reduced_to: str | None = None
     proof_of_reduction: ChildProofSpec | None = None

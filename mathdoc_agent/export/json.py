@@ -693,6 +693,29 @@ def _proof_node_data(node: ProofNode) -> Any:
                 }
             )
 
+    if kind == ProofKind.uniqueness.value:
+        data = _structured_data(node)
+        existence_children = [child for child in node.children if kind_key(child.kind) == ProofKind.existence.value]
+        remaining_children = [child for child in node.children if child not in existence_children]
+        existence_proof = (
+            _proof_node_data(existence_children[0])
+            if len(existence_children) == 1
+            else (_proof_object([_proof_node_data(child) for child in existence_children]) if existence_children else None)
+        )
+        uniqueness_children = remaining_children or node.children
+        uniqueness_proof = _proof_object([_proof_node_data(child) for child in uniqueness_children])
+        return _without_none(
+            {
+                "type": "uniqueness_proof",
+                "existence_proof": existence_proof,
+                "uniqueness_proof": uniqueness_proof,
+                "candidate_variables": data.candidate_variables or None,
+                "claim": data.claim or node.goal,
+                "id": node.id,
+                "status": node.status.value,
+            }
+        )
+
     if kind == ProofKind.construction.value:
         data = _structured_data(node)
         if data.full_claim or data.claim or data.variable_name or data.construction:

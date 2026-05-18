@@ -40,7 +40,7 @@ class ProofNode(BaseModel):
             ProofKind.contrapositive.value: "proof",
             ProofKind.extensionality.value: "proof",
             ProofKind.existence.value: "existence_proof",
-            ProofKind.uniqueness.value: "proof",
+            ProofKind.uniqueness.value: "uniqueness_proof",
             ProofKind.equivalence.value: "bi-implication_cases_proof",
             ProofKind.construction.value: "construction_proof",
             ProofKind.minimal_counterexample.value: "contradiction_statement",

@@ -16,7 +16,7 @@ EXPECTED_PROOF_TYPES = {
     ProofKind.contradiction: "contradiction_statement",
     ProofKind.contrapositive: "proof",
     ProofKind.existence: "existence_proof",
-    ProofKind.uniqueness: "proof",
+    ProofKind.uniqueness: "uniqueness_proof",
     ProofKind.equivalence: "bi-implication_cases_proof",
     ProofKind.generic_element: "proof",
     ProofKind.construction: "construction_proof",
@@ -81,6 +81,9 @@ class ProofTypeExampleTests(unittest.IsolatedAsyncioTestCase):
                     self.assertIn("claim", proof_root)
                     self.assertIn("proof_of_reduction", proof_root)
                     self.assertIn("proof", proof_root)
+                if proof_root["type"] == "uniqueness_proof":
+                    self.assertIn("uniqueness_proof", proof_root)
+                    self.assertIn("claim", proof_root)
                 if proof_root["type"] == "existence_proof":
                     self.assertIn("full_claim", proof_root)
                     self.assertIn("variable_name", proof_root)

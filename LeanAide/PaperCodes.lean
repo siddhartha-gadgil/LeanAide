@@ -287,10 +287,10 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
             throwError
               s!"codegen: no definition translation found for {statement'}"
 
-def existenceProof (translator : CodeGenerator) (variableName witness : String) (proof: Json) (goal : MVarId) :
+def existenceProof (translator : CodeGenerator) (variableName construction : String) (proof: Json) (goal : MVarId) :
     TranslateM (TSyntax `Lean.Parser.Tactic.tacticSeq) := do
   let varId := mkIdent variableName.toName
-  let statement := s!"Let {variableName} be {witness}."
+  let statement := s!"Let {variableName} be {construction}."
   let defStx ← translator.translateDefCmdM? statement
   match defStx with
   | .ok defStx =>
@@ -317,7 +317,7 @@ def existenceProof (translator : CodeGenerator) (variableName witness : String) 
   | .error _ =>
     traceAide `leanaide.papercodes.info s!"Existence proof: failed to translate statement to definition command"
     traceAide `leanaide.papercodes.info s!"Existence proof: attempted statement was:\n{statement}"
-    throwError s!"Existence proof: failed to create definition for witness {witness} with variable name {variableName} and statement {statement}"
+    throwError s!"Existence proof: failed to create definition for witness {construction} with variable name {variableName} and statement {statement}"
 
 /-!
 ### `existence_proof`
@@ -353,6 +353,69 @@ def existenceProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId
     let .ok proof := js.getObjVal? "proof" | throwError s!"codegen: no 'proof' found in 'existence_proof'"
     existenceProof translator variableName witness proof goal
   | _, _,_ => throwError s!"codegen: 'existence_proof' only works for tactic sequences with a goal, got kind {s} and goal? {goal?.isSome}"
+
+/-!
+### `construction_proof`
+
+JSON type to match: `construction_proof`.
+
+Fields:
+
+- `full_claim`: required existential claim supplied by the construction.
+- `variable_name`: name of the object being constructed.
+- `claim`: required target property of `variable_name` supplied by the
+  construction.
+- `construction`: constructed object or definition.
+- `verification`: proof that the construction has the required property.
+
+Expected Lean behavior: treat `full_claim` as the ambient existential goal,
+define or refine the constructed object named by `variable_name` using
+`construction`, then discharge the verification goals for `claim`.
+
+Use this type when the proof must build a mathematical object, map, structure,
+definition, or auxiliary datum that will be used as an object in the surrounding
+argument. Unlike `existence_proof`, the construction itself is first-class data;
+`full_claim` records the surrounding existential statement, while `claim`
+records what property the named constructed object is meant to certify. Both
+`existence_proof` and `construction_proof` use the same `full_claim` /
+`variable_name` / `claim` split; the difference is that `existence_proof`
+supplies an already available `witness`, while `construction_proof` supplies a
+first-class `construction` or definition for the object.
+-/
+
+@[codegen "construction_proof"]
+def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+  | ``tacticSeq, js => do
+    let .ok variableName := js.getObjValAs? String "variable_name" | throwError
+      s!"codegen: no 'variable_name' found in 'construction_proof'"
+    let .ok construction := js.getObjValAs? String "construction" | throwError
+      s!"codegen: no 'construction' found in 'construction_proof'"
+    let .ok verification := js.getObjVal? "verification" | throwError s!"codegen: no 'verification' found in 'construction_proof'"
+    let .ok fullClaim := js.getObjValAs? String "full_claim" | throwError
+      s!"codegen: no 'full_claim' found in 'construction_proof'"
+    let .ok claim := js.getObjValAs? String "claim" | throwError
+      s!"codegen: no 'claim' found in 'construction_proof'"
+    let existenceType ← translator.translateToPropStrict fullClaim
+    let existenceGoal ← mkFreshExprMVar existenceType
+    let tacs ← findTacticsI existenceGoal.mvarId!
+    addPrelude <| "Assume: " ++ claim
+    let existenceSyntax ← delabDetailed existenceGoal
+    let hash := fullClaim.hash
+    let existsId := mkIdent (s!"assert_exists_{hash}").toName
+    let haveStx ← `(tacticSeq| have $existsId : $existenceSyntax := by $tacs*)
+    let varId := mkIdent variableName.toName
+    let propId := mkIdent (s!"assert_prop_{hash}").toName
+    let splitStx ←
+        `(tacticSeq| have ⟨$varId:ident, $propId:ident⟩ : $existenceSyntax := by $tacs*)
+    let verificationId := mkIdent (s!"verification_{hash}").toName
+    let verificationType ← translator.translateToPropStrict claim
+    let verificationGoal ← mkFreshExprMVar verificationType
+    let verificationTacs ← findTacticsI verificationGoal.mvarId!
+    let claimStx ← translator.translateToPropStrict claim
+    -- let verificationStx ← `(tacticSeq| have $verificationId : $claim := by $verificationTacs*)
+    sorry
+  | s, _ => throwError s!"codegen: 'construction_proof' only works for tactic sequences, got kind {s}"
+
 
 /-!
 ## Adding handlers for different schema elements
