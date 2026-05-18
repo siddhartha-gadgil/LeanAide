@@ -286,3 +286,129 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
               traceAide `leanaide.papercodes.info s!"codegen: not a command:\n{e.text}"
             throwError
               s!"codegen: no definition translation found for {statement'}"
+
+def existenceProof (translator : CodeGenerator) (variableName witness : String) (proof: Json) (goal : MVarId) :
+    TranslateM (TSyntax `Lean.Parser.Tactic.tacticSeq) := do
+  let varId := mkIdent variableName.toName
+  let statement := s!"Let {variableName} be {witness}."
+  let defStx ← translator.translateDefCmdM? statement
+  match defStx with
+  | .ok defStx =>
+    traceAide `leanaide.papercodes.info s!"Existence proof: translated statement to definition command:\n{← PrettyPrinter.ppCommand defStx}"
+    let defTactic ← commandToTactic defStx
+    let useTacticSeq ← `(tacticSeq| $defTactic; use $varId:ident)
+    traceAide `leanaide.papercodes.info s!"Existence proof: created tactic sequence for definition and use:\n{useTacticSeq}"
+    let newGoal? ← runForSingleGoal goal useTacticSeq
+    match newGoal? with
+    | some newGoal =>
+      traceAide `leanaide.papercodes.info s!"Existence proof: after applying 'use', new goal is {← Term.ppGoal newGoal}"
+      let proofTactics ← getCode translator newGoal ``tacticSeq proof
+      traceAide `leanaide.papercodes.info s!"Existence proof: obtained tactics for proof: {proofTactics.isSome}"
+      match proofTactics with
+      | some proofTactics =>
+        let fullTactics ← appendTacticSeqSeq useTacticSeq proofTactics
+        return fullTactics
+      | none =>
+        traceAide `leanaide.papercodes.info s!"Existence proof: no tactics obtained for proof, returning just 'use' tactic"
+        return useTacticSeq
+    | none =>
+      traceAide `leanaide.papercodes.info s!"Existence proof: 'use' tactic did not create a new goal, returning just 'use' tactic"
+      return useTacticSeq
+  | .error _ =>
+    traceAide `leanaide.papercodes.info s!"Existence proof: failed to translate statement to definition command"
+    traceAide `leanaide.papercodes.info s!"Existence proof: attempted statement was:\n{statement}"
+    throwError s!"Existence proof: failed to create definition for witness {witness} with variable name {variableName} and statement {statement}"
+
+/-!
+### `existence_proof`
+
+JSON type to match: `existence_proof`.
+
+Fields:
+
+- `full_claim`: required existential claim being proved.
+- `variable_name`: name of the bound object in the existential claim.
+- `claim`: required property of `variable_name`, after the object is fixed.
+- `witness`: constructed witness.
+- `proof`: verification that the witness satisfies the predicate.
+
+Expected Lean behavior: treat `full_claim` as the ambient existential goal, use
+`witness` for the variable named by `variable_name`, then generate tactics for
+the verification proof of `claim`.
+
+Use this type when the main mathematical act is proving an already stated
+existential proposition, usually by providing a witness for `∃ x, P x`. The
+field `claim` is not the existential proposition; it is the proposition to prove
+after the witness has been introduced.
+
+-/
+@[codegen "existence_proof"]
+def existenceProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
+  match goal?, s, js with
+  | some goal, ``tacticSeq, js => do
+    let .ok variableName := js.getObjValAs? String "variable_name" | throwError
+      s!"codegen: no 'variable_name' found in 'existence_proof'"
+    let .ok witness := js.getObjValAs? String "witness" | throwError
+      s!"codegen: no 'witness' found in 'existence_proof'"
+    let .ok proof := js.getObjVal? "proof" | throwError s!"codegen: no 'proof' found in 'existence_proof'"
+    existenceProof translator variableName witness proof goal
+  | _, _,_ => throwError s!"codegen: 'existence_proof' only works for tactic sequences with a goal, got kind {s} and goal? {goal?.isSome}"
+
+/-!
+## Adding handlers for different schema elements
+
+The following functions are helpers that one can use.
+-/
+
+/--
+info: LeanAide.runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax `Lean.Parser.Tactic.tacticSeq) :
+  TermElabM (Option MVarId)
+-/
+#guard_msgs in
+#check runForSingleGoal
+
+
+/--
+info: LeanAide.Translator.translateToPropStrict (claim : String) (translator : Translator) : TranslateM Expr
+-/
+#guard_msgs in
+#check Translator.translateToPropStrict
+
+/--
+info: LeanAide.Translator.translateDefCmdM? (s : String) (translator : Translator) (isProp : Bool := false) :
+  TranslateM (Except (Array CmdElabError) Command)
+-/
+#guard_msgs in
+#check Translator.translateDefCmdM?
+
+/--
+info: LeanAide.getProof (translator : CodeGenerator) (goal : MVarId) (js : Json) :
+  TranslateM (Option (TSyntax `Lean.Parser.Tactic.tacticSeq))
+-/
+#guard_msgs in
+#check getProof
+
+/--
+info: LeanAide.Codegen.getCode (translator : CodeGenerator) (goal? : Option MVarId) (kind : SyntaxNodeKinds) (source : Json) :
+  TranslateM (Option (TSyntax kind))
+-/
+#guard_msgs in
+#check getCode
+
+/--
+info: LeanAide.Codegen.getCodeTactics (translator : CodeGenerator) (goal : MVarId) (sources : List Json) :
+  TranslateM (TSyntax `Lean.Parser.Tactic.tacticSeq)
+-/
+#guard_msgs in
+#check getCodeTactics
+
+/--
+info: LeanAide.Codegen.commandSeqToTacticSeq (cmdSeq : TSyntax `commandSeq) :
+  TermElabM (TSyntax `Lean.Parser.Tactic.tacticSeq)
+-/
+#guard_msgs in
+#check commandSeqToTacticSeq
+
+/-- info: LeanAide.Codegen.commandToTactic (cmd : Command) : TermElabM Syntax.Tactic -/
+#guard_msgs in
+#check commandToTactic

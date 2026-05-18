@@ -184,6 +184,8 @@ Fields:
 Expected Lean behavior: introduce the contrapositive assumption, derive the
 negated hypothesis, and close using the contrapositive form of the theorem.
 
+#### Update: Done (Ajay)
+
 ### `existence_proof`
 
 JSON type to match: `existence_proof`.

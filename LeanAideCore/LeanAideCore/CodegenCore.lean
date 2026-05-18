@@ -216,19 +216,6 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         --let sourceId := mkIdent (s!"error_source_{hash source}").toName
         let strLit := Syntax.mkStrLit s!"Error in processing:{source.pretty}"
         let sourceTacs ← `(tacticSeq| trace $strLit)
-          -- try
-          --  let stx ← getJsonSyntax source
-          --  `(tacticSeq| let $sourceId : Json := json% $stx; sorry)
-          -- catch _ =>
-          --  let strLit := Syntax.mkStrLit (source.pretty)
-          --  `(tacticSeq| let $sourceId : String := $strLit; sorry)
-        -- let errs := "Error: " ++  err |>.splitOn "\n"
-        -- let errStxs : List Syntax.Tactic ←
-        --   errs.mapM fun err =>
-        --   let errStx := Syntax.mkStrLit <| err
-        --   `(tactic| trace $errStx)
-        -- let errStxs := errStxs.toArray
-        -- pure <| some <| ← `(tacticSeq| $errStxs*)
         pure <| some <| sourceTacs
     match code? with
     | none => do -- pure side effect, no code generated

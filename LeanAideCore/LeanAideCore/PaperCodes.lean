@@ -15,6 +15,7 @@ open Codegen Translate
 
 #logIO leanaide.papercodes.info
 
+
 /--
 Translating to a proposition in Lean, using the `translateToProp?` method of the `Translator`. Various checks are performed to ensure the type is valid and does not contain `sorry` or metavariables. An error is thrown if the translation fails or if the type is not valid.
 -/
@@ -1345,83 +1346,65 @@ def generalInductionCode (translator : CodeGenerator := {}) : Option MVarId → 
     s!"codegen: conditionCasesCode does not work for kind {kind} with goal present: {goal?.isSome}"
 
 
-/- Figure
-{
-  "type": "object",
-  "description": "A figure or image.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "Figure",
-      "description": "The type of this document element."
-    },
-    "label": {
-      "type": "string",
-      "description": "Unique identifier/label for referencing (e.g., 'fig:flowchart')."
-    },
-    "source": {
-      "type": "string",
-      "description": "URL or path to the image file."
-    },
-    "caption": {
-      "type": "string",
-      "description": "(OPTIONAL) Caption describing the figure."
-    },
-    "alt_text": {
-      "type": "string",
-      "description": "(OPTIONAL) Alternative text for accessibility."
-    }
-  },
-  "required": [
-    "type",
-    "label",
-    "source"
-  ],
-  "additionalProperties": false
-}
--/
 #notImplementedCode "Figure"
 
-/- Table
-{
-  "type": "object",
-  "description": "A data table.",
-  "properties": {
-    "type": {
-      "type": "string",
-      "const": "Table",
-      "description": "The type of this document element."
-    },
-    "label": {
-      "type": "string",
-      "description": "Unique identifier/label for referencing (e.g., 'tab:results')."
-    },
-    "caption": {
-      "type": "string",
-      "description": "(OPTIONAL) Caption describing the table."
-    },
-    "content": {
-      "type": "array",
-      "description": "Table data, represented as an array of rows, where each row is an array of cell strings.",
-      "items": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
-      }
-    },
-    "header_row": {
-      "type": "boolean",
-      "description": "(OPTIONAL) Indicates if the first row in 'content' is a header row. Default: false",
-      "default": false
-    }
-  },
-  "required": [
-    "type",
-    "label",
-    "content"
-  ],
-  "additionalProperties": false
-}
--/
 #notImplementedCode "Table"
+
+/-!
+## Adding handlers for different schema elements
+
+The following functions are helpers that one can use.
+-/
+
+/--
+info: LeanAide.runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax `Lean.Parser.Tactic.tacticSeq) :
+  TermElabM (Option MVarId)
+-/
+#guard_msgs in
+#check runForSingleGoal
+
+
+/--
+info: LeanAide.Translator.translateToPropStrict (claim : String) (translator : Translator) : TranslateM Expr
+-/
+#guard_msgs in
+#check Translator.translateToPropStrict
+
+/--
+info: LeanAide.Translator.translateDefCmdM? (s : String) (translator : Translator) (isProp : Bool := false) :
+  TranslateM (Except (Array CmdElabError) Command)
+-/
+#guard_msgs in
+#check Translator.translateDefCmdM?
+
+/--
+info: LeanAide.getProof (translator : CodeGenerator) (goal : MVarId) (js : Json) :
+  TranslateM (Option (TSyntax `Lean.Parser.Tactic.tacticSeq))
+-/
+#guard_msgs in
+#check getProof
+
+/--
+info: LeanAide.Codegen.getCode (translator : CodeGenerator) (goal? : Option MVarId) (kind : SyntaxNodeKinds) (source : Json) :
+  TranslateM (Option (TSyntax kind))
+-/
+#guard_msgs in
+#check getCode
+
+/--
+info: LeanAide.Codegen.getCodeTactics (translator : CodeGenerator) (goal : MVarId) (sources : List Json) :
+  TranslateM (TSyntax `Lean.Parser.Tactic.tacticSeq)
+-/
+#guard_msgs in
+#check getCodeTactics
+
+/--
+info: LeanAide.Codegen.commandSeqToTacticSeq (cmdSeq : TSyntax `commandSeq) :
+  TermElabM (TSyntax `Lean.Parser.Tactic.tacticSeq)
+-/
+#guard_msgs in
+#check commandSeqToTacticSeq
+
+/-- info: LeanAide.Codegen.commandToTactic (cmd : Command) : TermElabM Syntax.Tactic -/
+#guard_msgs in
+#check commandToTactic
