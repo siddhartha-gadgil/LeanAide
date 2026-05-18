@@ -384,7 +384,7 @@ first-class `construction` or definition for the object.
 -/
 
 @[codegen "construction_proof"]
-def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def constructionProofCode (translator : CodeGenerator := {}) (_ : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
   | ``tacticSeq, js => do
     let .ok variableName := js.getObjValAs? String "variable_name" | throwError
       s!"codegen: no 'variable_name' found in 'construction_proof'"
@@ -397,24 +397,26 @@ def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVa
       s!"codegen: no 'claim' found in 'construction_proof'"
     let existenceType ← translator.translateToPropStrict fullClaim
     let existenceGoal ← mkFreshExprMVar existenceType
-    let tacs ← findTacticsI existenceGoal.mvarId!
-    addPrelude <| "Assume: " ++ claim
+    let existenceProofTacs ←
+        existenceProof translator variableName construction verification existenceGoal.mvarId!
     let existenceSyntax ← delabDetailed existenceGoal
     let hash := fullClaim.hash
     let existsId := mkIdent (s!"assert_exists_{hash}").toName
-    let haveStx ← `(tacticSeq| have $existsId : $existenceSyntax := by $tacs*)
+    let haveStx ←
+      `(tacticSeq| have $existsId : $existenceSyntax := by $existenceProofTacs)
     let varId := mkIdent variableName.toName
     let propId := mkIdent (s!"assert_prop_{hash}").toName
     let splitStx ←
-        `(tacticSeq| have ⟨$varId:ident, $propId:ident⟩ : $existenceSyntax := by $tacs*)
+        `(tacticSeq| let ⟨$varId:ident, $propId:ident⟩ := $existsId)
     let verificationId := mkIdent (s!"verification_{hash}").toName
     let verificationType ← translator.translateToPropStrict claim
     let verificationGoal ← mkFreshExprMVar verificationType
-    let verificationTacs ← findTacticsI verificationGoal.mvarId!
-    let claimStx ← translator.translateToPropStrict claim
-    -- let verificationStx ← `(tacticSeq| have $verificationId : $claim := by $verificationTacs*)
-    sorry
-  | s, _ => throwError s!"codegen: 'construction_proof' only works for tactic sequences, got kind {s}"
+    let .some verificationTacs ←
+      getProof translator verificationGoal.mvarId! verification | throwError s!"codegen: no proof translation found for verification part of 'construction_proof'"
+    let claimStx ← delabDetailed verificationType
+    let verificationStx ← `(tacticSeq| have $verificationId : $claimStx := by $verificationTacs)
+    appendTacticSeqSeq haveStx <| ← appendTacticSeqSeq splitStx verificationStx
+  | s, _ => throwError s!"codegen: 'construction_proof' only works for tactic sequences with goal, got kind {s}"
 
 
 /-!
