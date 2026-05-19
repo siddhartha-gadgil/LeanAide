@@ -11,17 +11,19 @@ theorem zero_unique : ∀ {G : Type u_1} [inst : AddGroup G], ∃! z : G, ∀ (a
     intro G inst
     have assert_815999362915303493 : ∃ (e : G), ∀ (a : G), e + a = a ∧ a + e = a :=
       by
-      let e : (G : Type u_1) → [inst : AddGroup G] → G := fun G [AddGroup G] => 0
+      let e : G :=  0
       use e
       simp only [add_eq_right, add_eq_left, and_self, forall_const, exists_eq]
+      grind
     have assert_7520022488588508554 :
       ∀ {x y : G}, (∀ (a : G), x + a = a ∧ a + x = a) → (∀ (a : G), y + a = a ∧ a + y = a) → x = y := by
       simp only [add_eq_right, add_eq_left, and_self, forall_const, forall_eq_apply_imp_iff, imp_self, implies_true]
-    grind
-
+    apply existsUnique_of_exists_of_unique
+    assumption
+    assumption
 
 /-!
-## Elaboration results 
+## Elaboration results
 
 
 Declarations (1): zero_unique
@@ -80,18 +82,18 @@ Elaboration logs (5):
              ((∀ (a : G), x + a = a) ∧ ∀ (a : G), a + x = a) → ((∀ (a : G), y + a = a) ∧ ∀ (a : G), a + y = a) → x = y
 4. This simp argument is unused:
      exists_eq
-   
+
    Hint: Omit it from the simp argument list.
      simp only [add_eq_right, add_eq_left, and_self, forall_const,̵ ̵e̵x̵i̵s̵t̵s̵_̵e̵q̵]
-   
+
    Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
 5. This simp argument is unused:
      implies_true
-   
+
    Hint: Omit it from the simp argument list.
      simp only [add_eq_right, add_eq_left, and_self, forall_const, forall_eq_apply_imp_iff,
      ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲i̵m̵p̵_̵s̵e̵l̵f̵,̵ ̵i̵m̵p̵l̵i̵e̵s̵_̵t̵r̵u̵e̵]̵i̲m̲p̲_̲s̲e̲l̲f̲]̲
-   
+
    Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
 
 Sorries (2 goals):
@@ -108,4 +110,3 @@ Sorries after purge: none
 
 
 -/
-
