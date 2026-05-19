@@ -418,6 +418,70 @@ def constructionProofCode (translator : CodeGenerator := {}) (_ : Option MVarId)
     appendTacticSeqSeq haveStx <| ← appendTacticSeqSeq splitStx verificationStx
   | s, _ => throwError s!"codegen: 'construction_proof' only works for tactic sequences with goal, got kind {s}"
 
+def existenceProofForUniqueness (translator : CodeGenerator) (js : Json) :
+    TranslateM (TSyntax `Lean.Parser.Tactic.tacticSeq) := do
+  let .ok fullClaim := js.getObjValAs? String "full_claim" | throwError
+      s!"codegen: no 'full_claim' found in 'existence_proof'"
+  let .ok variableName := js.getObjValAs? String "variable_name" | throwError
+      s!"codegen: no 'variable_name' found in 'existence_proof'"
+  let .ok witness := js.getObjValAs? String "witness" | throwError
+      s!"codegen: no 'witness' found in 'existence_proof'"
+  let .ok proof := js.getObjVal? "proof" | throwError
+      s!"codegen: no 'proof' found in 'existence_proof'"
+  let goalType ← translator.translateToPropStrict fullClaim
+  let existenceGoalExpr ← mkFreshExprMVar goalType
+  let existenceGoal := existenceGoalExpr.mvarId!
+  let proofStx ← existenceProof translator variableName witness proof existenceGoal
+  let stx ← delabDetailed goalType
+  let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
+  let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  `(tacticSeq| have $name : $stx := by $proofStx)
+
+def uniquenessProofCore (translator : CodeGenerator) (existence_js : Json) (proof : Json) :
+    TranslateM (TSyntax `Lean.Parser.Tactic.tacticSeq) := do
+  let .ok fullClaim := existence_js.getObjValAs? String "full_claim" | throwError
+      s!"codegen: no 'full_claim' found in 'existence_proof'"
+  let uniquenessClaim := s!"If x and y both satisfy {fullClaim}, then x = y"
+  let goalType ← translator.translateToPropStrict uniquenessClaim
+  let uniquenessGoalExpr ← mkFreshExprMVar goalType
+  let uniquenessGoal := uniquenessGoalExpr.mvarId!
+  let some proofStx ← withoutModifyingState do
+    getProof translator uniquenessGoal proof | throwError
+    s!"codegen: no tactics found for contrapositive proof {proof}"
+  let stx ← delabDetailed goalType
+  let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
+  let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
+  `(tacticSeq| have $name : $stx := by $proofStx)
+
+/-!
+### `uniqueness_proof`
+
+JSON type to match: `uniqueness_proof`.
+
+Fields:
+
+- `existence_proof`: proof that at least one object exists.
+- `uniqueness_proof`: proof that any two candidates are equal.
+- `candidate_variables`: optional names for arbitrary candidates.
+- `claim`: optional uniqueness or `exists unique` statement.
+
+Expected Lean behavior: split existence and uniqueness goals, then prove the
+equality of arbitrary candidates.
+-/
+@[codegen "uniqueness_proof"]
+def uniquenessProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
+  match goal?, s, js with
+  | some goal, ``tacticSeq, js => do
+    let .ok existenceProof := js.getObjVal? "existence_proof" | throwError
+      s!"codegen: no 'existence_proof' found in 'uniqueness_proof'"
+    let .ok uniquenessProof := js.getObjVal? "uniqueness_proof" | throwError
+      s!"codegen: no 'uniqueness_proof' found in 'uniqueness_proof'"
+    let existenceTacs ← existenceProofForUniqueness translator existenceProof
+    let uniquenessTacs ← uniquenessProofCore translator existenceProof uniquenessProof
+    let bothTacs ← appendTacticSeqSeq existenceTacs uniquenessTacs
+    let grindTac ← `(tacticSeq| grind)
+    appendTacticSeqSeq bothTacs grindTac
+  | _, _,_ => throwError s!"codegen: 'uniqueness_proof' only works for tactic sequences with a goal, got kind {s} and goal? {goal?.isSome}"
 
 /-!
 ## Adding handlers for different schema elements
