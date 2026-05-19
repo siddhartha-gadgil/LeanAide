@@ -1351,6 +1351,129 @@ def generalInductionCode (translator : CodeGenerator := {}) : Option MVarId → 
 #notImplementedCode "Table"
 
 /-!
+### `reduction_proof`
+
+JSON type to match: `reduction_proof`.
+
+Fields:
+
+- `claim`: current claim being reduced.
+- `reduced_to`: target result or previously proved theorem.
+- `proof_of_reduction`: proof object showing that `claim` follows from, or is
+  reduced to, `reduced_to`.
+- `proof`: proof object for the reduced goal `reduced_to`.
+
+Expected Lean behavior: first prove the reduction from `claim` to `reduced_to`,
+then prove the reduced goal. This avoids separating "reduction steps" from
+"result used"; the result/theorem being used should appear inside either
+`proof_of_reduction` or `proof` as an ordinary proof reference.
+-/
+
+@[codegen "reduction_proof"]
+def reductionProofCode(translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _ , ``tacticSeq, js => do
+    let .ok claim := js.getObjValAs? String "claim" | throwError s!"codegen: no 'claim' found in 'reduction_proof'"
+    let .ok reducedTo := js.getObjValAs? String "reduced_to"| throwError s!"codegen: no 'reduced_to' found in 'reduction_proof"
+    let .ok proofOfReduction := js.getObjVal? "proof_of_reduction"| throwError s!"codegen: no 'proof_of_reduction' found in 'reductionn_proof'"
+    let .ok proof := js.getObjVal? "proof" | throwError s!"codegen: no 'proof' found in 'reduction_proof'"
+
+    -- proving the reduction
+    let claim ← translator.translateToPropStrict claim
+    let reducedProp ← translator.translateToPropStrict reducedTo
+    let reductionStep ← mkArrow reducedProp claim
+    let reductionStepExpr ← mkFreshExprMVar reductionStep
+    let reductionGoal := reductionStepExpr.mvarId!
+    let some tacs ← withoutModifyingState do getProof translator reductionGoal proofOfReduction | throwError
+    s!"codegen: no tactics found for proof {proofOfReduction}"
+    let reduction ← delabDetailed reductionStep
+    let hash₀ := hash ((← ppTerm {env := ← getEnv} reduction).pretty)
+    let name := mkIdent <| Name.mkSimple s!"reduction_{hash₀}"
+    let tacReduction ← `(tacticSeq| have $name : $reduction := by $tacs)
+
+    -- proving the reduced statement
+    let reducedPropExpr ← mkFreshExprMVar reducedProp
+    let reducedPropGoal := reducedPropExpr.mvarId!
+    let some reducedProof ← withoutModifyingState do getProof translator reducedPropGoal proof | throwError
+    s!"codegen: no tactics found for proof {proof}"
+    let reduced ← delabDetailed reducedProp
+    let hash₁ := hash ((← ppTerm {env := ← getEnv} reduced).pretty)
+    let name' := mkIdent <| Name.mkSimple s!"reduced_{hash₁}"
+    let tacReduced ← `(tacticSeq| have $name' : $reduced := by $reducedProof
+                                  grind)
+    appendTacticSeqSeq tacReduction tacReduced
+
+| goal?, kind, _ => throwError s!"codegen: reductionProofCode does not work for kind {kind} with goal present : {goal?.isSome}"
+
+/-
+### `epsilon_delta_proof`
+
+JSON type to match: `epsilon_delta_proof`.
+
+Fields:
+
+- `epsilon_var`: epsilon variable name.
+- `epsilon_positive`: positivity hypothesis for epsilon.
+- `delta`: chosen delta expression.
+- `delta_positive_proof`: proof that delta is positive.
+- `bound_claim`: bound or implication to prove after the delta is chosen.
+- `bound_proof`: proof of the required bound.
+
+Expected Lean behavior: introduce epsilon and its positivity hypothesis, use
+the proposed delta, prove positivity, then prove the implication/bound.
+-/
+
+@[codegen "epsilon_delta_proof"]
+def epsilonDeltaProof(translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+|some goal, ``tacticSeq, js => goal.withContext do
+    let .ok epsilonVar := js.getObjValAs? String "epsilon_var" | throwError s!"codegen: no 'epsilon_var' found in 'epsilon_delta_proof'"
+    let .ok delta := js.getObjValAs? String "delta" | throwError s!"codegen : no 'delta' found in 'epsilon_delta_proof'"
+    let .ok deltaPosProof := js.getObjVal? "delta_positive_proof" | throwError s!"codegen : no 'delta_positive_proof' found in 'epsilon_delta_proof'"
+    let .ok boundClaim := js.getObjValAs? String "bound_claim" | throwError s!"codegen: no 'bound_claim' found in 'epsilon_delta_proof'"
+    let .ok boundProof := js.getObjVal? "bound_proof" | throwError s!"codegen: no 'bound_proof' found in 'epsilon_delta_proof'"
+
+    let epsilon := mkIdent epsilonVar.toName
+    let hyp := mkIdent ("h"++epsilonVar).toName
+    let epsilonPosStx ← `($epsilon > 0)
+    let epsilonPosExpr ← `(tactic| have $hyp : $epsilonPosStx := by assumption)
+
+    let .ok deltaStxRaw := Parser.runParserCategory (← getEnv) `term delta
+      | throwError s!"could not parse delta term: {delta}"
+    let deltaStx : TSyntax `term := ⟨deltaStxRaw⟩
+    let deltaIdent := mkIdent `delta
+    let deltaExpr ← `(tactic| let $deltaIdent := $deltaStx)
+    addPrelude s!"Let delta := {delta}"
+
+    let deltaPosStat := "For all ε > 0, delta > 0"
+    let deltaPosExpr ← translator.translateToPropStrict deltaPosStat
+    let deltaPosStx ← delabDetailed deltaPosExpr
+    let deltaPosMVar ← mkFreshExprMVar deltaPosExpr
+    let deltaPosGoal := deltaPosMVar.mvarId!
+    let some deltaPosProof ← getProof translator deltaPosGoal deltaPosProof
+        | throwError "no proof found for epsilon-delta bound claim"
+    Term.synthesizeSyntheticMVarsNoPostponing
+    let hash₀ := hash ((← ppTerm {env := ← getEnv} deltaStx).pretty)
+    let name := mkIdent <| Name.mkSimple s!"δ_pos_{hash₀}"
+    let deltaTac ← `(tacticSeq|
+      have $name : $deltaPosStx := by
+        $deltaPosProof)
+    try
+      let boundClaim ← translator.translateToPropStrict ("For all ε > 0"++boundClaim)
+      traceAide `leanaide.papercodes.info s!"The bound claim: {← ppExpr boundClaim}"
+      let boundClaimMVar ← mkFreshExprMVar boundClaim
+      let boundClaimGoalExpr := boundClaimMVar.mvarId!
+      let some boundClaimProof ← getProof translator boundClaimGoalExpr boundProof
+        | throwError "no proof found for epsilon-delta bound claim"
+      let boundClaimName := mkIdent <| Name.mkSimple s!"claim_{hash₀}"
+      let boundClaimStx ← delabDetailed boundClaim
+      let boundProofTacs ← `(tacticSeq| have $boundClaimName : $boundClaimStx := by $boundClaimProof
+                                        llm?)
+      appendTacticSeqSeq deltaTac boundProofTacs
+    catch e =>
+      traceAide `leanaide.papercodes.info
+        s!"could not translate epsilon_delta_proof bound claim, using sorry; error: {← e.toMessageData.toString}"
+      `(tacticSeq| sorry)
+| _, _, _ => throwError s!"Wrong Case"
+/-!
 ## Adding handlers for different schema elements
 
 The following functions are helpers that one can use.
