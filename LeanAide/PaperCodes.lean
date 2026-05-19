@@ -471,7 +471,7 @@ equality of arbitrary candidates.
 @[codegen "uniqueness_proof"]
 def uniquenessProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
   match goal?, s, js with
-  | some goal, ``tacticSeq, js => do
+  | some _, ``tacticSeq, js => do
     let .ok existenceProof := js.getObjVal? "existence_proof" | throwError
       s!"codegen: no 'existence_proof' found in 'uniqueness_proof'"
     let .ok uniquenessProof := js.getObjVal? "uniqueness_proof" | throwError
