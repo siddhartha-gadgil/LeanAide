@@ -291,11 +291,47 @@ partial def dropFuncs : Syntax.Term → Syntax.Term
   | `(fun $_* => $body) => dropFuncs body
   | stx => stx
 
+partial def dropFuncs? : Syntax.Term → Bool × Syntax.Term
+  | `(fun $_* => $body) =>
+    let (_, body') := dropFuncs? body
+    (true, body')
+  | stx => (false, stx)
+
 partial def dropForallsExpr : Expr → TermElabM Expr := fun expr => do
   match expr with
   | Expr.forallE _ _ body _ => do
     dropForallsExpr body
   | _ => pure expr
+
+partial def dropForallsExpr? : Expr → TermElabM (Bool × Expr) := fun expr => do
+  match expr with
+  | Expr.forallE _ _ body _ => do
+    let (_, body') ← dropForallsExpr? body
+    pure (true, body')
+  | _ => pure (false, expr)
+
+def typedLetParts? (stx : Syntax.Tactic) : Option (TSyntax `ident × TSyntax `term × TSyntax `term) :=
+  match stx.raw with
+  | Syntax.node _ `Lean.Parser.Tactic.tacticLet__ #[
+      _,
+      _,
+      Syntax.node _ `Lean.Parser.Term.letDecl #[
+        Syntax.node _ `Lean.Parser.Term.letIdDecl #[
+          Syntax.node _ `Lean.Parser.Term.letId #[n],
+          _,
+          Syntax.node _ `null #[
+            Syntax.node _ `Lean.Parser.Term.typeSpec #[_, ty]
+          ],
+          _,
+          val
+        ]
+      ]
+    ] =>
+    if ty.getKind == `Lean.Parser.Term.forall then
+      some (⟨n⟩, ⟨ty⟩, ⟨val⟩)
+    else
+      none
+  | _ => none
 
 partial def simpleLet' (stx: Syntax.Tactic) : TermElabM Syntax.Tactic := do
   match stx with
@@ -336,9 +372,27 @@ partial def simpleLet : Syntax.Tactic → TermElabM Syntax.Tactic
   | `(tactic| let $n : $_ → $ty := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $ty := $val)
   | tac => do
-    traceAide `leanaide.papercodes.info
-      s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
-    return tac
+    match typedLetParts? tac with
+    | some (n, ty, val) => do
+      try
+        let tyExpr ← elabType ty
+        let (typeChanged, tyExpr') ← dropForallsExpr? tyExpr
+        let (valueChanged, val') := dropFuncs? val
+        if typeChanged || valueChanged then
+          let ty' ← delabDetailed tyExpr'
+          simpleLet <| ←  `(tactic| let $n : $ty' := $val')
+        else
+          traceAide `leanaide.papercodes.info
+            s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
+          return tac
+      catch _ =>
+        traceAide `leanaide.papercodes.info
+          s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
+        return tac
+    | _ => do
+      traceAide `leanaide.papercodes.info
+        s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
+      return tac
 
 def simpEg : TermElabM Syntax.Tactic := do
   let stx ← `(tactic| let e : (G : Type u) → [inst : AddGroup G] → G := fun G [AddGroup G] => 0)
