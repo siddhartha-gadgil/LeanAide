@@ -8,16 +8,19 @@
         "header": "Theorem",
         "claim": "|x+z|≤|x|+|z|.",
         "proof": {
-          "type": "triangle_inequality_estimate",
+          "type": "proof",
+          "calculation_kind": "triangle_inequality_estimate",
           "start": "|x+z|",
           "target": "|x| + |z|",
           "goal_relation": "<=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "|x+z| <= |x| + |z|",
+              "proof_method": "abs_add",
               "from": "|x+z|",
               "relation": "<=",
-              "to": "|x| + |z|",
-              "justification": "abs_add"
+              "to": "|x| + |z|"
             }
           ],
           "id": "triangle_inequality_estimate.root.calculation",

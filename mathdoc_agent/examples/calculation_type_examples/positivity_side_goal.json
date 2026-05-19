@@ -8,16 +8,29 @@
         "header": "Theorem",
         "claim": "If 0<x and 0<y, then 0<x*y.",
         "proof": {
-          "type": "positivity_side_goal",
+          "type": "proof",
+          "calculation_kind": "positivity_side_goal",
           "start": "0",
           "target": "x*y",
           "goal_relation": "<",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "0 < x",
+              "proof_method": "side condition for 0 < x*y"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "0 < y",
+              "proof_method": "side condition for 0 < x*y"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "0 < x*y",
+              "proof_method": "positivity",
               "from": "0",
               "relation": "<",
               "to": "x*y",
-              "justification": "positivity",
               "side_conditions": [
                 "0 < x",
                 "0 < y"

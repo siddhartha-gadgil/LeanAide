@@ -25,22 +25,31 @@
                 "text": "The polynomial p(x)=x-a is nonzero."
               },
               {
-                "type": "equality_chain",
-                "start": "p(a)",
-                "target": "0",
-                "goal_relation": "=",
-                "steps": [
-                  {
-                    "from": "p(a)",
-                    "relation": "=",
-                    "to": "a-a"
-                  },
-                  {
-                    "from": "a-a",
-                    "relation": "=",
-                    "to": "0"
-                  }
-                ],
+                "type": "theorem",
+                "label": "construction_polynomial_with_root.root.construction_polynomial_with_root.proof.root.verify_root",
+                "header": "Claim",
+                "claim": "p(a)=0.",
+                "proof": {
+                  "type": "proof",
+                  "proof_steps": [
+                    {
+                      "type": "assert_statement",
+                      "claim": "p(a) = a-a",
+                      "proof_method": "calculation step",
+                      "from": "p(a)",
+                      "relation": "=",
+                      "to": "a-a"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "a-a = 0",
+                      "proof_method": "calculation step",
+                      "from": "a-a",
+                      "relation": "=",
+                      "to": "0"
+                    }
+                  ]
+                },
                 "id": "construction_polynomial_with_root.root.construction_polynomial_with_root.proof.root.verify_root",
                 "status": "resolved",
                 "text": "Evaluating at a gives p(a)=a-a=0."

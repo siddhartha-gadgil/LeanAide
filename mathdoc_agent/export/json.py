@@ -22,7 +22,6 @@ from mathdoc_agent.models.payloads import (
 )
 from mathdoc_agent.models.proof import ProofNode, ProofTree
 from mathdoc_agent.orchestration.worklist import kind_key
-from mathdoc_agent.plugins.calculation_types import CORE_CALCULATION_SCHEMAS
 
 
 def _without_none(value: dict[str, Any]) -> dict[str, Any]:
@@ -93,15 +92,31 @@ def _logical_step_data(step) -> dict[str, Any]:
     return data
 
 
-def _calculation_step_data(step: CalcStep) -> dict[str, Any]:
+def _calculation_step_claim(step: CalcStep) -> str:
+    return f"{step.lhs} {step.relation.value} {step.rhs}"
+
+
+def _calculation_assertion_step_data(step: CalcStep) -> dict[str, Any]:
     return _without_none(
         {
+            "type": "assert_statement",
+            "claim": _calculation_step_claim(step),
+            "proof_method": step.justification or "calculation step",
             "from": step.lhs,
             "relation": step.relation.value,
             "to": step.rhs,
-            "justification": step.justification,
             **_dependency_data(step),
             "side_conditions": step.side_conditions or None,
+        }
+    )
+
+
+def _calculation_side_condition_data(condition: str, step: CalcStep) -> dict[str, Any]:
+    return _without_none(
+        {
+            "type": "assert_statement",
+            "claim": condition,
+            "proof_method": f"side condition for {_calculation_step_claim(step)}",
         }
     )
 
@@ -578,32 +593,38 @@ def _proof_node_data(node: ProofNode) -> Any:
             data = CalculationData.model_validate(node.data)
         except Exception:
             data = CalculationData()
-        if data.calculation_kind in CORE_CALCULATION_SCHEMAS:
-            return _without_none(
+        proof_steps: list[dict[str, Any]] = []
+        for step in data.steps:
+            proof_steps.extend(
+                _calculation_side_condition_data(condition, step)
+                for condition in step.side_conditions
+            )
+            proof_steps.append(_calculation_assertion_step_data(step))
+        if not proof_steps:
+            claim = (
+                node.goal
+                if node.goal and not _is_instructional_claim(node.goal)
+                else node.text
+            )
+            proof_steps.append(
                 {
-                    "type": data.calculation_kind,
-                    "start": data.start,
-                    "target": data.target,
-                    "goal_relation": _goal_relation(data),
-                    "steps": [_calculation_step_data(step) for step in data.steps],
-                    "inline_calculation": node.text if not data.steps else None,
-                    "id": node.id,
-                    "status": node.status.value,
-                    "text": node.text,
+                    "type": "assert_statement",
+                    "claim": claim,
+                    "proof_method": data.calculation_kind or "calculation",
                 }
             )
-        sequence = [
-            f"{step.lhs} {step.relation.value} {step.rhs}"
-            + (f" ({step.justification})" if step.justification else "")
-            for step in data.steps
-        ]
         return _without_none(
             {
-                "type": "calculation",
-                "calculation_sequence": sequence or None,
-                "inline_calculation": node.text if not sequence else None,
+                "type": "proof",
+                "claim_label": _proof_label(node),
+                "calculation_kind": data.calculation_kind,
+                "start": data.start,
+                "target": data.target,
+                "goal_relation": _goal_relation(data),
+                "proof_steps": proof_steps,
                 "id": node.id,
                 "status": node.status.value,
+                "text": node.text,
             }
         )
 

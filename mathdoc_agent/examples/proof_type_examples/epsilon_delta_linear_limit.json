@@ -25,14 +25,42 @@
             "type": "proof",
             "proof_steps": [
               {
-                "type": "calculation",
-                "calculation_sequence": [
-                  "|2x-6| = 2|x-3|",
-                  "2|x-3| < 2 delta",
-                  "2 delta = epsilon"
-                ],
+                "type": "theorem",
+                "label": "epsilon_delta_linear_limit.root.epsilon_delta_linear_limit.proof.root.verify_bound",
+                "header": "Claim",
+                "claim": "|2x-6| < epsilon.",
+                "proof": {
+                  "type": "proof",
+                  "proof_steps": [
+                    {
+                      "type": "assert_statement",
+                      "claim": "|2x-6| = 2|x-3|",
+                      "proof_method": "calculation step",
+                      "from": "|2x-6|",
+                      "relation": "=",
+                      "to": "2|x-3|"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "2|x-3| < 2 delta",
+                      "proof_method": "calculation step",
+                      "from": "2|x-3|",
+                      "relation": "<",
+                      "to": "2 delta"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "2 delta = epsilon",
+                      "proof_method": "calculation step",
+                      "from": "2 delta",
+                      "relation": "=",
+                      "to": "epsilon"
+                    }
+                  ]
+                },
                 "id": "epsilon_delta_linear_limit.root.epsilon_delta_linear_limit.proof.root.verify_bound",
-                "status": "resolved"
+                "status": "resolved",
+                "text": "If |x-3|<delta, then |2x-6|=2|x-3|<2delta=epsilon."
               }
             ]
           },

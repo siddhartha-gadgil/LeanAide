@@ -34,42 +34,59 @@
                 "proof_method": "By symmetry of the metric and \\(d(z,x)<\\varepsilon/3\\)."
               },
               {
-                "type": "calculation_to_contradiction",
-                "start": "d(x,y)",
-                "target": "1 < 2/3",
-                "goal_relation": "mixed",
-                "steps": [
-                  {
-                    "from": "d(x,y)",
-                    "relation": "≤",
-                    "to": "d(x,z) + d(z,y)",
-                    "justification": "triangle inequality"
-                  },
-                  {
-                    "from": "d(x,z) + d(z,y)",
-                    "relation": "<",
-                    "to": "\\varepsilon/3 + \\varepsilon/3",
-                    "justification": "using \\(d(x,z)<\\varepsilon/3\\) and \\(d(z,y)<\\varepsilon/3\\)"
-                  },
-                  {
-                    "from": "\\varepsilon/3 + \\varepsilon/3",
-                    "relation": "=",
-                    "to": "2\\varepsilon/3",
-                    "justification": "arithmetic normalization"
-                  },
-                  {
-                    "from": "\\varepsilon",
-                    "relation": "<",
-                    "to": "2\\varepsilon/3",
-                    "justification": "substitute \\(d(x,y)=\\varepsilon\\)"
-                  },
-                  {
-                    "from": "1",
-                    "relation": "<",
-                    "to": "2/3",
-                    "justification": "divide by the positive number \\(\\varepsilon\\)"
-                  }
-                ],
+                "type": "theorem",
+                "label": "source_id.root.theorem.proof.root.triangle_inequality_contradiction",
+                "header": "Claim",
+                "claim": "1 < 2/3",
+                "proof": {
+                  "type": "proof",
+                  "calculation_kind": "calculation_to_contradiction",
+                  "start": "d(x,y)",
+                  "target": "1 < 2/3",
+                  "goal_relation": "mixed",
+                  "proof_steps": [
+                    {
+                      "type": "assert_statement",
+                      "claim": "d(x,y) ≤ d(x,z) + d(z,y)",
+                      "proof_method": "triangle inequality",
+                      "from": "d(x,y)",
+                      "relation": "≤",
+                      "to": "d(x,z) + d(z,y)"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "d(x,z) + d(z,y) < \\varepsilon/3 + \\varepsilon/3",
+                      "proof_method": "using \\(d(x,z)<\\varepsilon/3\\) and \\(d(z,y)<\\varepsilon/3\\)",
+                      "from": "d(x,z) + d(z,y)",
+                      "relation": "<",
+                      "to": "\\varepsilon/3 + \\varepsilon/3"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "\\varepsilon/3 + \\varepsilon/3 = 2\\varepsilon/3",
+                      "proof_method": "arithmetic normalization",
+                      "from": "\\varepsilon/3 + \\varepsilon/3",
+                      "relation": "=",
+                      "to": "2\\varepsilon/3"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "\\varepsilon < 2\\varepsilon/3",
+                      "proof_method": "substitute \\(d(x,y)=\\varepsilon\\)",
+                      "from": "\\varepsilon",
+                      "relation": "<",
+                      "to": "2\\varepsilon/3"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "1 < 2/3",
+                      "proof_method": "divide by the positive number \\(\\varepsilon\\)",
+                      "from": "1",
+                      "relation": "<",
+                      "to": "2/3"
+                    }
+                  ]
+                },
                 "id": "source_id.root.theorem.proof.root.triangle_inequality_contradiction",
                 "status": "resolved"
               },

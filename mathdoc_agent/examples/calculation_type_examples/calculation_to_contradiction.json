@@ -8,22 +8,27 @@
         "header": "Theorem",
         "claim": "The assumptions a<b and b<a lead to a contradiction.",
         "proof": {
-          "type": "calculation_to_contradiction",
+          "type": "proof",
+          "calculation_kind": "calculation_to_contradiction",
           "start": "a",
           "target": "a",
           "goal_relation": "<",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "a < b",
+              "proof_method": "hypothesis hab",
               "from": "a",
               "relation": "<",
-              "to": "b",
-              "justification": "hypothesis hab"
+              "to": "b"
             },
             {
+              "type": "assert_statement",
+              "claim": "b < a",
+              "proof_method": "hypothesis hba",
               "from": "b",
               "relation": "<",
-              "to": "a",
-              "justification": "hypothesis hba"
+              "to": "a"
             }
           ],
           "id": "calculation_to_contradiction.root.calculation",

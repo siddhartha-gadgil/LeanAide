@@ -8,22 +8,27 @@
         "header": "Theorem",
         "claim": "If a ≤ b and b ≤ c, then a ≤ c.",
         "proof": {
-          "type": "inequality_chain",
+          "type": "proof",
+          "calculation_kind": "inequality_chain",
           "start": "a",
           "target": "c",
           "goal_relation": "<=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "a <= b",
+              "proof_method": "hypothesis hab",
               "from": "a",
               "relation": "<=",
-              "to": "b",
-              "justification": "hypothesis hab"
+              "to": "b"
             },
             {
+              "type": "assert_statement",
+              "claim": "b <= c",
+              "proof_method": "hypothesis hbc",
               "from": "b",
               "relation": "<=",
-              "to": "c",
-              "justification": "hypothesis hbc"
+              "to": "c"
             }
           ],
           "id": "inequality_chain_order_bound.root.calculation",

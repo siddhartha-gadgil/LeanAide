@@ -8,22 +8,27 @@
         "header": "Theorem",
         "claim": "The successor step for the sum of the first n natural numbers follows by arithmetic.",
         "proof": {
-          "type": "inductive_step_calculation",
+          "type": "proof",
+          "calculation_kind": "inductive_step_calculation",
           "start": "sum (n+1)",
           "target": "n*(n+1)/2 + (n+1)",
           "goal_relation": "=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "sum (n+1) = sum n + (n+1)",
+              "proof_method": "definition of sum",
               "from": "sum (n+1)",
               "relation": "=",
-              "to": "sum n + (n+1)",
-              "justification": "definition of sum"
+              "to": "sum n + (n+1)"
             },
             {
+              "type": "assert_statement",
+              "claim": "sum n + (n+1) = n*(n+1)/2 + (n+1)",
+              "proof_method": "induction hypothesis",
               "from": "sum n + (n+1)",
               "relation": "=",
-              "to": "n*(n+1)/2 + (n+1)",
-              "justification": "induction hypothesis"
+              "to": "n*(n+1)/2 + (n+1)"
             }
           ],
           "id": "inductive_step_calculation.root.calculation",

@@ -740,197 +740,73 @@ Implementation notes:
    implement a prompt-backed fallback for examples where targets must be
    inferred from prose.
 
-## Calculation Codegen Handlers Needed
+## Calculation Lowering for `grind`
 
-`mathdoc_agent` now resolves core `calculation_kind` values to specific JSON
-`type`s when exporting calculations. Unknown calculation kinds still fall back
-to the older generic `calculation` object with `calculation_sequence` or
-`inline_calculation`.
-
-The common core calculation shape is:
+For proof completion with `grind`, calculations should mostly export as normal
+proof structure, not as specialized calculation dispatch objects. A calculation
+node now exports as:
 
 ```json
 {
-  "type": "equality_chain",
+  "type": "proof",
+  "calculation_kind": "equality_chain",
   "start": "A",
   "target": "B",
   "goal_relation": "=",
-  "steps": [
+  "proof_steps": [
     {
+      "type": "assert_statement",
+      "claim": "A = A1",
+      "proof_method": "lemma or local reason",
       "from": "A",
       "relation": "=",
-      "to": "A₁",
-      "justification": "lemma or local reason",
+      "to": "A1",
       "side_conditions": []
     }
   ]
 }
 ```
 
-Shared Lean-side guidance:
+If the calculation appears as a child proof with a mathematical goal, the
+surrounding proof flattener may wrap it as a local `theorem`/`Claim` whose proof
+is this assertion chain. This is intentional: the local theorem records what the
+calculation proves, while the assertions expose the intermediate facts to
+`grind`.
 
-- Add `@[codegen]` handlers dispatching on these calculation `type` values.
-- Treat `steps` as the primary source of the Lean `calc` block.
-- `from`, `relation`, and `to` are intended as Lean-adjacent expressions.
-- `justification` is prose or a lemma name; first implementation can turn it
-  into `by aesop?`, `by simpa [...]`, `by ring`, `by nlinarith`, etc., depending
-  on the handler.
-- `side_conditions` should become subgoals, local `have` statements, or comments
-  for a repair pass.
-- If a specialized handler fails, fall back to the generic `calculation` handler
-  and preserve the original step data in comments.
+Calculation steps differ from typical assertions in three ways:
 
-### `equality_chain`
+- A normal `assert_statement` is just a proposition to prove and add to the
+  local context.
+- A calculation step is a directed transformation from `from` to `to` under a
+  relation (`=`, `<`, `<=`, etc.). Its order matters because adjacent steps form
+  a chain whose transitive closure proves the calculation goal.
+- A calculation step often has local side conditions and a step-specific
+  justification, such as a rewrite lemma, monotonicity fact, ring
+  normalization, or triangle inequality. These are not separate theorem claims,
+  but they are useful hints for proof search.
 
-Fields: common calculation fields.
+Lean-side support should therefore prioritize `assert_statement` and local
+`theorem` generation:
 
-Expected Lean behavior: emit a `calc` block whose relations are all equality,
-using each step justification for the corresponding `:= by ...` proof.
+- `assertionCode` should continue translating each `claim` and use proof search
+  such as `grind` to close it.
+- When an `assert_statement` also has `from`, `relation`, and `to`, codegen can
+  treat those fields as structured hints for the translated `claim`; it should
+  not require a separate calculation handler.
+- `proof_method`, `deduced_from_claim`, and `deduced_from_theorem` should feed
+  the proof-search context before falling back to plain `grind`.
+- `side_conditions` should be emitted as preceding `assert_statement`s or local
+  haves, so they are available to `grind` for the main step.
+- The old specialized calculation kinds (`equality_chain`, `inequality_chain`,
+  `rewrite_by_hypothesis`, `normalization`, etc.) are still preserved in
+  `calculation_kind` metadata. They should guide tactic selection or prompt
+  repair, but should not be the primary JSON `type` for codegen.
 
-Likely tactics: `simpa`, `rw`, `ring`, `simp`, or repair-guided theorem search.
+Suggested implementation order:
 
-### `inequality_chain`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: emit a `calc` block with `<`, `≤`, `>`, or `≥` steps.
-Each step may require an order lemma or arithmetic tactic.
-
-Likely tactics: `linarith`, `nlinarith`, `positivity`, monotonicity lemmas, or
-explicit named inequalities.
-
-### `mixed_relation_chain`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: emit a heterogeneous `calc` block when Lean accepts the
-relation transitions, otherwise split the chain into smaller assertions.
-
-Likely tactics: relation transitivity lemmas, `calc`, `linarith`, and explicit
-coercion/cast normalization.
-
-### `rewrite_by_hypothesis`
-
-Fields: common calculation fields. `justification` should name or describe the
-hypothesis when possible.
-
-Expected Lean behavior: use `rw [h]`, `rw [← h]`, or `simpa [h]` at the target
-expression.
-
-### `rewrite_by_lemma`
-
-Fields: common calculation fields. `justification` should name or describe the
-lemma when possible.
-
-Expected Lean behavior: use `rw [lemma]`, `simpa [lemma]`, or theorem search to
-identify a rewrite lemma.
-
-### `definition_unfolding`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: unfold definitions used in the step and simplify.
-
-Likely tactics: `simp [definition_name]`, `unfold definition_name`, or
-`change ...`.
-
-### `normalization`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: normalize both sides of a calculation step to a common
-form.
-
-Likely tactics: `ring`, `ring_nf`, `norm_num`, `simp`, `omega`, `linarith`,
-or `nlinarith`, selected by expression class.
-
-### `positivity_side_goal`
-
-Fields: common calculation fields plus `side_conditions`.
-
-Expected Lean behavior: prove positivity/nonnegativity side goals needed by a
-main calculation step.
-
-Likely tactics: `positivity`, `nlinarith`, `linarith`, `norm_num`.
-
-### `monotonicity_step`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: apply monotonicity of a function/operator to a previous
-inequality.
-
-Likely tactics: `gcongr`, monotonicity lemmas, or explicit application of
-`Monotone`/`StrictMono` hypotheses.
-
-### `triangle_inequality_estimate`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: introduce an intermediate norm/absolute-value estimate
-using triangle inequality and then simplify/bound terms.
-
-Likely tactics: `calc`, `nlinarith`, `linarith`, `simpa` using norm or absolute
-value lemmas.
-
-### `add_subtract_intermediate`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: insert and subtract an intermediate term, then split an
-estimate, often before triangle inequality.
-
-Likely tactics: `ring_nf` for algebraic rearrangement, then inequality tactics.
-
-### `casewise_calculation`
-
-Fields: common calculation fields. In future, this may need explicit cases.
-
-Expected Lean behavior: split into cases before running the calculation in each
-case. For now, if only `steps` are present, emit a normal calculation and leave
-case information to surrounding proof nodes.
-
-Likely tactics: `by_cases`, `rcases`, `split`, `simp` in each branch.
-
-### `inductive_step_calculation`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: use induction hypotheses and recursive/inductive
-definitions to prove the step calculation.
-
-Likely tactics: `simp` with recursive definitions and induction hypotheses,
-then `ring`, `omega`, or `linarith`.
-
-### `extensionality_then_pointwise_calculation`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: first apply extensionality (`ext x`, `funext x`, set
-extensionality, component extensionality), then use a pointwise calculation.
-
-Likely tactics: `ext`, `funext`, `constructor`, followed by `simp`, `calc`, or
-the chain handler.
-
-### `calculation_to_contradiction`
-
-Fields: common calculation fields.
-
-Expected Lean behavior: derive an impossible final relation such as `n < n`,
-`0 < 0`, or `1 = 0`, then close the contradiction.
-
-Likely tactics: `exact absurd ...`, `linarith`, `omega`, `norm_num`, or
-irreflexivity/nonzero lemmas.
-
-### Suggested Calculation Handler Order
-
-1. Implement `equality_chain`, `rewrite_by_hypothesis`, `rewrite_by_lemma`,
-   `definition_unfolding`, and `normalization`; these cover basic algebraic
-   calculations and are easiest to lower to Lean.
-2. Add `inequality_chain`, `mixed_relation_chain`, `positivity_side_goal`, and
-   `monotonicity_step`; these cover most order/arithmetic calculations.
-3. Add estimate and structural handlers:
-   `triangle_inequality_estimate`, `add_subtract_intermediate`,
-   `casewise_calculation`, `inductive_step_calculation`,
-   `extensionality_then_pointwise_calculation`, and
-   `calculation_to_contradiction`.
+1. Make `assert_statement` robust with `grind`, dependency fields, and
+   side-condition assertions.
+2. Add optional calculation-step hinting inside `assertionCode` for
+   `from`/`relation`/`to` and `calculation_kind`.
+3. Only add specialized calculation handlers later for cases where assertion
+   chains plus `grind` repeatedly fail.
