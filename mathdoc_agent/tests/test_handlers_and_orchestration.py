@@ -27,6 +27,7 @@ from mathdoc_agent.models.refinement_specs import (
     DocumentChildSpec,
     DocumentRefinementSpec,
     InductionRefinementSpec,
+    ProofResolutionSpec,
     SimpleProofRefinementSpec,
     StructuredProofRefinementSpec,
 )
@@ -34,6 +35,10 @@ from mathdoc_agent.orchestration.context import build_proof_context
 from mathdoc_agent.orchestration.claim_audit import audit_claims_for_lean
 from mathdoc_agent.orchestration.document_orchestrator import document_from_text, refine_math_document
 from mathdoc_agent.orchestration.proof_orchestrator import refine_proof_tree
+from mathdoc_agent.orchestration.proof_resolution import (
+    proof_kind_needs_resolution,
+    resolve_unhandled_proof_tree,
+)
 from mathdoc_agent.orchestration.worklist import walk_proof_nodes
 from mathdoc_agent.plugins.document_types import default_document_handler_registry
 from mathdoc_agent.plugins.proof_types import default_proof_handler_registry
@@ -202,6 +207,48 @@ class ClaimAuditAgent:
                 )
             )
         return ClaimAuditSpec(patches=patches)
+
+
+class ProofResolutionAgent:
+    def __call__(self, payload):
+        return ProofResolutionSpec(
+            strategy="resolve invariant proof to assertions",
+            summary="The invariant proof is exposed as two local assertions.",
+            proof_steps=[
+                LogicalProofStepData(
+                    type="assert_statement",
+                    claim="The invariant holds initially.",
+                    proof_method="initial condition",
+                ),
+                LogicalProofStepData(
+                    type="assert_statement",
+                    claim="The invariant is preserved by each move.",
+                    proof_method="invariant preservation",
+                ),
+            ],
+            notes=[f"resolved {payload['proof_kind']}"],
+        )
+
+
+class ComponentProofResolutionAgent:
+    def __call__(self, payload):
+        return ProofResolutionSpec(
+            strategy="resolve diagram chase into component claims",
+            components=[
+                ChildProofSpec(
+                    id_suffix="commuting_square",
+                    kind=ProofKind.simple,
+                    text="The square commutes.",
+                    goal="The square commutes.",
+                ),
+                ChildProofSpec(
+                    id_suffix="element_equality",
+                    kind=ProofKind.simple,
+                    text="The two element images are equal.",
+                    goal="The two element images are equal.",
+                ),
+            ],
+        )
 
 
 class DocumentParserAgent:
@@ -576,6 +623,57 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             ProofKind.probabilistic,
         ):
             self.assertEqual(registry.get(kind.value).kind, kind.value)
+
+    async def test_unhandled_proof_kind_resolves_after_original_refinement(self) -> None:
+        original = ProofNode(
+            id="p.root",
+            kind=ProofKind.invariant,
+            status=NodeStatus.resolved,
+            text="Use an invariant to show the target is unreachable.",
+            goal="The target is unreachable.",
+            data=StructuredProofData(
+                strategy="invariant argument",
+                summary="Use a preserved invariant.",
+                invariant="parity",
+            ).model_dump(),
+        )
+        tree, changed = await resolve_unhandled_proof_tree(
+            ProofTree(id="p", root=original),
+            {"invariant": ProofResolutionAgent()},
+        )
+        self.assertTrue(changed)
+        self.assertEqual(tree.root.kind, ProofKind.logical_sequence)
+        self.assertEqual(tree.root.status, NodeStatus.resolved)
+        self.assertIn("Resolved from original proof kind 'invariant'", tree.root.notes[0])
+        exported = json.loads(to_json(tree))
+        self.assertEqual(exported["type"], "proof")
+        self.assertEqual(
+            [step["claim"] for step in exported["proof_steps"]],
+            ["The invariant holds initially.", "The invariant is preserved by each move."],
+        )
+
+    async def test_document_orchestrator_resolves_unhandled_proof_after_generation(self) -> None:
+        document = document_from_text("Theorem. P. Proof. diagram chase.", title="Diagram")
+        refined = await refine_math_document(
+            document,
+            default_document_handler_registry(parser_agent=DocumentParserAgent()),
+            default_proof_handler_registry(
+                classifier_agent=UnsupportedProofClassifierAgent(ProofKind.diagram_chase.value),
+                structured_agent=StructuredAgent(),
+                simple_agent=SimpleAgent(),
+            ),
+            proof_resolution_agents={"diagram_chase": ComponentProofResolutionAgent()},
+        )
+        proof_root = refined.root.children[0].proof.root
+        self.assertEqual(proof_root.kind, ProofKind.logical_sequence)
+        self.assertEqual(proof_root.status, NodeStatus.resolved)
+        self.assertTrue(proof_kind_needs_resolution(ProofKind.diagram_chase))
+        self.assertFalse(proof_kind_needs_resolution(ProofKind.simple))
+        self.assertEqual([child.kind for child in proof_root.children], [ProofKind.simple, ProofKind.simple])
+        self.assertTrue(all(child.status == NodeStatus.resolved for child in proof_root.children))
+        exported = json.loads(to_json(refined))
+        steps = exported["document"]["body"][0]["proof"]["proof_steps"]
+        self.assertEqual([step["claim"] for step in steps], ["The square commutes.", "The two element images are equal."])
 
     async def test_document_orchestrator_refines_attached_proof(self) -> None:
         document = document_from_text("Theorem. P. Proof. simple proof.", title="Tiny")

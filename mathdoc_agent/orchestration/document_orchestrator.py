@@ -8,6 +8,7 @@ from mathdoc_agent.models.payloads import StatementData
 from mathdoc_agent.models.runs import AgentRunRecord
 from mathdoc_agent.orchestration.context import DocumentContext
 from mathdoc_agent.orchestration.proof_orchestrator import refine_proof_tree
+from mathdoc_agent.orchestration.proof_resolution import resolve_and_refine_unhandled_proof_tree
 from mathdoc_agent.orchestration.worklist import kind_key, replace_document_node, walk_document_nodes
 from mathdoc_agent.registries.document_handlers import DocumentHandlerRegistry
 from mathdoc_agent.registries.proof_handlers import ProofHandlerRegistry
@@ -160,6 +161,7 @@ async def refine_attached_proofs(
     document: MathDocument,
     proof_registry: ProofHandlerRegistry,
     max_iterations_per_proof: int = 100,
+    proof_resolution_agents: dict[str, object] | None = None,
 ) -> MathDocument:
     root = document.root
     results = available_document_results(root)
@@ -172,7 +174,18 @@ async def refine_attached_proofs(
             available_document_results=results,
             max_iterations=max_iterations_per_proof,
         )
-        root = replace_document_node(root, node.id, node.model_copy(update={"proof": refined_proof}))
+        refined_proof = await resolve_and_refine_unhandled_proof_tree(
+            refined_proof,
+            proof_resolution_agents,
+            proof_registry,
+            available_document_results=results,
+            max_iterations=max_iterations_per_proof,
+        )
+        root = replace_document_node(
+            root,
+            node.id,
+            node.model_copy(update={"proof": refined_proof}),
+        )
     return document.model_copy(update={"root": recompute_document_statuses(root)})
 
 
@@ -183,6 +196,7 @@ async def refine_math_document(
     *,
     document_iterations: int = 20,
     proof_iterations: int = 100,
+    proof_resolution_agents: dict[str, object] | None = None,
 ) -> MathDocument:
     doc = await refine_document_structure(
         document,
@@ -193,5 +207,6 @@ async def refine_math_document(
         doc,
         proof_registry,
         max_iterations_per_proof=proof_iterations,
+        proof_resolution_agents=proof_resolution_agents,
     )
     return doc.model_copy(update={"root": recompute_document_statuses(doc.root)})

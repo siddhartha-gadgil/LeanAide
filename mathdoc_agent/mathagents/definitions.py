@@ -18,6 +18,7 @@ from mathdoc_agent.models.refinement_specs import (
     CasesRefinementSpec,
     DocumentRefinementSpec,
     InductionRefinementSpec,
+    ProofResolutionSpec,
     SimpleProofRefinementSpec,
     StructuredProofRefinementSpec,
 )
@@ -88,8 +89,49 @@ structured_proof_agent = _agent(
     prompts.STRUCTURED_PROOF_INSTRUCTIONS,
     StructuredProofRefinementSpec,
 )
+proof_resolution_agent = _agent(
+    "Unsupported proof resolver",
+    prompts.PROOF_RESOLUTION_INSTRUCTIONS,
+    ProofResolutionSpec,
+)
+combinatorial_proof_resolution_agent = _agent(
+    "Combinatorial proof resolver",
+    prompts.PROOF_RESOLUTION_INSTRUCTIONS,
+    ProofResolutionSpec,
+)
+analytic_proof_resolution_agent = _agent(
+    "Analytic proof resolver",
+    prompts.PROOF_RESOLUTION_INSTRUCTIONS,
+    ProofResolutionSpec,
+)
+structural_proof_resolution_agent = _agent(
+    "Structural proof resolver",
+    prompts.PROOF_RESOLUTION_INSTRUCTIONS,
+    ProofResolutionSpec,
+)
 claim_audit_agent = _agent(
     "Lean claim auditor",
     prompts.CLAIM_AUDIT_INSTRUCTIONS,
     ClaimAuditSpec,
 )
+
+proof_resolution_agents = {
+    "default": proof_resolution_agent,
+    "counting": combinatorial_proof_resolution_agent,
+    "pigeonhole": combinatorial_proof_resolution_agent,
+    "probabilistic": combinatorial_proof_resolution_agent,
+    "genericity_ae": combinatorial_proof_resolution_agent,
+    "algorithmic": combinatorial_proof_resolution_agent,
+    "invariant": analytic_proof_resolution_agent,
+    "monotonicity_bounding": analytic_proof_resolution_agent,
+    "maximal_minimal": analytic_proof_resolution_agent,
+    "compactness": analytic_proof_resolution_agent,
+    "density": analytic_proof_resolution_agent,
+    "approximation": analytic_proof_resolution_agent,
+    "extensionality": structural_proof_resolution_agent,
+    "generic_element": structural_proof_resolution_agent,
+    "diagram_chase": structural_proof_resolution_agent,
+    "local_to_global": structural_proof_resolution_agent,
+    "universal_property": structural_proof_resolution_agent,
+    "diagrammatic_geometric": structural_proof_resolution_agent,
+}

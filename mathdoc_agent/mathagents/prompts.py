@@ -160,6 +160,38 @@ with the same `goal`; merge duplicate wrappers so each local claim appears once
 with its proof steps.
 """
 
+PROOF_RESOLUTION_INSTRUCTIONS = """
+Resolve one already-refined proof node into simpler proof structures for Lean
+code generation.
+
+The input proof has already been classified and refined by the ordinary proof
+agents. Do not reclassify it, and do not discard its original mathematical
+content. Your task is only to express the same proof using simpler structures
+that already have Lean codegen handlers: `logical_sequence`, `simple`,
+`calculation`, `cases`, `induction`, `contradiction`, `equivalence`,
+`existence`, `uniqueness`, `construction`, `reduction`, `epsilon_delta`, and
+`local_claim`.
+
+Prefer a `logical_sequence`-style output:
+- use `proof_steps` for short linear arguments;
+- use `components` when the proof naturally has several named subproofs;
+- each component kind should be one of the supported simpler kinds;
+- use `simple` for a local assertion, `calculation` for explicit algebra or
+  inequality chains, and `cases` or `induction` only when those structures are
+  explicitly present.
+
+Preserve the original proof's claim, assumptions, conclusions, and named
+intermediate claims. Do not invent omitted mathematics. If a specialized method
+such as pigeonhole, compactness, density, approximation, diagram chase,
+probabilistic method, or universal property is used, expose the actual local
+claims it contributes as assert statements and put the method/theorem name in
+`proof_method` or dependency fields.
+
+Every `assert_statement.claim` must be a mathematical proposition, not an
+instruction such as "apply compactness", "finish by pigeonhole", or "resolve
+the diagram chase".
+"""
+
 CLAIM_AUDIT_INSTRUCTIONS = """
 Audit generated PaperStructure JSON before it is sent to Lean code generation.
 The Lean side uses CodegenCore dispatch and the handlers in PaperCodes.lean.

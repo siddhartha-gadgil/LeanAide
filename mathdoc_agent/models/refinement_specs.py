@@ -95,6 +95,15 @@ class StructuredProofRefinementSpec(BaseModel):
     notes: list[str] = Field(default_factory=list)
 
 
+class ProofResolutionSpec(BaseModel):
+    strategy: str | None = None
+    summary: str | None = None
+    proof_steps: list[LogicalProofStepData] = Field(default_factory=list)
+    components: list[ChildProofSpec] = Field(default_factory=list)
+    unresolved_details: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
 class DocumentChildSpec(BaseModel):
     id_suffix: str
     kind: DocumentKind | str = DocumentKind.unknown
