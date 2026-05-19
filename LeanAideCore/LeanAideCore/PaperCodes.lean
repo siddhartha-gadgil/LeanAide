@@ -1466,7 +1466,7 @@ def epsilonDeltaProof(translator : CodeGenerator := {}) : Option MVarId →  (ki
       let boundClaimName := mkIdent <| Name.mkSimple s!"claim_{hash₀}"
       let boundClaimStx ← delabDetailed boundClaim
       let boundProofTacs ← `(tacticSeq| have $boundClaimName : $boundClaimStx := by $boundClaimProof
-                                        llm?)
+                                        grind)
       appendTacticSeqSeq deltaTac boundProofTacs
     catch e =>
       traceAide `leanaide.papercodes.info
