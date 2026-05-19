@@ -120,6 +120,7 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
       consumeIntros goal' k (accum ++ [n])
   | _, _ => do
     return (goal, accum)
+
 open Lean.Parser.Tactic
 
 def resolveIntros (goal: MVarId) (names: List Name) : TranslateM <| MVarId × (Array Syntax.Tactic)  := goal.withContext do

@@ -11,24 +11,24 @@ theorem zero_unique : ∀ {G : Type u_1} [inst : AddGroup G], ∃! z : G, ∀ (a
     intro G inst
     have assert_815999362915303493 : ∃ (e : G), ∀ (a : G), e + a = a ∧ a + e = a :=
       by
-      let e : G :=  0
+      let e : (G : Type u_1) → [inst : AddGroup G] → G := fun G [AddGroup G] => 0
       use e
       simp only [add_eq_right, add_eq_left, and_self, forall_const, exists_eq]
-      grind
     have assert_7520022488588508554 :
       ∀ {x y : G}, (∀ (a : G), x + a = a ∧ a + x = a) → (∀ (a : G), y + a = a ∧ a + y = a) → x = y := by
       simp only [add_eq_right, add_eq_left, and_self, forall_const, forall_eq_apply_imp_iff, imp_self, implies_true]
-    apply existsUnique_of_exists_of_unique
-    assumption
-    assumption
+    first
+    | apply existsUnique_of_exists_of_unique; repeat (assumption)
+    | grind
+
 
 /-!
-## Elaboration results
+## Elaboration results 
 
 
 Declarations (1): zero_unique
 
-Elaboration logs (5):
+Elaboration logs (4):
 1. Type mismatch
      e
    has type
@@ -42,71 +42,28 @@ Elaboration logs (5):
    inst : AddGroup G
    e : (G : Type u_1) → [inst : AddGroup G] → G := fun G [AddGroup G] => 0
    ⊢ sorry = 0
-3. `grind` failed
-   case grind
-   G : Type u_1
-   inst : AddGroup G
-   assert_815999362915303493 : ∃ e, ∀ (a : G), e + a = a ∧ a + e = a
-   assert_7520022488588508554 :
-     ∀ {x y : G}, (∀ (a : G), x + a = a ∧ a + x = a) → (∀ (a : G), y + a = a ∧ a + y = a) → x = y
-   h : ¬∃! e, (∀ (a : G), e + a = a) ∧ ∀ (a : G), a + e = a
-   w : G
-   left : ∀ (a : G), w + a = a
-   right : ∀ (a : G), a + w = a
-   ⊢ False
-   [grind] Goal diagnostics
-     [facts] Asserted facts
-       [prop] ∃ e, (∀ (a : G), e + a = a) ∧ ∀ (a : G), a + e = a
-       [prop] ∀ {x y : G},
-             ((∀ (a : G), x + a = a) ∧ ∀ (a : G), a + x = a) → ((∀ (a : G), y + a = a) ∧ ∀ (a : G), a + y = a) → x = y
-       [prop] ¬∃! e, (∀ (a : G), e + a = a) ∧ ∀ (a : G), a + e = a
-       [prop] ∀ (a : G), w + a = a
-       [prop] ∀ (a : G), a + w = a
-     [eqc] True propositions
-       [prop] ∃ e, (∀ (a : G), e + a = a) ∧ ∀ (a : G), a + e = a
-       [prop] ∀ (a : G), a + w = a
-       [prop] ∀ (a : G), w + a = a
-       [prop] ∀ {x y : G},
-             ((∀ (a : G), x + a = a) ∧ ∀ (a : G), a + x = a) → ((∀ (a : G), y + a = a) ∧ ∀ (a : G), a + y = a) → x = y
-     [eqc] False propositions
-       [prop] ∃! e, (∀ (a : G), e + a = a) ∧ ∀ (a : G), a + e = a
-     [cases] Case analyses
-       [cases] [1/1]: ∃ e, (∀ (a : G), e + a = a) ∧ ∀ (a : G), a + e = a
-         [cases] source: Initial goal
-     [ematch] E-matching patterns
-       [thm] left: [@HAdd.hAdd `[G] `[G] `[G] `[instHAdd] `[w] #0]
-       [thm] right: [@HAdd.hAdd `[G] `[G] `[G] `[instHAdd] #0 `[w]]
-   [grind] Issues
-     [issue] failed to create E-match local theorem for
-           ∀ {x y : G},
-             ((∀ (a : G), x + a = a) ∧ ∀ (a : G), a + x = a) → ((∀ (a : G), y + a = a) ∧ ∀ (a : G), a + y = a) → x = y
-4. This simp argument is unused:
+3. This simp argument is unused:
      exists_eq
-
+   
    Hint: Omit it from the simp argument list.
      simp only [add_eq_right, add_eq_left, and_self, forall_const,̵ ̵e̵x̵i̵s̵t̵s̵_̵e̵q̵]
-
+   
    Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-5. This simp argument is unused:
+4. This simp argument is unused:
      implies_true
-
+   
    Hint: Omit it from the simp argument list.
      simp only [add_eq_right, add_eq_left, and_self, forall_const, forall_eq_apply_imp_iff,
      ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲i̵m̵p̵_̵s̵e̵l̵f̵,̵ ̵i̵m̵p̵l̵i̵e̵s̵_̵t̵r̵u̵e̵]̵i̲m̲p̲_̲s̲e̲l̲f̲]̲
-
+   
    Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
 
-Sorries (2 goals):
+Sorries (1 goal):
 1. zero_unique
-   ∀ {G : Type u_1} [inst : AddGroup G],
-     have assert_815999362915303493 := ⋯;
-     have assert_7520022488588508554 := ⋯;
-     ∃! z, ∀ (a : G), z + a = a ∧ a + z = a
-
-2. zero_unique
    ∀ {G : Type u_1} [inst : AddGroup G], ∃ e, ∀ (a : G), e + a = a ∧ a + e = a
 
 Sorries after purge: none
 
 
 -/
+

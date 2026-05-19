@@ -287,6 +287,57 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
             throwError
               s!"codegen: no definition translation found for {statement'}"
 
+partial def dropFuncs : Syntax.Term → Syntax.Term
+  | `(fun $_* => $body) => dropFuncs body
+  | stx => stx
+
+partial def dropForallsExpr : Expr → TermElabM Expr := fun expr => do
+  match expr with
+  | Expr.forallE _ _ body _ => do
+    dropForallsExpr body
+  | _ => pure expr
+
+partial def simpleLet' (stx: Syntax.Tactic) : TermElabM Syntax.Tactic := do
+  match stx with
+  | `(tactic| let $n : $ty := $val) => do
+    let tyExpr ← elabType ty
+    let tyExpr' ← dropForallsExpr tyExpr
+    let ty' ← delabDetailed tyExpr'
+    let val' := dropFuncs val
+    simpleLet' <| ←  `(tactic| let $n : $ty' := $val')
+  | tac => do
+    traceAide `leanaide.papercodes.info
+      s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
+    return tac
+
+partial def simpleLet : Syntax.Tactic → TermElabM Syntax.Tactic
+  | `(tactic| let $n := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n := $val)
+  | `(tactic| let $n := fun $_ $_* => $val) => do
+    simpleLet <| ←  `(tactic| let $n := $val)
+  | `(tactic| let $n : ∀ $_, $t := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $t := $val)
+  | `(tactic| let $n : ∀ $_ $ys*, $t := fun $_ $zs* => $val) => do
+    simpleLet <| ←  `(tactic| let $n : ∀ $ys*, $t := fun $zs* => $val)
+  | `(tactic| let $n : $x → $ty := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := $val)
+  | `(tactic| let $n : ($a:term : $b:term) → $ty := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := $val)
+  | `(tactic| let $n : $_ → $ty := fun $_ $ys* => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
+  | `(tactic| let $n : $_ → $ty := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := $val)
+  | tac => do
+    traceAide `leanaide.papercodes.info
+      s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
+    return tac
+
+def simpEg : TermElabM Syntax.Tactic := do
+  let stx ← `(tactic| let e : (G : Type u) → [inst : AddGroup G] → G := fun G [AddGroup G] => 0)
+  simpleLet stx
+
+#eval simpEg
+
 def existenceProof (translator : CodeGenerator) (variableName construction : String) (proof: Json) (goal : MVarId) :
     TranslateM (TSyntax `Lean.Parser.Tactic.tacticSeq) := do
   let varId := mkIdent variableName.toName
@@ -295,8 +346,9 @@ def existenceProof (translator : CodeGenerator) (variableName construction : Str
   match defStx with
   | .ok defStx =>
     traceAide `leanaide.papercodes.info s!"Existence proof: translated statement to definition command:\n{← PrettyPrinter.ppCommand defStx}"
-    let defTactic ← commandToTactic defStx
-    let useTacticSeq ← `(tacticSeq| $defTactic; use $varId:ident)
+    let letTactic ← commandToTactic defStx
+    let letTactic ← simpleLet letTactic
+    let useTacticSeq ← `(tacticSeq| $letTactic; use $varId:ident)
     traceAide `leanaide.papercodes.info s!"Existence proof: created tactic sequence for definition and use:\n{useTacticSeq}"
     let newGoal? ← runForSingleGoal goal useTacticSeq
     match newGoal? with
@@ -345,7 +397,7 @@ after the witness has been introduced.
 @[codegen "existence_proof"]
 def existenceProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
   match goal?, s, js with
-  | some goal, ``tacticSeq, js => do
+  | some goal, ``tacticSeq, js => goal.withContext do
     let .ok variableName := js.getObjValAs? String "variable_name" | throwError
       s!"codegen: no 'variable_name' found in 'existence_proof'"
     let .ok witness := js.getObjValAs? String "witness" | throwError
@@ -384,8 +436,10 @@ first-class `construction` or definition for the object.
 -/
 
 @[codegen "construction_proof"]
-def constructionProofCode (translator : CodeGenerator := {}) (_ : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
   | ``tacticSeq, js => do
+    let some goal := goal? | throwError s!"codegen: 'construction_proof' requires a goal, but none found"
+    goal.withContext do
     let .ok variableName := js.getObjValAs? String "variable_name" | throwError
       s!"codegen: no 'variable_name' found in 'construction_proof'"
     let .ok construction := js.getObjValAs? String "construction" | throwError
@@ -471,7 +525,7 @@ equality of arbitrary candidates.
 @[codegen "uniqueness_proof"]
 def uniquenessProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
   match goal?, s, js with
-  | some _, ``tacticSeq, js => do
+  | some goal, ``tacticSeq, js => goal.withContext do
     let .ok existenceProof := js.getObjVal? "existence_proof" | throwError
       s!"codegen: no 'existence_proof' found in 'uniqueness_proof'"
     let .ok uniquenessProof := js.getObjVal? "uniqueness_proof" | throwError
@@ -479,7 +533,8 @@ def uniquenessProofCode (translator : CodeGenerator := {}) (goal? : Option MVarI
     let existenceTacs ← existenceProofForUniqueness translator existenceProof
     let uniquenessTacs ← uniquenessProofCore translator existenceProof uniquenessProof
     let bothTacs ← appendTacticSeqSeq existenceTacs uniquenessTacs
-    let grindTac ← `(tacticSeq| grind)
+    let exId := mkIdent `existsUnique_of_exists_of_unique
+    let grindTac ← `(tacticSeq| first | apply $exId; repeat (assumption) | grind)
     appendTacticSeqSeq bothTacs grindTac
   | _, _,_ => throwError s!"codegen: 'uniqueness_proof' only works for tactic sequences with a goal, got kind {s} and goal? {goal?.isSome}"
 
