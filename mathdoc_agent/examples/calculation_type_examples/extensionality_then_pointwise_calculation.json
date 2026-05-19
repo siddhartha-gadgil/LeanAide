@@ -8,16 +8,19 @@
         "header": "Theorem",
         "claim": "Two functions are equal when their values agree pointwise.",
         "proof": {
-          "type": "extensionality_then_pointwise_calculation",
+          "type": "proof",
+          "calculation_kind": "extensionality_then_pointwise_calculation",
           "start": "f x",
           "target": "g x",
           "goal_relation": "=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "f x = g x",
+              "proof_method": "pointwise calculation after funext x",
               "from": "f x",
               "relation": "=",
-              "to": "g x",
-              "justification": "pointwise calculation after funext x"
+              "to": "g x"
             }
           ],
           "id": "extensionality_then_pointwise_calculation.root.calculation",

@@ -8,16 +8,19 @@
         "header": "Theorem",
         "claim": "(x+y)^2 normalizes to x^2+2*x*y+y^2.",
         "proof": {
-          "type": "normalization",
+          "type": "proof",
+          "calculation_kind": "normalization",
           "start": "(x+y)^2",
           "target": "x^2 + 2*x*y + y^2",
           "goal_relation": "=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "(x+y)^2 = x^2 + 2*x*y + y^2",
+              "proof_method": "ring_nf",
               "from": "(x+y)^2",
               "relation": "=",
-              "to": "x^2 + 2*x*y + y^2",
-              "justification": "ring_nf"
+              "to": "x^2 + 2*x*y + y^2"
             }
           ],
           "id": "normalization.root.calculation",

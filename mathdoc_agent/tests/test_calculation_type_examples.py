@@ -24,7 +24,7 @@ class CalculationTypeExampleTests(unittest.IsolatedAsyncioTestCase):
             written = await write_all_examples(output_dir)
             self.assertEqual(len(written), 2 * len(EXAMPLES))
 
-            exported_types = set()
+            exported_kinds = set()
             for example in EXAMPLES:
                 source_path = output_dir / f"{example.slug}.md"
                 json_path = output_dir / f"{example.slug}.json"
@@ -36,15 +36,19 @@ class CalculationTypeExampleTests(unittest.IsolatedAsyncioTestCase):
                 theorem = data["document"]["body"][0]
                 self.assertEqual(theorem["type"], "theorem")
                 proof = theorem["proof"]
-                self.assertEqual(proof["type"], example.calculation_kind)
-                self.assertIn("steps", proof)
-                self.assertTrue(proof["steps"])
-                self.assertIn("from", proof["steps"][0])
-                self.assertIn("relation", proof["steps"][0])
-                self.assertIn("to", proof["steps"][0])
-                exported_types.add(proof["type"])
+                self.assertEqual(proof["type"], "proof")
+                self.assertEqual(proof["calculation_kind"], example.calculation_kind)
+                self.assertIn("proof_steps", proof)
+                self.assertTrue(proof["proof_steps"])
+                self.assertEqual(proof["proof_steps"][0]["type"], "assert_statement")
+                self.assertIn("claim", proof["proof_steps"][0])
+                calculation_steps = [step for step in proof["proof_steps"] if "from" in step]
+                self.assertTrue(calculation_steps)
+                self.assertIn("relation", calculation_steps[0])
+                self.assertIn("to", calculation_steps[0])
+                exported_kinds.add(proof["calculation_kind"])
 
-            self.assertEqual(exported_types, CORE_CALCULATION_SCHEMAS)
+            self.assertEqual(exported_kinds, CORE_CALCULATION_SCHEMAS)
 
     def test_saved_example_outputs_exist(self) -> None:
         output_dir = Path("mathdoc_agent/examples/calculation_type_examples")

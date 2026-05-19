@@ -8,16 +8,19 @@
         "header": "Theorem",
         "claim": "The expression (x+1)^2 equals x^2+2*x+1.",
         "proof": {
-          "type": "equality_chain",
+          "type": "proof",
+          "calculation_kind": "equality_chain",
           "start": "(x+1)^2",
           "target": "x^2 + 2*x + 1",
           "goal_relation": "=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "(x+1)^2 = x^2 + 2*x + 1",
+              "proof_method": "ring",
               "from": "(x+1)^2",
               "relation": "=",
-              "to": "x^2 + 2*x + 1",
-              "justification": "ring"
+              "to": "x^2 + 2*x + 1"
             }
           ],
           "id": "equality_chain_square_sum.root.calculation",

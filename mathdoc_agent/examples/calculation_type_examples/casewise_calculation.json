@@ -8,16 +8,19 @@
         "header": "Theorem",
         "claim": "|x| equals x when x is nonnegative and -x otherwise.",
         "proof": {
-          "type": "casewise_calculation",
+          "type": "proof",
+          "calculation_kind": "casewise_calculation",
           "start": "|x|",
           "target": "if 0 ≤ x then x else -x",
           "goal_relation": "=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "|x| = if 0 ≤ x then x else -x",
+              "proof_method": "by_cases hx : 0 ≤ x",
               "from": "|x|",
               "relation": "=",
-              "to": "if 0 ≤ x then x else -x",
-              "justification": "by_cases hx : 0 ≤ x"
+              "to": "if 0 ≤ x then x else -x"
             }
           ],
           "id": "casewise_calculation.root.calculation",

@@ -8,16 +8,19 @@
         "header": "Theorem",
         "claim": "double x = x+x.",
         "proof": {
-          "type": "definition_unfolding",
+          "type": "proof",
+          "calculation_kind": "definition_unfolding",
           "start": "double x",
           "target": "x + x",
           "goal_relation": "=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "double x = x + x",
+              "proof_method": "unfold double",
               "from": "double x",
               "relation": "=",
-              "to": "x + x",
-              "justification": "unfold double"
+              "to": "x + x"
             }
           ],
           "id": "definition_unfolding.root.calculation",

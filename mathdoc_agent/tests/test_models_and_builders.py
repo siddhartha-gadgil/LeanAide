@@ -144,7 +144,9 @@ class ModelAndBuilderTests(unittest.TestCase):
         self.assertEqual(calc.model_dump()["type"], "calculation")
 
         calc_json = json.loads(to_json(ProofTree(id="calc", theorem_statement="a = c", root=calc)))
-        self.assertEqual(calc_json["type"], "calculation")
+        self.assertEqual(calc_json["type"], "proof")
+        self.assertEqual(calc_json["proof_steps"][0]["type"], "assert_statement")
+        self.assertEqual(calc_json["proof_steps"][0]["claim"], "a = b")
 
         core_calc = ProofBuilder.calculation(
             id="core",
@@ -168,16 +170,19 @@ class ModelAndBuilderTests(unittest.TestCase):
             ],
         )
         core_json = json.loads(to_json(ProofTree(id="core", theorem_statement="a = c", root=core_calc)))
-        self.assertEqual(core_json["type"], "equality_chain")
+        self.assertEqual(core_json["type"], "proof")
+        self.assertEqual(core_json["calculation_kind"], "equality_chain")
         self.assertEqual(core_json["goal_relation"], "=")
-        self.assertEqual(core_json["steps"][0]["from"], "a")
-        self.assertEqual(core_json["steps"][0]["to"], "b")
+        self.assertEqual(core_json["proof_steps"][0]["type"], "assert_statement")
+        self.assertEqual(core_json["proof_steps"][0]["claim"], "a = b")
+        self.assertEqual(core_json["proof_steps"][0]["from"], "a")
+        self.assertEqual(core_json["proof_steps"][0]["to"], "b")
         self.assertEqual(
-            core_json["steps"][0]["deduced_from_claim"],
+            core_json["proof_steps"][0]["deduced_from_claim"],
             ["a = b follows from the local hypothesis h1"],
         )
         self.assertEqual(
-            core_json["steps"][0]["deduced_from_theorem"][0]["claim"],
+            core_json["proof_steps"][0]["deduced_from_theorem"][0]["claim"],
             "Equal terms may be substituted in any expression.",
         )
 
@@ -189,8 +194,10 @@ class ModelAndBuilderTests(unittest.TestCase):
                 steps=[CalcStep(lhs="a", relation=CalcRelation.eq, rhs="b")],
             )
             exported = json.loads(to_json(ProofTree(id=calculation_kind, theorem_statement="a = b", root=root)))
-            self.assertEqual(exported["type"], calculation_kind)
-            self.assertEqual(exported["steps"][0]["from"], "a")
+            self.assertEqual(exported["type"], "proof")
+            self.assertEqual(exported["calculation_kind"], calculation_kind)
+            self.assertEqual(exported["proof_steps"][0]["type"], "assert_statement")
+            self.assertEqual(exported["proof_steps"][0]["from"], "a")
 
     def test_definition_builders_create_lean_definition_payloads(self) -> None:
         structure = DocumentBuilder.structure_definition(

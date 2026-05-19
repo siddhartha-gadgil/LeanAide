@@ -8,16 +8,19 @@
         "header": "Theorem",
         "claim": "x+0 = x.",
         "proof": {
-          "type": "rewrite_by_lemma",
+          "type": "proof",
+          "calculation_kind": "rewrite_by_lemma",
           "start": "x + 0",
           "target": "x",
           "goal_relation": "=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "x + 0 = x",
+              "proof_method": "add_zero",
               "from": "x + 0",
               "relation": "=",
-              "to": "x",
-              "justification": "add_zero"
+              "to": "x"
             }
           ],
           "id": "rewrite_by_lemma.root.calculation",

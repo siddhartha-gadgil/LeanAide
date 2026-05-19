@@ -8,22 +8,27 @@
         "header": "Theorem",
         "claim": "If x= y and y < z, then x < z.",
         "proof": {
-          "type": "mixed_relation_chain",
+          "type": "proof",
+          "calculation_kind": "mixed_relation_chain",
           "start": "x",
           "target": "z",
           "goal_relation": "mixed",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "x = y",
+              "proof_method": "hypothesis hxy",
               "from": "x",
               "relation": "=",
-              "to": "y",
-              "justification": "hypothesis hxy"
+              "to": "y"
             },
             {
+              "type": "assert_statement",
+              "claim": "y < z",
+              "proof_method": "hypothesis hyz",
               "from": "y",
               "relation": "<",
-              "to": "z",
-              "justification": "hypothesis hyz"
+              "to": "z"
             }
           ],
           "id": "mixed_relation_chain_nonnegative.root.calculation",

@@ -8,16 +8,19 @@
         "header": "Theorem",
         "claim": "If a≤b, then a+c≤b+c.",
         "proof": {
-          "type": "monotonicity_step",
+          "type": "proof",
+          "calculation_kind": "monotonicity_step",
           "start": "a + c",
           "target": "b + c",
           "goal_relation": "<=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "a + c <= b + c",
+              "proof_method": "add_le_add_right hab c",
               "from": "a + c",
               "relation": "<=",
-              "to": "b + c",
-              "justification": "add_le_add_right hab c"
+              "to": "b + c"
             }
           ],
           "id": "monotonicity_step.root.calculation",

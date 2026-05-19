@@ -8,16 +8,19 @@
         "header": "Theorem",
         "claim": "If x=y, then f x = f y.",
         "proof": {
-          "type": "rewrite_by_hypothesis",
+          "type": "proof",
+          "calculation_kind": "rewrite_by_hypothesis",
           "start": "f x",
           "target": "f y",
           "goal_relation": "=",
-          "steps": [
+          "proof_steps": [
             {
+              "type": "assert_statement",
+              "claim": "f x = f y",
+              "proof_method": "rewrite by hxy",
               "from": "f x",
               "relation": "=",
-              "to": "f y",
-              "justification": "rewrite by hxy"
+              "to": "f y"
             }
           ],
           "id": "rewrite_by_hypothesis.root.calculation",

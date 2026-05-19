@@ -58,38 +58,71 @@
                 "text": "By the definition of open ball, \\(z\\in B(x,\\varepsilon/3)\\) gives \\(d(z,x)<\\varepsilon/3\\), and \\(z\\in B(y,\\varepsilon/3)\\) gives \\(d(z,y)<\\varepsilon/3\\)."
               },
               {
-                "type": "triangle_inequality_estimate",
-                "start": "d(x,y)",
-                "target": "2\\varepsilon/3",
-                "goal_relation": "mixed",
-                "steps": [
-                  {
-                    "from": "d(x,y)",
-                    "relation": "<=",
-                    "to": "d(x,z)+d(z,y)",
-                    "justification": "triangle inequality for the metric d",
-                    "side_conditions": [
-                      "d is a metric"
-                    ]
-                  },
-                  {
-                    "from": "d(x,z)+d(z,y)",
-                    "relation": "<",
-                    "to": "\\varepsilon/3+\\varepsilon/3",
-                    "justification": "using d(x,z)=d(z,x) by symmetry, together with the hypotheses d(z,x)<\\varepsilon/3 and d(z,y)<\\varepsilon/3",
-                    "side_conditions": [
-                      "d is a metric",
-                      "d(z,x)<\\varepsilon/3",
-                      "d(z,y)<\\varepsilon/3"
-                    ]
-                  },
-                  {
-                    "from": "\\varepsilon/3+\\varepsilon/3",
-                    "relation": "=",
-                    "to": "2\\varepsilon/3",
-                    "justification": "arithmetic simplification"
-                  }
-                ],
+                "type": "theorem",
+                "label": "metric.root.theorem.proof.root.triangle_inequality_bound",
+                "header": "Claim",
+                "claim": "d(x,y) < 2\\varepsilon/3",
+                "proof": {
+                  "type": "proof",
+                  "calculation_kind": "triangle_inequality_estimate",
+                  "start": "d(x,y)",
+                  "target": "2\\varepsilon/3",
+                  "goal_relation": "mixed",
+                  "proof_steps": [
+                    {
+                      "type": "assert_statement",
+                      "claim": "d is a metric",
+                      "proof_method": "side condition for d(x,y) <= d(x,z)+d(z,y)"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "d(x,y) <= d(x,z)+d(z,y)",
+                      "proof_method": "triangle inequality for the metric d",
+                      "from": "d(x,y)",
+                      "relation": "<=",
+                      "to": "d(x,z)+d(z,y)",
+                      "side_conditions": [
+                        "d is a metric"
+                      ]
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "d is a metric",
+                      "proof_method": "side condition for d(x,z)+d(z,y) < \\varepsilon/3+\\varepsilon/3"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "d(z,x)<\\varepsilon/3",
+                      "proof_method": "side condition for d(x,z)+d(z,y) < \\varepsilon/3+\\varepsilon/3"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "d(z,y)<\\varepsilon/3",
+                      "proof_method": "side condition for d(x,z)+d(z,y) < \\varepsilon/3+\\varepsilon/3"
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "d(x,z)+d(z,y) < \\varepsilon/3+\\varepsilon/3",
+                      "proof_method": "using d(x,z)=d(z,x) by symmetry, together with the hypotheses d(z,x)<\\varepsilon/3 and d(z,y)<\\varepsilon/3",
+                      "from": "d(x,z)+d(z,y)",
+                      "relation": "<",
+                      "to": "\\varepsilon/3+\\varepsilon/3",
+                      "side_conditions": [
+                        "d is a metric",
+                        "d(z,x)<\\varepsilon/3",
+                        "d(z,y)<\\varepsilon/3"
+                      ]
+                    },
+                    {
+                      "type": "assert_statement",
+                      "claim": "\\varepsilon/3+\\varepsilon/3 = 2\\varepsilon/3",
+                      "proof_method": "arithmetic simplification",
+                      "from": "\\varepsilon/3+\\varepsilon/3",
+                      "relation": "=",
+                      "to": "2\\varepsilon/3"
+                    }
+                  ]
+                },
                 "id": "metric.root.theorem.proof.root.triangle_inequality_bound",
                 "status": "resolved",
                 "text": "Using the triangle inequality, \\(d(x,y)\\le d(x,z)+d(z,y)<\\varepsilon/3+\\\\varepsilon/3=2\\varepsilon/3\\)."
@@ -101,39 +134,59 @@
                   "type": "proof",
                   "proof_steps": [
                     {
-                      "type": "calculation_to_contradiction",
-                      "start": "\\varepsilon",
-                      "target": "2/3",
-                      "goal_relation": "mixed",
-                      "steps": [
-                        {
-                          "from": "\\varepsilon",
-                          "relation": "=",
-                          "to": "d(x,y)",
-                          "justification": "From the hypothesis \\(d(x,y)=\\varepsilon\\)."
-                        },
-                        {
-                          "from": "d(x,y)",
-                          "relation": "<",
-                          "to": "2\\varepsilon/3",
-                          "justification": "Hypothesis."
-                        },
-                        {
-                          "from": "\\varepsilon",
-                          "relation": "<",
-                          "to": "2\\varepsilon/3",
-                          "justification": "Substitution using \\(d(x,y)=\\varepsilon\\) in \\(d(x,y)<2\\varepsilon/3\\)."
-                        },
-                        {
-                          "from": "1",
-                          "relation": "<",
-                          "to": "2/3",
-                          "justification": "Divide both sides of \\(\\varepsilon<2\\varepsilon/3\\) by \\(\\varepsilon\\).",
-                          "side_conditions": [
-                            "\\varepsilon>0"
-                          ]
-                        }
-                      ],
+                      "type": "theorem",
+                      "label": "metric.root.theorem.proof.root.contradiction.derive_false_inequality",
+                      "header": "Claim",
+                      "claim": "1 < 2/3",
+                      "proof": {
+                        "type": "proof",
+                        "calculation_kind": "calculation_to_contradiction",
+                        "start": "\\varepsilon",
+                        "target": "2/3",
+                        "goal_relation": "mixed",
+                        "proof_steps": [
+                          {
+                            "type": "assert_statement",
+                            "claim": "\\varepsilon = d(x,y)",
+                            "proof_method": "From the hypothesis \\(d(x,y)=\\varepsilon\\).",
+                            "from": "\\varepsilon",
+                            "relation": "=",
+                            "to": "d(x,y)"
+                          },
+                          {
+                            "type": "assert_statement",
+                            "claim": "d(x,y) < 2\\varepsilon/3",
+                            "proof_method": "Hypothesis.",
+                            "from": "d(x,y)",
+                            "relation": "<",
+                            "to": "2\\varepsilon/3"
+                          },
+                          {
+                            "type": "assert_statement",
+                            "claim": "\\varepsilon < 2\\varepsilon/3",
+                            "proof_method": "Substitution using \\(d(x,y)=\\varepsilon\\) in \\(d(x,y)<2\\varepsilon/3\\).",
+                            "from": "\\varepsilon",
+                            "relation": "<",
+                            "to": "2\\varepsilon/3"
+                          },
+                          {
+                            "type": "assert_statement",
+                            "claim": "\\varepsilon>0",
+                            "proof_method": "side condition for 1 < 2/3"
+                          },
+                          {
+                            "type": "assert_statement",
+                            "claim": "1 < 2/3",
+                            "proof_method": "Divide both sides of \\(\\varepsilon<2\\varepsilon/3\\) by \\(\\varepsilon\\).",
+                            "from": "1",
+                            "relation": "<",
+                            "to": "2/3",
+                            "side_conditions": [
+                              "\\varepsilon>0"
+                            ]
+                          }
+                        ]
+                      },
                       "id": "metric.root.theorem.proof.root.contradiction.derive_false_inequality",
                       "status": "resolved",
                       "text": "Since \\(d(x,y)=\\varepsilon\\), the inequality \\(d(x,y)<2\\varepsilon/3\\) gives \\(\\varepsilon<2\\varepsilon/3\\). Dividing by \\(\\varepsilon>0\\) gives \\(1<2/3\\), impossible."
