@@ -6,6 +6,7 @@ import unittest
 from contextlib import redirect_stderr
 
 from mathdoc_agent.export.json import to_json
+from mathdoc_agent.mathagents import definitions
 from mathdoc_agent.mathagents.runner import run_agent_typed
 from mathdoc_agent.models.base import DocumentKind, NodeStatus, ProofKind
 from mathdoc_agent.models.payloads import (
@@ -36,6 +37,7 @@ from mathdoc_agent.orchestration.claim_audit import audit_claims_for_lean
 from mathdoc_agent.orchestration.document_orchestrator import document_from_text, refine_math_document
 from mathdoc_agent.orchestration.proof_orchestrator import refine_proof_tree
 from mathdoc_agent.orchestration.proof_resolution import (
+    DIRECT_CODEGEN_PROOF_KINDS,
     proof_kind_needs_resolution,
     resolve_unhandled_proof_tree,
 )
@@ -247,6 +249,25 @@ class ComponentProofResolutionAgent:
                     text="The two element images are equal.",
                     goal="The two element images are equal.",
                 ),
+            ],
+        )
+
+
+class RecordingProofResolutionAgent:
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+
+    def __call__(self, payload):
+        proof_kind = payload["proof_kind"]
+        self.calls.append(proof_kind)
+        return ProofResolutionSpec(
+            strategy=f"resolve {proof_kind}",
+            proof_steps=[
+                LogicalProofStepData(
+                    type="assert_statement",
+                    claim=f"The {proof_kind} proof is reduced to a handled assertion.",
+                    proof_method=f"resolved from {proof_kind}",
+                )
             ],
         )
 
@@ -651,6 +672,66 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             [step["claim"] for step in exported["proof_steps"]],
             ["The invariant holds initially.", "The invariant is preserved by each move."],
         )
+
+    async def test_all_configured_rewrite_kinds_are_resolved(self) -> None:
+        rewrite_kinds = set(definitions.proof_resolution_agents) - {"default"}
+        agents = {kind: RecordingProofResolutionAgent() for kind in rewrite_kinds}
+
+        for kind in sorted(rewrite_kinds):
+            with self.subTest(kind=kind):
+                original = ProofNode(
+                    id=f"{kind}.root",
+                    kind=kind,
+                    status=NodeStatus.resolved,
+                    text=f"Original {kind} proof.",
+                    goal=f"The {kind} goal holds.",
+                    data=StructuredProofData(
+                        strategy=f"original {kind} strategy",
+                        summary=f"Original {kind} summary.",
+                    ).model_dump(),
+                )
+                tree, changed = await resolve_unhandled_proof_tree(
+                    ProofTree(id=kind, root=original),
+                    agents,
+                )
+                self.assertTrue(changed)
+                self.assertEqual(tree.root.kind, ProofKind.logical_sequence)
+                self.assertEqual(tree.root.status, NodeStatus.resolved)
+                self.assertEqual(agents[kind].calls, [kind])
+                self.assertIn(f"Resolved from original proof kind '{kind}'", tree.root.notes[0])
+                exported = json.loads(to_json(tree))
+                self.assertEqual(exported["type"], "proof")
+                self.assertEqual(
+                    exported["proof_steps"][0]["claim"],
+                    f"The {kind} proof is reduced to a handled assertion.",
+                )
+
+    async def test_supported_proof_kinds_are_not_rewritten(self) -> None:
+        resolver = RecordingProofResolutionAgent()
+        agents = {"default": resolver}
+
+        for kind in sorted(DIRECT_CODEGEN_PROOF_KINDS):
+            with self.subTest(kind=kind):
+                original = ProofNode(
+                    id=f"{kind}.root",
+                    kind=kind,
+                    status=NodeStatus.resolved,
+                    text=f"Handled {kind} proof.",
+                    goal=f"The {kind} goal holds.",
+                    data=StructuredProofData(
+                        strategy=f"handled {kind} strategy",
+                        summary=f"Handled {kind} summary.",
+                    ).model_dump(),
+                )
+                tree, changed = await resolve_unhandled_proof_tree(
+                    ProofTree(id=kind, root=original),
+                    agents,
+                )
+                self.assertFalse(changed)
+                self.assertEqual(tree.root.kind, kind)
+                self.assertEqual(tree.root.text, original.text)
+
+        self.assertEqual(resolver.calls, [])
 
     async def test_document_orchestrator_resolves_unhandled_proof_after_generation(self) -> None:
         document = document_from_text("Theorem. P. Proof. diagram chase.", title="Diagram")
