@@ -300,50 +300,54 @@ partial def dropForallsExpr : Expr → TermElabM Expr := fun expr => do
 
 partial def simpleLet : Syntax.Tactic → TermElabM Syntax.Tactic := fun tac => do
   match tac with
-  | `(tactic| let $n:ident := fun $_ => $val) => do
-    if ← check n then
+  | `(tactic| let $n := fun $x:ident => $val) => do
+    if ← check x then
       simpleLet <| ←  `(tactic| let $n := $val)
     else
       return tac
-  | `(tactic| let $n:ident := fun $_ $_* => $val) => do
+  | `(tactic| let $n := fun $_ $_* => $val) => do
     simpleLet <| ←  `(tactic| let $n := $val)
-  | `(tactic| let $n:ident : ∀ $_, $t := fun $_ => $val) => do
+  | `(tactic| let $n : ∀ $_, $t := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n:ident : ∀ $_ $ys*, $t := fun $_ $zs* => $val) => do
+  | `(tactic| let $n : ∀ $_ $ys*, $t := fun $_ $zs* => $val) => do
     simpleLet <| ←  `(tactic| let $n : ∀ $ys*, $t := fun $zs* => $val)
-  | `(tactic| let $n:ident : ∀ ($_ : $_), $t := fun $_ => $val) => do
+  | `(tactic| let $n : ∀ ($_ : $_), $t := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n:ident : ∀ {$_ : $_}, $t := fun $_ => $val) => do
+  | `(tactic| let $n : ∀ {$_ : $_}, $t := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n:ident : ∀ ⦃$_ : $_⦄, $t := fun $_ => $val) => do
+  | `(tactic| let $n : ∀ ⦃$_ : $_⦄, $t := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n:ident : ∀ [$_ : $_], $t := fun $_ => $val) => do
+  | `(tactic| let $n : ∀ [$_ : $_], $t := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n:ident : ∀ [$_], $t := fun $_ => $val) => do
+  | `(tactic| let $n : ∀ [$_], $t := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n:ident : [$_ : $_] → $ty := fun $_ => $val) => do
+  | `(tactic| let $n : [$_ : $_] → $ty := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $ty := $val)
-  | `(tactic| let $n:ident : [$_ : $_] → $ty := fun $_ $ys* => $val) => do
+  | `(tactic| let $n : [$_ : $_] → $ty := fun $_ $ys* => $val) => do
     simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n:ident : [$_] → $ty := fun $_ => $val) => do
+  | `(tactic| let $n : [$_] → $ty := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $ty := $val)
-  | `(tactic| let $n:ident : [$_] → $ty := fun $_ $ys* => $val) => do
+  | `(tactic| let $n : [$_] → $ty := fun $_ $ys* => $val) => do
     simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n:ident : ($_ : $_) → $ty := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := $val)
-  | `(tactic| let $n:ident : ($_ : $_) → $ty := fun $_ $ys* => $val) => do
+  | `(tactic| let $n : ($_ : $_) → $ty := fun $x:ident => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n : $ty := $val)
+    else
+      traceAide `leanaide.papercodes.info s!"simpleLet: cannot simplify let statement with binder {x}, which is used in the value as this is not a user variable"
+      return tac
+  | `(tactic| let $n : ($_ : $_) → $ty := fun $_ $ys* => $val) => do
     simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n:ident : $_ → $ty := fun $_ $ys* => $val) => do
+  | `(tactic| let $n : $_ → $ty := fun $_ $ys* => $val) => do
     simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n:ident : $_ → $ty := fun $_ => $val) => do
+  | `(tactic| let $n : $_ → $ty := fun $_ => $val) => do
     simpleLet <| ←  `(tactic| let $n : $ty := $val)
   | tac => do
     traceAide `leanaide.papercodes.info
       s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
     return tac
-  where check (n: Syntax.Ident) : MetaM Bool := do
+  where check (x: Syntax.Ident) : MetaM Bool := do
           try
-           let _ ← getFVarFromUserName n.getId
+           let _ ← getFVarFromUserName x.getId
            return true
           catch _ =>
            return false
