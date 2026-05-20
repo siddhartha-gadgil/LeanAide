@@ -1,7 +1,7 @@
 import Lean
 import LeanAideCore.Aides
 import LeanAideCore.Config
-
+set_option linter.unusedSimpArgs false
 open Lean Meta Elab Parser
 
 namespace LeanAide
@@ -17,6 +17,9 @@ def simpleRunFrontend
     (opts : Options := {}) (top : String := "universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u₁ u₂ u₃
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
+set_option linter.unusedSimpArgs false
+set_option linter.unusedTactic false
+set_option linter.unusedVariables false
 open scoped Nat
 ")
     (fileName : String := "<input>")

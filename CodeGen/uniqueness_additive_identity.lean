@@ -28,21 +28,7 @@ theorem zero_unique : ∀ {G : Type u_1} [inst : AddGroup G], ∃! z : G, ∀ (a
 
 Declarations (1): zero_unique
 
-Elaboration logs (3):
-1. unused variable `inst`
-   
-   Note: This linter can be disabled with `set_option linter.unusedVariables false`
-2. This simp argument is unused:
-     implies_true
-   
-   Hint: Omit it from the simp argument list.
-     simp only [add_eq_right, add_eq_left, and_self, forall_const, forall_eq_apply_imp_iff,
-     ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲i̵m̵p̵_̵s̵e̵l̵f̵,̵ ̵i̵m̵p̵l̵i̵e̵s̵_̵t̵r̵u̵e̵]̵i̲m̲p̲_̲s̲e̲l̲f̲]̲
-   
-   Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
-3. 'grind' tactic does nothing
-   
-   Note: This linter can be disabled with `set_option linter.unusedTactic false`
+Elaboration logs: none
 
 Sorries: none
 
