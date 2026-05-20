@@ -305,42 +305,65 @@ partial def simpleLet : Syntax.Tactic → TermElabM Syntax.Tactic := fun tac => 
       simpleLet <| ←  `(tactic| let $n := $val)
     else
       return tac
-  | `(tactic| let $n := fun $_ $_* => $val) => do
-    simpleLet <| ←  `(tactic| let $n := $val)
-  | `(tactic| let $n : ∀ $_, $t := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n : ∀ $_ $ys*, $t := fun $_ $zs* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : ∀ $ys*, $t := fun $zs* => $val)
-  | `(tactic| let $n : ∀ ($_ : $_), $t := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n : ∀ {$_ : $_}, $t := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n : ∀ ⦃$_ : $_⦄, $t := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $t := $val)
+  | `(tactic| let $n := fun $x:ident $ys* => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n := fun $ys* => $val)
+    else
+      return tac
+  | `(tactic| let $n : ∀ $_, $t := fun $x:ident => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n : $t := $val)
+    else
+      return tac
+  | `(tactic| let $n : ∀ $_ $ys*, $t := fun $x:ident $zs* => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n : ∀ $ys*, $t := fun $zs* => $val)
+    else
+      return tac
+  | `(tactic| let $n : ∀ ($_ : $_), $t := fun $x:ident => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n : $t := $val)
+    else
+      return tac
+  | `(tactic| let $n : ∀ {$_ : $_}, $t := fun $x:ident => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n : $t := $val)
+    else
+      return tac
+  | `(tactic| let $n : ∀ ⦃$_ : $_⦄, $t := fun $x:ident => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n : $t := $val)
+    else
+      return tac
   | `(tactic| let $n : ∀ [$_ : $_], $t := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $t := $val)
+      simpleLet <| ←  `(tactic| let $n : $t := $val)
   | `(tactic| let $n : ∀ [$_], $t := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $t := $val)
+      simpleLet <| ←  `(tactic| let $n : $t := $val)
   | `(tactic| let $n : [$_ : $_] → $ty := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := $val)
-  | `(tactic| let $n : [$_ : $_] → $ty := fun $_ $ys* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n : [$_] → $ty := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := $val)
+      simpleLet <| ←  `(tactic| let $n : $ty := $val)
   | `(tactic| let $n : [$_] → $ty := fun $_ $ys* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
+      simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
   | `(tactic| let $n : ($_ : $_) → $ty := fun $x:ident => $val) => do
     if ← check x then
       simpleLet <| ←  `(tactic| let $n : $ty := $val)
     else
       traceAide `leanaide.papercodes.info s!"simpleLet: cannot simplify let statement with binder {x}, which is used in the value as this is not a user variable"
       return tac
-  | `(tactic| let $n : ($_ : $_) → $ty := fun $_ $ys* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n : $_ → $ty := fun $_ $ys* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n : $_ → $ty := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := $val)
+  | `(tactic| let $n : ($_ : $_) → $ty := fun $x:ident $ys* => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
+    else
+      return tac
+  | `(tactic| let $n : $_ → $ty := fun $x:ident $ys* => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
+    else
+      return tac
+  | `(tactic| let $n : $_ → $ty := fun $x:ident => $val) => do
+    if ← check x then
+      simpleLet <| ←  `(tactic| let $n : $ty := $val)
+    else
+      return tac
   | tac => do
     traceAide `leanaide.papercodes.info
       s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
