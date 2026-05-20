@@ -291,114 +291,67 @@ partial def dropFuncs : Syntax.Term → Syntax.Term
   | `(fun $_* => $body) => dropFuncs body
   | stx => stx
 
-partial def dropFuncs? : Syntax.Term → Bool × Syntax.Term
-  | `(fun $_* => $body) =>
-    let (_, body') := dropFuncs? body
-    (true, body')
-  | stx => (false, stx)
-
 partial def dropForallsExpr : Expr → TermElabM Expr := fun expr => do
   match expr with
   | Expr.forallE _ _ body _ => do
     dropForallsExpr body
   | _ => pure expr
 
-partial def dropForallsExpr? : Expr → TermElabM (Bool × Expr) := fun expr => do
-  match expr with
-  | Expr.forallE _ _ body _ => do
-    let (_, body') ← dropForallsExpr? body
-    pure (true, body')
-  | _ => pure (false, expr)
 
-def typedLetParts? (stx : Syntax.Tactic) : Option (TSyntax `ident × TSyntax `term × TSyntax `term) :=
-  match stx.raw with
-  | Syntax.node _ `Lean.Parser.Tactic.tacticLet__ #[
-      _,
-      _,
-      Syntax.node _ `Lean.Parser.Term.letDecl #[
-        Syntax.node _ `Lean.Parser.Term.letIdDecl #[
-          Syntax.node _ `Lean.Parser.Term.letId #[n],
-          _,
-          Syntax.node _ `null #[
-            Syntax.node _ `Lean.Parser.Term.typeSpec #[_, ty]
-          ],
-          _,
-          val
-        ]
-      ]
-    ] =>
-    if ty.getKind == `Lean.Parser.Term.forall then
-      some (⟨n⟩, ⟨ty⟩, ⟨val⟩)
+partial def simpleLet : Syntax.Tactic → TermElabM Syntax.Tactic := fun tac => do
+  match tac with
+  | `(tactic| let $n:ident := fun $_ => $val) => do
+    if ← check n then
+      simpleLet <| ←  `(tactic| let $n := $val)
     else
-      none
-  | _ => none
-
-partial def simpleLet' (stx: Syntax.Tactic) : TermElabM Syntax.Tactic := do
-  match stx with
-  | `(tactic| let $n : $ty := $val) => do
-    let tyExpr ← elabType ty
-    let tyExpr' ← dropForallsExpr tyExpr
-    let ty' ← delabDetailed tyExpr'
-    let val' := dropFuncs val
-    simpleLet' <| ←  `(tactic| let $n : $ty' := $val')
+      return tac
+  | `(tactic| let $n:ident := fun $_ $_* => $val) => do
+    simpleLet <| ←  `(tactic| let $n := $val)
+  | `(tactic| let $n:ident : ∀ $_, $t := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $t := $val)
+  | `(tactic| let $n:ident : ∀ $_ $ys*, $t := fun $_ $zs* => $val) => do
+    simpleLet <| ←  `(tactic| let $n : ∀ $ys*, $t := fun $zs* => $val)
+  | `(tactic| let $n:ident : ∀ ($_ : $_), $t := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $t := $val)
+  | `(tactic| let $n:ident : ∀ {$_ : $_}, $t := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $t := $val)
+  | `(tactic| let $n:ident : ∀ ⦃$_ : $_⦄, $t := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $t := $val)
+  | `(tactic| let $n:ident : ∀ [$_ : $_], $t := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $t := $val)
+  | `(tactic| let $n:ident : ∀ [$_], $t := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $t := $val)
+  | `(tactic| let $n:ident : [$_ : $_] → $ty := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := $val)
+  | `(tactic| let $n:ident : [$_ : $_] → $ty := fun $_ $ys* => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
+  | `(tactic| let $n:ident : [$_] → $ty := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := $val)
+  | `(tactic| let $n:ident : [$_] → $ty := fun $_ $ys* => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
+  | `(tactic| let $n:ident : ($_ : $_) → $ty := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := $val)
+  | `(tactic| let $n:ident : ($_ : $_) → $ty := fun $_ $ys* => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
+  | `(tactic| let $n:ident : $_ → $ty := fun $_ $ys* => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
+  | `(tactic| let $n:ident : $_ → $ty := fun $_ => $val) => do
+    simpleLet <| ←  `(tactic| let $n : $ty := $val)
   | tac => do
     traceAide `leanaide.papercodes.info
       s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
     return tac
-
-partial def simpleLet : Syntax.Tactic → TermElabM Syntax.Tactic
-  | `(tactic| let $n := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n := $val)
-  | `(tactic| let $n := fun $_ $_* => $val) => do
-    simpleLet <| ←  `(tactic| let $n := $val)
-  | `(tactic| let $n : ∀ $_, $t := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $t := $val)
-  | `(tactic| let $n : ∀ $_ $ys*, $t := fun $_ $zs* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : ∀ $ys*, $t := fun $zs* => $val)
-  | `(tactic| let $n : [$_ : $_] → $ty := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := $val)
-  | `(tactic| let $n : [$_ : $_] → $ty := fun $_ $ys* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n : [$_] → $ty := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := $val)
-  | `(tactic| let $n : [$_] → $ty := fun $_ $ys* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n : ($_ : $_) → $ty := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := $val)
-  | `(tactic| let $n : ($_ : $_) → $ty := fun $_ $ys* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n : $_ → $ty := fun $_ $ys* => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
-  | `(tactic| let $n : $_ → $ty := fun $_ => $val) => do
-    simpleLet <| ←  `(tactic| let $n : $ty := $val)
-  | tac => do
-    match typedLetParts? tac with
-    | some (n, ty, val) => do
-      try
-        let tyExpr ← elabType ty
-        let (typeChanged, tyExpr') ← dropForallsExpr? tyExpr
-        let (valueChanged, val') := dropFuncs? val
-        if typeChanged || valueChanged then
-          let ty' ← delabDetailed tyExpr'
-          simpleLet <| ←  `(tactic| let $n : $ty' := $val')
-        else
-          traceAide `leanaide.papercodes.info
-            s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
-          return tac
-      catch _ =>
-        traceAide `leanaide.papercodes.info
-          s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
-        return tac
-    | _ => do
-      traceAide `leanaide.papercodes.info
-        s!"simpleLet: simplified tactic to {← PrettyPrinter.ppCategory `term <| ← `(by $tac:tactic)}"
-      return tac
+  where check (n: Syntax.Ident) : MetaM Bool := do
+          try
+           let _ ← getFVarFromUserName n.getId
+           return true
+          catch _ =>
+           return false
 
 def simpEg : TermElabM Syntax.Tactic := do
   let stx ← `(tactic| let e : (G : Type u) → [inst : AddGroup G] → G := fun G [AddGroup G] => 0)
   simpleLet stx
 
-#eval simpEg
 
 def existenceProof (translator : CodeGenerator) (variableName construction : String) (proof: Json) (goal : MVarId) :
     TranslateM (TSyntax `Lean.Parser.Tactic.tacticSeq) := do
