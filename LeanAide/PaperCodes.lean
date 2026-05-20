@@ -341,6 +341,10 @@ partial def simpleLet : Syntax.Tactic → TermElabM Syntax.Tactic := fun tac => 
       simpleLet <| ←  `(tactic| let $n : $t := $val)
   | `(tactic| let $n : [$_ : $_] → $ty := fun $_ => $val) => do
       simpleLet <| ←  `(tactic| let $n : $ty := $val)
+  | `(tactic| let $n : [$_] → $ty := fun $_  => $val) => do
+      simpleLet <| ←  `(tactic| let $n : $ty := $val)
+  | `(tactic| let $n : [$_ : $_] → $ty := fun $_ $ys* => $val) => do
+      simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
   | `(tactic| let $n : [$_] → $ty := fun $_ $ys* => $val) => do
       simpleLet <| ←  `(tactic| let $n : $ty := fun $ys* => $val)
   | `(tactic| let $n : ($_ : $_) → $ty := fun $x:ident => $val) => do
