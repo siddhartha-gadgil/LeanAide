@@ -1700,19 +1700,6 @@ def instanceDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind:
 | _, kind, _ => throwError
     s!"codegen: instance_definition does not work for kind {kind}"
 
-
-#check Term.structInstField
-
-
-
-example : MetaM Unit := do
-  let t ← `({x := 3, y := 4})
-  match t with
-  | `({ $fields* }) =>
-    return
-  | _ =>
-    return
-
 /-!
 ### `inductive-type-definition`
 
