@@ -1474,6 +1474,237 @@ def epsilonDeltaProof(translator : CodeGenerator := {}) : Option MVarId →  (ki
         s!"could not translate epsilon_delta_proof bound claim, using sorry; error: {← e.toMessageData.toString}"
       `(tacticSeq| sorry)
 | _, _, _ => throwError s!"Wrong Case"
+
+/-!
+### `structure-definition`
+
+JSON type to match: `structure-definition`.
+
+Fields:
+
+- `name`: Lean declaration name.
+- `is_class`: whether to emit `class` instead of `structure`.
+- `parameters`: optional array of binders, e.g. `["α : Type", "le : α → α → Prop"]`.
+- `extends`: optional array of parent structures/classes.
+- `fields`: array of field objects:
+  - `name`: field name.
+  - `type`: field type.
+  - `default`: optional default value.
+- `text`: source prose for comments or repair prompts.
+
+Expected Lean behavior:
+
+- If `is_class = false`, emit:
+
+  ```lean
+  structure SortedList (α : Type) (le : α → α → Prop) where
+    xs : List α
+    sorted : List.Pairwise le xs
+  ```
+
+- If `is_class = true`, emit:
+
+  ```lean
+  class Magma where
+    carrier : Type
+    mul : carrier → carrier → carrier
+  ```
+
+- If `extends` is nonempty, emit `structure Name ... extends Parent₁, Parent₂ where`
+  or `class Name ... extends Parent₁, Parent₂ where`.
+- If a field has `default`, emit `field_name : field_type := default`.
+- For "data and property" structures, both data fields and proof/property fields
+  are plain structure fields. Example: `BoundedNat` has data `n : Nat` and
+  property `bound : n ≤ b`.
+
+Implementation notes:
+
+- Add a `@[codegen]` handler for `structure-definition`.
+- Add a parser helper for optional arrays of strings (`parameters`, `extends`).
+- Add a parser helper for field objects with required `type` and optional
+  `name`/`default`.
+- The field name should be required for generated Lean. If omitted, either infer
+  a stable name such as `field1` or emit a TODO comment.
+
+-/
+
+open Lean Syntax Parser Command
+
+def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.Ident × Array (TSyntax ``bracketedBinder)) := do
+  let mut paramString := ""
+  for param in parameters do
+    paramString := paramString ++ " " ++ param
+  let defString := s!"def {name} {paramString} : Unit := sorry"
+  let .ok stx := runParserCategory (← getEnv) `command defString | throwError
+    s!"codegen: failed to parse structure definition header: {defString}"
+  match stx with
+    | `(command| def $name:ident $params:bracketedBinder* : $_ := $_) =>
+      return (name, params)
+    | `(command| def $name:ident : $_ := $_) =>
+      return (name, #[])
+    | _ => throwError s!"codegen: unexpected syntax for structure definition header: {stx}"
+
+def structureCommand (name: String) (parameters: Array String) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) :
+  MetaM (TSyntax `command) := do
+  let structIdent := mkIdent name.toName
+  let inputFields : Array (Syntax.Ident × Syntax.Term × Option Syntax.Term) ←  inputFieldsRaw.mapM fun (fieldName, fieldType, default?) => do
+    let fieldIdent := mkIdent fieldName.toName
+    let .ok fieldTypeStx := Parser.runParserCategory (← getEnv) `term fieldType | throwError s!"codegen: failed to parse field type: {fieldType}"
+    let fieldType : Syntax.Term := ⟨fieldTypeStx⟩
+    let defaultStx? : Option Syntax.Term ← match default? with
+      | some defaultStr =>
+        let .ok defaultStx := Parser.runParserCategory (← getEnv) `term defaultStr | throwError s!"codegen: failed to parse field default value: {defaultStr}"
+        some (⟨defaultStx⟩ : Syntax.Term)
+      | none => none
+    pure (fieldIdent, fieldType, defaultStx?)
+  let ps : Array (TSyntax ``structSimpleBinder) ←
+    inputFields.mapM fun (fieldIdent, fieldType, defaultStx?) => do
+      match defaultStx? with
+        | some defaultStx =>
+          `(structSimpleBinder| $fieldIdent:ident : $fieldType:term := $defaultStx:term)
+        | none =>
+          `(structSimpleBinder| $fieldIdent:ident : $fieldType:term)
+  if isClass then
+    if parameters.isEmpty then
+      `(command| class $structIdent:ident where
+        $ps:structSimpleBinder*)
+    else
+      let (_, params) ← getNameAndBinders name parameters
+      `(command| class $structIdent:ident $params* where
+          $ps:structSimpleBinder*)
+  else
+    if parameters.isEmpty then
+      `(command| structure $structIdent:ident where
+        $ps:structSimpleBinder*)
+    else
+      let (_, params) ← getNameAndBinders name parameters
+      `(command| structure $structIdent:ident $params* where
+          $ps:structSimpleBinder*)
+
+@[codegen "structure-definition"]
+def structureDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `command, js => do
+  let .ok name := js.getObjValAs? String "name" | throwError
+    s!"codegen: no 'name' found in 'structure_definition'"
+  let .ok parameters := js.getObjValAs? (Array String) "parameters" | throwError
+    s!"codegen: no 'parameters' found in 'structure_definition'"
+  let .ok fields := js.getObjValAs? (Array Json) "fields" | throwError
+    s!"codegen: no 'fields' found in 'structure_definition'"
+  let isClass := js.getObjValAs? Bool "is_class" |>.toOption.getD false
+  let inputFieldsRaw ← fields.mapM fun fieldJson => do
+    let .ok fieldName := fieldJson.getObjValAs? String "name" | throwError
+      s!"codegen: no 'name' found in structure field definition {fieldJson}"
+    let .ok fieldType := fieldJson.getObjValAs? String "type" | throwError
+      s!"codegen: no 'type' found in structure field definition {fieldJson}"
+    let default := fieldJson.getObjValAs? String "default" |>.toOption
+    pure (fieldName, fieldType, default)
+  structureCommand name parameters inputFieldsRaw isClass
+| _, kind, _ => throwError
+    s!"codegen: structure_definition does not work for kind {kind}"
+
+/-!
+### `instance-definition`
+
+JSON type to match: `instance-definition`.
+
+Fields:
+
+- `name`: optional instance declaration name.
+- `class_name`: class being instantiated.
+- `target`: target type or target expression.
+- `parameters`: optional array of binders.
+- `fields`: object mapping field names to implementation expressions.
+- `value`: optional raw instance expression or prose summary.
+- `text`: source prose for comments or repair prompts.
+
+Expected Lean behavior:
+
+- If `fields` is present, emit a structure-style instance body:
+
+  ```lean
+  instance natAddMagma : Magma where
+    carrier := Nat
+    mul := Nat.add
+  ```
+
+- If `class_name` and `target` should be combined into an applied class, emit
+  `: ClassName Target` only when the class expects a target argument. For the
+  current `Magma` example, the target is metadata and `: Magma` is enough because
+  `carrier` is a field.
+- If `value` is a usable Lean expression and `fields` is absent, emit:
+
+  ```lean
+  instance name : ClassName Target := value
+  ```
+
+- If `name` is absent, emit an anonymous instance:
+
+  ```lean
+  instance : ClassName Target where
+    ...
+  ```
+
+Implementation notes:
+
+- Add a `@[codegen]` handler for `instance-definition`.
+- Be conservative about the instance type: classes vary between bundled
+  structures (`Magma`) and typeclass-on-carrier shapes (`Group G`). If both
+  `class_name` and `target` are present, a first heuristic is:
+  - if `fields` contains `carrier`, use `: class_name`;
+  - otherwise use `: class_name target`.
+- Long term, add a repair pass that tries both instance signatures when Lean
+  elaboration fails.
+
+### `inductive-type-definition`
+
+JSON type to match: `inductive-type-definition`.
+
+Fields:
+
+- `name`: Lean inductive declaration name.
+- `is_prop`: whether the inductive family lives in `Prop`; otherwise emit a
+  normal `Type` inductive.
+- `parameters`: optional array of declaration binders.
+- `constructors`: array of constructor objects:
+  - `name`: constructor name.
+  - `arguments`: array of named typed arguments, e.g.
+    `["n : Nat", "h : Even n"]`.
+- `text`: source prose for comments or repair prompts.
+
+Expected Lean behavior:
+
+- For propositions, emit an inductive proposition:
+
+  ```lean
+  inductive Even : Nat → Prop where
+    | zero_even : Even 0
+    | step_even (n : Nat) (h : Even n) : Even (n + 2)
+  ```
+
+- For types, emit an inductive type:
+
+  ```lean
+  inductive BinaryTree (α : Type) : Type where
+    | leaf : BinaryTree α
+    | node (left : BinaryTree α) (label : α) (right : BinaryTree α) : BinaryTree α
+  ```
+
+Important limitation:
+
+- The current JSON schema records constructor arguments but not constructor
+  result targets. For many inductive families, especially propositions such as
+  `Even : Nat → Prop`, the target of each constructor is essential:
+  `zero_even : Even 0`, `step_even ... : Even (n + 2)`.
+- Recommended Lean-side fallback for now: use `text` plus constructor arguments
+  to prompt/repair the full declaration, or emit a commented TODO if targets
+  cannot be inferred.
+- Recommended Python/schema improvement: add optional constructor field
+  `target` or `result` so the JSON can explicitly contain:
+  - `{"name": "zero_even", "arguments": [], "target": "Even 0"}`
+  - `{"name": "step_even", "arguments": ["n : Nat", "h : Even n"], "target": "Even (n + 2)"}`
+
+-/
+
 /-!
 ## Adding handlers for different schema elements
 
