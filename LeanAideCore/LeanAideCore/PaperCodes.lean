@@ -1654,7 +1654,66 @@ Implementation notes:
   - otherwise use `: class_name target`.
 - Long term, add a repair pass that tries both instance signatures when Lean
   elaboration fails.
+-/
+@[codegen "instance-definition"]
+def instanceDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `command, js => do
+  let .ok className := js.getObjValAs? String "class_name" | throwError
+    s!"codegen: no 'class_name' found in 'instance_definition'"
+  let target? := js.getObjValAs? String "target" |>.toOption
+  let type : Syntax.Term ← match target? with
+    | some target =>
+      let .ok targetStx := Parser.runParserCategory (← getEnv) `term target | throwError
+        s!"codegen: failed to parse instance target expression: {target}"
+      let targetTerm := ⟨targetStx⟩
+      let classIdent := mkIdent className.toName
+      `(term| $classIdent $targetTerm)
+    | none =>
+      let classIdent := mkIdent className.toName
+      `(term| $classIdent)
+  let .ok fields := js.getObjValAs? (Array (String × String)) "fields" | throwError
+    s!"codegen: no 'fields' found in 'instance_definition'"
+  let name? := js.getObjValAs? String "name" |>.toOption
+  let parameters := js.getObjValAs? (Array String) "parameters" |>.toOption |>.getD #[]
+  let mut paramString := ""
+  for param in parameters do
+    paramString := paramString ++ " " ++ param
+  let (_, params) ← getNameAndBinders (name?.getD "dummy") parameters
+  let fieldList ← fields.mapM fun (fieldName, fieldVal) => do
+    let .ok val := Parser.runParserCategory (← getEnv) `term fieldVal | throwError
+      s!"codegen: failed to parse instance field implementation expression: {fieldVal}"
+    let valTerm : Syntax.Term := ⟨val⟩
+    let fieldIdent := mkIdent fieldName.toName
+    `(structInstField| $fieldIdent:ident := $valTerm:term)
+  match name?, params with
+  | some name, #[] =>
+    let nameIdent := mkIdent name.toName
+    `(command| instance $nameIdent:ident : $type := {
+      $fieldList:structInstField,* })
+  | some name, ps =>
+    let nameIdent := mkIdent name.toName
+    `(command| instance $nameIdent:ident $ps*  : $type := {
+    $fieldList:structInstField,* })
+  | none, _ =>
+    `(command| instance : $type := {
+      $fieldList:structInstField,* })
+| _, kind, _ => throwError
+    s!"codegen: instance_definition does not work for kind {kind}"
 
+
+#check Term.structInstField
+
+
+
+example : MetaM Unit := do
+  let t ← `({x := 3, y := 4})
+  match t with
+  | `({ $fields* }) =>
+    return
+  | _ =>
+    return
+
+/-!
 ### `inductive-type-definition`
 
 JSON type to match: `inductive-type-definition`.
