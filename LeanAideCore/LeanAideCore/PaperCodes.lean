@@ -97,15 +97,22 @@ def translateToDef (statement: String) (translator : Translator) : TranslateM <|
   catch _ =>
     translator.translateDefCmdM? statement
 
-def translateToTerm (term: String)(translator: Translator) : TranslateM Expr := do
+def translateToTermAux (term: String)(translator: Translator) : TranslateM Syntax.Term := do
   let termStat := s!"Let my_new_term be {term}"
   let termCmd ← translator.translateDefCmdM? termStat
   match termCmd with
   | .ok cmd =>
     let term ← commandToTerm cmd
-    elabTerm term none
+    pure term
   | .error errs =>
     throwError s!"codegen: failed to translate '{term}' to a term, errors: {errs.map (·.text)}"
+
+def Translator.translateToTerm (term: String)(translator: Translator) : TranslateM Syntax.Term := do
+  try
+     let .ok finalTerm := Parser.runParserCategory (← getEnv) `term term | throwError s!"codegen: failed to parse the term: {term}"
+     pure ⟨finalTerm⟩
+  catch _ =>
+    translateToTermAux term translator
 /--
 If the goal is a ∀, function etc., this function intros the variables and returns the goal with the names of the variables introduced. Further, corresponding prelude commands are added to the context.
 -/
@@ -1556,17 +1563,18 @@ def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.I
       return (name, #[])
     | _ => throwError s!"codegen: unexpected syntax for structure definition header: {stx}"
 
-def structureCommand (name: String) (parameters: Array String) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) :
-  MetaM (TSyntax `command) := do
+def structureCommand (translator : CodeGenerator := {})(name: String) (parameters: Array String) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) :
+  TranslateM (TSyntax `command) := do
   let structIdent := mkIdent name.toName
   let inputFields : Array (Syntax.Ident × Syntax.Term × Option Syntax.Term) ←  inputFieldsRaw.mapM fun (fieldName, fieldType, default?) => do
     let fieldIdent := mkIdent fieldName.toName
-    let .ok fieldTypeStx := Parser.runParserCategory (← getEnv) `term fieldType | throwError s!"codegen: failed to parse field type: {fieldType}"
-    let fieldType : Syntax.Term := ⟨fieldTypeStx⟩
+    let fieldType ← translator.translateToTerm fieldType
+    --let .ok fieldTypeStx := Parser.runParserCategory (← getEnv) `term fieldType | throwError s!"codegen: failed to parse field type: {fieldType}"
     let defaultStx? : Option Syntax.Term ← match default? with
       | some defaultStr =>
-        let .ok defaultStx := Parser.runParserCategory (← getEnv) `term defaultStr | throwError s!"codegen: failed to parse field default value: {defaultStr}"
-        some (⟨defaultStx⟩ : Syntax.Term)
+        let defaultStx ← translator.translateToTerm defaultStr
+        --let .ok defaultStx := Parser.runParserCategory (← getEnv) `term defaultStr | throwError s!"codegen: failed to parse field default value: {defaultStr}"
+        some defaultStx
       | none => none
     pure (fieldIdent, fieldType, defaultStx?)
   let ps : Array (TSyntax ``structSimpleBinder) ←
@@ -1594,7 +1602,7 @@ def structureCommand (name: String) (parameters: Array String) (inputFieldsRaw :
           $ps:structSimpleBinder*)
 
 @[codegen "structure-definition"]
-def structureDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def structureDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let .ok name := js.getObjValAs? String "name" | throwError
     s!"codegen: no 'name' found in 'structure_definition'"
@@ -1610,7 +1618,8 @@ def structureDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind
       s!"codegen: no 'type' found in structure field definition {fieldJson}"
     let default := fieldJson.getObjValAs? String "default" |>.toOption
     pure (fieldName, fieldType, default)
-  structureCommand name parameters inputFieldsRaw isClass
+-- structureCommand name parameters inputFieldsRaw isClass
+  structureCommand translator name parameters inputFieldsRaw isClass
 | _, kind, _ => throwError
     s!"codegen: structure_definition does not work for kind {kind}"
 
