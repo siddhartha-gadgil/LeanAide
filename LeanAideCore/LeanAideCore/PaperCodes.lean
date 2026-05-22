@@ -98,7 +98,7 @@ def translateToDef (statement: String) (translator : Translator) : TranslateM <|
     translator.translateDefCmdM? statement
 
 def translateToTerm (term: String)(translator: Translator) : TranslateM Expr := do
-  let termStat := s!"Let x := {term}"
+  let termStat := s!"Let my_new_term be {term}"
   let termCmd ← translator.translateDefCmdM? termStat
   match termCmd with
   | .ok cmd =>
