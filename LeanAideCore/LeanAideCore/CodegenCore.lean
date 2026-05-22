@@ -638,6 +638,12 @@ def commandToTactic (cmd: Syntax.Command) : TermElabM Syntax.Tactic := do
       `(tactic| let $name $letArgs*  := $value)
   | _ => `(tactic| sorry)
 
+def commandToTerm (cmd: Syntax.Command) : TermElabM Syntax.Term := do
+  match cmd with
+  | `(command| $[noncomputable]? def $_name:ident $_args:bracketedBinder* $[: $_type]? := $value) =>
+      `(term| $value)
+  | _ => throwError s!"commandToTerm: unsupported command {cmd}"
+
   open Lean.Parser.Tactic
 
 def commandSeqToTacticSeq (cmdSeq: TSyntax ``commandSeq) : TermElabM <| TSyntax ``tacticSeq := do
