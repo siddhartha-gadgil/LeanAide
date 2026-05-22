@@ -17,6 +17,7 @@ from mathdoc_agent.pipeline import (
     is_leanaide_lakefile,
     lakefile_project_name,
     leanaide_codegen_request,
+    leanaide_server_python,
     post_leanaide_json,
     run_leanaide_server_codegen,
     start_leanaide_http_server,
@@ -220,6 +221,9 @@ class LeanAideDirTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             (root / "leanaide_server.py").write_text("", encoding="utf-8")
+            venv_python = root / "venv" / "bin" / "python"
+            venv_python.parent.mkdir(parents=True)
+            venv_python.write_text("", encoding="utf-8")
             process = Mock()
 
             with patch("subprocess.Popen", return_value=process) as popen:
@@ -227,12 +231,23 @@ class LeanAideDirTests(unittest.TestCase):
 
         self.assertIs(result, process)
         command = popen.call_args.args[0]
+        self.assertEqual(Path(command[0]), venv_python)
         self.assertEqual(Path(command[1]).name, "leanaide_server.py")
         self.assertEqual(popen.call_args.kwargs["cwd"], root)
         self.assertEqual(
             popen.call_args.kwargs["env"]["LEANAIDE_COMMAND"],
             "lake exe leanaide_process",
         )
+        self.assertEqual(popen.call_args.kwargs["env"]["VIRTUAL_ENV"], str(root / "venv"))
+
+    def test_leanaide_server_python_prefers_project_venv(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            venv_python = root / "venv" / "bin" / "python"
+            venv_python.parent.mkdir(parents=True)
+            venv_python.write_text("", encoding="utf-8")
+
+            self.assertEqual(leanaide_server_python(root), venv_python)
 
     def test_run_leanaide_server_codegen_writes_codegen_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

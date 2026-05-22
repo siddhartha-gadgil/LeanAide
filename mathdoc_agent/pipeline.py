@@ -217,11 +217,16 @@ def start_leanaide_http_server(leanaide_dir: Path) -> subprocess.Popen[str]:
     env = os.environ.copy()
     env.setdefault("LEANAIDE_COMMAND", "lake exe leanaide_process")
     env.setdefault("LEANAIDE_LOG_FILE", str(log_dir / "leanaide.log"))
+    python_executable = leanaide_server_python(leanaide_dir)
+    venv_dir = leanaide_dir / "venv"
+    if python_executable.parent == venv_dir / "bin":
+        env["VIRTUAL_ENV"] = str(venv_dir)
+        env["PATH"] = f"{python_executable.parent}{os.pathsep}{env.get('PATH', '')}"
     stdout = stdout_path.open("a", encoding="utf-8")
     stderr = stderr_path.open("a", encoding="utf-8")
     try:
         process = subprocess.Popen(
-            [sys.executable, str(leanaide_dir / "leanaide_server.py")],
+            [str(python_executable), str(leanaide_dir / "leanaide_server.py")],
             cwd=leanaide_dir,
             stdout=stdout,
             stderr=stderr,
@@ -234,6 +239,11 @@ def start_leanaide_http_server(leanaide_dir: Path) -> subprocess.Popen[str]:
     finally:
         stdout.close()
         stderr.close()
+
+
+def leanaide_server_python(leanaide_dir: Path) -> Path:
+    venv_python = leanaide_dir / "venv" / "bin" / "python"
+    return venv_python if venv_python.exists() else Path(sys.executable)
 
 
 def ensure_leanaide_http_server(
