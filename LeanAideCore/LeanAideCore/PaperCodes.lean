@@ -110,7 +110,9 @@ def translateToTermAux (term: String)(translator: Translator) : TranslateM Synta
 def Translator.translateToTerm (term: String)(translator: Translator) : TranslateM Syntax.Term := do
   try
      let .ok finalTerm := Parser.runParserCategory (← getEnv) `term term | throwError s!"codegen: failed to parse the term: {term}"
-     pure ⟨finalTerm⟩
+     let expr ← elabTerm finalTerm none
+     Term.synthesizeSyntheticMVarsNoPostponing
+     delabDetailed expr
   catch _ =>
     translateToTermAux term translator
 /--
