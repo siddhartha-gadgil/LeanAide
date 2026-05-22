@@ -96,6 +96,16 @@ def translateToDef (statement: String) (translator : Translator) : TranslateM <|
     return .ok ⟨stx⟩
   catch _ =>
     translator.translateDefCmdM? statement
+
+def translateToTerm (term: String)(translator: Translator) : TranslateM Expr := do
+  let termStat := s!"Let x := {term}"
+  let termCmd ← translator.translateDefCmdM? termStat
+  match termCmd with
+  | .ok cmd =>
+    let term ← commandToTerm cmd
+    elabTerm term none
+  | .error errs =>
+    throwError s!"codegen: failed to translate '{term}' to a term, errors: {errs.map (·.text)}"
 /--
 If the goal is a ∀, function etc., this function intros the variables and returns the goal with the names of the variables introduced. Further, corresponding prelude commands are added to the context.
 -/
@@ -1372,7 +1382,7 @@ then prove the reduced goal. This avoids separating "reduction steps" from
 
 @[codegen "reduction_proof"]
 def reductionProofCode(translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _ , ``tacticSeq, js => do
+| some goal , ``tacticSeq, js => goal.withContext do
     let .ok claim := js.getObjValAs? String "claim" | throwError s!"codegen: no 'claim' found in 'reduction_proof'"
     let .ok reducedTo := js.getObjValAs? String "reduced_to"| throwError s!"codegen: no 'reduced_to' found in 'reduction_proof"
     let .ok proofOfReduction := js.getObjVal? "proof_of_reduction"| throwError s!"codegen: no 'proof_of_reduction' found in 'reductionn_proof'"
@@ -1389,7 +1399,7 @@ def reductionProofCode(translator : CodeGenerator := {}) : Option MVarId →  (k
     let reduction ← delabDetailed reductionStep
     let hash₀ := hash ((← ppTerm {env := ← getEnv} reduction).pretty)
     let name := mkIdent <| Name.mkSimple s!"reduction_{hash₀}"
-    let tacReduction ← `(tacticSeq| have $name : $reduction := by $tacs)
+    let tacReduction ← `(tactic| have $name : $reduction := by $tacs)
 
     -- proving the reduced statement
     let reducedPropExpr ← mkFreshExprMVar reducedProp
@@ -1399,10 +1409,10 @@ def reductionProofCode(translator : CodeGenerator := {}) : Option MVarId →  (k
     let reduced ← delabDetailed reducedProp
     let hash₁ := hash ((← ppTerm {env := ← getEnv} reduced).pretty)
     let name' := mkIdent <| Name.mkSimple s!"reduced_{hash₁}"
-    let tacReduced ← `(tacticSeq| have $name' : $reduced := by $reducedProof
-                                  grind)
-    appendTacticSeqSeq tacReduction tacReduced
-
+    let tacReduced ← `(tactic| have $name' : $reduced := by $reducedProof)
+    let [remGoals] ← runAndGetMVars goal #[tacReduction,tacReduced] 1 | throwError s!"codegen: reduction proof failed to get goal, goal: {← ppExpr <| ← reductionGoal.getType}"
+    let finalpf ← findTacticsI remGoals
+    `(tacticSeq| $tacReduction; $tacReduced; $finalpf*)
 | goal?, kind, _ => throwError s!"codegen: reductionProofCode does not work for kind {kind} with goal present : {goal?.isSome}"
 
 /-
@@ -1454,7 +1464,7 @@ def epsilonDeltaProof(translator : CodeGenerator := {}) : Option MVarId →  (ki
     Term.synthesizeSyntheticMVarsNoPostponing
     let hash₀ := hash ((← ppTerm {env := ← getEnv} deltaStx).pretty)
     let name := mkIdent <| Name.mkSimple s!"δ_pos_{hash₀}"
-    let deltaTac ← `(tacticSeq|
+    let deltaTac ← `(tactic|
       have $name : $deltaPosStx := by
         $deltaPosProof)
     try
@@ -1466,9 +1476,11 @@ def epsilonDeltaProof(translator : CodeGenerator := {}) : Option MVarId →  (ki
         | throwError "no proof found for epsilon-delta bound claim"
       let boundClaimName := mkIdent <| Name.mkSimple s!"claim_{hash₀}"
       let boundClaimStx ← delabDetailed boundClaim
-      let boundProofTacs ← `(tacticSeq| have $boundClaimName : $boundClaimStx := by $boundClaimProof
-                                        grind)
-      appendTacticSeqSeq deltaTac boundProofTacs
+      let boundProofTacs ← `(tactic| have $boundClaimName : $boundClaimStx := by $boundClaimProof)
+      let [remGoals] ← runAndGetMVars goal #[deltaTac, boundProofTacs] 1 | throwError
+        s!"codegen: epsilon_delta_proof failed to get goal, goal: {← ppExpr <| ← goal.getType}"
+      let finalpf ← findTacticsI remGoals
+      `(tacticSeq| $deltaTac; $boundProofTacs; $finalpf*)
     catch e =>
       traceAide `leanaide.papercodes.info
         s!"could not translate epsilon_delta_proof bound claim, using sorry; error: {← e.toMessageData.toString}"
