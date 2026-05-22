@@ -103,7 +103,10 @@ def post_leanaide_json(
 
 
 def _stderr_line_startswith(line: str, prefix: str) -> bool:
-    return line.lstrip().startswith(prefix)
+    stripped = line.lstrip()
+    if stripped.startswith(prefix):
+        return True
+    return f"]  {prefix}" in stripped
 
 
 def wait_for_process_stderr_prefix(

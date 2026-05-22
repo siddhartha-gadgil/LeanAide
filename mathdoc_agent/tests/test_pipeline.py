@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from mathdoc_agent.pipeline import (
+    _stderr_line_startswith,
     find_leanaide_dir,
     find_leanaide_dir_from_paths,
     is_leanaide_lakefile,
@@ -111,6 +112,14 @@ class LeanAideDirTests(unittest.TestCase):
         self.assertEqual(popen.call_args.kwargs["cwd"], root.resolve())
         wait.assert_called_once_with(process, "Server ready", timeout=3)
         post.assert_called_once_with({"task": "echo"}, url="http://localhost:7654", timeout=3)
+
+    def test_stderr_line_startswith_accepts_logged_ready_line(self) -> None:
+        line = (
+            "[2026-05-22T10:57:54] [leanaide.tasks.info] [root]  "
+            "Server ready. Waiting for input..."
+        )
+
+        self.assertTrue(_stderr_line_startswith(line, "Server ready"))
 
 
 if __name__ == "__main__":
