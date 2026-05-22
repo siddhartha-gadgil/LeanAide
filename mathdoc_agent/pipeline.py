@@ -3,7 +3,12 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import selectors
 import subprocess
+import time
+import tomllib
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +28,166 @@ from mathdoc_agent.registries.proof_handlers import ProofHandlerRegistry
 
 _DEFAULT_CLAIM_AGENT = object()
 _DEFAULT_PROOF_RESOLUTION_AGENTS = object()
+_LEANAIDE_LAKE_NAME = "LeanAide"
+_LEANAIDE_PROCESS_URL = "http://localhost:7654"
+_LEANAIDE_READY_PREFIX = "Server ready"
+
+
+def lakefile_project_name(lakefile: Path) -> str | None:
+    data = tomllib.loads(lakefile.read_text(encoding="utf-8"))
+    name = data.get("name")
+    return name if isinstance(name, str) else None
+
+
+def is_leanaide_lakefile(lakefile: Path) -> bool:
+    name = lakefile_project_name(lakefile)
+    return name is not None and name.casefold() == _LEANAIDE_LAKE_NAME.casefold()
+
+
+def find_leanaide_dir(start: Path | str | None = None) -> Path:
+    path = Path.cwd() if start is None else Path(start)
+    directory = path.parent if path.is_file() else path
+    directory = directory.resolve()
+
+    for candidate in (directory, *directory.parents):
+        lakefile = candidate / "lakefile.toml"
+        if lakefile.is_file() and is_leanaide_lakefile(lakefile):
+            return candidate
+
+    raise FileNotFoundError(
+        f"Could not find a parent directory containing a LeanAide lakefile.toml from {directory}"
+    )
+
+
+def find_leanaide_dir_from_paths(*starts: Path | str | None) -> Path:
+    errors: list[FileNotFoundError] = []
+    for start in starts:
+        try:
+            return find_leanaide_dir(start)
+        except FileNotFoundError as error:
+            errors.append(error)
+    try:
+        return find_leanaide_dir()
+    except FileNotFoundError as error:
+        errors.append(error)
+    raise FileNotFoundError(
+        "Could not find a parent directory containing a LeanAide lakefile.toml"
+    ) from errors[-1]
+
+
+def _url_with_scheme(url: str) -> str:
+    return url if "://" in url else f"http://{url}"
+
+
+def post_leanaide_json(
+    data: dict[str, Any],
+    *,
+    url: str = _LEANAIDE_PROCESS_URL,
+    timeout: float = 30.0,
+) -> dict[str, Any]:
+    request = urllib.request.Request(
+        _url_with_scheme(url),
+        data=json.dumps(data).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.URLError as error:
+        raise RuntimeError(f"LeanAide server request failed: {error}") from error
+
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"LeanAide server returned non-object JSON: {payload!r}")
+    return payload
+
+
+def _stderr_line_startswith(line: str, prefix: str) -> bool:
+    return line.lstrip().startswith(prefix)
+
+
+def wait_for_process_stderr_prefix(
+    process: subprocess.Popen[str],
+    prefix: str,
+    *,
+    timeout: float = 120.0,
+) -> str:
+    if process.stderr is None:
+        raise RuntimeError("LeanAide process was not started with stderr=PIPE")
+
+    deadline = time.monotonic() + timeout
+    selector = selectors.DefaultSelector()
+    selector.register(process.stderr, selectors.EVENT_READ)
+    stderr_lines: list[str] = []
+    try:
+        while True:
+            if process.poll() is not None:
+                raise RuntimeError(
+                    "LeanAide process exited before becoming ready. "
+                    f"stderr: {' | '.join(stderr_lines[-10:])}"
+                )
+
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError(
+                    f"Timed out waiting for LeanAide stderr line starting with {prefix!r}"
+                )
+
+            events = selector.select(remaining)
+            if not events:
+                continue
+
+            line = process.stderr.readline()
+            if line == "":
+                continue
+            stderr_lines.append(line.rstrip("\n"))
+            if _stderr_line_startswith(line, prefix):
+                return line
+    finally:
+        selector.close()
+
+
+def _terminate_process(process: subprocess.Popen[str]) -> None:
+    if process.poll() is not None:
+        return
+    process.terminate()
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=5)
+
+
+def start_leanaide_process(
+    start: Path | str | None = None,
+    *,
+    url: str = _LEANAIDE_PROCESS_URL,
+    timeout: float = 120.0,
+) -> subprocess.Popen[str]:
+    leanaide_dir = find_leanaide_dir(start)
+    process = subprocess.Popen(
+        ["lake", "exe", "leanaide_process"],
+        cwd=leanaide_dir,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+    )
+    try:
+        wait_for_process_stderr_prefix(
+            process, _LEANAIDE_READY_PREFIX, timeout=timeout
+        )
+        response = post_leanaide_json({"task": "echo"}, url=url, timeout=timeout)
+        result = response.get("result")
+        if result != "success":
+            raise RuntimeError(
+                f"LeanAide echo health check failed: expected result='success', got {result!r}"
+            )
+        return process
+    except Exception:
+        _terminate_process(process)
+        raise
 
 
 async def generate_math_document(
@@ -193,7 +358,12 @@ def main() -> None:
     else:
         args.output.write_text(json_text + "\n", encoding="utf-8")
         if args.lean:
-            subprocess.run(["lake", "exe", "codegen", str(args.output)], check=True)
+            leanaide_dir = find_leanaide_dir_from_paths(args.source, args.output)
+            subprocess.run(
+                ["lake", "exe", "codegen", str(args.output.resolve())],
+                check=True,
+                cwd=leanaide_dir,
+            )
 
 
 if __name__ == "__main__":
