@@ -1775,6 +1775,34 @@ Important limitation:
 
 -/
 
+def inductiveCommand (translator : CodeGenerator := {}) (name: String) (parameters: Array String) (constructorsRaw : Array (String × Array String)) (isProp : Bool) :
+    TranslateM (TSyntax `command) := do
+  let inductiveIdent := mkIdent name.toName
+  let ctorFields : Array (Syntax.Ident × Array (TSyntax ``bracketedBinder)) ← constructorsRaw.mapM
+    fun (ctorName, ctorArgs) => do
+      let ctorIdent := mkIdent ctorName.toName
+      let (_, params) ← getNameAndBinders ctorName ctorArgs
+      pure (ctorIdent, params)
+  let ctors : Array (TSyntax ``ctor) ←
+    ctorFields.mapM fun (ctorIdent, params) => do
+      `(ctor| | $ctorIdent:ident $params*)
+  if isProp then
+    if parameters.isEmpty then
+      `(command| inductive $inductiveIdent:ident : Prop where
+        $ctors:ctor*)
+    else
+      let (_, params) ← getNameAndBinders name parameters
+      `(command| inductive $inductiveIdent:ident $params* : Prop where
+          $ctors:ctor*)
+  else
+    if parameters.isEmpty then
+      `(command| inductive $inductiveIdent:ident where
+        $ctors:ctor*)
+    else
+      let (_, params) ← getNameAndBinders name parameters
+      `(command| inductive $inductiveIdent:ident $params* where
+          $ctors:ctor*)
+
 /-!
 ## Adding handlers for different schema elements
 
