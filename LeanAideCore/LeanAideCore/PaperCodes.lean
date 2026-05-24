@@ -1775,7 +1775,7 @@ Important limitation:
 
 -/
 
-def inductiveCommand (translator : CodeGenerator := {}) (name: String) (parameters: Array String) (constructorsRaw : Array (String × Array String)) (isProp : Bool) :
+def inductiveCommand (_ : CodeGenerator := {}) (name: String) (parameters: Array String) (constructorsRaw : Array (String × Array String)) (isProp : Bool) :
     TranslateM (TSyntax `command) := do
   let inductiveIdent := mkIdent name.toName
   let ctorFields : Array (Syntax.Ident × Array (TSyntax ``bracketedBinder)) ← constructorsRaw.mapM
