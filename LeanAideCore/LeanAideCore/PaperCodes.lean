@@ -1555,7 +1555,7 @@ open Lean Syntax Parser Command
 def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.Ident × Array (TSyntax ``bracketedBinder)) := do
   let mut paramString := ""
   for param in parameters do
-    paramString := paramString ++ " " ++ param
+    paramString := paramString ++ "(" ++ param ++ ") "
   let defString := s!"def {name} {paramString} : Unit := sorry"
   let .ok stx := runParserCategory (← getEnv) `command defString | throwError
     s!"codegen: failed to parse structure definition header: {defString}"
@@ -1774,6 +1774,54 @@ Important limitation:
   - `{"name": "step_even", "arguments": ["n : Nat", "h : Even n"], "target": "Even (n + 2)"}`
 
 -/
+
+def inductiveCommand (_ : CodeGenerator := {}) (name: String) (parameters: Array String) (constructorsRaw : Array (String × Array String)) (isProp : Bool) :
+    TranslateM (TSyntax `command) := do
+  let inductiveIdent := mkIdent name.toName
+  let ctorFields : Array (Syntax.Ident × Array (TSyntax ``bracketedBinder)) ← constructorsRaw.mapM
+    fun (ctorName, ctorArgs) => do
+      let ctorIdent := mkIdent ctorName.toName
+      let (_, params) ← getNameAndBinders ctorName ctorArgs
+      pure (ctorIdent, params)
+  let ctors : Array (TSyntax ``ctor) ←
+    ctorFields.mapM fun (ctorIdent, params) => do
+      `(ctor| | $ctorIdent:ident $params*)
+  if isProp then
+    if parameters.isEmpty then
+      `(command| inductive $inductiveIdent:ident : Prop where
+        $ctors:ctor*)
+    else
+      let (_, params) ← getNameAndBinders name parameters
+      `(command| inductive $inductiveIdent:ident $params* : Prop where
+          $ctors:ctor*)
+  else
+    if parameters.isEmpty then
+      `(command| inductive $inductiveIdent:ident where
+        $ctors:ctor*)
+    else
+      let (_, params) ← getNameAndBinders name parameters
+      `(command| inductive $inductiveIdent:ident $params* where
+          $ctors:ctor*)
+
+@[codegen "inductive-type-definition"]
+def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `command, js => do
+  let .ok name := js.getObjValAs? String "name" | throwError
+    s!"codegen: no 'name' found in 'inductive-type-definition'"
+  let isProp := js.getObjValAs? Bool "is_prop" |>.toOption.getD false
+  let .ok parameters := js.getObjValAs? (Array String) "parameters" | throwError
+    s!"codegen: no 'parameters' found in 'inductive-type-definition'"
+  let .ok constructors := js.getObjValAs? (Array Json) "constructors" | throwError
+    s!"codegen: no 'constructors' found in 'inductive-type-definition'"
+  let constructorsRaw ← constructors.mapM fun constructorJson => do
+    let .ok constructorName := constructorJson.getObjValAs? String "name" | throwError
+      s!"codegen: no 'name' found in inductive constructor definition {constructorJson}"
+    let .ok constructorArgs := constructorJson.getObjValAs? (Array String) "arguments" | throwError
+      s!"codegen: no 'arguments' found in inductive constructor definition {constructorJson}"
+    pure (constructorName, constructorArgs)
+  inductiveCommand translator name parameters constructorsRaw isProp
+| _, kind, _ => throwError
+    s!"codegen: inductive_type_definition does not work for kind {kind}"
 
 /-!
 ## Adding handlers for different schema elements
