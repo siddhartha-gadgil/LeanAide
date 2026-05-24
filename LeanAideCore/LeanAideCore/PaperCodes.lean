@@ -1803,6 +1803,26 @@ def inductiveCommand (translator : CodeGenerator := {}) (name: String) (paramete
       `(command| inductive $inductiveIdent:ident $params* where
           $ctors:ctor*)
 
+@[codegen "inductive-type-definition"]
+def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `command, js => do
+  let .ok name := js.getObjValAs? String "name" | throwError
+    s!"codegen: no 'name' found in 'inductive-type-definition'"
+  let isProp := js.getObjValAs? Bool "is_prop" |>.toOption.getD false
+  let .ok parameters := js.getObjValAs? (Array String) "parameters" | throwError
+    s!"codegen: no 'parameters' found in 'inductive-type-definition'"
+  let .ok constructors := js.getObjValAs? (Array Json) "constructors" | throwError
+    s!"codegen: no 'constructors' found in 'inductive-type-definition'"
+  let constructorsRaw ← constructors.mapM fun constructorJson => do
+    let .ok constructorName := constructorJson.getObjValAs? String "name" | throwError
+      s!"codegen: no 'name' found in inductive constructor definition {constructorJson}"
+    let .ok constructorArgs := constructorJson.getObjValAs? (Array String) "arguments" | throwError
+      s!"codegen: no 'arguments' found in inductive constructor definition {constructorJson}"
+    pure (constructorName, constructorArgs)
+  inductiveCommand translator name parameters constructorsRaw isProp
+| _, kind, _ => throwError
+    s!"codegen: inductive_type_definition does not work for kind {kind}"
+
 /-!
 ## Adding handlers for different schema elements
 
