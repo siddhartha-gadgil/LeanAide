@@ -1555,7 +1555,7 @@ open Lean Syntax Parser Command
 def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.Ident × Array (TSyntax ``bracketedBinder)) := do
   let mut paramString := ""
   for param in parameters do
-    paramString := paramString ++ " " ++ param
+    paramString := paramString ++ "(" ++ param ++ ") "
   let defString := s!"def {name} {paramString} : Unit := sorry"
   let .ok stx := runParserCategory (← getEnv) `command defString | throwError
     s!"codegen: failed to parse structure definition header: {defString}"
