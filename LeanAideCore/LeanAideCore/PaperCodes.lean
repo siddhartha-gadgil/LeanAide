@@ -96,6 +96,26 @@ def translateToDef (statement: String) (translator : Translator) : TranslateM <|
     return .ok ⟨stx⟩
   catch _ =>
     translator.translateDefCmdM? statement
+
+def translateToTermAux (term: String)(translator: Translator) : TranslateM Syntax.Term := do
+  let termStat := s!"Let my_new_term be {term}"
+  let termCmd ← translator.translateDefCmdM? termStat
+  match termCmd with
+  | .ok cmd =>
+    let term ← commandToTerm cmd
+    pure term
+  | .error errs =>
+    throwError s!"codegen: failed to translate '{term}' to a term, errors: {errs.map (·.text)}"
+
+def Translator.translateToTerm (term: String)(translator: Translator) : TranslateM Syntax.Term := do
+  try
+    withoutErrToSorry do
+     let .ok finalTerm := Parser.runParserCategory (← getEnv) `term term | throwError s!"codegen: failed to parse the term: {term}"
+     let expr ← elabTerm finalTerm none
+     Term.synthesizeSyntheticMVarsNoPostponing
+     delabDetailed expr
+  catch _ =>
+    translateToTermAux term translator
 /--
 If the goal is a ∀, function etc., this function intros the variables and returns the goal with the names of the variables introduced. Further, corresponding prelude commands are added to the context.
 -/
@@ -1372,7 +1392,7 @@ then prove the reduced goal. This avoids separating "reduction steps" from
 
 @[codegen "reduction_proof"]
 def reductionProofCode(translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _ , ``tacticSeq, js => do
+| some goal , ``tacticSeq, js => goal.withContext do
     let .ok claim := js.getObjValAs? String "claim" | throwError s!"codegen: no 'claim' found in 'reduction_proof'"
     let .ok reducedTo := js.getObjValAs? String "reduced_to"| throwError s!"codegen: no 'reduced_to' found in 'reduction_proof"
     let .ok proofOfReduction := js.getObjVal? "proof_of_reduction"| throwError s!"codegen: no 'proof_of_reduction' found in 'reductionn_proof'"
@@ -1389,7 +1409,7 @@ def reductionProofCode(translator : CodeGenerator := {}) : Option MVarId →  (k
     let reduction ← delabDetailed reductionStep
     let hash₀ := hash ((← ppTerm {env := ← getEnv} reduction).pretty)
     let name := mkIdent <| Name.mkSimple s!"reduction_{hash₀}"
-    let tacReduction ← `(tacticSeq| have $name : $reduction := by $tacs)
+    let tacReduction ← `(tactic| have $name : $reduction := by $tacs)
 
     -- proving the reduced statement
     let reducedPropExpr ← mkFreshExprMVar reducedProp
@@ -1399,10 +1419,10 @@ def reductionProofCode(translator : CodeGenerator := {}) : Option MVarId →  (k
     let reduced ← delabDetailed reducedProp
     let hash₁ := hash ((← ppTerm {env := ← getEnv} reduced).pretty)
     let name' := mkIdent <| Name.mkSimple s!"reduced_{hash₁}"
-    let tacReduced ← `(tacticSeq| have $name' : $reduced := by $reducedProof
-                                  grind)
-    appendTacticSeqSeq tacReduction tacReduced
-
+    let tacReduced ← `(tactic| have $name' : $reduced := by $reducedProof)
+    let [remGoals] ← runAndGetMVars goal #[tacReduction,tacReduced] 1 | throwError s!"codegen: reduction proof failed to get goal, goal: {← ppExpr <| ← reductionGoal.getType}"
+    let finalpf ← findTacticsI remGoals
+    `(tacticSeq| $tacReduction; $tacReduced; $finalpf*)
 | goal?, kind, _ => throwError s!"codegen: reductionProofCode does not work for kind {kind} with goal present : {goal?.isSome}"
 
 /-
@@ -1454,7 +1474,7 @@ def epsilonDeltaProof(translator : CodeGenerator := {}) : Option MVarId →  (ki
     Term.synthesizeSyntheticMVarsNoPostponing
     let hash₀ := hash ((← ppTerm {env := ← getEnv} deltaStx).pretty)
     let name := mkIdent <| Name.mkSimple s!"δ_pos_{hash₀}"
-    let deltaTac ← `(tacticSeq|
+    let deltaTac ← `(tactic|
       have $name : $deltaPosStx := by
         $deltaPosProof)
     try
@@ -1466,9 +1486,11 @@ def epsilonDeltaProof(translator : CodeGenerator := {}) : Option MVarId →  (ki
         | throwError "no proof found for epsilon-delta bound claim"
       let boundClaimName := mkIdent <| Name.mkSimple s!"claim_{hash₀}"
       let boundClaimStx ← delabDetailed boundClaim
-      let boundProofTacs ← `(tacticSeq| have $boundClaimName : $boundClaimStx := by $boundClaimProof
-                                        grind)
-      appendTacticSeqSeq deltaTac boundProofTacs
+      let boundProofTacs ← `(tactic| have $boundClaimName : $boundClaimStx := by $boundClaimProof)
+      let [remGoals] ← runAndGetMVars goal #[deltaTac, boundProofTacs] 1 | throwError
+        s!"codegen: epsilon_delta_proof failed to get goal, goal: {← ppExpr <| ← goal.getType}"
+      let finalpf ← findTacticsI remGoals
+      `(tacticSeq| $deltaTac; $boundProofTacs; $finalpf*)
     catch e =>
       traceAide `leanaide.papercodes.info
         s!"could not translate epsilon_delta_proof bound claim, using sorry; error: {← e.toMessageData.toString}"
@@ -1533,7 +1555,7 @@ open Lean Syntax Parser Command
 def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.Ident × Array (TSyntax ``bracketedBinder)) := do
   let mut paramString := ""
   for param in parameters do
-    paramString := paramString ++ " " ++ param
+    paramString := paramString ++ "(" ++ param ++ ") "
   let defString := s!"def {name} {paramString} : Unit := sorry"
   let .ok stx := runParserCategory (← getEnv) `command defString | throwError
     s!"codegen: failed to parse structure definition header: {defString}"
@@ -1544,17 +1566,18 @@ def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.I
       return (name, #[])
     | _ => throwError s!"codegen: unexpected syntax for structure definition header: {stx}"
 
-def structureCommand (name: String) (parameters: Array String) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) :
-  MetaM (TSyntax `command) := do
+def structureCommand (translator : CodeGenerator := {})(name: String) (parameters: Array String) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) :
+  TranslateM (TSyntax `command) := do
   let structIdent := mkIdent name.toName
   let inputFields : Array (Syntax.Ident × Syntax.Term × Option Syntax.Term) ←  inputFieldsRaw.mapM fun (fieldName, fieldType, default?) => do
     let fieldIdent := mkIdent fieldName.toName
-    let .ok fieldTypeStx := Parser.runParserCategory (← getEnv) `term fieldType | throwError s!"codegen: failed to parse field type: {fieldType}"
-    let fieldType : Syntax.Term := ⟨fieldTypeStx⟩
+    let fieldType ← translator.translateToTerm fieldType
+    --let .ok fieldTypeStx := Parser.runParserCategory (← getEnv) `term fieldType | throwError s!"codegen: failed to parse field type: {fieldType}"
     let defaultStx? : Option Syntax.Term ← match default? with
       | some defaultStr =>
-        let .ok defaultStx := Parser.runParserCategory (← getEnv) `term defaultStr | throwError s!"codegen: failed to parse field default value: {defaultStr}"
-        some (⟨defaultStx⟩ : Syntax.Term)
+        let defaultStx ← translator.translateToTerm defaultStr
+        --let .ok defaultStx := Parser.runParserCategory (← getEnv) `term defaultStr | throwError s!"codegen: failed to parse field default value: {defaultStr}"
+        some defaultStx
       | none => none
     pure (fieldIdent, fieldType, defaultStx?)
   let ps : Array (TSyntax ``structSimpleBinder) ←
@@ -1582,7 +1605,7 @@ def structureCommand (name: String) (parameters: Array String) (inputFieldsRaw :
           $ps:structSimpleBinder*)
 
 @[codegen "structure-definition"]
-def structureDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+def structureDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let .ok name := js.getObjValAs? String "name" | throwError
     s!"codegen: no 'name' found in 'structure_definition'"
@@ -1598,7 +1621,8 @@ def structureDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind
       s!"codegen: no 'type' found in structure field definition {fieldJson}"
     let default := fieldJson.getObjValAs? String "default" |>.toOption
     pure (fieldName, fieldType, default)
-  structureCommand name parameters inputFieldsRaw isClass
+-- structureCommand name parameters inputFieldsRaw isClass
+  structureCommand translator name parameters inputFieldsRaw isClass
 | _, kind, _ => throwError
     s!"codegen: structure_definition does not work for kind {kind}"
 
@@ -1750,6 +1774,54 @@ Important limitation:
   - `{"name": "step_even", "arguments": ["n : Nat", "h : Even n"], "target": "Even (n + 2)"}`
 
 -/
+
+def inductiveCommand (_ : CodeGenerator := {}) (name: String) (parameters: Array String) (constructorsRaw : Array (String × Array String)) (isProp : Bool) :
+    TranslateM (TSyntax `command) := do
+  let inductiveIdent := mkIdent name.toName
+  let ctorFields : Array (Syntax.Ident × Array (TSyntax ``bracketedBinder)) ← constructorsRaw.mapM
+    fun (ctorName, ctorArgs) => do
+      let ctorIdent := mkIdent ctorName.toName
+      let (_, params) ← getNameAndBinders ctorName ctorArgs
+      pure (ctorIdent, params)
+  let ctors : Array (TSyntax ``ctor) ←
+    ctorFields.mapM fun (ctorIdent, params) => do
+      `(ctor| | $ctorIdent:ident $params*)
+  if isProp then
+    if parameters.isEmpty then
+      `(command| inductive $inductiveIdent:ident : Prop where
+        $ctors:ctor*)
+    else
+      let (_, params) ← getNameAndBinders name parameters
+      `(command| inductive $inductiveIdent:ident $params* : Prop where
+          $ctors:ctor*)
+  else
+    if parameters.isEmpty then
+      `(command| inductive $inductiveIdent:ident where
+        $ctors:ctor*)
+    else
+      let (_, params) ← getNameAndBinders name parameters
+      `(command| inductive $inductiveIdent:ident $params* where
+          $ctors:ctor*)
+
+@[codegen "inductive-type-definition"]
+def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, `command, js => do
+  let .ok name := js.getObjValAs? String "name" | throwError
+    s!"codegen: no 'name' found in 'inductive-type-definition'"
+  let isProp := js.getObjValAs? Bool "is_prop" |>.toOption.getD false
+  let .ok parameters := js.getObjValAs? (Array String) "parameters" | throwError
+    s!"codegen: no 'parameters' found in 'inductive-type-definition'"
+  let .ok constructors := js.getObjValAs? (Array Json) "constructors" | throwError
+    s!"codegen: no 'constructors' found in 'inductive-type-definition'"
+  let constructorsRaw ← constructors.mapM fun constructorJson => do
+    let .ok constructorName := constructorJson.getObjValAs? String "name" | throwError
+      s!"codegen: no 'name' found in inductive constructor definition {constructorJson}"
+    let .ok constructorArgs := constructorJson.getObjValAs? (Array String) "arguments" | throwError
+      s!"codegen: no 'arguments' found in inductive constructor definition {constructorJson}"
+    pure (constructorName, constructorArgs)
+  inductiveCommand translator name parameters constructorsRaw isProp
+| _, kind, _ => throwError
+    s!"codegen: inductive_type_definition does not work for kind {kind}"
 
 /-!
 ## Adding handlers for different schema elements
