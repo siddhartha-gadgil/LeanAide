@@ -278,7 +278,7 @@ vw^{-1}
 $$
 Hence $a=y(vw^{-1})y^{-1}$, so $a$ is conjugate to $vw^{-1}$.
 
-Lemma 3, applied to the elements $a,w,u,v$, gives
+Lemma 3, applied with $s=e$, $t=y$, $y=u$, and $z=v$, gives
 $$
 l(a)\leq \frac{l(u)+l(v)}{2}.
 $$
@@ -560,7 +560,8 @@ $A\to A\otimes_{\mathbb Z}\mathbb Q$ is injective.  We identify $A$ with its
 image in $V_{\mathbb Q}$.
 
 Every element of $V_{\mathbb Q}$ can be written as $a/n$ with
-$a\in A$ and $n$ a positive integer.  Define
+$a\in A$ and $n$ a positive integer: a finite sum of fractions can be put over
+a common positive denominator.  Define
 $$
 \|a/n\|_{\mathbb Q}:=\frac{p(a)}{n}.
 $$
@@ -608,8 +609,7 @@ such that
 $$
 \|\iota(v)\|_B=\|v\|_{\mathbb Q}
 $$
-for every $v\in V_{\mathbb Q}$, after quotienting by the zero-seminorm
-subspace if necessary.
+for every $v\in V_{\mathbb Q}$.
 
 **Proof.**
 Let
@@ -617,11 +617,36 @@ $$
 N:=\{v\in V_{\mathbb Q}\mid \|v\|_{\mathbb Q}=0\}.
 $$
 The seminorm axioms imply that $N$ is a rational vector subspace of
-$V_{\mathbb Q}$.  The quotient $V_{\mathbb Q}/N$ carries a norm induced by
-$\|\cdot\|_{\mathbb Q}$.  Extend scalars from $\mathbb Q$ to $\mathbb R$ and
-equip the resulting real vector space with the induced norm.  Let $B$ be the
-metric completion of this normed real vector space.  The completion is a real
-Banach space by definition.  The canonical composite
+$V_{\mathbb Q}$.  The quotient
+$$
+W:=V_{\mathbb Q}/N
+$$
+carries a norm induced by $\|\cdot\|_{\mathbb Q}$.  Let $B$ be the metric
+completion of the normed rational vector space $W$.
+
+The addition map $W\times W\to W$, the additive inverse map $W\to W$, and
+the scalar multiplication map $W\to W$ by each fixed rational number are
+uniformly continuous.  Hence they extend uniquely to the completion $B$.
+
+It remains to define multiplication by an arbitrary real scalar.  Let
+$\alpha\in\mathbb R$ and $b\in B$.  Choose a sequence of rationals
+$(q_i)_{i\geq 1}$ converging to $\alpha$, and choose a sequence
+$(w_i)_{i\geq 1}$ in $W$ converging to $b$.  The sequence $(q_iw_i)$ is
+Cauchy: for large $i,j$,
+$$
+\|q_iw_i-q_jw_j\|
+\leq |q_i|\,\|w_i-w_j\|+|q_i-q_j|\,\|w_j\|,
+$$
+and the sequences $(q_i)$ and $(w_i)$ are bounded.  Define
+$$
+\alpha b:=\lim_i q_iw_i.
+$$
+The same estimate shows that this limit is independent of the chosen rational
+sequence $(q_i)$ and the chosen approximating sequence $(w_i)$.  These
+operations make $B$ into a real normed vector space.  Since $B$ is complete as
+a metric space by construction, $B$ is a real Banach space.
+
+The canonical composite
 $$
 V_{\mathbb Q}\to V_{\mathbb Q}/N\to B
 $$
@@ -721,7 +746,12 @@ Therefore every torsion element of $G$ is the identity element, so $G$ is
 torsion-free.
 
 Conversely, assume that $G$ is abelian and torsion-free.  Write the group law
-additively.  Since $G$ is torsion-free, the canonical map
+additively.  Since $G$ is torsion-free, the localization map
+$$
+G\to G\otimes_{\mathbb Z}\mathbb Q
+$$
+is injective.  Extending scalars from $\mathbb Q$ to $\mathbb R$ preserves this
+injection.  Thus the canonical map
 $$
 G\to G\otimes_{\mathbb Z}\mathbb R
 $$
