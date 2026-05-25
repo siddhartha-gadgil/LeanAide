@@ -797,7 +797,36 @@ A large fraction of proof errors are type errors in disguise.
 
 This is where Lean-style thinking is extremely valuable.
 
-## 26. Computational perturbation tests
+## 26. Definition-equivalence tests
+
+When a proof uses a definition, check that it is the same definition throughout,
+or that the claimed equivalent definitions are actually equivalent under the
+current hypotheses.
+
+Stress questions:
+
+```text
+Which definition of this term is being used here?
+Does the cited theorem use the same definition?
+Are the two definitions equivalent without extra assumptions?
+Is the equivalence natural, or does it depend on choices?
+Does the equivalence preserve all extra structure in the theorem?
+```
+
+Common examples:
+
+```text
+compactness by open covers versus sequential compactness
+regularity in topology versus regularity in algebra
+bundled versus unbundled structures
+pointwise versus categorical definitions of a universal property
+analytic versus algebraic definitions of the same object
+```
+
+If the proof switches definitions, insert the equivalence theorem as an explicit
+lemma and stress-test its hypotheses.
+
+## 27. Computational perturbation tests
 
 For formula-heavy arguments, perturb the input and check consistency.
 
@@ -816,7 +845,7 @@ take a nilpotent matrix
 
 If a complicated formula does not reduce to the expected simple formula, there is likely a sign, normalization, or convention error.
 
-## 27. Alternative-proof comparison
+## 28. Alternative-proof comparison
 
 Try to prove the same result by a different route.
 
@@ -831,7 +860,7 @@ Does one proof require stronger assumptions?
 
 If proof A uses compactness and proof B does not, then either proof B is stronger, or proof B is missing a compactness-dependent step.
 
-## 28. Formalization stress tests
+## 29. Formalization stress tests
 
 For Lean or another proof assistant, useful stress tests include:
 
@@ -858,7 +887,7 @@ theorem continuous_on_closed_bounded_in_infinite_dimensional_space_bounded ...
 
 A proof framework should fail at the compactness extraction step, not later mysteriously.
 
-## 29. LLM/agent proof stress tests
+## 30. LLM/agent proof stress tests
 
 For LLM-generated proof sketches, use adversarial theorem variants.
 
@@ -906,7 +935,7 @@ Proof-break localization
 Revision of proof or statement
 ```
 
-## 30. Proof-obligation extraction
+## 31. Proof-obligation extraction
 
 Every nontrivial step should generate obligations.
 
@@ -941,7 +970,7 @@ Obligations:
 
 Stress testing then asks whether each obligation is still provable under theorem mutations.
 
-## 31. Counterexample-guided proof testing
+## 32. Counterexample-guided proof testing
 
 For each hypothesis, try to find a minimal counterexample when it is removed.
 
@@ -997,9 +1026,10 @@ For a proof, ask:
 10. Build the dependency graph and look for circularity.
 11. Test small explicit models and degenerate examples.
 12. Try to construct counterexamples to each lemma exactly as stated.
-13. For equivalences, test both directions independently.
-14. For induction, check base cases, decrease, and hypothesis strength.
-15. For formalization, remove hypotheses and make implicit data explicit.
+13. Check that all equivalent definitions are equivalent under the hypotheses.
+14. For equivalences, test both directions independently.
+15. For induction, check base cases, decrease, and hypothesis strength.
+16. For formalization, remove hypotheses and make implicit data explicit.
 ```
 
 The guiding principle is:

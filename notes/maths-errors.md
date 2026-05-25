@@ -384,7 +384,28 @@ Possibilities:
 
 This is a common source of propagated errors.
 
-## 25. Formalization-level errors
+## 25. Definition drift or incompatible definitions
+
+A proof uses a term, structure, or property under one definition in one place
+and a subtly different definition elsewhere.
+
+Typical forms:
+
+* switching between equivalent definitions without proving equivalence under the
+  current hypotheses;
+* using a definition from one subfield with conventions from another;
+* treating "compact", "variety", "scheme", "graph", "simple", "regular",
+  "measurable", or "representation" as if the meaning were globally fixed;
+* proving a theorem for a bundled structure but applying it to an unbundled or
+  differently bundled one;
+* changing between analytic, algebraic, categorical, or point-set definitions of
+  the same object without checking compatibility.
+
+The error is often hidden because both definitions are standard. The problem is
+that they are standard in different contexts, or equivalent only after extra
+hypotheses.
+
+## 26. Formalization-level errors
 
 When translating proofs into Lean/Coq/Isabelle, additional hidden errors surface:
 
@@ -412,6 +433,7 @@ A compact way to classify proof errors is:
 | Limit error            | Passage to a limit loses the needed property              |
 | Local-global error     | Local data fail to glue globally                          |
 | Circularity            | The proof uses what it is trying to prove                 |
+| Definition drift       | A term changes meaning or equivalent definitions are not justified |
 | Notational suppression | Dependence, coherence, or equality is hidden              |
 | Computation error      | Sign, factor, convention, or algebra mistake              |
 | Citation error         | Referenced result is weaker/different than needed         |
