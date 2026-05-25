@@ -20,9 +20,23 @@ The `statement` field must be a mathematical assertion, not an instruction to
 the reader or prover. Do not write imperative/task text such as "show that",
 "prove", "conclude", "negate the desired conclusion", or "produce a witness"
 as a statement.
+Avoid local-definition syntax inside theorem statements, especially phrases
+such as `if C_n := ... then ...`. Instead state the local definition as a named
+function or object in mathematical prose: for example, "Let C : Nat -> G be
+defined by C n = ... . For every n, ... C n ...". Use ASCII identifier-style
+names such as `C`, `normQ`, `barL`, `VQ`, `twoN`, and `sumSigns` in statements
+when the source notation is display-heavy.
 If a proof immediately follows a theorem-like statement, attach the proof text
 to that theorem-like child in `proof_text`. Do not emit the proof as a separate
 paragraph. A text beginning with "Proof." or "Proof:" is never a paragraph.
+For ordinary definition children, fill Lean-codegen metadata through
+`data_entries`: use key `term` for a short ASCII Lean-style identifier or
+declaration name such as `PseudoLength`, `IsLength`, `IsHomogeneousPseudoLength`,
+`commutator`, `commutatorSubgroup`, `abelianization`, or `torsionSubgroup`; use
+key `definiens` for only the mathematical definition, without Markdown headers,
+bold markers, numbering labels, or explanatory prose. Use key `notation` only
+when the source explicitly defines notation. Never use prose names containing
+spaces, hyphens, parentheses, LaTeX, or display math as the definition `term`.
 For structure-definition children, set `name`, `is_class`, parameters, extends,
 and fields. Use `is_class=true` for class-like structures such as groups.
 For instance-definition children, set `class_name`, `target`, optional `name`,
@@ -31,6 +45,9 @@ For inductive-type-definition children, set `name`, `is_prop`, parameters, and
 constructors. Each constructor should include its name, when stated, and its
 arguments.
 Use `data_entries` only for small string metadata as key/value pairs.
+Prefer labels that are stable source labels such as `Lemma 1`, `Proposition 7`,
+or a short ASCII identifier. Avoid putting full claims or display notation in
+labels.
 """
 
 PROOF_CLASSIFIER_INSTRUCTIONS = """
@@ -65,6 +82,12 @@ mathematical step as a `proof_steps` entry:
 - use `assume_statement` for fixed arbitrary variables or assumptions;
 - use `assert_statement` for equations, inequalities, derived claims, and final
   conclusions, with `proof_method` explaining the local justification.
+Use Lean-codegen-friendly names in `let_statement.variable_name`: ASCII
+identifier-style names such as `normQ`, `basisNorm`, `iota`, `eps`, `twoN`,
+`comm`, or `quotientMap`. Do not use display names such as `||·||_Q`,
+`(B, iota)`, subscripts, Greek letters, comma-separated tuples, or LaTeX as a
+variable name; if the source constructs several objects, split them into
+separate `let_statement` steps with one identifier each.
 Whenever an `assert_statement` has a `proof_method`, also fill dependency
 fields when the source supports them:
 - `deduced_from_claim`: local/contextual claims used for the assertion, stated
@@ -77,6 +100,9 @@ fields when the source supports them:
 Do not put method names, tactic names, or bare labels in `deduced_from_claim`.
 For example, do not write `Second derivative test` as a claim dependency; use
 `deduced_from_theorem` with a theorem object whose `claim` states the test.
+When an assertion depends on a previously labeled theorem or lemma from the
+same document, mention that label in `proof_method` or in the theorem object's
+`name`; keep the `claim` itself as the mathematical proposition being proved.
 If the fragment is represented as one simple proof with `method` rather than
 separate `proof_steps`, use the top-level `deduced_from_claim` and
 `deduced_from_theorem` fields by the same rules.
@@ -85,8 +111,17 @@ not an instruction. For example use `B(x, ε/3) ∩ B(y, ε/3) ≠ ∅`,
 `z ∈ B(x, ε/3) ∩ B(y, ε/3)`, or
 `B(x, ε/3) ∩ B(y, ε/3) = ∅`, not "negate the desired conclusion",
 "produce a witness", "verify the witness", or "conclude the claim".
+Keep claims close to Lean-codegen prose. Prefer local ASCII names already
+introduced in the proof over raw display notation: use `barL` instead of
+`\\bar l`, `normQ` instead of `‖·‖_ℚ` or `||·||_Q`, `VQ` instead of
+`V_ℚ`, `twoN` instead of subscripted `2n` notation when it is an object name,
+and `expectation`/`finite average` prose instead of `𝔼` when possible.
 Do not expand omitted arguments, but do keep all intermediate equations and
 algebraic rewrites that are present in the source text.
+Avoid extracting obvious typing side conditions as standalone assertions, for
+example `x ∈ G`, `s^{-1} ∈ G`, `n > 0`, or "`l` is a pseudo-length function",
+when they are already hypotheses or fixed-variable context. Keep them in
+assumptions, variable types, or proof methods instead.
 """
 
 CALCULATION_INSTRUCTIONS = """
@@ -146,6 +181,27 @@ exists a nonzero polynomial p such that p(a)=0", use `variable_name="p"` and
 `claim="p is a nonzero polynomial such that p(a)=0"`. For epsilon-delta proofs,
 fill `bound_claim` with the inequality or implication proved after choosing
 delta.
+For existence and construction proofs, `variable_name` must be a single
+Lean-style ASCII identifier, not mathematical display notation. Use names such
+as `normQ`, `subspaceN`, `quotientW`, `completionB`, `iota`, `basis`,
+`basisNorm`, `linearMapPhi`, or `lengthFromNorm`. If the source constructs a
+pair or tuple such as `(B, iota)`, choose a single identifier for the existential
+witness only when the existential really binds one object; otherwise expose the
+separate objects as child `let_statement` steps and verify the final object.
+The `construction` field should be a first-class object description or
+definition for that one identifier, not a paragraph of proof. Put auxiliary
+definitions such as `N`, `W`, `B`, and `iota` in child proof steps.
+When possible, write `construction` as an assignment-shaped phrase beginning
+with the variable name, such as `normQ(v) := ...`, `completionB := ...`, or
+`iota := ...`. Do not use pair notation, display norm symbols, or several
+comma-separated constructions in the same `construction` field.
+For generic-element proofs, do not create child proof specs whose kind is again
+`generic_element`. The arbitrary element setup is the current proof node. Put
+the fixed variable or membership assumption in `assumptions`, then make the
+remaining child components `simple`, `calculation`, `theorem_application`,
+`existence`, `cases`, or `contradiction` as appropriate. If the source only says
+"take an arbitrary u" or "fix u" and gives no separate subproof, record that in
+`assumptions` and do not create a child component for the setup.
 
 For every child proof spec, `goal` must be a clean mathematical proposition,
 never a task description. Avoid imperative phrases such as "negate the desired
@@ -179,6 +235,11 @@ Prefer a `logical_sequence`-style output:
 - use `simple` for a local assertion, `calculation` for explicit algebra or
   inequality chains, and `cases` or `induction` only when those structures are
   explicitly present.
+Never resolve a proof by wrapping it in a component with the same kind and same
+goal as the input. In particular, do not create recursive `generic_element`
+setup components such as `fix u`, `arbitrary u`, or `setup arbitrary u`; express
+those setup phrases as `assume_statement` or `let_statement` proof steps, then
+continue with the actual mathematical claim.
 
 Preserve the original proof's claim, assumptions, conclusions, and named
 intermediate claims. Do not invent omitted mathematics. If a specialized method
@@ -190,6 +251,9 @@ claims it contributes as assert statements and put the method/theorem name in
 Every `assert_statement.claim` must be a mathematical proposition, not an
 instruction such as "apply compactness", "finish by pigeonhole", or "resolve
 the diagram chase".
+Do not turn nested local reasoning into theorem-like child nodes unless the
+source explicitly names a reusable local claim. Prefer `assert_statement` for
+ordinary intermediate facts so the surrounding proof context is preserved.
 """
 
 CLAIM_AUDIT_INSTRUCTIONS = """
@@ -200,6 +264,17 @@ suitable for a Lean theorem statement or `have` statement after natural-language
 translation. A valid claim may mention fixed variables and hypotheses, but it
 must not contain proof instructions, proof methods, reader tasks, tactic-like
 phrasing, or a sequence of several proof steps.
+Prefer claims phrased with local identifier names over raw display notation.
+Repair claims that consist only of side conditions already present in context,
+method labels, or type-membership bookkeeping by replacing them with the actual
+mathematical conclusion when the container text supplies it; otherwise leave a
+note rather than inventing content.
+Patch proposition-shaped claims that still use LaTeX command names or display
+symbols when the same object has an identifier in nearby context: replace
+`\\bar l` by `barL`, `\\tilde l` by `tildeL`, `V_{\\mathbb Q}` or `V_ℚ` by `VQ`,
+`||·||_Q` or `‖·‖_ℚ` by `normQ`, and probability display notation such as
+`\\mathbb E` or `𝔼` by "the expectation" or "the finite average". Preserve the
+same mathematical proposition; only change notation and wording.
 
 For each supplied claim entry, decide whether the claim is already suitable for
 Lean proposition translation. Return patches only for entries that need repair.
