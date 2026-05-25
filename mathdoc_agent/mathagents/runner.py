@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
 import os
@@ -14,6 +15,7 @@ from mathdoc_agent.mathagents.leansearch import LeanSearchError, lookup_theorems
 
 T = TypeVar("T", bound=BaseModel)
 _LEANSEARCH_CACHE: dict[str, str | None] = {}
+DEFAULT_AGENT_TIMEOUT_SECONDS = 180.0
 
 
 def _agent_name(agent: Any) -> str:
@@ -76,6 +78,17 @@ async def _maybe_await(value: Any) -> Any:
     if inspect.isawaitable(value):
         return await value
     return value
+
+
+def _agent_timeout_seconds() -> float | None:
+    value = os.environ.get("MATHDOC_AGENT_AGENT_TIMEOUT_SECONDS")
+    if value is None:
+        return DEFAULT_AGENT_TIMEOUT_SECONDS
+    try:
+        timeout = float(value)
+    except ValueError:
+        return DEFAULT_AGENT_TIMEOUT_SECONDS
+    return None if timeout <= 0 else timeout
 
 
 def _leansearch_enabled() -> bool:
@@ -165,22 +178,33 @@ async def run_agent_typed(
     else:
         input_payload = payload
 
+    async def _run_agent_raw() -> Any:
+        if callable(agent) and not hasattr(agent, "instructions"):
+            return await _maybe_await(agent(input_payload))
+        if hasattr(agent, "run"):
+            return await _maybe_await(agent.run(input_payload))
+        try:
+            from agents import Runner
+        except ImportError as exc:
+            raise RuntimeError(
+                "No runnable fake agent was provided and the OpenAI Agents SDK is not installed."
+            ) from exc
+        sdk_input = input_payload if isinstance(input_payload, str) else json.dumps(input_payload)
+        result = await Runner.run(agent, sdk_input)
+        return result.final_output
+
     _log_agent_event("calling", agent, output_type, input_payload)
     try:
-        if callable(agent) and not hasattr(agent, "instructions"):
-            output = await _maybe_await(agent(input_payload))
-        elif hasattr(agent, "run"):
-            output = await _maybe_await(agent.run(input_payload))
+        timeout = _agent_timeout_seconds()
+        if timeout is None:
+            output = await _run_agent_raw()
         else:
-            try:
-                from agents import Runner
-            except ImportError as exc:
-                raise RuntimeError(
-                    "No runnable fake agent was provided and the OpenAI Agents SDK is not installed."
-                ) from exc
-            sdk_input = input_payload if isinstance(input_payload, str) else json.dumps(input_payload)
-            result = await Runner.run(agent, sdk_input)
-            output = result.final_output
+            output = await asyncio.wait_for(_run_agent_raw(), timeout=timeout)
+    except asyncio.TimeoutError as exc:
+        _log_agent_event("timed out", agent, output_type, input_payload)
+        raise TimeoutError(
+            f"Agent {_agent_name(agent)} timed out after {_agent_timeout_seconds()} seconds"
+        ) from exc
     except Exception:
         _log_agent_event("failed", agent, output_type, input_payload)
         raise
