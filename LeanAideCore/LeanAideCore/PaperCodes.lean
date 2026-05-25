@@ -860,7 +860,7 @@ def specializeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind
 | _, kind, _ => throwError
     s!"codegen: specialize does not work for kind {kind}; it must be used inside a proof"
 where
-  specializeTactic (js: Json) : TranslateM (TSyntax ``tactic) := do
+  specializeTactic (js: Json) : TranslateM (TSyntax `tactic) := do
     let .ok name := js.getObjValAs? Name "name" | throwError
       s!"codegen: no 'name' found in 'specialize'"
     let .ok leanTerm := js.getObjValAs? String "lean_term" | throwError
