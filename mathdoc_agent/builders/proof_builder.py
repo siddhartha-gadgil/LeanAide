@@ -9,6 +9,7 @@ from mathdoc_agent.models.payloads import (
     InductionData,
     LocalClaimData,
     SimpleProofData,
+    SpecializeData,
 )
 from mathdoc_agent.models.proof import ProofNode
 
@@ -152,5 +153,34 @@ class ProofBuilder:
             text=text,
             goal=statement,
             children=[proof_node] if proof_node else [],
+            data=data.model_dump(),
+        )
+
+    @staticmethod
+    def specialize(
+        *,
+        id: str,
+        text: str,
+        name: str,
+        lean_term: str,
+        claim: str | None = None,
+        source_claim: str | None = None,
+        arguments: list[str] | None = None,
+        hypotheses: list[str] | None = None,
+    ) -> ProofNode:
+        data = SpecializeData(
+            name=name,
+            lean_term=lean_term,
+            claim=claim,
+            source_claim=source_claim,
+            arguments=arguments or [],
+        )
+        return ProofNode(
+            id=id,
+            kind=ProofKind.specialize,
+            status=NodeStatus.resolved,
+            text=text,
+            goal=claim,
+            hypotheses=hypotheses or [],
             data=data.model_dump(),
         )

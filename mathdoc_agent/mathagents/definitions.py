@@ -20,6 +20,7 @@ from mathdoc_agent.models.refinement_specs import (
     InductionRefinementSpec,
     ProofResolutionSpec,
     SimpleProofRefinementSpec,
+    SpecializeRefinementSpec,
     StructuredProofRefinementSpec,
 )
 
@@ -83,6 +84,11 @@ calculation_agent = _agent(
     "Calculation proof refiner",
     prompts.CALCULATION_INSTRUCTIONS,
     CalculationRefinementSpec,
+)
+specialize_agent = _agent(
+    "Specialization proof refiner",
+    prompts.SPECIALIZE_INSTRUCTIONS,
+    SpecializeRefinementSpec,
 )
 structured_proof_agent = _agent(
     "Structured proof refiner",

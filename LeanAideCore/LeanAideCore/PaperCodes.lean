@@ -845,6 +845,39 @@ where typeStx (js: Json) :
   return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type)
 
 /--
+Generate code for a non-destructive specialization of an already proved claim.
+This creates a new local lemma with `have name := lean_term`, keeping the
+original general claim available in the local context.
+-/
+@[codegen "specialize"]
+def specializeCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
+| _, ``tacticSeq, js => do
+  let tac ← specializeTactic js
+  let tacs := #[tac]
+  `(tacticSeq| $tacs*)
+| _, `tactic, js => do
+  specializeTactic js
+| _, kind, _ => throwError
+    s!"codegen: specialize does not work for kind {kind}; it must be used inside a proof"
+where
+  specializeTactic (js: Json) : TranslateM (TSyntax ``tactic) := do
+    let .ok name := js.getObjValAs? Name "name" | throwError
+      s!"codegen: no 'name' found in 'specialize'"
+    let .ok leanTerm := js.getObjValAs? String "lean_term" | throwError
+      s!"codegen: no 'lean_term' found in 'specialize'"
+    let .ok termStx := Parser.runParserCategory (← getEnv) `term leanTerm |
+      throwError s!"codegen: failed to parse 'lean_term' as a term: {leanTerm}"
+    let termStx : TSyntax `term := ⟨termStx⟩
+    let nameStx := mkIdent name
+    match js.getObjValAs? String "claim" with
+    | .ok claim =>
+        let type ← translator.translateToPropStrict claim
+        let typeStx ← delabDetailed type
+        `(tactic| have $nameStx : $typeStx := $termStx)
+    | .error _ =>
+        `(tactic| have $nameStx := $termStx)
+
+/--
 Generate code for a `calculation` step. This can either be a single inline calculation or a sequence of calculations. If the `inline_calculation` is provided, it generates a tactic that asserts the calculation. If `calculation_sequence` is provided, it generates a sequence of tactics for each step in the calculation.
 -/
 @[codegen "calculation"]

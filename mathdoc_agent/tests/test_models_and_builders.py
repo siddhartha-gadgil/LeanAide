@@ -16,6 +16,7 @@ from mathdoc_agent.models.payloads import (
     InductiveConstructorData,
     LogicalProofStepData,
     SimpleProofData,
+    SpecializeData,
     StructureFieldData,
 )
 from mathdoc_agent.models.proof import ProofNode, ProofTree
@@ -119,7 +120,36 @@ class ModelAndBuilderTests(unittest.TestCase):
             {"variable": "n", "base_case_ids": ["b"], "step_case_ids": ["s"]},
         )
         self.assertIsInstance(data, InductionData)
+        specialized = proof_payload_registry.validate_data(
+            ProofKind.specialize,
+            {
+                "name": "h_at_x",
+                "lean_term": "(h x hx)",
+                "claim": "P x",
+                "source_claim": "For every y satisfying H y, P y.",
+                "arguments": ["x", "hx"],
+            },
+        )
+        self.assertIsInstance(specialized, SpecializeData)
         self.assertIsNone(proof_payload_registry.validate_data("custom_kind", {}))
+
+    def test_specialize_proof_exports_named_lemma_instance(self) -> None:
+        node = ProofBuilder.specialize(
+            id="p.specialize",
+            text="Specialize h to x.",
+            name="h_at_x",
+            lean_term="(h x hx)",
+            claim="P x",
+            source_claim="For every y satisfying H y, P y.",
+            arguments=["x", "hx"],
+        )
+        exported = json.loads(to_json(ProofTree(id="p", theorem_statement="P x", root=node)))
+        self.assertEqual(exported["type"], "specialize")
+        self.assertEqual(exported["name"], "h_at_x")
+        self.assertEqual(exported["lean_term"], "(h x hx)")
+        self.assertEqual(exported["claim"], "P x")
+        self.assertEqual(exported["source_claim"], "For every y satisfying H y, P y.")
+        self.assertEqual(exported["arguments"], ["x", "hx"])
 
     def test_builders_create_expected_payloads(self) -> None:
         base = ProofNode(id="p.base", kind=ProofKind.simple, text="base")

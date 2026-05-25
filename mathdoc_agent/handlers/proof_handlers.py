@@ -17,6 +17,7 @@ from mathdoc_agent.models.payloads import (
     LocalClaimData,
     LogicalProofStepData,
     SimpleProofData,
+    SpecializeData,
     StructuredProofData,
 )
 from mathdoc_agent.models.proof import ProofNode
@@ -27,6 +28,7 @@ from mathdoc_agent.models.refinement_specs import (
     LocalClaimRefinementSpec,
     metadata_entries_to_dict,
     SimpleProofRefinementSpec,
+    SpecializeRefinementSpec,
     StructuredProofRefinementSpec,
 )
 from mathdoc_agent.models.validation import ValidationIssue, ValidationReport
@@ -64,6 +66,9 @@ class UnknownProofHandler(ProofRefinementHandler[ClassificationSpec]):
             "logical_step_sequence": ProofKind.logical_sequence.value,
             "logical_proof_sequence": ProofKind.logical_sequence.value,
             "logical_sequence": ProofKind.logical_sequence.value,
+            "specialization": ProofKind.specialize.value,
+            "specialise": ProofKind.specialize.value,
+            "specialisation": ProofKind.specialize.value,
             "unknown": ProofKind.logical_sequence.value,
             "unknown_proof": ProofKind.logical_sequence.value,
         }
@@ -544,6 +549,72 @@ class LocalClaimHandler(ProofRefinementHandler[LocalClaimRefinementSpec]):
         if not node.children:
             return True
         return all(child.status in {NodeStatus.resolved, NodeStatus.opaque} for child in node.children)
+
+
+class SpecializeHandler(ProofRefinementHandler[SpecializeRefinementSpec]):
+    kind = ProofKind.specialize.value
+    output_model = SpecializeRefinementSpec
+
+    def __init__(self, agent=None) -> None:
+        self.agent = agent
+
+    async def refine(self, node: ProofNode, context: ProofContext) -> ProofNode:
+        if self.agent is None:
+            if node.data:
+                SpecializeData.model_validate(node.data)
+                return node.model_copy(update={"status": NodeStatus.resolved})
+            return node.model_copy(
+                update={
+                    "status": NodeStatus.locally_refined,
+                    "unresolved_details": node.unresolved_details
+                    + ["Specialize proof requires a name and lean_term."],
+                }
+            )
+        spec = await run_agent_typed(
+            self.agent,
+            {
+                "node": node.model_dump(),
+                "context": context.model_dump(),
+                "task": (
+                    "Create a named local lemma by specializing an already-proved "
+                    "claim. Do not overwrite or forget the original claim."
+                ),
+            },
+            SpecializeRefinementSpec,
+        )
+        data = SpecializeData(
+            name=spec.name,
+            lean_term=spec.lean_term,
+            claim=spec.claim or node.goal,
+            source_claim=spec.source_claim,
+            arguments=spec.arguments,
+        )
+        return node.model_copy(
+            update={
+                "kind": self.kind,
+                "status": NodeStatus.resolved,
+                "goal": data.claim or node.goal,
+                "data": data.model_dump(),
+                "unresolved_details": node.unresolved_details + spec.unresolved_details,
+                "notes": node.notes + spec.notes,
+            }
+        )
+
+    def validate(self, node: ProofNode, context: ProofContext) -> ValidationReport:
+        issues: list[ValidationIssue] = []
+        data = SpecializeData.model_validate(node.data)
+        if not data.name.strip():
+            issues.append(ValidationIssue(severity="error", path="data.name", message="Specialize node has no new lemma name."))
+        if not data.lean_term.strip():
+            issues.append(ValidationIssue(severity="error", path="data.lean_term", message="Specialize node has no Lean term."))
+        return ValidationReport.from_issues(issues)
+
+    def is_resolved(self, node: ProofNode, context: ProofContext) -> bool:
+        try:
+            data = SpecializeData.model_validate(node.data)
+        except Exception:
+            return False
+        return bool(data.name.strip() and data.lean_term.strip())
 
 
 class StructuredProofHandler(ProofRefinementHandler[StructuredProofRefinementSpec]):

@@ -156,6 +156,30 @@ class LocalClaimData(ProofKindData):
     label: Optional[str] = None
 
 
+class SpecializeData(ProofKindData):
+    name: str = Field(
+        description="Name of the new local lemma created by specializing an existing claim."
+    )
+    lean_term: str = Field(
+        description=(
+            "Lean term proving the specialized lemma, typically an application "
+            "of an existing theorem or hypothesis to local arguments."
+        )
+    )
+    claim: Optional[str] = Field(
+        default=None,
+        description="Optional mathematical statement of the specialized lemma.",
+    )
+    source_claim: Optional[str] = Field(
+        default=None,
+        description="Optional already-proved general claim being instantiated.",
+    )
+    arguments: list[str] = Field(
+        default_factory=list,
+        description="Optional local values or hypotheses used for the specialization.",
+    )
+
+
 class StructuredProofData(ProofKindData):
     strategy: Optional[str] = None
     summary: Optional[str] = None

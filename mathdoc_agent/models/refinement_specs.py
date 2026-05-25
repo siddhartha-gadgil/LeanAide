@@ -72,6 +72,26 @@ class LocalClaimRefinementSpec(BaseModel):
     notes: list[str] = Field(default_factory=list)
 
 
+class SpecializeRefinementSpec(BaseModel):
+    name: str = Field(
+        description="Name for the new specialized local lemma being created."
+    )
+    lean_term: str = Field(
+        description="Lean term for the specialized instance, such as `(h x hx)`."
+    )
+    claim: str | None = Field(
+        default=None,
+        description="Mathematical statement of the specialized lemma.",
+    )
+    source_claim: str | None = Field(
+        default=None,
+        description="Already-proved general claim or hypothesis being instantiated.",
+    )
+    arguments: list[str] = Field(default_factory=list)
+    unresolved_details: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
 class StructuredProofRefinementSpec(BaseModel):
     strategy: str | None = None
     summary: str | None = None

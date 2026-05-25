@@ -36,6 +36,7 @@ DIRECT_CODEGEN_PROOF_KINDS = {
     ProofKind.local_claim.value,
     ProofKind.theorem_application.value,
     ProofKind.definition_unfolding.value,
+    ProofKind.specialize.value,
     ProofKind.opaque.value,
 }
 
@@ -56,6 +57,7 @@ SUPPORTED_RESOLUTION_CHILD_KINDS = {
     ProofKind.local_claim.value,
     ProofKind.theorem_application.value,
     ProofKind.definition_unfolding.value,
+    ProofKind.specialize.value,
 }
 
 

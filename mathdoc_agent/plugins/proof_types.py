@@ -9,6 +9,7 @@ from mathdoc_agent.handlers.proof_handlers import (
     LogicalSequenceHandler,
     OpaqueProofHandler,
     SimpleProofHandler,
+    SpecializeHandler,
     StructuredProofHandler,
     UnknownProofHandler,
 )
@@ -23,6 +24,7 @@ def default_proof_handler_registry(
     cases_agent=definitions.cases_agent,
     simple_agent=definitions.simple_proof_agent,
     calculation_agent=definitions.calculation_agent,
+    specialize_agent=definitions.specialize_agent,
     local_claim_agent=None,
     structured_agent=definitions.structured_proof_agent,
 ) -> ProofHandlerRegistry:
@@ -43,6 +45,7 @@ def default_proof_handler_registry(
     )
     registry.register(ProofKind.calculation.value, CalculationHandler(calculation_agent))
     registry.register(ProofKind.local_claim.value, LocalClaimHandler(local_claim_agent))
+    registry.register(ProofKind.specialize.value, SpecializeHandler(specialize_agent))
     for structured_kind in STRUCTURED_PROOF_KINDS:
         registry.register(structured_kind.value, StructuredProofHandler(structured_kind, structured_agent))
     return registry

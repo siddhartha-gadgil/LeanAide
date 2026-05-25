@@ -77,6 +77,7 @@ def proof_node_priority(node: ProofNode) -> tuple[int, int, int]:
         ProofKind.induction.value: 1,
         ProofKind.cases.value: 1,
         ProofKind.local_claim.value: 2,
+        ProofKind.specialize.value: 2,
         ProofKind.extensionality.value: 2,
         ProofKind.existence.value: 2,
         ProofKind.uniqueness.value: 2,

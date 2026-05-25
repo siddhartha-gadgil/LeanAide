@@ -621,6 +621,7 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             ProofKind.logical_sequence,
             ProofKind.theorem_application,
             ProofKind.definition_unfolding,
+            ProofKind.specialize,
             ProofKind.contrapositive,
             ProofKind.existence,
             ProofKind.uniqueness,

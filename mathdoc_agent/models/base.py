@@ -73,4 +73,5 @@ class ProofKind(str, Enum):
     local_claim = "local_claim"
     theorem_application = "theorem_application"
     definition_unfolding = "definition_unfolding"
+    specialize = "specialize"
     opaque = "opaque"

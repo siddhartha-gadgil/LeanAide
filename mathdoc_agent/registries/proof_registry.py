@@ -8,6 +8,7 @@ from mathdoc_agent.models.payloads import (
     LocalClaimData,
     ProofKindData,
     SimpleProofData,
+    SpecializeData,
     StructuredProofData,
 )
 
@@ -42,6 +43,7 @@ proof_payload_registry.register(ProofKind.induction, InductionData)
 proof_payload_registry.register(ProofKind.cases, CasesData)
 proof_payload_registry.register(ProofKind.calculation, CalculationData)
 proof_payload_registry.register(ProofKind.local_claim, LocalClaimData)
+proof_payload_registry.register(ProofKind.specialize, SpecializeData)
 
 for structured_kind in (
     ProofKind.contradiction,

@@ -60,6 +60,10 @@ have useful downstream handlers. If the proof is a direct argument, a sequence
 of deductions, or otherwise does not clearly match a specialized proof family,
 classify it as kind='logical_sequence'. The logical-sequence handler will split
 the proof into many explicit steps and refine those steps further.
+If the fragment primarily instantiates an already-proved universal or
+implicational claim at particular local values or hypotheses, classify it as
+kind='specialize'. This proof kind creates a new named local lemma for the
+instance; it must not overwrite or forget the original general claim.
 """
 
 INDUCTION_INSTRUCTIONS = """
@@ -71,6 +75,27 @@ Do not deeply refine child proofs or invent missing arguments.
 CASES_INSTRUCTIONS = """
 Refine one case split proof fragment. Extract what is split on, the cases, case
 assumptions, and an exhaustiveness reason when stated. Do not invent missing cases.
+"""
+
+SPECIALIZE_INSTRUCTIONS = """
+Refine a proof fragment whose purpose is to instantiate an already-proved
+claim, theorem, or hypothesis at particular local values or hypotheses.
+Return a new named local lemma for the specialized instance; do not model this
+as Lean's destructive `specialize h ...` tactic, because the original general
+claim must remain available.
+
+Fill:
+- `name`: a Lean-style ASCII identifier for the new specialized lemma.
+- `lean_term`: the exact Lean term proving the specialized lemma, possibly
+  depending on local variables and hypotheses, such as `(h x hx)` or
+  `(Nat.succ_le_succ hnm)`.
+- `claim`: the mathematical statement of the specialized lemma when clear.
+- `source_claim`: the general already-proved claim being instantiated when
+  clear.
+- `arguments`: the local values or hypotheses used for the specialization.
+
+Do not invent a `lean_term` if the local Lean names are not available; leave an
+unresolved detail instead.
 """
 
 SIMPLE_PROOF_INSTRUCTIONS = """
@@ -245,8 +270,9 @@ Prefer a `logical_sequence`-style output:
 - use `components` when the proof naturally has several named subproofs;
 - each component kind should be one of the supported simpler kinds;
 - use `simple` for a local assertion, `calculation` for explicit algebra or
-  inequality chains, and `cases` or `induction` only when those structures are
-  explicitly present.
+  inequality chains, `specialize` for a named instance of an already-proved
+  universal or implicational claim, and `cases` or `induction` only when those
+  structures are explicitly present.
 Never resolve a proof by wrapping it in a component with the same kind and same
 goal as the input. In particular, do not create recursive `generic_element`
 setup components such as `fix u`, `arbitrary u`, or `setup arbitrary u`; express

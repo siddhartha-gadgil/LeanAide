@@ -16,6 +16,7 @@ from mathdoc_agent.models.payloads import (
     InductiveTypeDefinitionData,
     InstanceDefinitionData,
     SimpleProofData,
+    SpecializeData,
     StatementData,
     StructureDefinitionData,
     StructuredProofData,
@@ -664,6 +665,22 @@ def _proof_node_data(node: ProofNode) -> Any:
                 "proof_cases": proof_cases,
                 "id": node.id,
                 "status": node.status.value,
+            }
+        )
+
+    if kind == ProofKind.specialize.value:
+        data = SpecializeData.model_validate(node.data)
+        return _without_none(
+            {
+                "type": "specialize",
+                "name": data.name,
+                "lean_term": data.lean_term,
+                "claim": data.claim or node.goal,
+                "source_claim": data.source_claim,
+                "arguments": data.arguments or None,
+                "id": node.id,
+                "status": node.status.value,
+                "text": node.text,
             }
         )
 
