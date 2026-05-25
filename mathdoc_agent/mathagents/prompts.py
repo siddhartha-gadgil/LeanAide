@@ -341,3 +341,25 @@ Preserve mathematical meaning and do not invent stronger results. If there is
 not enough mathematical content to form a proposition, leave the entry
 unpatched and add a note explaining the issue.
 """
+
+DEDUCED_FROM_CLAIM_REWRITE_INSTRUCTIONS = """
+Rewrite generated PaperStructure JSON entries that contain `deduced_from_claim`
+so they correspond to Lean proof structure.
+
+For each dependency entry:
+- If a dependency claim is already present verbatim in the available hypotheses
+  or local context, omit it from `deduced_from_claim`; it is already available.
+- If a dependency claim is available only through instantiating a general claim,
+  theorem, or hypothesis at particular local values or hypotheses, insert a
+  `specialize` step immediately before the current object. The inserted step
+  must create a new named local lemma and must not overwrite or forget the
+  original general claim. Fill `name` with the new lemma name and `lean_term`
+  with the Lean term for the instance, such as `(h x hx)`.
+- If a dependency claim is not yet available and must be proved before use,
+  insert a separate named local theorem immediately before the current object.
+  Give it a `name`, a proposition-shaped `claim`, and proof steps. Do not leave
+  it inside `deduced_from_claim`.
+
+Return only structured patches. Do not invent Lean terms or local names when the
+context does not support them; leave the dependency unchanged instead.
+"""

@@ -15,10 +15,13 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-from mathdoc_agent.export.json import paper_structure_data, to_json
+from mathdoc_agent.export.json import paper_structure_data
 from mathdoc_agent.mathagents import definitions
 from mathdoc_agent.models.document import MathDocument
 from mathdoc_agent.orchestration.claim_audit import audit_claims_for_lean
+from mathdoc_agent.orchestration.deduced_from_claim_rewrite import (
+    rewrite_deduced_from_claims_for_lean,
+)
 from mathdoc_agent.orchestration.document_orchestrator import (
     document_from_text,
     refine_math_document,
@@ -30,6 +33,7 @@ from mathdoc_agent.registries.proof_handlers import ProofHandlerRegistry
 
 
 _DEFAULT_CLAIM_AGENT = object()
+_DEFAULT_DEDUCED_FROM_CLAIM_AGENT = object()
 _DEFAULT_PROOF_RESOLUTION_AGENTS = object()
 _LEANAIDE_LAKE_NAME = "LeanAide"
 _LEANAIDE_PROCESS_URL = "http://localhost:7654"
@@ -473,6 +477,7 @@ async def generate_math_document_json(
     proof_iterations: int = 100,
     indent: int = 2,
     claim_agent: Any | None = _DEFAULT_CLAIM_AGENT,
+    deduced_from_claim_agent: Any | None = _DEFAULT_DEDUCED_FROM_CLAIM_AGENT,
     proof_resolution_agents: (
         dict[str, object] | None | object
     ) = _DEFAULT_PROOF_RESOLUTION_AGENTS,
@@ -482,6 +487,16 @@ async def generate_math_document_json(
         definitions.claim_audit_agent
         if claim_agent is _DEFAULT_CLAIM_AGENT and using_default_registries
         else (None if claim_agent is _DEFAULT_CLAIM_AGENT else claim_agent)
+    )
+    resolved_deduced_from_claim_agent = (
+        definitions.deduced_from_claim_rewrite_agent
+        if deduced_from_claim_agent is _DEFAULT_DEDUCED_FROM_CLAIM_AGENT
+        and using_default_registries
+        else (
+            None
+            if deduced_from_claim_agent is _DEFAULT_DEDUCED_FROM_CLAIM_AGENT
+            else deduced_from_claim_agent
+        )
     )
     resolved_proof_resolution_agents = (
         definitions.proof_resolution_agents
@@ -502,9 +517,12 @@ async def generate_math_document_json(
         proof_iterations=proof_iterations,
         proof_resolution_agents=resolved_proof_resolution_agents,
     )
-    if resolved_claim_agent is None:
-        return to_json(document, indent=indent)
-    data = await audit_claims_for_lean(paper_structure_data(document), resolved_claim_agent)
+    data = paper_structure_data(document)
+    data = await rewrite_deduced_from_claims_for_lean(
+        data,
+        resolved_deduced_from_claim_agent,
+    )
+    data = await audit_claims_for_lean(data, resolved_claim_agent)
     return json.dumps(data, indent=indent, ensure_ascii=False)
 
 
@@ -519,6 +537,7 @@ def generate_math_document_json_sync(
     proof_iterations: int = 100,
     indent: int = 2,
     claim_agent: Any | None = _DEFAULT_CLAIM_AGENT,
+    deduced_from_claim_agent: Any | None = _DEFAULT_DEDUCED_FROM_CLAIM_AGENT,
     proof_resolution_agents: (
         dict[str, object] | None | object
     ) = _DEFAULT_PROOF_RESOLUTION_AGENTS,
@@ -534,6 +553,7 @@ def generate_math_document_json_sync(
             proof_iterations=proof_iterations,
             indent=indent,
             claim_agent=claim_agent,
+            deduced_from_claim_agent=deduced_from_claim_agent,
             proof_resolution_agents=proof_resolution_agents,
         )
     )
@@ -573,6 +593,11 @@ def main() -> None:
         help="Skip the final LLM audit that repairs claim fields for Lean codegen.",
     )
     parser.add_argument(
+        "--skip-deduced-from-claim-rewrite",
+        action="store_true",
+        help="Skip the final LLM rewrite of deduced_from_claim dependencies.",
+    )
+    parser.add_argument(
         "--skip-proof-resolution",
         action="store_true",
         help=(
@@ -602,6 +627,11 @@ def main() -> None:
         proof_iterations=args.proof_iterations,
         indent=args.indent,
         claim_agent=None if args.skip_claim_audit else definitions.claim_audit_agent,
+        deduced_from_claim_agent=(
+            None
+            if args.skip_deduced_from_claim_rewrite
+            else definitions.deduced_from_claim_rewrite_agent
+        ),
         proof_resolution_agents=(
             None if args.skip_proof_resolution else definitions.proof_resolution_agents
         ),

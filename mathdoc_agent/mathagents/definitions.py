@@ -16,6 +16,7 @@ from mathdoc_agent.models.refinement_specs import (
     CalculationRefinementSpec,
     ClaimAuditSpec,
     CasesRefinementSpec,
+    DeducedFromClaimRewriteSpec,
     DocumentRefinementSpec,
     InductionRefinementSpec,
     ProofResolutionSpec,
@@ -119,6 +120,11 @@ claim_audit_agent = _agent(
     "Lean claim auditor",
     prompts.CLAIM_AUDIT_INSTRUCTIONS,
     ClaimAuditSpec,
+)
+deduced_from_claim_rewrite_agent = _agent(
+    "Deduced-from-claim rewriter",
+    prompts.DEDUCED_FROM_CLAIM_REWRITE_INSTRUCTIONS,
+    DeducedFromClaimRewriteSpec,
 )
 
 proof_resolution_agents = {

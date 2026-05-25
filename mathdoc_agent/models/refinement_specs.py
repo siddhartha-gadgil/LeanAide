@@ -182,3 +182,58 @@ class ClaimPatchSpec(BaseModel):
 class ClaimAuditSpec(BaseModel):
     patches: list[ClaimPatchSpec] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
+
+
+class DeducedFromClaimPatchSpec(BaseModel):
+    path: str = Field(
+        description=(
+            "JSON pointer path to the object containing `deduced_from_claim`, "
+            "for example `/document/body/0/proof/proof_steps/2`."
+        )
+    )
+    action: Literal[
+        "replace_deduced_from_claim",
+        "insert_specialize_before",
+        "insert_lemma_before",
+    ] = Field(
+        description=(
+            "`replace_deduced_from_claim` only rewrites or removes the dependency list. "
+            "`insert_specialize_before` inserts a named non-destructive specialization step. "
+            "`insert_lemma_before` inserts a named local theorem/lemma with its own proof."
+        )
+    )
+    deduced_from_claim: list[str] = Field(
+        default_factory=list,
+        description="Replacement dependency claims that should remain on the original object.",
+    )
+    remove_claims: list[str] = Field(
+        default_factory=list,
+        description="Dependency claims to remove from the original object.",
+    )
+    name: str | None = Field(
+        default=None,
+        description="Name for the inserted specialized lemma or local lemma.",
+    )
+    lean_term: str | None = Field(
+        default=None,
+        description="Lean term for the inserted specialization.",
+    )
+    claim: str | None = Field(
+        default=None,
+        description="Claim proved by the inserted specialization or local lemma.",
+    )
+    source_claim: str | None = Field(
+        default=None,
+        description="General already-proved claim being instantiated.",
+    )
+    arguments: list[str] = Field(default_factory=list)
+    proof_steps: list[LogicalProofStepData] = Field(
+        default_factory=list,
+        description="Proof steps for an inserted local theorem/lemma.",
+    )
+    notes: list[str] = Field(default_factory=list)
+
+
+class DeducedFromClaimRewriteSpec(BaseModel):
+    patches: list[DeducedFromClaimPatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)

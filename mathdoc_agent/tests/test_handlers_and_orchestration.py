@@ -25,6 +25,8 @@ from mathdoc_agent.models.refinement_specs import (
     ClaimPatchSpec,
     CasesRefinementSpec,
     ChildProofSpec,
+    DeducedFromClaimPatchSpec,
+    DeducedFromClaimRewriteSpec,
     DocumentChildSpec,
     DocumentRefinementSpec,
     InductionRefinementSpec,
@@ -34,6 +36,9 @@ from mathdoc_agent.models.refinement_specs import (
 )
 from mathdoc_agent.orchestration.context import build_proof_context
 from mathdoc_agent.orchestration.claim_audit import audit_claims_for_lean
+from mathdoc_agent.orchestration.deduced_from_claim_rewrite import (
+    rewrite_deduced_from_claims_for_lean,
+)
 from mathdoc_agent.orchestration.document_orchestrator import document_from_text, refine_math_document
 from mathdoc_agent.orchestration.proof_orchestrator import refine_proof_tree
 from mathdoc_agent.orchestration.proof_resolution import (
@@ -209,6 +214,45 @@ class ClaimAuditAgent:
                 )
             )
         return ClaimAuditSpec(patches=patches)
+
+
+class DeducedFromClaimRewriteAgent:
+    def __call__(self, payload):
+        entries = payload["dependency_entries"]
+        patches = []
+        for entry in entries:
+            dependencies = entry["deduced_from_claim"]
+            if "For every y satisfying H y, P y." in dependencies:
+                patches.append(
+                    DeducedFromClaimPatchSpec(
+                        path=entry["path"],
+                        action="insert_specialize_before",
+                        remove_claims=["For every y satisfying H y, P y."],
+                        name="h_at_x",
+                        lean_term="(h x hx)",
+                        claim="P x",
+                        source_claim="For every y satisfying H y, P y.",
+                        arguments=["x", "hx"],
+                    )
+                )
+            if "Auxiliary estimate E." in dependencies:
+                patches.append(
+                    DeducedFromClaimPatchSpec(
+                        path=entry["path"],
+                        action="insert_lemma_before",
+                        remove_claims=["Auxiliary estimate E."],
+                        name="aux_estimate",
+                        claim="Auxiliary estimate E.",
+                        proof_steps=[
+                            LogicalProofStepData(
+                                type="assert_statement",
+                                claim="Auxiliary estimate E.",
+                                proof_method="direct estimate",
+                            )
+                        ],
+                    )
+                )
+        return DeducedFromClaimRewriteSpec(patches=patches)
 
 
 class ProofResolutionAgent:
@@ -613,6 +657,51 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             [step["claim"] for step in replacement["proof_steps"]],
             ["x + 0 = x.", "The desired equality holds."],
         )
+
+    async def test_deduced_from_claim_rewrite_omits_hypotheses_and_inserts_steps(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "Q x",
+                        "hypothesis": [
+                            {"type": "assume_statement", "assumption": "H x"}
+                        ],
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "P x",
+                                    "deduced_from_claim": [
+                                        "H x",
+                                        "For every y satisfying H y, P y.",
+                                    ],
+                                },
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "Q x",
+                                    "deduced_from_claim": ["Auxiliary estimate E."],
+                                },
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+        rewritten = await rewrite_deduced_from_claims_for_lean(
+            data,
+            DeducedFromClaimRewriteAgent(),
+        )
+        steps = rewritten["document"]["body"][0]["proof"]["proof_steps"]
+        self.assertEqual(steps[0]["type"], "specialize")
+        self.assertEqual(steps[0]["name"], "h_at_x")
+        self.assertEqual(steps[0]["lean_term"], "(h x hx)")
+        self.assertNotIn("deduced_from_claim", steps[1])
+        self.assertEqual(steps[2]["type"], "theorem")
+        self.assertEqual(steps[2]["name"], "aux_estimate")
+        self.assertNotIn("deduced_from_claim", steps[3])
 
     def test_default_registry_has_reasonable_taxonomy_handlers(self) -> None:
         registry = proof_registry()
