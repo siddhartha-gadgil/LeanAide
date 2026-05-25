@@ -532,7 +532,44 @@ empty category
 
 Small models are excellent stress tests because false general statements often fail there.
 
-## 17. Analogy-breaking tests
+## 17. Lemma-level counterexample tests
+
+For each lemma, try to construct a counterexample to the lemma exactly as it is
+stated, before looking at how it is used later.
+
+Stress questions:
+
+```text
+Is the lemma false without an unstated hypothesis?
+Can a small model violate the conclusion?
+Can a boundary case violate it?
+Can a degenerate object violate it?
+Can the intended construction fail to cover all cases?
+Does the proof actually prove this statement, or a nearby corrected version?
+```
+
+This should be done locally, lemma by lemma, not only for the final theorem.
+Many paper-level errors enter through auxiliary lemmas whose statements are
+slightly too broad, too uniform, or too canonical.
+
+Useful workflow:
+
+```text
+Lemma L as stated
+  ↓
+Try smallest examples
+  ↓
+Try degenerate examples
+  ↓
+Try dropping implicit regularity/nonzero/nonempty assumptions
+  ↓
+If a counterexample appears, repair the lemma statement before using it
+```
+
+A correct proof should make counterexample search fail for a clear reason: the
+hypotheses should block the attempted examples at a specific point.
+
+## 18. Analogy-breaking tests
 
 If the proof is adapted from a familiar setting, test the exact property that made the familiar proof work.
 
@@ -567,7 +604,7 @@ fails in infinite-dimensional normed spaces.
 
 So any proof using compactness from boundedness should fail under that stress test.
 
-## 18. “Same proof proves too much” test
+## 19. “Same proof proves too much” test
 
 This is one of the most powerful meta-tests.
 
@@ -591,7 +628,7 @@ Then the same proof might appear to prove a false Arzelà–Ascoli variant. That
 
 This test is especially useful for proof assistants and LLM-generated proofs: if the proof template is too generic, it may be unsound.
 
-## 19. Reverse-direction tests
+## 20. Reverse-direction tests
 
 For equivalences:
 
@@ -617,7 +654,7 @@ A ⇒ B is true, but B ⇒ A is false.
 
 Many erroneous proofs of equivalences prove only one direction, or prove both directions using an implicit symmetry that does not exist.
 
-## 20. Induction-strength tests
+## 21. Induction-strength tests
 
 For induction proofs, stress-test the induction hypothesis.
 
@@ -649,7 +686,7 @@ inner induction on m
 
 check that dependencies are not reversed.
 
-## 21. Case-coverage tests
+## 22. Case-coverage tests
 
 For case splits, check that the cases are:
 
@@ -684,7 +721,7 @@ a = 0.
 
 In formal systems, this becomes constructor coverage or pattern coverage.
 
-## 22. Dependency-graph tests
+## 23. Dependency-graph tests
 
 Build a dependency graph of results:
 
@@ -715,7 +752,7 @@ This detects circularity.
 
 For large mathematical documents, this test is very important.
 
-## 23. Notation-expansion tests
+## 24. Notation-expansion tests
 
 Expand all suppressed notation.
 
@@ -742,7 +779,7 @@ Write the actual canonical isomorphism.
 
 If the proof becomes invalid when notation is expanded, the original proof hid a real gap.
 
-## 24. Type-checking tests
+## 25. Type-checking tests
 
 Even for informal mathematics, ask what the types are.
 
@@ -760,7 +797,7 @@ A large fraction of proof errors are type errors in disguise.
 
 This is where Lean-style thinking is extremely valuable.
 
-## 25. Computational perturbation tests
+## 26. Computational perturbation tests
 
 For formula-heavy arguments, perturb the input and check consistency.
 
@@ -779,7 +816,7 @@ take a nilpotent matrix
 
 If a complicated formula does not reduce to the expected simple formula, there is likely a sign, normalization, or convention error.
 
-## 26. Alternative-proof comparison
+## 27. Alternative-proof comparison
 
 Try to prove the same result by a different route.
 
@@ -794,7 +831,7 @@ Does one proof require stronger assumptions?
 
 If proof A uses compactness and proof B does not, then either proof B is stronger, or proof B is missing a compactness-dependent step.
 
-## 27. Formalization stress tests
+## 28. Formalization stress tests
 
 For Lean or another proof assistant, useful stress tests include:
 
@@ -821,7 +858,7 @@ theorem continuous_on_closed_bounded_in_infinite_dimensional_space_bounded ...
 
 A proof framework should fail at the compactness extraction step, not later mysteriously.
 
-## 28. LLM/agent proof stress tests
+## 29. LLM/agent proof stress tests
 
 For LLM-generated proof sketches, use adversarial theorem variants.
 
@@ -869,7 +906,7 @@ Proof-break localization
 Revision of proof or statement
 ```
 
-## 29. Proof-obligation extraction
+## 30. Proof-obligation extraction
 
 Every nontrivial step should generate obligations.
 
@@ -904,7 +941,7 @@ Obligations:
 
 Stress testing then asks whether each obligation is still provable under theorem mutations.
 
-## 30. Counterexample-guided proof testing
+## 31. Counterexample-guided proof testing
 
 For each hypothesis, try to find a minimal counterexample when it is removed.
 
@@ -959,9 +996,10 @@ For a proof, ask:
 9. Expand suppressed notation and canonical identifications.
 10. Build the dependency graph and look for circularity.
 11. Test small explicit models and degenerate examples.
-12. For equivalences, test both directions independently.
-13. For induction, check base cases, decrease, and hypothesis strength.
-14. For formalization, remove hypotheses and make implicit data explicit.
+12. Try to construct counterexamples to each lemma exactly as stated.
+13. For equivalences, test both directions independently.
+14. For induction, check base cases, decrease, and hypothesis strength.
+15. For formalization, remove hypotheses and make implicit data explicit.
 ```
 
 The guiding principle is:

@@ -327,7 +327,36 @@ Examples:
 * proves a result up to isomorphism but states equality;
 * proves a local classification but states global classification.
 
-## 22. Computational or experimental misguidance
+## 22. Assuming a construction is exhaustive
+
+A proof studies objects produced by a particular construction and then silently
+treats all objects of the relevant type as arising that way, perhaps after
+isomorphism, equivalence, completion, localization, or change of coordinates.
+
+Typical forms:
+
+* proving a property for free/projective/injective presentations, then using it
+  for all objects without showing every object has such a presentation;
+* classifying objects built from generators and relations, but not proving the
+  construction is essentially surjective;
+* assuming every bundle, sheaf, representation, extension, or algebra is induced
+  from a standard model;
+* replacing an arbitrary object by a resolution, cover, skeleton, normal form, or
+  moduli representative without proving the replacement preserves the structure
+  under discussion;
+* proving a universal property for constructed examples, then using it as if it
+  characterized all examples.
+
+The dangerous hidden step is often:
+
+> “It is enough to consider objects of the form ...”
+
+This requires a density, resolution, presentation, strictification,
+classification, or essential-surjectivity theorem. Up to equivalence is not
+enough unless the property being proved is invariant under that equivalence and
+all extra structure is transported correctly.
+
+## 23. Computational or experimental misguidance
 
 In modern work, computer algebra, numerical experiments, or examples may suggest a false conjecture.
 
@@ -341,7 +370,7 @@ Errors include:
 
 This is not a proof error inside a proof, but often leads to erroneous claims.
 
-## 23. Citation errors
+## 24. Citation errors
 
 A paper cites a known result that does not quite say what is needed.
 
@@ -355,7 +384,7 @@ Possibilities:
 
 This is a common source of propagated errors.
 
-## 24. Formalization-level errors
+## 25. Formalization-level errors
 
 When translating proofs into Lean/Coq/Isabelle, additional hidden errors surface:
 
@@ -379,6 +408,7 @@ A compact way to classify proof errors is:
 | Quantifier error       | A choice depends on something it later must not depend on |
 | Degenerate-case error  | Generic argument fails at boundary/singular cases         |
 | Construction error     | A map/object is not well-defined or not canonical         |
+| Exhaustiveness error   | Constructed examples are treated as all examples          |
 | Limit error            | Passage to a limit loses the needed property              |
 | Local-global error     | Local data fail to glue globally                          |
 | Circularity            | The proof uses what it is trying to prove                 |
