@@ -80,6 +80,13 @@ class DeducedFromTheoremData(BaseModel):
         default=None,
         description="Optional Lean/Mathlib declaration name found by LeanSearch.",
     )
+    lean_term: Optional[str] = Field(
+        default=None,
+        description=(
+            "Optional Lean term for the specific theorem instance used in the proof, "
+            "possibly depending on local variables or hypotheses."
+        ),
+    )
 
 
 class DeducedFromDataMixin(BaseModel):

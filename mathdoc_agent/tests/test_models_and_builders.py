@@ -52,6 +52,7 @@ class ModelAndBuilderTests(unittest.TestCase):
                                 name="order transitivity",
                                 claim="If x ≤ y and 0 ≤ x, then 0 ≤ y.",
                                 lean_name="le_trans",
+                                lean_term="(le_trans h0a hab)",
                             )
                         ],
                     )
@@ -65,6 +66,7 @@ class ModelAndBuilderTests(unittest.TestCase):
         self.assertEqual(step["deduced_from_claim"], ["a ≥ 0 and a ≤ b"])
         self.assertEqual(step["deduced_from_theorem"][0]["name"], "order transitivity")
         self.assertEqual(step["deduced_from_theorem"][0]["lean_name"], "le_trans")
+        self.assertEqual(step["deduced_from_theorem"][0]["lean_term"], "(le_trans h0a hab)")
 
     def test_single_assertion_simple_proof_dependencies_export(self) -> None:
         node = ProofBuilder.simple(
