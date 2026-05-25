@@ -458,7 +458,7 @@ class StatementData(DocumentKindData):
 
 class DefinitionData(DocumentKindData):
     term: str | None = None
-    definiens: str | None = None
+    definitions: str | None = None
     notation: str | None = None
 
 

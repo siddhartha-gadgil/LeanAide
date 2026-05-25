@@ -60,7 +60,7 @@ class DocumentBuilder:
         id: str,
         text: str,
         term: str | None = None,
-        definiens: str | None = None,
+        definitions: str | None = None,
         notation: str | None = None,
         label: str | None = None,
     ) -> DocumentNode:
@@ -70,7 +70,7 @@ class DocumentBuilder:
             status=NodeStatus.classified,
             label=label,
             text=text,
-            data=DefinitionData(term=term, definiens=definiens, notation=notation).model_dump(),
+            data=DefinitionData(term=term, definitions=definitions, notation=notation).model_dump(),
         )
 
     @staticmethod

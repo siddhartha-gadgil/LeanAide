@@ -348,7 +348,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
                 "type": "definition",
                 "label": node.label or node.id,
                 "header": "Definition",
-                "definition": node.data.get("definiens") or node.text,
+                "definition": node.data.get("definitions") or node.text,
                 "name": node.data.get("term") or node.title or node.label or node.id,
                 "id": node.id,
                 "status": node.status.value,

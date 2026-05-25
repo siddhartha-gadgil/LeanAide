@@ -27,7 +27,7 @@ defined by C n = ... . For every n, ... C n ...". Use ASCII identifier-style
 names such as `C`, `normQ`, `barL`, `VQ`, `twoN`, and `sumSigns` in statements
 when the source notation is display-heavy.
 If a proof immediately follows a theorem-like statement, attach the proof text
-to that theorem-like child in `proof_text`. Do not emit the proof as a separate
+to thdefinitionsm-like child in `proof_text`. Do not emit the proof as a separate
 paragraph. A text beginning with "Proof." or "Proof:" is never a paragraph.
 For ordinary definition children, fill Lean-codegen metadata through
 `data_entries`: use key `term` for a short ASCII Lean-style identifier or

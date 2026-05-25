@@ -22,7 +22,7 @@ class StatementData(DocumentKindData):
 
 class DefinitionData(DocumentKindData):
     term: Optional[str] = None
-    definiens: Optional[str] = None
+    definitions: Optional[str] = None
     notation: Optional[str] = None
 
 
