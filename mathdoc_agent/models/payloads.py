@@ -76,6 +76,10 @@ class DeducedFromTheoremData(BaseModel):
     claim: str = Field(description="The general mathematical statement of the theorem used.")
     name: Optional[str] = Field(default=None, description="Optional standard name of the theorem.")
     description: Optional[str] = Field(default=None, description="Optional note on how the theorem is used.")
+    lean_name: Optional[str] = Field(
+        default=None,
+        description="Optional Lean/Mathlib declaration name found by LeanSearch.",
+    )
 
 
 class DeducedFromDataMixin(BaseModel):

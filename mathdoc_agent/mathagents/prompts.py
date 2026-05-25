@@ -96,10 +96,13 @@ fields when the source supports them:
   rather than copied verbatim from the immediate context.
 - `deduced_from_theorem`: standard theorem objects used for the assertion. Each
   object must have a `claim` field giving the general theorem, and may have
-  `name` and `description` fields.
+  `name`, `description`, and `lean_name` fields. Use `lean_name` only for an
+  exact Lean/Mathlib declaration name found by LeanSearch; do not invent Lean
+  names.
 Do not put method names, tactic names, or bare labels in `deduced_from_claim`.
 For example, do not write `Second derivative test` as a claim dependency; use
-`deduced_from_theorem` with a theorem object whose `claim` states the test.
+`deduced_from_theorem` with a theorem object whose `claim` states the test and
+whose `lean_name` is filled only when a LeanSearch match is available.
 When an assertion depends on a previously labeled theorem or lemma from the
 same document, mention that label in `proof_method` or in the theorem object's
 `name`; keep the `claim` itself as the mathematical proposition being proved.
@@ -135,10 +138,12 @@ source supports them:
   than copied verbatim from the immediate context.
 - `deduced_from_theorem`: standard theorem objects used for the step. Each
   object must have a `claim` field giving the general mathematical theorem, and
-  may have `name` and `description` fields. For example, do not put "Second
-  derivative test" by itself in a dependency list; use an object such as
-  `{name: "second derivative test", claim: "If f''(x) > 0 on an interval, then
-  f is strictly convex on that interval"}`.
+  may have `name`, `description`, and `lean_name` fields. For example, do not
+  put "Second derivative test" by itself in a dependency list; use an object
+  such as `{name: "second derivative test", claim: "If f''(x) > 0 on an
+  interval, then f is strictly convex on that interval"}`. Use `lean_name` only
+  for an exact Lean/Mathlib declaration name found by LeanSearch; do not invent
+  Lean names.
 Do not put method names, tactic names, or bare labels in `deduced_from_claim`.
 Keep local hypotheses out of `deduced_from_theorem`; reserve that field for
 standard mathematical results.
@@ -292,8 +297,10 @@ When repairing:
   objects whose own `claim` fields are clean propositions.
 - If a claim says that a result follows by a named method, put the result as the
   claim and put the method in `proof_method`; do not put the method in `claim`.
-- A dependency theorem object may have a `claim` field, but that field must be
-  the general theorem statement, not a theorem name.
+- A dependency theorem object may have `claim`, `name`, `description`, and
+  `lean_name` fields. The `claim` field must be the general theorem statement,
+  not a theorem name. Use `lean_name` only for an exact Lean/Mathlib declaration
+  name found by LeanSearch; do not invent Lean names.
 
 Preserve mathematical meaning and do not invent stronger results. If there is
 not enough mathematical content to form a proposition, leave the entry

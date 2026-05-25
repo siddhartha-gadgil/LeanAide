@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import inspect
 import json
+import os
 import sys
 from typing import Any, TypeVar
 
 from pydantic import BaseModel
 
+from mathdoc_agent.mathagents.leansearch import LeanSearchError, lookup_theorems
+
 T = TypeVar("T", bound=BaseModel)
+_LEANSEARCH_CACHE: dict[str, str | None] = {}
 
 
 def _agent_name(agent: Any) -> str:
@@ -58,11 +62,90 @@ def _log_agent_event(event: str, agent: Any, output_type: type[BaseModel], paylo
     )
 
 
+def _log_leansearch_failure(query: str, error: Exception) -> None:
+    """Log a non-fatal LeanSearch enrichment failure."""
+    print(
+        f"[mathdoc_agent] leansearch failed for {query!r}: {error}",
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 async def _maybe_await(value: Any) -> Any:
     """Await awaitable values and pass through synchronous values unchanged."""
     if inspect.isawaitable(value):
         return await value
     return value
+
+
+def _leansearch_enabled() -> bool:
+    value = os.environ.get("MATHDOC_AGENT_LEANSEARCH_DEDUCED_THEOREMS", "1")
+    return value.strip().lower() not in {"0", "false", "no", "off"}
+
+
+def _theorem_search_query(theorem: dict[str, Any]) -> str | None:
+    """Build a LeanSearch query from a deduced_from_theorem object."""
+    for key in ("claim", "name", "description"):
+        value = theorem.get(key)
+        if isinstance(value, str) and value.strip():
+            return value
+    return None
+
+
+def _lean_name_for_theorem(theorem: dict[str, Any]) -> str | None:
+    """Return an exact Lean/Mathlib name for a theorem dependency if found."""
+    lean_name = theorem.get("lean_name")
+    if isinstance(lean_name, str) and lean_name.strip():
+        return lean_name
+    query = _theorem_search_query(theorem)
+    if query is None:
+        return None
+    if query in _LEANSEARCH_CACHE:
+        return _LEANSEARCH_CACHE[query]
+    try:
+        results = lookup_theorems(query, num_results=1, timeout=10.0)
+    except (LeanSearchError, ValueError, OSError) as error:
+        _log_leansearch_failure(query, error)
+        _LEANSEARCH_CACHE[query] = None
+        return None
+    lean_name = results[0].name if results else None
+    _LEANSEARCH_CACHE[query] = lean_name
+    return lean_name
+
+
+def _enrich_deduced_from_theorems_data(value: Any) -> Any:
+    """Add `lean_name` to deduced_from_theorem objects using LeanSearch."""
+    if isinstance(value, list):
+        return [_enrich_deduced_from_theorems_data(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+
+    enriched = {
+        key: _enrich_deduced_from_theorems_data(item)
+        for key, item in value.items()
+    }
+    dependencies = enriched.get("deduced_from_theorem")
+    if isinstance(dependencies, list):
+        enriched_dependencies = []
+        for item in dependencies:
+            if isinstance(item, dict):
+                lean_name = _lean_name_for_theorem(item)
+                if lean_name:
+                    item = {**item, "lean_name": lean_name}
+            enriched_dependencies.append(item)
+        enriched["deduced_from_theorem"] = enriched_dependencies
+    return enriched
+
+
+def enrich_deduced_from_theorems(model: T) -> T:
+    """Resolve theorem dependency objects to Lean names using LeanSearch."""
+    if not _leansearch_enabled():
+        return model
+    data = model.model_dump(mode="json")
+    enriched = _enrich_deduced_from_theorems_data(data)
+    if enriched == data:
+        return model
+    return type(model).model_validate(enriched)
 
 
 async def run_agent_typed(
@@ -117,5 +200,6 @@ async def run_agent_typed(
     except Exception:
         _log_agent_event("failed", agent, output_type, input_payload)
         raise
+    coerced = enrich_deduced_from_theorems(coerced)
     _log_agent_event("completed", agent, output_type, input_payload)
     return coerced
