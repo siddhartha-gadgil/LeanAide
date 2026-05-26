@@ -252,7 +252,7 @@ def findTactics? (goal :  MVarId):
   let grindWs ← grindWithSuggestions
   let simpWs ← simpWithSuggestions goal localNames
   runTacticsAndFindTryThis? goal ([← `(tacticSeq|  simp?), ← `(tacticSeq | grind?),
-  ← `(tacticSeq| try?),
+  -- ← `(tacticSeq| try?),
   grindWs, simpWs, ← `(tacticSeq| try simp; exact?)] ++ (← getAutoTactics).toList) (strict := true)
 
 def findTacticsI (goal :  MVarId):

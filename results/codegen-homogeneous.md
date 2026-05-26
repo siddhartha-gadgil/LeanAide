@@ -447,3 +447,130 @@ remain useful Python-side information, but Lean codegen must consume
 `results_used`, `lean_name`, `lean_term`, local theorem names, and `specialize`
 steps to turn them into proof terms. This run did not test that stage because
 Lean was intentionally not run.
+
+## Update: Codegen Run With `try?` Disabled (2026-05-26)
+
+Server access was checked before running codegen:
+
+```text
+POST http://localhost:7654 {"task": "echo"}
+```
+
+The Python client received `result: "success"` with the echoed payload. The
+server path used by Python is therefore working, not just shell `curl`.
+
+I then ran:
+
+```text
+lake exe codegen results/homogeneous.json
+```
+
+The first sandboxed attempt hit network/DNS failures when LeanAide tried to use
+OpenAI and similarity search. I stopped that attempt and reran codegen with
+server/network permission. The rerun made real OpenAI calls using the
+environment, and the log shows `gpt-5.5-2026-04-23` responses and cache writes.
+
+The run did not reach a complete generated Lean file. I stopped it after the
+same pattern was diagnosed twice, to avoid spending more API calls on a known
+bad path.
+
+Observed Lean-stage behavior:
+
+- `try?` is no longer the immediate stall, but other broad tactics remain:
+  `grind?`, generated `grind?` variants, `llm?`, and `hammer`.
+- `checkCode` works for Mathlib declarations such as `commutatorElement`,
+  `commutator`, `Abelianization`, `AddCommGroup.torsion`, and
+  `IsAddTorsionFree`.
+- `defCode` still ignores the JSON `name` when translating local definitions.
+  It generated names such as `PseudoLengthFunction` and
+  `PseudoLengthFunction.IsHomogeneous` rather than the requested `PseudoLength`
+  and `IsHomogeneousPseudoLength`.
+- When a definition translation fails, `defCode` still falls back to an
+  existential theorem of the form `There exists <name> such that: ...` and then
+  launches automation. This turned the commutator-subgroup definition into the
+  theorem `∀ G [Group G], commutator G = Subgroup.closure (commutatorSet G)`,
+  then tried heavy tactics on it.
+- The theorem translator still rediscovered theorem statements from prose. In
+  the first theorem it changed the homogeneity hypothesis to a natural-number
+  version in the generated target, losing the intended integer homogeneity.
+- The proof stage tries global automation on whole goals before using the
+  structured proof sources from JSON.
+
+Lean-side fixes still needed in `LeanAideCore/LeanAideCore/PaperCodes.lean` and
+the corresponding `LeanAide/PaperCodes.lean` path:
+
+- Make definition translation respect the JSON `name`, or reject translations
+  whose generated command introduces a different declaration name.
+- Remove the existential-theorem fallback for failed definitions, or put it
+  behind an explicit option with strict heartbeat/time limits.
+- Bound or remove broad default automation probes (`grind?`, generated
+  `grind?` variants, `llm?`, `hammer`) in codegen. `try?` was not the only
+  unbounded path.
+- Use structured proof sources before whole-goal automation, especially
+  `results_used`, `deduced_from_theorem[*].lean_name`,
+  `deduced_from_theorem[*].lean_term`, local theorem names, and `specialize`
+  steps.
+- Preserve the formal content of generated theorem statements; do not replace
+  integer homogeneity by a weaker or different natural-number hypothesis.
+- Configure `LeanAideUrl` or quiet the repeated similarity-search fallback
+  diagnostic when the local fallback is expected.
+
+Python-side defects found from this codegen run:
+
+- The element commutator was sometimes emitted as a fresh local definition even
+  though Mathlib has `commutatorElement`.
+- The subgroup commutator was sometimes emitted as a fresh local definition
+  even though Mathlib has `commutator`.
+- The abelianization was not robustly reused when LeanSearch failed or when the
+  prose used `[G,G]` rather than the word "commutator".
+- The torsion subgroup and torsion-free abelian predicate needed deterministic
+  reuse of `AddCommGroup.torsion` and `IsAddTorsionFree`.
+
+## Update: Python Fixes After Codegen (2026-05-26)
+
+Implemented in `mathdoc_agent/orchestration/mathlib_reuse.py`:
+
+- Added narrow deterministic Mathlib reuse rules for:
+  `commutatorElement`, `commutator`, `Abelianization`,
+  `AddCommGroup.torsion`, and `IsAddTorsionFree`.
+- Kept the general LeanSearch-backed definition lookup for other definitions.
+  During these runs LeanSearch repeatedly returned HTTP 500 for both theorem
+  and definition queries, so these specific rules are needed for robustness.
+
+Verification:
+
+```text
+./venv/bin/python -m py_compile mathdoc_agent/orchestration/mathlib_reuse.py
+./venv/bin/python -m mathdoc_agent.pipeline results/homogeneous.md --id homogeneous -o results/homogeneous.json
+```
+
+The pipeline completed with actual API calls. `pytest` was not available in the
+venv, so the focused pytest suite could not be run.
+
+Final JSON analysis after the last rerun:
+
+- JSON parsed successfully.
+- Statuses: `resolved`: 84; no `opaque` nodes.
+- Top-level theorem objects: 15, named `lemma_1` through `corollary_15`.
+- Total theorem objects: 44; 0 missing `name`.
+- Reused Mathlib declarations emitted as checks:
+  `commutatorElement`, `commutator`, `Abelianization`,
+  `AddCommGroup.torsion`, `IsAddTorsionFree`.
+- Local definitions still emitted:
+  `PseudoLength`, `IsLength`, `IsHomogeneousPseudoLength`.
+- Dependency entries: 110 steps with `deduced_from_theorem`.
+- `results_used` entries: 0 in this final run because LeanSearch returned HTTP
+  500 for theorem lookups throughout the run.
+- No detected unusable LeanSearch names such as `noConfusion` declarations or
+  generated instance names were emitted.
+
+Remaining Python limitation:
+
+- The pipeline currently treats LeanSearch HTTP 500s as soft failures and
+  continues. That is correct for completing the run, but it means theorem
+  dependencies may lack `lean_name`/`lean_term` until LeanSearch is healthy or a
+  separate fallback source is added.
+
+The current Python-side definition reuse defects exposed by codegen are fixed.
+The next failures are expected to be Lean-stage issues in definition naming,
+definition fallback, theorem statement translation, and proof automation.

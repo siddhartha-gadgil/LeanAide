@@ -102,6 +102,87 @@ def _type_is_compatible(result: LeanSearchResult, definition_text: str) -> bool:
     return True
 
 
+def _special_mathlib_definition(data: DefinitionData, text: str) -> LeanSearchResult | None:
+    """Known Mathlib declarations that LeanSearch misses or ranks poorly.
+
+    These are intentionally narrow: each rule is for a definition pattern that
+    appeared in the generated homogeneous JSON and caused codegen to duplicate a
+    Mathlib declaration under a fresh name.
+    """
+    term = (data.term or "").casefold()
+    definition = " ".join(
+        part
+        for part in (data.definitions or "", data.notation or "", text or "")
+        if part
+    ).casefold()
+
+    if (
+        "commutator" in term
+        and "for elements" in definition
+        and "subgroup" not in definition
+        and ("xyx" in definition or "x y x" in definition or "[x,y]" in definition)
+    ):
+        return LeanSearchResult(
+            name="commutatorElement",
+            type="{G : Type*} → [Group G] → Bracket G G",
+            kind="instance",
+            docstring="Mathlib instance for the element commutator bracket.",
+        )
+
+    if (
+        "commutator" in term
+        and "subgroup" in term
+        and "commutator subgroup" in definition
+        and ("generated" in definition or "[g,g]" in definition)
+    ):
+        return LeanSearchResult(
+            name="commutator",
+            type="(G : Type*) → [Group G] → Subgroup G",
+            kind="def",
+            docstring="Mathlib definition of the commutator subgroup of a group.",
+        )
+
+    if "abelianization" in term and "quotient" in definition and ("[g,g]" in definition or "commutator" in definition):
+        return LeanSearchResult(
+            name="Abelianization",
+            type="(G : Type*) → [Group G] → Type*",
+            kind="def",
+            docstring="Mathlib definition of the abelianization of a group.",
+        )
+
+    if (
+        "torsion" in term
+        and "subgroup" in term
+        and "torsion subgroup" in definition
+        and "abelian" in definition
+    ):
+        return LeanSearchResult(
+            name="AddCommGroup.torsion",
+            type="(A : Type*) → [AddCommGroup A] → AddSubgroup A",
+            kind="def",
+            docstring="Mathlib definition of the torsion subgroup of an additive commutative group.",
+        )
+
+    if (
+        "torsion" in term
+        and "free" in term
+        and "abelian" in term
+        and "torsion-free" in definition
+        and "abelian" in definition
+    ):
+        return LeanSearchResult(
+            name="IsAddTorsionFree",
+            type="(M : Type*) → [AddMonoid M] → Type*",
+            kind="class",
+            docstring=(
+                "Mathlib class for additive torsion-freeness; applies to "
+                "additive commutative groups through their AddMonoid structure."
+            ),
+        )
+
+    return None
+
+
 def _definition_queries(data: DefinitionData, text: str) -> Iterable[str]:
     term = (data.term or "").strip()
     definition = (data.definitions or text or "").strip()
@@ -122,6 +203,10 @@ def find_mathlib_definition(
     timeout: float = 10.0,
 ) -> LeanSearchResult | None:
     """Return a conservative Mathlib declaration match for a definition."""
+    special_match = _special_mathlib_definition(data, text)
+    if special_match is not None:
+        return special_match
+
     requested_name = data.term
     for query in _definition_queries(data, text):
         cache_key = (requested_name or "", query)
