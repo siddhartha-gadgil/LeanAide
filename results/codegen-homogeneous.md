@@ -1002,3 +1002,78 @@ The generic matcher was broadened slightly:
   actually returns those candidates.
 
 No LeanSearch API calls were made for this change.
+
+## Update: Local LeanSearch-Style Lookup (2026-05-26)
+
+Implemented a local lookup path with higher priority than LeanSearch for
+Mathlib definition reuse.
+
+The local path is:
+
+1. Query the running server at:
+
+```text
+http://localhost:7654/run-sim-search
+```
+
+with the same payload shape used by
+`LeanAideCore/LeanAideCore/SimilaritySearch.lean`:
+
+```json
+{
+  "num": 10,
+  "query": "<query>",
+  "descField": "docString"
+}
+```
+
+2. Collate the top 10 returned records.
+3. Ask `gpt-5.5` whether any candidate is exactly the Lean/Mathlib declaration
+   described by the query.
+4. If the local path returns an exact match, use it.
+5. If the local path fails or returns no exact match, fall back to LeanSearch.
+6. LeanSearch fallback results are also passed through the same LLM exact-match
+   adjudication before reuse.
+
+The local lookup has its own cache:
+
+```text
+.cache/mathdoc_agent/local_definition_cache.json
+```
+
+This avoids repeating embedding-search and GPT adjudication for the same query.
+
+### Local-Only Test
+
+The test below used only the local similarity-search plus GPT adjudication path.
+LeanSearch fallback was not exercised.
+
+Queries were definition-style rather than bare-name only, because this is the
+shape emitted by the pipeline for definition reuse.
+
+| Case | Expected | Local result | Outcome |
+| --- | --- | --- | --- |
+| Homogeneous/HAdd | `HAdd.hAdd` | `HAdd.hAdd` | success |
+| Homogeneous/HMul | `HMul.hMul` | `HMul.hMul` | success |
+| Homogeneous/HDiv | `HDiv.hDiv` | `HDiv.hDiv` | success |
+| Homogeneous/HSub | `HSub.hSub` | `HSub.hSub` | success |
+| Homogeneous/HPow | `HPow.hPow` | `HPow.hPow` | success |
+| Commutator subgroup | `commutator` | `commutator` | success |
+| Abelianization | `Abelianization` | `Abelianization` | success |
+| Torsion subgroup | `AddCommGroup.torsion` | `AddCommGroup.torsion` | success |
+| Torsion-free predicate | `IsAddTorsionFree` | no match | miss |
+| Basis | `Basis` | no match | miss |
+
+Success rate on this sample: 8/10.
+
+Notes:
+
+- A first bare-name-only test succeeded on only 2/10 cases. This is expected:
+  embedding search works much better when the query includes the mathematical
+  description, as the pipeline does for definitions.
+- Before prompt tightening, the local GPT adjudicator falsely accepted
+  `Module.Basis.mk` for the query `Basis`. The prompt was tightened to reject
+  constructors, helpers, and nearby APIs when the query names a declaration.
+- The miss for `IsAddTorsionFree` means the correct declaration was not selected
+  from the top 10 local candidates. In normal operation this will fall through
+  to LeanSearch, where the result is still LLM-adjudicated before reuse.

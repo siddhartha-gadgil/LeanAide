@@ -6,8 +6,10 @@ import json
 import os
 import re
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 from mathdoc_agent.mathagents.leansearch import (
     LeanSearchError,
@@ -48,7 +50,12 @@ IGNORABLE_NAME_TOKENS = {
 }
 
 _LEANSEARCH_DEFINITION_QUERY_CACHE: dict[str, list[LeanSearchResult] | None] = {}
+_LOCAL_DEFINITION_QUERY_CACHE: dict[str, list[LeanSearchResult] | None] = {}
 _PERSISTENT_CACHE_LOADED = False
+LOCAL_CACHE_VERSION = "local-v2"
+
+DEFAULT_LOCAL_SIMILARITY_URL = "http://localhost:7654/run-sim-search"
+DEFAULT_LOCAL_MATCH_MODEL = "gpt-5.5"
 
 
 def _ascii_words(value: str) -> list[str]:
@@ -146,6 +153,13 @@ def _cache_path() -> Path:
     return Path(".cache") / "mathdoc_agent" / "leansearch_definition_cache.json"
 
 
+def _local_cache_path() -> Path:
+    value = os.environ.get("MATHDOC_AGENT_LOCAL_DEFINITION_CACHE")
+    if value:
+        return Path(value)
+    return Path(".cache") / "mathdoc_agent" / "local_definition_cache.json"
+
+
 def _seed_cache_path() -> Path | None:
     value = os.environ.get("MATHDOC_AGENT_LEANSEARCH_DEFINITION_SEED")
     return Path(value) if value else None
@@ -226,15 +240,15 @@ def _load_persistent_definition_cache() -> None:
     if seed_path is not None:
         _LEANSEARCH_DEFINITION_QUERY_CACHE.update(_load_cache_file(seed_path))
     _LEANSEARCH_DEFINITION_QUERY_CACHE.update(_load_cache_file(_cache_path()))
+    _LOCAL_DEFINITION_QUERY_CACHE.update(_load_cache_file(_local_cache_path()))
 
 
-def _write_persistent_definition_cache() -> None:
-    path = _cache_path()
+def _write_cache(path: Path, cache: dict[str, list[LeanSearchResult] | None]) -> None:
     payload = {
         query: None
         if results is None
         else [_result_to_json(result) for result in results]
-        for query, results in sorted(_LEANSEARCH_DEFINITION_QUERY_CACHE.items())
+        for query, results in sorted(cache.items())
         if results is not None
     }
     try:
@@ -245,10 +259,18 @@ def _write_persistent_definition_cache() -> None:
         )
     except OSError as error:
         print(
-            f"[mathdoc_agent] could not write LeanSearch definition cache {path}: {error}",
+            f"[mathdoc_agent] could not write definition cache {path}: {error}",
             file=sys.stderr,
             flush=True,
         )
+
+
+def _write_persistent_definition_cache() -> None:
+    _write_cache(_cache_path(), _LEANSEARCH_DEFINITION_QUERY_CACHE)
+
+
+def _write_persistent_local_cache() -> None:
+    _write_cache(_local_cache_path(), _LOCAL_DEFINITION_QUERY_CACHE)
 
 
 def _definition_query_results(
@@ -276,6 +298,237 @@ def _definition_query_results(
     return results
 
 
+def _similarity_url() -> str:
+    return os.environ.get(
+        "MATHDOC_AGENT_LOCAL_SIMILARITY_URL",
+        DEFAULT_LOCAL_SIMILARITY_URL,
+    )
+
+
+def _local_match_model() -> str:
+    return os.environ.get(
+        "MATHDOC_AGENT_LOCAL_LEANSEARCH_MODEL",
+        DEFAULT_LOCAL_MATCH_MODEL,
+    )
+
+
+def _post_json(url: str, payload: dict[str, Any], *, timeout: float) -> dict[str, Any]:
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            data = json.loads(response.read().decode("utf-8"))
+    except (urllib.error.URLError, json.JSONDecodeError) as error:
+        raise RuntimeError(f"local similarity request failed: {error}") from error
+    if not isinstance(data, dict):
+        raise RuntimeError(f"local similarity response must be an object, got {type(data).__name__}")
+    return data
+
+
+def _run_similarity_search(
+    query: str,
+    *,
+    num_results: int,
+    timeout: float,
+) -> list[dict[str, Any]]:
+    response = _post_json(
+        _similarity_url(),
+        {"num": num_results, "query": query, "descField": "docString"},
+        timeout=timeout,
+    )
+    output = response.get("output")
+    if not isinstance(output, list):
+        raise RuntimeError("local similarity response has no output array")
+    return [item for item in output if isinstance(item, dict)]
+
+
+def _record_summary(record: dict[str, Any], index: int) -> dict[str, Any]:
+    return {
+        "index": index,
+        "name": record.get("name"),
+        "kind": record.get("kind"),
+        "type": record.get("type"),
+        "statement": record.get("statement"),
+        "docString": record.get("docString"),
+        "distance": record.get("distance"),
+    }
+
+
+def _candidate_to_result(record: dict[str, Any]) -> LeanSearchResult | None:
+    name = record.get("name")
+    if not isinstance(name, str) or not name.strip():
+        return None
+    kind = record.get("kind")
+    if not isinstance(kind, str):
+        statement = record.get("statement")
+        if isinstance(statement, str):
+            words = statement.split(maxsplit=2)
+            if len(words) >= 2 and words[0] == "noncomputable":
+                kind = words[1]
+            elif words:
+                kind = words[0]
+            else:
+                kind = None
+        else:
+            kind = None
+    return LeanSearchResult(
+        name=name,
+        type=record.get("type") if isinstance(record.get("type"), str) else None,
+        docstring=(
+            record.get("docString")
+            if isinstance(record.get("docString"), str)
+            else None
+        ),
+        kind=kind,
+    )
+
+
+def _leansearch_result_summary(result: LeanSearchResult, index: int) -> dict[str, Any]:
+    return {
+        "index": index,
+        "name": result.name,
+        "kind": result.kind,
+        "type": result.type,
+        "docString": result.docstring,
+    }
+
+
+def _parse_llm_json(content: str) -> dict[str, Any]:
+    text = content.strip()
+    fenced = re.fullmatch(r"```(?:json)?\s*(.*?)\s*```", text, flags=re.DOTALL)
+    if fenced:
+        text = fenced.group(1).strip()
+    data = json.loads(text)
+    if not isinstance(data, dict):
+        raise ValueError("LLM match response must be a JSON object")
+    return data
+
+
+def _llm_exact_match_index(
+    query: str,
+    candidates: list[dict[str, Any]],
+    *,
+    timeout: float,
+) -> int | None:
+    if not candidates:
+        return None
+    try:
+        from openai import OpenAI
+    except ImportError as error:
+        raise RuntimeError("openai package is required for local LeanSearch matching") from error
+    prompt = {
+        "query": query,
+        "candidates": candidates,
+        "instructions": (
+            "Decide whether any candidate is exactly the Lean/Mathlib declaration "
+            "described by the query. Match mathematical content, declaration name, "
+            "and type when available. Return JSON only with fields: "
+            "match: boolean, index: integer or null, name: string or null, "
+            "reason: string. If the query names a declaration, do not match a "
+            "constructor, helper, theorem, namespace-qualified variant, or nearby "
+            "API unless it is exactly that declaration or the same declaration "
+            "under a known namespace."
+        ),
+    }
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"], timeout=timeout)
+    response = client.chat.completions.create(
+        model=_local_match_model(),
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You identify exact Lean/Mathlib declaration matches. "
+                    "Return only compact JSON."
+                ),
+            },
+            {"role": "user", "content": json.dumps(prompt, ensure_ascii=False)},
+        ],
+        temperature=1,
+    )
+    content = response.choices[0].message.content or ""
+    data = _parse_llm_json(content)
+    if data.get("match") is not True:
+        return None
+    index = data.get("index")
+    if not isinstance(index, int):
+        return None
+    return index
+
+
+def _select_llm_match(
+    query: str,
+    results: list[LeanSearchResult],
+    *,
+    timeout: float,
+) -> list[LeanSearchResult]:
+    candidates = [
+        _leansearch_result_summary(result, index)
+        for index, result in enumerate(results)
+    ]
+    index = _llm_exact_match_index(query, candidates, timeout=timeout)
+    if index is None or index < 0 or index >= len(results):
+        return []
+    return [results[index]]
+
+
+def _local_definition_query_results(
+    query: str,
+    *,
+    num_results: int,
+    timeout: float,
+) -> list[LeanSearchResult] | None:
+    _load_persistent_definition_cache()
+    key = _cache_key(f"{LOCAL_CACHE_VERSION}: {query}")
+    if key in _LOCAL_DEFINITION_QUERY_CACHE:
+        return _LOCAL_DEFINITION_QUERY_CACHE[key]
+    try:
+        records = _run_similarity_search(
+            query,
+            num_results=max(num_results, 10),
+            timeout=timeout,
+        )
+        candidates = [
+            _record_summary(record, index)
+            for index, record in enumerate(records[:10])
+        ]
+        index = _llm_exact_match_index(query, candidates, timeout=timeout)
+    except Exception as error:
+        print(
+            f"[mathdoc_agent] local definition lookup failed for {query!r}: {error}",
+            file=sys.stderr,
+            flush=True,
+        )
+        _LOCAL_DEFINITION_QUERY_CACHE[key] = None
+        return None
+    if index is None or index < 0 or index >= len(records):
+        _LOCAL_DEFINITION_QUERY_CACHE[key] = []
+        _write_persistent_local_cache()
+        return []
+    result = _candidate_to_result(records[index])
+    results = [] if result is None else [result]
+    _LOCAL_DEFINITION_QUERY_CACHE[key] = results
+    _write_persistent_local_cache()
+    return results
+
+
+def local_definition_lookup(
+    query: str,
+    *,
+    num_results: int = 10,
+    timeout: float = 60.0,
+) -> list[LeanSearchResult]:
+    """Run local similarity search plus LLM exact-match adjudication."""
+    return _local_definition_query_results(
+        query,
+        num_results=num_results,
+        timeout=timeout,
+    ) or []
+
+
 def _definition_queries(data: DefinitionData, text: str) -> Iterable[str]:
     term = (data.term or "").strip()
     definition = (data.definitions or text or "").strip()
@@ -294,18 +547,14 @@ def find_mathlib_definition(
     *,
     num_results: int = 5,
     timeout: float = 10.0,
+    use_local: bool = True,
+    use_leansearch: bool = True,
 ) -> LeanSearchResult | None:
     """Return a conservative Mathlib declaration match for a definition."""
     requested_name = data.term
-    for query in _definition_queries(data, text):
-        results = _definition_query_results(
-            query,
-            num_results=num_results,
-            timeout=timeout,
-        )
-        if results is None:
-            continue
-        match = next(
+
+    def compatible_match(results: list[LeanSearchResult]) -> LeanSearchResult | None:
+        return next(
             (
                 result
                 for result in results
@@ -315,6 +564,35 @@ def find_mathlib_definition(
             ),
             None,
         )
+
+    for query in _definition_queries(data, text):
+        if use_local:
+            local_results = _local_definition_query_results(
+                query,
+                num_results=max(num_results, 10),
+                timeout=max(timeout, 60.0),
+            )
+            if local_results is not None:
+                match = compatible_match(local_results)
+                if match is not None:
+                    return match
+
+        if not use_leansearch:
+            continue
+
+        leansearch_results = _definition_query_results(
+            query,
+            num_results=num_results,
+            timeout=timeout,
+        )
+        if not leansearch_results:
+            continue
+        leansearch_results = _select_llm_match(
+            query,
+            leansearch_results,
+            timeout=max(timeout, 60.0),
+        )
+        match = compatible_match(leansearch_results)
         if match is not None:
             return match
     return None
