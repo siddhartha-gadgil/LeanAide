@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
+import json
+import os
 import re
 import sys
+from pathlib import Path
 from typing import Iterable
 
-from mathdoc_agent.mathagents.leansearch import LeanSearchError, LeanSearchResult, lookup_theorems
+from mathdoc_agent.mathagents.leansearch import (
+    LeanSearchError,
+    LeanSearchResult,
+    lookup_theorems,
+)
 from mathdoc_agent.models.base import DocumentKind
 from mathdoc_agent.models.document import DocumentNode, MathDocument
 from mathdoc_agent.models.payloads import DefinitionData
@@ -19,10 +26,29 @@ DEFINITION_LIKE_KINDS = {
     "def",
     "definition",
     "inductive",
+    "instance",
     "structure",
 }
 
-_MATHLIB_DEFINITION_CACHE: dict[tuple[str, str], LeanSearchResult | None] = {}
+IGNORABLE_NAME_TOKENS = {
+    "a",
+    "an",
+    "add",
+    "additive",
+    "abelian",
+    "function",
+    "group",
+    "is",
+    "map",
+    "multiplicative",
+    "predicate",
+    "property",
+    "subgroup",
+    "the",
+}
+
+_LEANSEARCH_DEFINITION_QUERY_CACHE: dict[str, list[LeanSearchResult] | None] = {}
+_PERSISTENT_CACHE_LOADED = False
 
 
 def _ascii_words(value: str) -> list[str]:
@@ -49,6 +75,10 @@ def lean_identifier_from_text(value: str, *, fallback: str = "generated_name") -
 
 def _name_tokens(name: str) -> set[str]:
     return {token.lower() for token in _ascii_words(name)}
+
+
+def _meaningful_name_tokens(name: str) -> set[str]:
+    return _name_tokens(name) - IGNORABLE_NAME_TOKENS
 
 
 def _result_kind(result: LeanSearchResult) -> str:
@@ -82,6 +112,9 @@ def _name_is_compatible(
         return True
     if "subgroup" in requested_tokens and result_tokens & definition_tokens:
         return True
+    meaningful_requested = _meaningful_name_tokens(requested)
+    if meaningful_requested and meaningful_requested.issubset(result_tokens):
+        return True
     return requested_tokens.issubset(result_tokens)
 
 
@@ -102,85 +135,145 @@ def _type_is_compatible(result: LeanSearchResult, definition_text: str) -> bool:
     return True
 
 
-def _special_mathlib_definition(data: DefinitionData, text: str) -> LeanSearchResult | None:
-    """Known Mathlib declarations that LeanSearch misses or ranks poorly.
+def _cache_key(query: str) -> str:
+    return " ".join(query.strip().split())
 
-    These are intentionally narrow: each rule is for a definition pattern that
-    appeared in the generated homogeneous JSON and caused codegen to duplicate a
-    Mathlib declaration under a fresh name.
-    """
-    term = (data.term or "").casefold()
-    definition = " ".join(
-        part
-        for part in (data.definitions or "", data.notation or "", text or "")
-        if part
-    ).casefold()
 
-    if (
-        "commutator" in term
-        and "for elements" in definition
-        and "subgroup" not in definition
-        and ("xyx" in definition or "x y x" in definition or "[x,y]" in definition)
-    ):
-        return LeanSearchResult(
-            name="commutatorElement",
-            type="{G : Type*} → [Group G] → Bracket G G",
-            kind="instance",
-            docstring="Mathlib instance for the element commutator bracket.",
+def _cache_path() -> Path:
+    value = os.environ.get("MATHDOC_AGENT_LEANSEARCH_DEFINITION_CACHE")
+    if value:
+        return Path(value)
+    return Path(".cache") / "mathdoc_agent" / "leansearch_definition_cache.json"
+
+
+def _seed_cache_path() -> Path | None:
+    value = os.environ.get("MATHDOC_AGENT_LEANSEARCH_DEFINITION_SEED")
+    return Path(value) if value else None
+
+
+def _result_to_json(result: LeanSearchResult) -> dict[str, str]:
+    return {
+        key: value
+        for key, value in {
+            "name": result.name,
+            "type": result.type,
+            "docstring": result.docstring,
+            "doc_url": result.doc_url,
+            "kind": result.kind,
+        }.items()
+        if value is not None
+    }
+
+
+def _result_from_json(value: object) -> LeanSearchResult | None:
+    if not isinstance(value, dict):
+        return None
+    name = value.get("name")
+    if not isinstance(name, str) or not name.strip():
+        return None
+    return LeanSearchResult(
+        name=name,
+        type=value.get("type") if isinstance(value.get("type"), str) else None,
+        docstring=(
+            value.get("docstring")
+            if isinstance(value.get("docstring"), str)
+            else None
+        ),
+        doc_url=value.get("doc_url") if isinstance(value.get("doc_url"), str) else None,
+        kind=value.get("kind") if isinstance(value.get("kind"), str) else None,
+    )
+
+
+def _load_cache_file(path: Path) -> dict[str, list[LeanSearchResult] | None]:
+    if not path.is_file():
+        return {}
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        print(
+            f"[mathdoc_agent] could not read LeanSearch definition cache {path}: {error}",
+            file=sys.stderr,
+            flush=True,
+        )
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    loaded: dict[str, list[LeanSearchResult] | None] = {}
+    for query, value in raw.items():
+        if not isinstance(query, str):
+            continue
+        key = _cache_key(query)
+        if value is None:
+            loaded[key] = None
+            continue
+        if not isinstance(value, list):
+            continue
+        results = [
+            result
+            for item in value
+            if (result := _result_from_json(item)) is not None
+        ]
+        loaded[key] = results
+    return loaded
+
+
+def _load_persistent_definition_cache() -> None:
+    global _PERSISTENT_CACHE_LOADED
+    if _PERSISTENT_CACHE_LOADED:
+        return
+    _PERSISTENT_CACHE_LOADED = True
+    seed_path = _seed_cache_path()
+    if seed_path is not None:
+        _LEANSEARCH_DEFINITION_QUERY_CACHE.update(_load_cache_file(seed_path))
+    _LEANSEARCH_DEFINITION_QUERY_CACHE.update(_load_cache_file(_cache_path()))
+
+
+def _write_persistent_definition_cache() -> None:
+    path = _cache_path()
+    payload = {
+        query: None
+        if results is None
+        else [_result_to_json(result) for result in results]
+        for query, results in sorted(_LEANSEARCH_DEFINITION_QUERY_CACHE.items())
+        if results is not None
+    }
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    except OSError as error:
+        print(
+            f"[mathdoc_agent] could not write LeanSearch definition cache {path}: {error}",
+            file=sys.stderr,
+            flush=True,
         )
 
-    if (
-        "commutator" in term
-        and "subgroup" in term
-        and "commutator subgroup" in definition
-        and ("generated" in definition or "[g,g]" in definition)
-    ):
-        return LeanSearchResult(
-            name="commutator",
-            type="(G : Type*) → [Group G] → Subgroup G",
-            kind="def",
-            docstring="Mathlib definition of the commutator subgroup of a group.",
-        )
 
-    if "abelianization" in term and "quotient" in definition and ("[g,g]" in definition or "commutator" in definition):
-        return LeanSearchResult(
-            name="Abelianization",
-            type="(G : Type*) → [Group G] → Type*",
-            kind="def",
-            docstring="Mathlib definition of the abelianization of a group.",
+def _definition_query_results(
+    query: str,
+    *,
+    num_results: int,
+    timeout: float,
+) -> list[LeanSearchResult] | None:
+    _load_persistent_definition_cache()
+    key = _cache_key(query)
+    if key in _LEANSEARCH_DEFINITION_QUERY_CACHE:
+        return _LEANSEARCH_DEFINITION_QUERY_CACHE[key]
+    try:
+        results = lookup_theorems(query, num_results=num_results, timeout=timeout)
+    except (LeanSearchError, ValueError, OSError) as error:
+        print(
+            f"[mathdoc_agent] leansearch definition lookup failed for {query!r}: {error}",
+            file=sys.stderr,
+            flush=True,
         )
-
-    if (
-        "torsion" in term
-        and "subgroup" in term
-        and "torsion subgroup" in definition
-        and "abelian" in definition
-    ):
-        return LeanSearchResult(
-            name="AddCommGroup.torsion",
-            type="(A : Type*) → [AddCommGroup A] → AddSubgroup A",
-            kind="def",
-            docstring="Mathlib definition of the torsion subgroup of an additive commutative group.",
-        )
-
-    if (
-        "torsion" in term
-        and "free" in term
-        and "abelian" in term
-        and "torsion-free" in definition
-        and "abelian" in definition
-    ):
-        return LeanSearchResult(
-            name="IsAddTorsionFree",
-            type="(M : Type*) → [AddMonoid M] → Type*",
-            kind="class",
-            docstring=(
-                "Mathlib class for additive torsion-freeness; applies to "
-                "additive commutative groups through their AddMonoid structure."
-            ),
-        )
-
-    return None
+        _LEANSEARCH_DEFINITION_QUERY_CACHE[key] = None
+        return None
+    _LEANSEARCH_DEFINITION_QUERY_CACHE[key] = results
+    _write_persistent_definition_cache()
+    return results
 
 
 def _definition_queries(data: DefinitionData, text: str) -> Iterable[str]:
@@ -203,27 +296,14 @@ def find_mathlib_definition(
     timeout: float = 10.0,
 ) -> LeanSearchResult | None:
     """Return a conservative Mathlib declaration match for a definition."""
-    special_match = _special_mathlib_definition(data, text)
-    if special_match is not None:
-        return special_match
-
     requested_name = data.term
     for query in _definition_queries(data, text):
-        cache_key = (requested_name or "", query)
-        if cache_key in _MATHLIB_DEFINITION_CACHE:
-            cached = _MATHLIB_DEFINITION_CACHE[cache_key]
-            if cached is not None:
-                return cached
-            continue
-        try:
-            results = lookup_theorems(query, num_results=num_results, timeout=timeout)
-        except (LeanSearchError, ValueError, OSError) as error:
-            print(
-                f"[mathdoc_agent] leansearch definition lookup failed for {query!r}: {error}",
-                file=sys.stderr,
-                flush=True,
-            )
-            _MATHLIB_DEFINITION_CACHE[cache_key] = None
+        results = _definition_query_results(
+            query,
+            num_results=num_results,
+            timeout=timeout,
+        )
+        if results is None:
             continue
         match = next(
             (
@@ -235,7 +315,6 @@ def find_mathlib_definition(
             ),
             None,
         )
-        _MATHLIB_DEFINITION_CACHE[cache_key] = match
         if match is not None:
             return match
     return None
