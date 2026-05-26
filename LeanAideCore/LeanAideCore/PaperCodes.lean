@@ -495,9 +495,20 @@ where
     let .ok name :=
       js.getObjValAs? Name "name" | throwError
         s!"codegen: no 'name' found in 'definition'"
+    let nameStx := mkIdent name
     match
       ← translator.translateDefCmdM? statement with
       | .ok cmd =>
+        match cmd with
+        | `(command| def $_defName:ident $args:bracketedBinder* : $type := $value) =>
+            `(command| def $nameStx $args* : $type := $value)
+        | `(command| def $_defName:ident $args:bracketedBinder* := $value) =>
+            `(command| def $nameStx $args*  := $value)
+        | `(command| noncomputable def $_defName:ident $args:bracketedBinder* : $type := $value) =>
+            `(command| noncomputable def $nameStx  $args* : $type := $value)
+        | `(command| noncomputable def $_defName:ident $args:bracketedBinder* := $value) =>
+            `(command| noncomputable def $nameStx $args*:= $value)
+        | _ => throwError s!"commandToTerm: unsupported command {cmd}"
         let cmds := #[← `(#check "Obtained definition"), cmd]
         `(commandSeq| $cmds*)
       | .error errs =>
