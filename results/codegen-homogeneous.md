@@ -1077,3 +1077,49 @@ Notes:
 - The miss for `IsAddTorsionFree` means the correct declaration was not selected
   from the top 10 local candidates. In normal operation this will fall through
   to LeanSearch, where the result is still LLM-adjudicated before reuse.
+
+## Update: Local Lookup Failure Isolation (2026-05-26)
+
+I isolated the two local-only failures from the previous section:
+`IsAddTorsionFree` and `Basis`.
+
+The issue was retrieval, not GPT adjudication. The exact declarations were not
+available to the LLM as candidates.
+
+Findings:
+
+| Case | Field | Top-window checked | Exact declaration found? |
+| --- | --- | ---: | --- |
+| `IsAddTorsionFree` | `docString` | 200 | no |
+| `IsAddTorsionFree` | `description` | 200 | no |
+| `IsAddTorsionFree` | `concise-description` | 200 | no |
+| `Basis` | `docString` | 200 | no |
+| `Basis` | `description` | 200 | no |
+| `Basis` | `concise-description` | 200 | no |
+
+I also scanned the local embedding JSONL files directly:
+
+```text
+rawdata/mathlib4-prompts-embeddings-small.jsonl
+rawdata/mathlib4-descs-embeddings-small.jsonl
+```
+
+Neither file contains an exact declaration-name record for
+`IsAddTorsionFree`, `Basis`, or `Module.Basis`.
+
+Representative top candidates:
+
+- For `IsAddTorsionFree`, the local search returns related theorems and
+  instances such as `FreeAddGroup.instIsAddTorsionFree`,
+  `Function.Injective.isAddTorsionFree`, and
+  `AddLocalization.instIsAddTorsionFree`, but not the class itself.
+- For `Basis`, the `docString` search returns `Module.Basis.mk` as the top
+  candidate. This is a constructor producing a basis, not the declaration
+  requested by the query. The tightened GPT adjudicator correctly rejects it.
+
+Adding searches over `description` and `concise-description` did not fix either
+failure, and raising the result count from 10 to 30, 50, 100, and 200 also did
+not recover the target declarations. Because this does not improve the two
+observed failures, I did not change the lookup code to issue additional local
+searches by default. The general fallback remains LeanSearch, with GPT
+exact-match checking applied to LeanSearch candidates before reuse.
