@@ -15,7 +15,8 @@ from mathdoc_agent.mathagents.leansearch import LeanSearchError, lookup_theorems
 
 T = TypeVar("T", bound=BaseModel)
 _LEANSEARCH_CACHE: dict[str, str | None] = {}
-DEFAULT_AGENT_TIMEOUT_SECONDS = 180.0
+DEFAULT_AGENT_TIMEOUT_SECONDS = 600.0
+THEOREM_LIKE_LEANSEARCH_KINDS = {"theorem", "lemma"}
 
 
 def _agent_name(agent: Any) -> str:
@@ -105,6 +106,20 @@ def _theorem_search_query(theorem: dict[str, Any]) -> str | None:
     return None
 
 
+def _is_usable_theorem_result(result: Any) -> bool:
+    name = getattr(result, "name", "")
+    if not isinstance(name, str) or not name.strip():
+        return False
+    lowered_name = name.casefold()
+    if "noconfusion" in lowered_name or lowered_name.split(".")[-1].startswith("inst"):
+        return False
+    kind = getattr(result, "kind", None)
+    if kind is None:
+        return True
+    kind_text = str(kind).strip().casefold()
+    return kind_text in THEOREM_LIKE_LEANSEARCH_KINDS
+
+
 def _lean_name_for_theorem(theorem: dict[str, Any]) -> str | None:
     """Return an exact Lean/Mathlib name for a theorem dependency if found."""
     lean_name = theorem.get("lean_name")
@@ -116,12 +131,15 @@ def _lean_name_for_theorem(theorem: dict[str, Any]) -> str | None:
     if query in _LEANSEARCH_CACHE:
         return _LEANSEARCH_CACHE[query]
     try:
-        results = lookup_theorems(query, num_results=1, timeout=10.0)
+        results = lookup_theorems(query, num_results=5, timeout=10.0)
     except (LeanSearchError, ValueError, OSError) as error:
         _log_leansearch_failure(query, error)
         _LEANSEARCH_CACHE[query] = None
         return None
-    lean_name = results[0].name if results else None
+    lean_name = next(
+        (result.name for result in results if _is_usable_theorem_result(result)),
+        None,
+    )
     _LEANSEARCH_CACHE[query] = lean_name
     return lean_name
 

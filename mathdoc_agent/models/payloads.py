@@ -24,6 +24,18 @@ class DefinitionData(DocumentKindData):
     term: Optional[str] = None
     definitions: Optional[str] = None
     notation: Optional[str] = None
+    lean_name: Optional[str] = Field(
+        default=None,
+        description="Lean/Mathlib declaration name to use instead of regenerating this definition.",
+    )
+    mathlib_kind: Optional[str] = Field(
+        default=None,
+        description="Kind of the reused Mathlib declaration, when known.",
+    )
+    mathlib_type: Optional[str] = Field(
+        default=None,
+        description="Type of the reused Mathlib declaration, when known.",
+    )
 
 
 class StructureFieldData(BaseModel):

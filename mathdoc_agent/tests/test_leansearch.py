@@ -149,7 +149,7 @@ class LeanSearchHelperTests(unittest.TestCase):
         self.assertEqual(theorem.lean_name, "Nat.succ_le_succ")
         lookup.assert_called_once_with(
             "If n <= m, then n + 1 <= m + 1.",
-            num_results=1,
+            num_results=5,
             timeout=10.0,
         )
 

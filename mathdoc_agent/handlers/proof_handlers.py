@@ -4,7 +4,7 @@ import re
 import sys
 from typing import Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from mathdoc_agent.mathagents.runner import run_agent_typed
 from mathdoc_agent.builders.proof_builder import ProofBuilder
@@ -41,6 +41,15 @@ class ClassificationSpec(BaseModel):
     kind: Union[ProofKind, str]
     confidence: float = Field(default=0.5, ge=0.0, le=1.0)
     notes: list[str] = Field(default_factory=list)
+
+    @field_validator("notes", mode="before")
+    @classmethod
+    def _coerce_notes(cls, value):
+        if value is None:
+            return []
+        if isinstance(value, str):
+            return [value]
+        return value
 
 
 class UnknownProofHandler(ProofRefinementHandler[ClassificationSpec]):

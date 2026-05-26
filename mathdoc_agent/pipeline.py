@@ -26,6 +26,7 @@ from mathdoc_agent.orchestration.document_orchestrator import (
     document_from_text,
     refine_math_document,
 )
+from mathdoc_agent.orchestration.mathlib_reuse import record_mathlib_definitions
 from mathdoc_agent.plugins.document_types import default_document_handler_registry
 from mathdoc_agent.plugins.proof_types import default_proof_handler_registry
 from mathdoc_agent.registries.document_handlers import DocumentHandlerRegistry
@@ -517,6 +518,7 @@ async def generate_math_document_json(
         proof_iterations=proof_iterations,
         proof_resolution_agents=resolved_proof_resolution_agents,
     )
+    document = record_mathlib_definitions(document)
     data = paper_structure_data(document)
     data = await rewrite_deduced_from_claims_for_lean(
         data,

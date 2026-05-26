@@ -12,6 +12,7 @@ from mathdoc_agent.models.payloads import (
     CalcStep,
     CalculationData,
     CasesData,
+    DefinitionData,
     InductionData,
     InductiveTypeDefinitionData,
     InstanceDefinitionData,
@@ -27,6 +28,19 @@ from mathdoc_agent.orchestration.worklist import kind_key
 
 def _without_none(value: dict[str, Any]) -> dict[str, Any]:
     return {key: item for key, item in value.items() if item is not None}
+
+
+def _lean_identifier_from_text(value: str, *, fallback: str = "generated_name") -> str:
+    value = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", value)
+    words = [word for word in re.split(r"[^A-Za-z0-9]+", value) if word]
+    if not words:
+        words = [word for word in re.split(r"[^A-Za-z0-9]+", fallback) if word]
+    if not words:
+        return "generated_name"
+    identifier = "_".join(word.lower() for word in words)
+    if not identifier[0].isalpha():
+        identifier = f"n_{identifier}"
+    return identifier
 
 
 def _type_is(value: dict[str, Any], expected: str) -> bool:
@@ -74,13 +88,24 @@ def _attached_proof_details_data(proof: ProofTree | None) -> Any:
 
 
 def _dependency_data(value: Any) -> dict[str, Any]:
+    theorem_dependencies = [
+        theorem.model_dump(exclude_none=True)
+        for theorem in value.deduced_from_theorem
+    ]
+    results_used = [
+        _without_none(
+            {
+                "statement": theorem.get("claim"),
+                "mathlib_identifier": theorem.get("lean_name"),
+            }
+        )
+        for theorem in theorem_dependencies
+        if theorem.get("lean_name")
+    ]
     return {
         "deduced_from_claim": value.deduced_from_claim or None,
-        "deduced_from_theorem": [
-            theorem.model_dump(exclude_none=True)
-            for theorem in value.deduced_from_theorem
-        ]
-        or None,
+        "deduced_from_theorem": theorem_dependencies or None,
+        "results_used": results_used or None,
     }
 
 
@@ -225,14 +250,17 @@ def _clean_instructional_assertion(step: dict[str, Any]) -> dict[str, Any] | Non
 
 
 def _claim_step_from_proof(step: dict[str, Any], claim: str, proof_steps: list[Any]) -> dict[str, Any]:
+    label = step.get("id")
+    name_source = label if isinstance(label, str) and label.strip() else claim
     return _without_none(
         {
             "type": "theorem",
-            "label": step.get("id"),
+            "label": label,
             "header": "Claim",
+            "name": _lean_identifier_from_text(name_source, fallback=claim),
             "claim": claim,
             "proof": _proof_object(proof_steps),
-            "id": step.get("id"),
+            "id": label,
             "status": step.get("status"),
             "text": step.get("text"),
         }
@@ -330,11 +358,18 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
     }:
         statement = _statement_data(node)
         proof = _attached_proof_details_data(node.proof)
+        name = node.data.get("name")
+        if not isinstance(name, str) or not name.strip():
+            name = _lean_identifier_from_text(
+                node.label or node.id,
+                fallback=node.id,
+            )
         return _without_none(
             {
                 "type": "theorem",
                 "label": node.label or node.id,
                 "header": _theorem_header(kind),
+                "name": name,
                 "claim": statement.statement if statement else node.text,
                 "hypothesis": _assumption_steps(statement.assumptions) if statement and statement.assumptions else None,
                 "proof": proof,
@@ -344,13 +379,17 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
         )
 
     if kind == DocumentKind.definition.value:
+        data = DefinitionData.model_validate(node.data)
+        if data.lean_name:
+            return {"check": data.lean_name}
         return _without_none(
             {
                 "type": "definition",
                 "label": node.label or node.id,
                 "header": "Definition",
-                "definition": node.data.get("definitions") or node.text,
-                "name": node.data.get("term") or node.title or node.label or node.id,
+                "definition": data.definitions or node.text,
+                "name": data.term or node.title or node.label or node.id,
+                "notation": data.notation,
                 "id": node.id,
                 "status": node.status.value,
             }
