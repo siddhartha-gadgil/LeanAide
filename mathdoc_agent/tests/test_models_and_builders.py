@@ -135,7 +135,7 @@ class ModelAndBuilderTests(unittest.TestCase):
         self.assertIsInstance(specialized, SpecializeData)
         self.assertIsNone(proof_payload_registry.validate_data("custom_kind", {}))
 
-    def test_specialize_proof_exports_named_lemma_instance(self) -> None:
+    def test_specialize_proof_exports_named_have_instance(self) -> None:
         node = ProofBuilder.specialize(
             id="p.specialize",
             text="Specialize h to x.",
@@ -146,7 +146,7 @@ class ModelAndBuilderTests(unittest.TestCase):
             arguments=["x", "hx"],
         )
         exported = json.loads(to_json(ProofTree(id="p", theorem_statement="P x", root=node)))
-        self.assertEqual(exported["type"], "specialize")
+        self.assertEqual(exported["type"], "assert_statement")
         self.assertEqual(exported["name"], "h_at_x")
         self.assertEqual(exported["lean_term"], "(h x hx)")
         self.assertEqual(exported["claim"], "P x")

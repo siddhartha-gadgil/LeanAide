@@ -38,9 +38,11 @@ matching field names.
 - `proof_method`: optional metadata, currently ignored by Lean codegen.
 - `results_used`: optional references, currently ignored by Lean codegen.
 - `deduced_from_claim`: optional local/contextual claims used for the
-  assertion, currently ignored by Lean codegen.
+  assertion. The normal Python pipeline rewrites most of these away before
+  codegen; residual values should be treated as fallback hints.
 - `deduced_from_theorem`: optional standard theorem objects used for the
-  assertion, currently ignored by Lean codegen.
+  assertion. Objects may now contain `lean_name` and `lean_term`; Lean codegen
+  should use these when present.
 
 ### `calculation`
 
@@ -84,6 +86,16 @@ The Python exporter now emits `proof` here as a `Proof` object with
 - Theorem nodes emit `claim`, not `statement`.
 - Proof nodes do not repeat the theorem statement inside the proof.
 - Saved JSON examples use `type`; `kind` is only used internally in Python.
+- Definition nodes that are matched to existing Mathlib declarations are now
+  exported as `{ "check": "<Lean.name>" }` rather than duplicated as new
+  definitions.
+- Declaration nodes for structures, instances, and inductive types now use the
+  updated formats documented below: binder-object `parameters`, inductive
+  `indices`, structure `isProp`, and instance `gives`.
+- The Python pipeline runs a pre-codegen `deduced_from_claim` rewrite pass
+  unless `--skip-deduced-from-claim-rewrite` is used. This pass removes
+  dependencies already present in hypotheses/local context and rewrites
+  instantiations or required intermediate facts into explicit JSON proof steps.
 
 ## Lean Field Mismatches To Watch
 
@@ -116,18 +128,31 @@ extra fields.
 ## Dependency Field Support Needed
 
 `mathdoc_agent` now emits structured dependency fields on logical proof steps
-and calculation steps. Lean codegen should preserve and use these fields instead
-of treating them as disposable metadata.
+and calculation steps. Some of these fields are now normalized by Python before
+Lean codegen sees the JSON.
 
 Primary fields:
 
 - `deduced_from_claim`: array of local/contextual mathematical claims. These are
-  not theorem names; they should be translated as propositions and used as
-  local facts, `have` candidates, or search context.
+  not theorem names. In the normal pipeline these are rewritten in Python before
+  codegen:
+  - if the claim is already a hypothesis or local fact, it is removed;
+  - if it is an instantiation of an available general claim, Python inserts a
+    preceding named `assert_statement` representing `have name : claim :=
+    lean_term` and removes the dependency;
+  - if it must first be proved, Python inserts a preceding local theorem with a
+    proof and removes the dependency.
+  A remaining `deduced_from_claim` should therefore be treated as unresolved
+  fallback metadata, not as the primary mechanism for Lean to create local
+  facts.
 - `deduced_from_theorem`: array of theorem objects. Each object has:
   - `claim`: general theorem statement.
   - `name`: optional theorem name.
   - `description`: optional note on how the theorem is used.
+  - `lean_name`: optional exact Lean/Mathlib theorem name found by LeanSearch or
+    the local Mathlib lookup path.
+  - `lean_term`: optional Lean expression for the specific instantiated theorem
+    used in the proof, possibly depending on local variables or hypotheses.
 - `proof_method`: local proof hint or method label.
 - `hints`, `referenced_lemmas`, `referenced_hypotheses`: optional guidance from
   coarse proof refinement.
@@ -135,13 +160,18 @@ Primary fields:
 Recommended Lean-side behavior:
 
 - Extend `assertionCode` for `assert_statement` to read
-  `deduced_from_claim` and `deduced_from_theorem` before falling back to generic
-  tactic search from the translated `claim`.
-- For `deduced_from_theorem`, prefer an explicit `name` when it resolves to a
-  known theorem. If only `claim` is present, translate the claim and use
-  `getExactTerm?`/search as with `results_used`.
-- For `deduced_from_claim`, translate each claim and generate named local
-  `have` facts or add them to the search context before proving the assertion.
+  `deduced_from_theorem`, `results_used`, and proof hints before falling back to
+  generic tactic search from the translated `claim`.
+- For `deduced_from_theorem`, prefer `lean_term` when present; it is the
+  strongest signal because it already gives the particular theorem instance.
+  Otherwise prefer `lean_name`, then a resolvable `name`, and only then fall
+  back to translating/searching from `claim`.
+- The exporter also maps theorem objects with `lean_name` into the older
+  `results_used` shape using `mathlib_identifier`; keep reading this field for
+  compatibility with existing Lean code.
+- For residual `deduced_from_claim`, do not duplicate the Python rewrite logic
+  as the main path. Treat it as a fallback hint: either add it to search context
+  conservatively, or emit a diagnostic/TODO if it cannot be resolved.
 - Keep compatibility with the older `results_used` array by either mapping it
   into the new dependency representation or by making a shared helper read all
   supported dependency fields.
@@ -163,6 +193,43 @@ Handlers that should share this dependency parser:
 - Future dedicated proof handlers in this note: any handler with an internal
   `proof`, `proof_of_reduction`, `verification`, or `*_proof` field should pass
   dependency metadata through to its generated subgoals.
+
+### Named Specialized `have`
+
+Python no longer emits a `specialize` JSON step for codegen. When a proof
+fragment instantiates an already-proved claim, theorem, or hypothesis, the
+exporter emits an additional named `assert_statement` that represents a Lean
+`have`. This may come directly from proof classification or from the
+`deduced_from_claim` rewrite pass.
+
+JSON type to match: `assert_statement`.
+
+Fields:
+
+- `name`: name of the new local lemma being created.
+- `lean_term`: Lean term proving the specialized lemma, such as `(h x hx)` or
+  `(Nat.succ_le_succ hnm)`.
+- `claim`: mathematical statement of the specialized lemma.
+- `proof_method`: usually records that this was obtained by specializing an
+  already available claim.
+- `source_claim`: optional general claim/theorem/hypothesis being instantiated.
+- `arguments`: optional array of local values or hypotheses used for the
+  instantiation.
+
+Expected Lean behavior:
+
+```lean
+have name := lean_term
+```
+
+or, when `claim` is present and translated successfully:
+
+```lean
+have name : translated_claim := lean_term
+```
+
+The handler must not use Lean's destructive `specialize h ...` tactic, because
+the original general claim should remain available.
 
 ## New `@[codegen]` Handlers Needed
 
@@ -523,13 +590,16 @@ apply geometric lemmas to close the conclusion.
 
 ## Recommended Order
 
-1. Add `contrapositive_proof`, `existence_proof`, `generic_element_proof`, and
+1. Extend `assert_statement` to honor optional `name` and `lean_term`, because
+   Python's `deduced_from_claim` rewrite pass can insert these named `have`
+   assertions before steps that use instantiated local claims.
+2. Add `contrapositive_proof`, `existence_proof`, `generic_element_proof`, and
    `epsilon_delta_proof`; these appear in the current example corpus and are
    the most useful next targets.
-2. Add `uniqueness_proof`, `construction_proof`, `invariant_proof`, and
+3. Add `uniqueness_proof`, `construction_proof`, `invariant_proof`, and
    `reduction_proof`; these are common enough to justify specialized
    generation.
-3. Keep less common proof types degrading to supported core structures until
+4. Keep less common proof types degrading to supported core structures until
    there are examples that require more precise Lean behavior.
 
 ## Declaration Codegen Handlers Needed
@@ -537,6 +607,17 @@ apply geometric lemmas to close the conclusion.
 `mathdoc_agent` now emits Lean-oriented declaration nodes for definitions that
 are not theorem/proof objects. These should be handled as top-level document
 items, producing Lean commands rather than proof scripts.
+
+If Python determines that an ordinary definition is already present in Mathlib,
+the exporter emits:
+
+```json
+{"check": "Existing.Mathlib.name"}
+```
+
+Lean codegen should treat this as a reuse marker: emit `#check
+Existing.Mathlib.name` or otherwise record the existing declaration, but do not
+generate a duplicate definition.
 
 Example JSON is generated by:
 
@@ -887,8 +968,11 @@ Lean-side support should therefore prioritize `assert_statement` and local
 - When an `assert_statement` also has `from`, `relation`, and `to`, codegen can
   treat those fields as structured hints for the translated `claim`; it should
   not require a separate calculation handler.
-- `proof_method`, `deduced_from_claim`, and `deduced_from_theorem` should feed
-  the proof-search context before falling back to plain `grind`.
+- `proof_method`, residual `deduced_from_claim`, and `deduced_from_theorem`
+  should feed the proof-search context before falling back to plain `grind`.
+  Prefer theorem `lean_term`/`lean_name` when present; remember that most
+  actionable `deduced_from_claim` entries should already have been converted by
+  Python into preceding named `assert_statement`/`have` or local theorem steps.
 - `side_conditions` should be emitted as preceding `assert_statement`s or local
   haves, so they are available to `grind` for the main step.
 - The old specialized calculation kinds (`equality_chain`, `inequality_chain`,

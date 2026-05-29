@@ -228,7 +228,7 @@ class DeducedFromClaimRewriteAgent:
                 patches.append(
                     DeducedFromClaimPatchSpec(
                         path=entry["path"],
-                        action="insert_specialize_before",
+                        action="insert_have_before",
                         remove_claims=["For every y satisfying H y, P y."],
                         name="h_at_x",
                         lean_term="(h x hx)",
@@ -699,9 +699,10 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             DeducedFromClaimRewriteAgent(),
         )
         steps = rewritten["document"]["body"][0]["proof"]["proof_steps"]
-        self.assertEqual(steps[0]["type"], "specialize")
+        self.assertEqual(steps[0]["type"], "assert_statement")
         self.assertEqual(steps[0]["name"], "h_at_x")
         self.assertEqual(steps[0]["lean_term"], "(h x hx)")
+        self.assertEqual(steps[0]["claim"], "P x")
         self.assertNotIn("deduced_from_claim", steps[1])
         self.assertEqual(steps[2]["type"], "theorem")
         self.assertEqual(steps[2]["name"], "aux_estimate")

@@ -37,7 +37,7 @@ def _assumption_from_step(value: Any) -> str | None:
 def _claim_introduced_by_step(value: Any) -> str | None:
     if not isinstance(value, dict):
         return None
-    if value.get("type") in {"theorem", "specialize", "assert_statement"}:
+    if value.get("type") in {"theorem", "assert_statement"}:
         claim = value.get("claim")
         if isinstance(claim, str) and claim.strip():
             return claim
@@ -218,19 +218,23 @@ def _apply_patch(root: Any, patch: DeducedFromClaimPatchSpec) -> None:
     if patch.action == "replace_deduced_from_claim":
         _remove_claims_from_dependency(parent, key, patch)
         return
-    if patch.action == "insert_specialize_before":
+    if patch.action in {"insert_have_before", "insert_specialize_before"}:
         if not patch.name or not patch.lean_term:
             return
+        proof_method = "Specialized an already available claim."
+        if patch.source_claim:
+            proof_method = f"Specialized: {patch.source_claim}"
         _insert_before(
             root,
             patch,
             {
                 key: value
                 for key, value in {
-                    "type": "specialize",
+                    "type": "assert_statement",
                     "name": patch.name,
-                    "lean_term": patch.lean_term,
                     "claim": patch.claim,
+                    "proof_method": proof_method,
+                    "lean_term": patch.lean_term,
                     "source_claim": patch.source_claim,
                     "arguments": patch.arguments or None,
                 }.items()
@@ -304,8 +308,9 @@ async def rewrite_deduced_from_claims_for_lean(
                 ),
                 "instantiation": (
                     "If the dependency is an instantiation of an available general "
-                    "claim, insert a non-destructive `specialize` step before the "
-                    "current object and remove the original dependency."
+                    "claim, insert a named `have` as an `assert_statement` before "
+                    "the current object and remove the original dependency. The "
+                    "inserted assertion must have `name`, `claim`, and `lean_term`."
                 ),
                 "needs_proof": (
                     "If the dependency must first be proved and then used, insert a "

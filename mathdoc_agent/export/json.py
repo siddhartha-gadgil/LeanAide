@@ -715,12 +715,16 @@ def _proof_node_data(node: ProofNode) -> Any:
 
     if kind == ProofKind.specialize.value:
         data = SpecializeData.model_validate(node.data)
+        proof_method = "Specialized an already available claim."
+        if data.source_claim:
+            proof_method = f"Specialized: {data.source_claim}"
         return _without_none(
             {
-                "type": "specialize",
+                "type": "assert_statement",
                 "name": data.name,
-                "lean_term": data.lean_term,
                 "claim": data.claim or node.goal,
+                "proof_method": proof_method,
+                "lean_term": data.lean_term,
                 "source_claim": data.source_claim,
                 "arguments": data.arguments or None,
                 "id": node.id,
