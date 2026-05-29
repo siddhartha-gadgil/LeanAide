@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 
 
 class ProofKindData(BaseModel):
@@ -38,6 +38,52 @@ class DefinitionData(DocumentKindData):
     )
 
 
+class BinderKind(str, Enum):
+    default = "default"
+    implicit = "implicit"
+    typeclass = "typeclass"
+
+
+class ParameterData(BaseModel):
+    name: str
+    type: str
+    binder: BinderKind = BinderKind.default
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_parameter(cls, value: object) -> object:
+        return _coerce_parameter(value)
+
+
+def _coerce_parameter(value: object) -> object:
+    if isinstance(value, ParameterData):
+        return value
+    if isinstance(value, str):
+        name, separator, type_ = value.partition(":")
+        if separator:
+            return {
+                "name": name.strip(),
+                "type": type_.strip(),
+                "binder": BinderKind.default.value,
+            }
+        return {
+            "name": value.strip(),
+            "type": "",
+            "binder": BinderKind.default.value,
+        }
+    if isinstance(value, dict) and "binder" not in value:
+        return {**value, "binder": BinderKind.default.value}
+    return value
+
+
+def _coerce_parameters(value: object) -> object:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [_coerce_parameter(item) for item in value]
+    return value
+
+
 class StructureFieldData(BaseModel):
     name: Optional[str] = None
     type: str
@@ -47,18 +93,76 @@ class StructureFieldData(BaseModel):
 class StructureDefinitionData(DocumentKindData):
     name: str
     is_class: bool = False
-    parameters: list[str] = Field(default_factory=list)
+    is_prop: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("is_prop", "isProp"),
+    )
+    parameters: list[ParameterData] = Field(default_factory=list)
     extends: list[str] = Field(default_factory=list)
     fields: list[StructureFieldData] = Field(default_factory=list)
+
+    @field_validator("parameters", mode="before")
+    @classmethod
+    def _validate_parameters(cls, value: object) -> object:
+        return _coerce_parameters(value)
+
+
+class InstanceGiveData(BaseModel):
+    name: str
+    value: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def _validate_give(cls, value: object) -> object:
+        if isinstance(value, StructureFieldData):
+            return {"name": value.name, "value": value.type}
+        if isinstance(value, dict) and "value" not in value and "type" in value:
+            return {**value, "value": value["type"]}
+        return value
+
+
+def _coerce_instance_gives(value: object) -> object:
+    if value is None:
+        return []
+    if isinstance(value, dict):
+        return [{"name": str(name), "value": str(item)} for name, item in value.items()]
+    if isinstance(value, list):
+        items: list[object] = []
+        for item in value:
+            if isinstance(item, StructureFieldData):
+                items.append({"name": item.name, "value": item.type})
+            elif isinstance(item, dict) and "value" not in item and "type" in item:
+                items.append({**item, "value": item["type"]})
+            else:
+                items.append(item)
+        return items
+    return value
 
 
 class InstanceDefinitionData(DocumentKindData):
     name: Optional[str] = None
     class_name: Optional[str] = None
     target: Optional[str] = None
-    parameters: list[str] = Field(default_factory=list)
-    fields: dict[str, str] = Field(default_factory=dict)
+    parameters: list[ParameterData] = Field(default_factory=list)
+    gives: list[InstanceGiveData] = Field(default_factory=list)
     value: Optional[str] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_legacy_fields(cls, value: object) -> object:
+        if isinstance(value, dict) and "gives" not in value and "fields" in value:
+            return {**value, "gives": value.get("fields")}
+        return value
+
+    @field_validator("parameters", mode="before")
+    @classmethod
+    def _validate_parameters(cls, value: object) -> object:
+        return _coerce_parameters(value)
+
+    @field_validator("gives", mode="before")
+    @classmethod
+    def _validate_gives(cls, value: object) -> object:
+        return _coerce_instance_gives(value)
 
 
 class InductiveConstructorData(BaseModel):
@@ -69,8 +173,14 @@ class InductiveConstructorData(BaseModel):
 class InductiveTypeDefinitionData(DocumentKindData):
     name: str
     is_prop: bool = False
-    parameters: list[str] = Field(default_factory=list)
+    parameters: list[ParameterData] = Field(default_factory=list)
+    indices: list[ParameterData] = Field(default_factory=list)
     constructors: list[InductiveConstructorData] = Field(default_factory=list)
+
+    @field_validator("parameters", "indices", mode="before")
+    @classmethod
+    def _validate_parameters(cls, value: object) -> object:
+        return _coerce_parameters(value)
 
 
 class CalcRelation(str, Enum):

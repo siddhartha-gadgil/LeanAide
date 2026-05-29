@@ -7,9 +7,18 @@
         "label": "def:sorted_list",
         "name": "SortedList",
         "is_class": false,
+        "isProp": false,
         "parameters": [
-          "α : Type",
-          "le : α → α → Prop"
+          {
+            "name": "α",
+            "type": "Type",
+            "binder": "implicit"
+          },
+          {
+            "name": "le",
+            "type": "α → α → Prop",
+            "binder": "default"
+          }
         ],
         "fields": [
           {
@@ -30,6 +39,7 @@
         "label": "class:magma",
         "name": "Magma",
         "is_class": true,
+        "isProp": false,
         "fields": [
           {
             "name": "carrier",
@@ -50,10 +60,16 @@
         "name": "natAddMagma",
         "class_name": "Magma",
         "target": "Nat",
-        "fields": {
-          "carrier": "Nat",
-          "mul": "Nat.add"
-        },
+        "gives": [
+          {
+            "name": "carrier",
+            "value": "Nat"
+          },
+          {
+            "name": "mul",
+            "value": "Nat.add"
+          }
+        ],
         "text": "The natural numbers form a magma using Nat as the carrier and addition as the binary operation.",
         "id": "lean_definition_examples.root.nat_magma",
         "status": "resolved"
@@ -63,8 +79,12 @@
         "label": "ind:even",
         "name": "Even",
         "is_prop": true,
-        "parameters": [
-          "n : Nat"
+        "indices": [
+          {
+            "name": "n",
+            "type": "Nat",
+            "binder": "default"
+          }
         ],
         "constructors": [
           {
@@ -89,7 +109,11 @@
         "name": "BinaryTree",
         "is_prop": false,
         "parameters": [
-          "α : Type"
+          {
+            "name": "α",
+            "type": "Type",
+            "binder": "implicit"
+          }
         ],
         "constructors": [
           {
@@ -114,8 +138,13 @@
         "label": "def:bounded_nat",
         "name": "BoundedNat",
         "is_class": false,
+        "isProp": false,
         "parameters": [
-          "b : Nat"
+          {
+            "name": "b",
+            "type": "Nat",
+            "binder": "default"
+          }
         ],
         "fields": [
           {

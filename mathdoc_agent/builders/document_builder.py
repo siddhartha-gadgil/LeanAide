@@ -6,7 +6,9 @@ from mathdoc_agent.models.payloads import (
     DefinitionData,
     InductiveConstructorData,
     InductiveTypeDefinitionData,
+    InstanceGiveData,
     InstanceDefinitionData,
+    ParameterData,
     StatementData,
     StructureDefinitionData,
     StructureFieldData,
@@ -80,8 +82,9 @@ class DocumentBuilder:
         text: str,
         name: str,
         is_class: bool = False,
+        is_prop: bool = False,
         fields: list[StructureFieldData] | None = None,
-        parameters: list[str] | None = None,
+        parameters: list[ParameterData | str] | None = None,
         extends: list[str] | None = None,
         label: str | None = None,
     ) -> DocumentNode:
@@ -94,6 +97,7 @@ class DocumentBuilder:
             data=StructureDefinitionData(
                 name=name,
                 is_class=is_class,
+                is_prop=is_prop,
                 parameters=parameters or [],
                 extends=extends or [],
                 fields=fields or [],
@@ -108,7 +112,8 @@ class DocumentBuilder:
         class_name: str | None = None,
         target: str | None = None,
         name: str | None = None,
-        parameters: list[str] | None = None,
+        parameters: list[ParameterData | str] | None = None,
+        gives: list[InstanceGiveData] | None = None,
         fields: dict[str, str] | None = None,
         value: str | None = None,
         label: str | None = None,
@@ -124,7 +129,7 @@ class DocumentBuilder:
                 class_name=class_name,
                 target=target,
                 parameters=parameters or [],
-                fields=fields or {},
+                gives=gives or fields or [],
                 value=value,
             ).model_dump(),
         )
@@ -137,7 +142,8 @@ class DocumentBuilder:
         name: str,
         is_prop: bool = False,
         constructors: list[InductiveConstructorData] | None = None,
-        parameters: list[str] | None = None,
+        parameters: list[ParameterData | str] | None = None,
+        indices: list[ParameterData | str] | None = None,
         label: str | None = None,
     ) -> DocumentNode:
         return DocumentNode(
@@ -150,6 +156,7 @@ class DocumentBuilder:
                 name=name,
                 is_prop=is_prop,
                 parameters=parameters or [],
+                indices=indices or [],
                 constructors=constructors or [],
             ).model_dump(),
         )

@@ -30,6 +30,10 @@ def _without_none(value: dict[str, Any]) -> dict[str, Any]:
     return {key: item for key, item in value.items() if item is not None}
 
 
+def _model_dump_json(value: BaseModel) -> dict[str, Any]:
+    return value.model_dump(mode="json", exclude_none=True)
+
+
 def _lean_identifier_from_text(value: str, *, fallback: str = "generated_name") -> str:
     value = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", value)
     words = [word for word in re.split(r"[^A-Za-z0-9]+", value) if word]
@@ -403,9 +407,10 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
                 "label": node.label or node.id,
                 "name": data.name,
                 "is_class": data.is_class,
-                "parameters": data.parameters or None,
+                "isProp": data.is_prop,
+                "parameters": [_model_dump_json(parameter) for parameter in data.parameters] or None,
                 "extends": data.extends or None,
-                "fields": [field.model_dump(exclude_none=True) for field in data.fields] or None,
+                "fields": [_model_dump_json(field) for field in data.fields] or None,
                 "text": node.text or None,
                 "id": node.id,
                 "status": node.status.value,
@@ -421,8 +426,8 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
                 "name": data.name,
                 "class_name": data.class_name,
                 "target": data.target,
-                "parameters": data.parameters or None,
-                "fields": data.fields or None,
+                "parameters": [_model_dump_json(parameter) for parameter in data.parameters] or None,
+                "gives": [_model_dump_json(give) for give in data.gives] or None,
                 "value": data.value,
                 "text": node.text or None,
                 "id": node.id,
@@ -438,9 +443,10 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
                 "label": node.label or node.id,
                 "name": data.name,
                 "is_prop": data.is_prop,
-                "parameters": data.parameters or None,
+                "parameters": [_model_dump_json(parameter) for parameter in data.parameters] or None,
+                "indices": [_model_dump_json(index) for index in data.indices] or None,
                 "constructors": [
-                    constructor.model_dump(exclude_none=True)
+                    _model_dump_json(constructor)
                     for constructor in data.constructors
                 ],
                 "text": node.text or None,

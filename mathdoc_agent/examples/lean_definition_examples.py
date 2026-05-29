@@ -5,7 +5,12 @@ from pathlib import Path
 
 from mathdoc_agent.export.json import to_json
 from mathdoc_agent.models.base import DocumentKind
-from mathdoc_agent.models.payloads import InductiveConstructorData, StructureFieldData
+from mathdoc_agent.models.payloads import (
+    InductiveConstructorData,
+    InstanceGiveData,
+    ParameterData,
+    StructureFieldData,
+)
 from mathdoc_agent.models.refinement_specs import DocumentChildSpec, DocumentRefinementSpec
 from mathdoc_agent.orchestration.document_orchestrator import document_from_text, refine_math_document
 from mathdoc_agent.plugins.document_types import default_document_handler_registry
@@ -46,7 +51,11 @@ class DocumentParserAgent:
                     ),
                     name="SortedList",
                     is_class=False,
-                    parameters=["α : Type", "le : α → α → Prop"],
+                    is_prop=False,
+                    parameters=[
+                        ParameterData(name="α", type="Type", binder="implicit"),
+                        ParameterData(name="le", type="α → α → Prop"),
+                    ],
                     fields=[
                         StructureFieldData(name="xs", type="List α"),
                         StructureFieldData(name="sorted", type="List.Pairwise le xs"),
@@ -62,6 +71,7 @@ class DocumentParserAgent:
                     ),
                     name="Magma",
                     is_class=True,
+                    is_prop=False,
                     fields=[
                         StructureFieldData(name="carrier", type="Type"),
                         StructureFieldData(name="mul", type="carrier → carrier → carrier"),
@@ -75,9 +85,9 @@ class DocumentParserAgent:
                     name="natAddMagma",
                     class_name="Magma",
                     target="Nat",
-                    fields=[
-                        StructureFieldData(name="carrier", type="Nat"),
-                        StructureFieldData(name="mul", type="Nat.add"),
+                    gives=[
+                        InstanceGiveData(name="carrier", value="Nat"),
+                        InstanceGiveData(name="mul", value="Nat.add"),
                     ],
                 ),
                 DocumentChildSpec(
@@ -91,7 +101,7 @@ class DocumentParserAgent:
                     ),
                     name="Even",
                     is_prop=True,
-                    parameters=["n : Nat"],
+                    indices=[ParameterData(name="n", type="Nat")],
                     constructors=[
                         InductiveConstructorData(name="zero_even", arguments=[]),
                         InductiveConstructorData(
@@ -110,7 +120,7 @@ class DocumentParserAgent:
                     ),
                     name="BinaryTree",
                     is_prop=False,
-                    parameters=["α : Type"],
+                    parameters=[ParameterData(name="α", type="Type", binder="implicit")],
                     constructors=[
                         InductiveConstructorData(name="leaf", arguments=[]),
                         InductiveConstructorData(
@@ -133,7 +143,8 @@ class DocumentParserAgent:
                     ),
                     name="BoundedNat",
                     is_class=False,
-                    parameters=["b : Nat"],
+                    is_prop=False,
+                    parameters=[ParameterData(name="b", type="Nat")],
                     fields=[
                         StructureFieldData(name="n", type="Nat"),
                         StructureFieldData(name="bound", type="n ≤ b"),

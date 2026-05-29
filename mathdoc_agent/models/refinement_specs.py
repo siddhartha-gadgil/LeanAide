@@ -2,14 +2,16 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field
 
 from mathdoc_agent.models.base import DocumentKind, ProofKind
 from mathdoc_agent.models.payloads import (
     CalcStep,
     DeducedFromTheoremData,
     InductiveConstructorData,
+    InstanceGiveData,
     LogicalProofStepData,
+    ParameterData,
     StructureFieldData,
 )
 
@@ -136,10 +138,15 @@ class DocumentChildSpec(BaseModel):
     proof_text: str | None = None
     name: str | None = None
     is_class: bool | None = None
-    is_prop: bool | None = None
-    parameters: list[str] = Field(default_factory=list)
+    is_prop: bool | None = Field(
+        default=None,
+        validation_alias=AliasChoices("is_prop", "isProp"),
+    )
+    parameters: list[ParameterData] = Field(default_factory=list)
+    indices: list[ParameterData] = Field(default_factory=list)
     extends: list[str] = Field(default_factory=list)
     fields: list[StructureFieldData] = Field(default_factory=list)
+    gives: list[InstanceGiveData] = Field(default_factory=list)
     class_name: str | None = None
     target: str | None = None
     value: str | None = None

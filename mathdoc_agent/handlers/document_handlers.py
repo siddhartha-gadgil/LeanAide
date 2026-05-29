@@ -84,6 +84,7 @@ class UnknownDocumentHandler(DocumentRefinementHandler[DocumentRefinementSpec]):
                 data = StructureDefinitionData(
                     name=child.name or child.title or child.label or child.id_suffix,
                     is_class=bool(child.is_class),
+                    is_prop=bool(child.is_prop),
                     parameters=child.parameters,
                     extends=child.extends,
                     fields=child.fields,
@@ -94,7 +95,12 @@ class UnknownDocumentHandler(DocumentRefinementHandler[DocumentRefinementSpec]):
                     class_name=child.class_name,
                     target=child.target,
                     parameters=child.parameters,
-                    fields={field.name: field.type for field in child.fields if field.name is not None},
+                    gives=child.gives
+                    or [
+                        {"name": field.name, "value": field.type}
+                        for field in child.fields
+                        if field.name is not None
+                    ],
                     value=child.value,
                 ).model_dump()
             elif child_kind == DocumentKind.inductive_type_definition.value:
@@ -102,6 +108,7 @@ class UnknownDocumentHandler(DocumentRefinementHandler[DocumentRefinementSpec]):
                     name=child.name or child.title or child.label or child.id_suffix,
                     is_prop=bool(child.is_prop),
                     parameters=child.parameters,
+                    indices=child.indices,
                     constructors=child.constructors,
                 ).model_dump()
             proof = None

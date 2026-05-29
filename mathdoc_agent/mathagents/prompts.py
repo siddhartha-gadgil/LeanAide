@@ -37,13 +37,18 @@ key `definiens` for only the mathematical definition, without Markdown headers,
 bold markers, numbering labels, or explanatory prose. Use key `notation` only
 when the source explicitly defines notation. Never use prose names containing
 spaces, hyphens, parentheses, LaTeX, or display math as the definition `term`.
-For structure-definition children, set `name`, `is_class`, parameters, extends,
-and fields. Use `is_class=true` for class-like structures such as groups.
+For structure-definition children, set `name`, `is_class`, `isProp`,
+parameters, extends, and fields. Use `is_class=true` for class-like structures
+such as groups. Parameters must be objects with `name`, `type`, and optional
+`binder`; `binder` is one of `default`, `implicit`, or `typeclass`, and defaults
+to `default` when omitted.
 For instance-definition children, set `class_name`, `target`, optional `name`,
-parameters, fields, and value when present.
-For inductive-type-definition children, set `name`, `is_prop`, parameters, and
-constructors. Each constructor should include its name, when stated, and its
-arguments.
+parameters, `gives`, and value when present. `gives` is an array of objects with
+`name` and `value`.
+For inductive-type-definition children, set `name`, `is_prop`, parameters,
+indices, and constructors. Parameters and indices use the same `name`, `type`,
+`binder` object shape as structure parameters. Each constructor should include
+its name, when stated, and its arguments.
 Use `data_entries` only for small string metadata as key/value pairs.
 Prefer labels that are stable source labels such as `Lemma 1`, `Proposition 7`,
 or a short ASCII identifier. Avoid putting full claims or display notation in
