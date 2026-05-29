@@ -96,20 +96,9 @@ def _dependency_data(value: Any) -> dict[str, Any]:
         theorem.model_dump(exclude_none=True)
         for theorem in value.deduced_from_theorem
     ]
-    results_used = [
-        _without_none(
-            {
-                "statement": theorem.get("claim"),
-                "mathlib_identifier": theorem.get("lean_name"),
-            }
-        )
-        for theorem in theorem_dependencies
-        if theorem.get("lean_name")
-    ]
     return {
         "deduced_from_claim": value.deduced_from_claim or None,
         "deduced_from_theorem": theorem_dependencies or None,
-        "results_used": results_used or None,
     }
 
 

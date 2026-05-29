@@ -39,6 +39,7 @@ from mathdoc_agent.models.refinement_specs import (
 from mathdoc_agent.orchestration.context import build_proof_context
 from mathdoc_agent.orchestration.claim_audit import audit_claims_for_lean
 from mathdoc_agent.orchestration.deduced_from_claim_rewrite import (
+    materialize_remaining_deduced_from_claims,
     rewrite_deduced_from_claims_for_lean,
 )
 from mathdoc_agent.orchestration.document_orchestrator import document_from_text, refine_math_document
@@ -707,6 +708,55 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(steps[2]["type"], "theorem")
         self.assertEqual(steps[2]["name"], "aux_estimate")
         self.assertNotIn("deduced_from_claim", steps[3])
+
+    async def test_deduced_from_claim_rewrite_materializes_residual_claims(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "Q",
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "Q",
+                                    "deduced_from_claim": ["P"],
+                                }
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+        rewritten = await rewrite_deduced_from_claims_for_lean(data, None)
+        steps = rewritten["document"]["body"][0]["proof"]["proof_steps"]
+        self.assertEqual(
+            steps[0],
+            {
+                "type": "assert_statement",
+                "claim": "P",
+                "proof_method": "Materialized from deduced_from_claim.",
+            },
+        )
+        self.assertEqual(steps[1]["claim"], "Q")
+        self.assertNotIn("deduced_from_claim", steps[1])
+
+    def test_materialize_remaining_deduced_from_claim_wraps_single_assertion(self) -> None:
+        rewritten = materialize_remaining_deduced_from_claims(
+            {
+                "type": "assert_statement",
+                "claim": "Q",
+                "deduced_from_claim": ["P"],
+            }
+        )
+        self.assertEqual(rewritten["type"], "proof")
+        self.assertEqual(
+            [step["claim"] for step in rewritten["proof_steps"]],
+            ["P", "Q"],
+        )
+        self.assertNotIn("deduced_from_claim", rewritten["proof_steps"][1])
 
     def test_default_registry_has_reasonable_taxonomy_handlers(self) -> None:
         registry = proof_registry()

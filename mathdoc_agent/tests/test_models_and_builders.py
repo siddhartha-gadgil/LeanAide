@@ -70,6 +70,7 @@ class ModelAndBuilderTests(unittest.TestCase):
         self.assertEqual(step["deduced_from_theorem"][0]["name"], "order transitivity")
         self.assertEqual(step["deduced_from_theorem"][0]["lean_name"], "le_trans")
         self.assertEqual(step["deduced_from_theorem"][0]["lean_term"], "(le_trans h0a hab)")
+        self.assertNotIn("results_used", step)
 
     def test_single_assertion_simple_proof_dependencies_export(self) -> None:
         node = ProofBuilder.simple(

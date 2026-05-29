@@ -36,10 +36,10 @@ matching field names.
 
 - `claim`: asserted proposition.
 - `proof_method`: optional metadata, currently ignored by Lean codegen.
-- `results_used`: optional references, currently ignored by Lean codegen.
 - `deduced_from_claim`: optional local/contextual claims used for the
-  assertion. The normal Python pipeline rewrites most of these away before
-  codegen; residual values should be treated as fallback hints.
+  assertion before finalization. The normal Python pipeline rewrites these into
+  explicit preceding `assert_statement` haves or local theorem steps before
+  codegen.
 - `deduced_from_theorem`: optional standard theorem objects used for the
   assertion. Objects may now contain `lean_name` and `lean_term`; Lean codegen
   should use these when present.
@@ -96,6 +96,12 @@ The Python exporter now emits `proof` here as a `Proof` object with
   unless `--skip-deduced-from-claim-rewrite` is used. This pass removes
   dependencies already present in hypotheses/local context and rewrites
   instantiations or required intermediate facts into explicit JSON proof steps.
+  Residual `deduced_from_claim` entries are deterministically materialized as
+  preceding `assert_statement` haves, so final pipeline JSON should not contain
+  `deduced_from_claim`.
+- The Python exporter no longer emits the legacy `results_used` compatibility
+  field. Lean/Mathlib references remain in `deduced_from_theorem`, with
+  `lean_name` and optional `lean_term`.
 
 ## Lean Field Mismatches To Watch
 
@@ -142,9 +148,9 @@ Primary fields:
     lean_term` and removes the dependency;
   - if it must first be proved, Python inserts a preceding local theorem with a
     proof and removes the dependency.
-  A remaining `deduced_from_claim` should therefore be treated as unresolved
-  fallback metadata, not as the primary mechanism for Lean to create local
-  facts.
+  Any remaining entries are materialized as preceding `assert_statement` haves.
+  Final pipeline JSON should not contain `deduced_from_claim`; raw exporter JSON
+  may contain it before the rewrite/finalization pass.
 - `deduced_from_theorem`: array of theorem objects. Each object has:
   - `claim`: general theorem statement.
   - `name`: optional theorem name.
@@ -160,21 +166,17 @@ Primary fields:
 Recommended Lean-side behavior:
 
 - Extend `assertionCode` for `assert_statement` to read
-  `deduced_from_theorem`, `results_used`, and proof hints before falling back to
+  `deduced_from_theorem` and proof hints before falling back to
   generic tactic search from the translated `claim`.
 - For `deduced_from_theorem`, prefer `lean_term` when present; it is the
   strongest signal because it already gives the particular theorem instance.
   Otherwise prefer `lean_name`, then a resolvable `name`, and only then fall
   back to translating/searching from `claim`.
-- The exporter also maps theorem objects with `lean_name` into the older
-  `results_used` shape using `mathlib_identifier`; keep reading this field for
-  compatibility with existing Lean code.
-- For residual `deduced_from_claim`, do not duplicate the Python rewrite logic
-  as the main path. Treat it as a fallback hint: either add it to search context
-  conservatively, or emit a diagnostic/TODO if it cannot be resolved.
-- Keep compatibility with the older `results_used` array by either mapping it
-  into the new dependency representation or by making a shared helper read all
-  supported dependency fields.
+- Do not rely on `results_used` in new JSON from `mathdoc_agent`; that legacy
+  compatibility field is no longer emitted.
+- For residual `deduced_from_claim` in hand-written or old JSON, treat it as
+  fallback metadata. New pipeline output should already have converted it to
+  preceding haves or local theorem steps.
 - Consider tolerating the misspelling `deduce_from_theorem` as an alias for
   `deduced_from_theorem` if any saved examples contain it, but prefer emitting
   and documenting the `deduced_from_theorem` spelling.

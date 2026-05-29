@@ -166,6 +166,64 @@ def _remove_hypothesis_duplicates(value: Any, hypotheses: list[str] | None = Non
     return cleaned
 
 
+def _pop_remaining_claim_dependencies(value: dict[str, Any]) -> list[str]:
+    dependencies = value.get("deduced_from_claim")
+    value.pop("deduced_from_claim", None)
+    if not isinstance(dependencies, list):
+        return []
+    return [item for item in dependencies if isinstance(item, str) and item.strip()]
+
+
+def _materialized_have_from_claim(claim: str) -> dict[str, Any]:
+    return {
+        "type": "assert_statement",
+        "claim": claim,
+        "proof_method": "Materialized from deduced_from_claim.",
+    }
+
+
+def _materialize_self_dependencies(value: dict[str, Any], claims: list[str]) -> dict[str, Any]:
+    if not claims:
+        return value
+    haves = [_materialized_have_from_claim(claim) for claim in claims]
+    if value.get("type") == "proof":
+        proof_steps = value.get("proof_steps")
+        if isinstance(proof_steps, list):
+            value["proof_steps"] = [*haves, *proof_steps]
+        else:
+            value["proof_steps"] = haves
+        return value
+    if value.get("type") in {"assert_statement", "conclude_statement"}:
+        return {"type": "proof", "proof_steps": [*haves, value]}
+    return value
+
+
+def materialize_remaining_deduced_from_claims(value: Any, *, in_list: bool = False) -> Any:
+    """Turn residual `deduced_from_claim` dependencies into explicit haves."""
+    if isinstance(value, list):
+        materialized: list[Any] = []
+        for item in value:
+            transformed = materialize_remaining_deduced_from_claims(item, in_list=True)
+            if isinstance(transformed, dict):
+                claims = _pop_remaining_claim_dependencies(transformed)
+                materialized.extend(
+                    _materialized_have_from_claim(claim) for claim in claims
+                )
+            materialized.append(transformed)
+        return materialized
+    if not isinstance(value, dict):
+        return value
+
+    transformed = {
+        key: materialize_remaining_deduced_from_claims(item)
+        for key, item in value.items()
+    }
+    if in_list:
+        return transformed
+    claims = _pop_remaining_claim_dependencies(transformed)
+    return _materialize_self_dependencies(transformed, claims)
+
+
 def _step_data(step: LogicalProofStepData) -> dict[str, Any]:
     data = step.model_dump(exclude_none=True)
     if not data.get("deduced_from_claim"):
@@ -289,10 +347,10 @@ async def rewrite_deduced_from_claims_for_lean(
     """Rewrite `deduced_from_claim` dependencies into Lean-friendly steps."""
     cleaned = _remove_hypothesis_duplicates(deepcopy(data))
     if agent is None:
-        return cleaned
+        return materialize_remaining_deduced_from_claims(cleaned)
     entries = _dependency_entries(cleaned)
     if not entries:
-        return cleaned
+        return materialize_remaining_deduced_from_claims(cleaned)
     spec = await run_agent_typed(
         agent,
         {
@@ -321,4 +379,5 @@ async def rewrite_deduced_from_claims_for_lean(
         },
         DeducedFromClaimRewriteSpec,
     )
-    return apply_deduced_from_claim_patches(cleaned, spec.patches)
+    patched = apply_deduced_from_claim_patches(cleaned, spec.patches)
+    return materialize_remaining_deduced_from_claims(patched)
