@@ -1698,29 +1698,39 @@ def structureCommand (translator : CodeGenerator := {}) (name: String) (paramete
         | none =>
           `(structSimpleBinder| $fieldIdent:ident : $fieldType:term)
   if isClass then
-    if parameters.isEmpty then
-      `(commandSeq| class $structIdent:ident where
-        $ps:structSimpleBinder*)
-    else
-      let params ← getBracketedBinders translator parameters
-      `(commandSeq| class $structIdent:ident $params* where
+    if isProp then
+      if parameters.isEmpty then
+        `(commandSeq| class $structIdent:ident : Prop where
           $ps:structSimpleBinder*)
-  else if isProp then
-    if parameters.isEmpty then
-      `(commandSeq| structure $structIdent:ident : Prop where
-        $ps:structSimpleBinder*)
+      else
+        let params ← getBracketedBinders translator parameters
+        `(commandSeq| class $structIdent:ident $params* : Prop where
+            $ps:structSimpleBinder*)
     else
-      let params ← getBracketedBinders translator parameters
-      `(commandSeq| structure $structIdent:ident $params* : Prop where
+      if parameters.isEmpty then
+        `(commandSeq| class $structIdent:ident where
           $ps:structSimpleBinder*)
+      else
+        let params ← getBracketedBinders translator parameters
+        `(commandSeq| class $structIdent:ident $params* where
+            $ps:structSimpleBinder*)
   else
-    if parameters.isEmpty then
-      `(commandSeq| structure $structIdent:ident where
-        $ps:structSimpleBinder*)
-    else
-      let params ← getBracketedBinders translator parameters
-      `(commandSeq| structure $structIdent:ident $params* where
+    if isProp then
+      if parameters.isEmpty then
+        `(commandSeq| structure $structIdent:ident : Prop where
           $ps:structSimpleBinder*)
+      else
+        let params ← getBracketedBinders translator parameters
+        `(commandSeq| structure $structIdent:ident $params* : Prop where
+            $ps:structSimpleBinder*)
+    else
+      if parameters.isEmpty then
+        `(commandSeq| structure $structIdent:ident where
+          $ps:structSimpleBinder*)
+      else
+        let params ← getBracketedBinders translator parameters
+        `(commandSeq| structure $structIdent:ident $params* where
+            $ps:structSimpleBinder*)
 
 @[codegen "structure-definition"]
 def structureDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
