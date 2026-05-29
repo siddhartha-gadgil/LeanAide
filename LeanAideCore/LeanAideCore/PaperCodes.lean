@@ -1629,6 +1629,20 @@ Implementation notes:
 
 open Lean Syntax Parser Command
 
+def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.Ident × Array (TSyntax ``bracketedBinder)) := do
+  let mut paramString := ""
+  for param in parameters do
+    paramString := paramString ++ "(" ++ param ++ ") "
+  let defString := s!"def {name} {paramString} : Unit := sorry"
+  let .ok stx := runParserCategory (← getEnv) `command defString | throwError
+    s!"codegen: failed to parse structure definition header: {defString}"
+  match stx with
+    | `(command| def $name:ident $params:bracketedBinder* : $_ := $_) =>
+      return (name, params)
+    | `(command| def $name:ident : $_ := $_) =>
+      return (name, #[])
+    | _ => throwError s!"codegen: unexpected syntax for structure definition header: {stx}"
+
 def getBracketedBinders (translator: CodeGenerator)  (parameters: Array (String × String × Option String)) : TranslateM (Array (TSyntax ``bracketedBinder)) := do
   parameters.mapM <| fun (nameStr, type, biStr) => do
     let nameId := mkIdent nameStr.toName
@@ -1638,10 +1652,6 @@ def getBracketedBinders (translator: CodeGenerator)  (parameters: Array (String 
       | "implicit" => `(bracketedBinder| {$nameId:ident : $typeStx:term})
       | "typeclass" => `(bracketedBinder| [$nameId:ident : $typeStx:term])
       | _ => `(bracketedBinder| ($nameId:ident : $typeStx:term))
-
-#check mkForallFVars
-#check withLocalDecl
-#check BinderInfo
 
 def getBinderInfo (os : Option String) : BinderInfo :=
   match os with
@@ -1666,9 +1676,10 @@ def withTypeLocalDecl {α} (translator : CodeGenerator := {}) (name : String) (i
       k
 
 def structureCommand (translator : CodeGenerator := {}) (name: String) (parameters: Array (String × String × Option String)) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) (isProp : Bool) :
-  TranslateM (TSyntax `command) := do
+  TranslateM (TSyntax `commandSeq) := do
   let structIdent := mkIdent name.toName
   let inputFields : Array (Syntax.Ident × Syntax.Term × Option Syntax.Term) ←  inputFieldsRaw.mapM fun (fieldName, fieldType, default?) => do
+    withTypeLocalDecl translator name isProp parameters.toList <| do
     let fieldIdent := mkIdent fieldName.toName
     let fieldType ← translator.translateToTerm fieldType
     let defaultStx? : Option (Syntax.Term) ← match default? with
@@ -1708,8 +1719,7 @@ def structureDefinitionCode (translator : CodeGenerator := {}) : Option MVarId �
 | _, `commandSeq, js => do
   let .ok name := js.getObjValAs? String "name" | throwError
     s!"codegen: no 'name' found in 'structure_definition'"
-  let .ok parameters := js.getObjValAs? (Array Json) "parameters" | throwError
-    s!"codegen: no 'parameters' found in 'structure_definition'"
+  let parameters := js.getObjValAs? (Array Json) "parameters" |>.toOption.getD #[]
   let parametersRaw ← parameters.mapM fun paramJson => do
     let .ok paramName := paramJson.getObjValAs? String "name" | throwError
       s!"codegen: no 'name' found in structure field definition {paramJson}"
@@ -1809,7 +1819,7 @@ def instanceDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind:
   let mut paramString := ""
   for param in parameters do
     paramString := paramString ++ " " ++ param
-  let (_, params) ← getBracketedBinders (name?.getD "dummy") parameters
+  let (_, params) ← getNameAndBinders "dummy" parameters
   let fieldList ← fields.mapM fun (fieldJson) => do
     let .ok fieldName := fieldJson.getObjValAs? String "name" | throwError
       s!"codegen: no 'name' found in instance field"
