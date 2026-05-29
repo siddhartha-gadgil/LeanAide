@@ -560,7 +560,16 @@ mathdoc_agent/examples/lean_definition_examples.json
 - Preserve labels, ids, and status only as optional comments or trace metadata;
   they should not affect elaborated Lean code.
 - Treat `parameters` as declaration binders that come before fields or
-  constructors.
+  constructors. Parameters are now objects with `name`, `type`, and optional
+  `binder`, not raw strings.
+- Render parameter binders by `binder`:
+  - `"default"` or omitted: `(name : type)`;
+  - `"implicit"`: `{name : type}`;
+  - `"typeclass"`: `[name : type]`, or `[type]` if `name` is intentionally
+    empty.
+- Inductive declarations may also have `indices`, with the same object shape as
+  `parameters`. Indices are part of the family target rather than ordinary
+  parameters.
 - Strings in fields and constructor arguments are already close to Lean syntax.
   Initially, parse them as raw syntax snippets and generate conservative code;
   later they can be passed through translator/code repair if elaboration fails.
@@ -576,7 +585,14 @@ Fields:
 
 - `name`: Lean declaration name.
 - `is_class`: whether to emit `class` instead of `structure`.
-- `parameters`: optional array of binders, e.g. `["α : Type", "le : α → α → Prop"]`.
+- `isProp`: whether the structure represents a proposition-valued object.
+  Usually this should generate `: Prop`/proposition-oriented translation rather
+  than an ordinary data structure. If absent, treat it as `false`.
+- `parameters`: optional array of binder objects:
+  - `name`: binder name.
+  - `type`: binder type.
+  - `binder`: optional binder kind, one of `"default"`, `"implicit"`, or
+    `"typeclass"`; omitted means `"default"`.
 - `extends`: optional array of parent structures/classes.
 - `fields`: array of field objects:
   - `name`: field name.
@@ -590,6 +606,33 @@ Expected Lean behavior:
 
   ```lean
   structure SortedList (α : Type) (le : α → α → Prop) where
+    xs : List α
+    sorted : List.Pairwise le xs
+  ```
+
+  Example input:
+
+  ```json
+  {
+    "type": "structure-definition",
+    "name": "SortedList",
+    "is_class": false,
+    "isProp": false,
+    "parameters": [
+      {"name": "α", "type": "Type", "binder": "implicit"},
+      {"name": "le", "type": "α → α → Prop", "binder": "default"}
+    ],
+    "fields": [
+      {"name": "xs", "type": "List α"},
+      {"name": "sorted", "type": "List.Pairwise le xs"}
+    ]
+  }
+  ```
+
+  Corresponding output should render the implicit binder with braces:
+
+  ```lean
+  structure SortedList {α : Type} (le : α → α → Prop) where
     xs : List α
     sorted : List.Pairwise le xs
   ```
@@ -612,9 +655,15 @@ Expected Lean behavior:
 Implementation notes:
 
 - Add a `@[codegen]` handler for `structure-definition`.
-- Add a parser helper for optional arrays of strings (`parameters`, `extends`).
+- Add a parser helper for optional arrays of binder objects (`parameters`).
+  For compatibility with older JSON, it can also accept raw strings such as
+  `"α : Type"` and interpret them as `{name := "α", type := "Type",
+  binder := "default"}`.
+- Keep `extends` as an optional array of strings.
 - Add a parser helper for field objects with required `type` and optional
   `name`/`default`.
+- Accept both `isProp` and `is_prop` defensively, but prefer `isProp` for
+  structure-definition JSON emitted by `mathdoc_agent`.
 - The field name should be required for generated Lean. If omitted, either infer
   a stable name such as `field1` or emit a TODO comment.
 
@@ -627,14 +676,17 @@ Fields:
 - `name`: optional instance declaration name.
 - `class_name`: class being instantiated.
 - `target`: target type or target expression.
-- `parameters`: optional array of binders.
-- `fields`: object mapping field names to implementation expressions.
+- `parameters`: optional array of binder objects with `name`, `type`, and
+  optional `binder`.
+- `gives`: array of objects assigning instance fields:
+  - `name`: field name.
+  - `value`: implementation expression.
 - `value`: optional raw instance expression or prose summary.
 - `text`: source prose for comments or repair prompts.
 
 Expected Lean behavior:
 
-- If `fields` is present, emit a structure-style instance body:
+- If `gives` is present, emit a structure-style instance body:
 
   ```lean
   instance natAddMagma : Magma where
@@ -642,11 +694,26 @@ Expected Lean behavior:
     mul := Nat.add
   ```
 
+  Example input:
+
+  ```json
+  {
+    "type": "instance-definition",
+    "name": "natAddMagma",
+    "class_name": "Magma",
+    "target": "Nat",
+    "gives": [
+      {"name": "carrier", "value": "Nat"},
+      {"name": "mul", "value": "Nat.add"}
+    ]
+  }
+  ```
+
 - If `class_name` and `target` should be combined into an applied class, emit
   `: ClassName Target` only when the class expects a target argument. For the
   current `Magma` example, the target is metadata and `: Magma` is enough because
   `carrier` is a field.
-- If `value` is a usable Lean expression and `fields` is absent, emit:
+- If `value` is a usable Lean expression and `gives` is absent, emit:
 
   ```lean
   instance name : ClassName Target := value
@@ -665,8 +732,10 @@ Implementation notes:
 - Be conservative about the instance type: classes vary between bundled
   structures (`Magma`) and typeclass-on-carrier shapes (`Group G`). If both
   `class_name` and `target` are present, a first heuristic is:
-  - if `fields` contains `carrier`, use `: class_name`;
+  - if `gives` contains an entry named `carrier`, use `: class_name`;
   - otherwise use `: class_name target`.
+- For compatibility with older JSON, accept the old `fields` object mapping
+  field names to implementation expressions and normalize it to `gives`.
 - Long term, add a repair pass that tries both instance signatures when Lean
   elaboration fails.
 
@@ -679,7 +748,11 @@ Fields:
 - `name`: Lean inductive declaration name.
 - `is_prop`: whether the inductive family lives in `Prop`; otherwise emit a
   normal `Type` inductive.
-- `parameters`: optional array of declaration binders.
+- `parameters`: optional array of declaration binder objects with `name`,
+  `type`, and optional `binder`.
+- `indices`: optional array of index binder objects with the same shape as
+  `parameters`. These describe the indexed family arguments, e.g. `n : Nat` in
+  `Even : Nat → Prop`.
 - `constructors`: array of constructor objects:
   - `name`: constructor name.
   - `arguments`: array of named typed arguments, e.g.
@@ -694,6 +767,23 @@ Expected Lean behavior:
   inductive Even : Nat → Prop where
     | zero_even : Even 0
     | step_even (n : Nat) (h : Even n) : Even (n + 2)
+  ```
+
+  Example input:
+
+  ```json
+  {
+    "type": "inductive-type-definition",
+    "name": "Even",
+    "is_prop": true,
+    "indices": [
+      {"name": "n", "type": "Nat", "binder": "default"}
+    ],
+    "constructors": [
+      {"name": "zero_even", "arguments": []},
+      {"name": "step_even", "arguments": ["n : Nat", "h : Even n"]}
+    ]
+  }
   ```
 
 - For types, emit an inductive type:
@@ -721,11 +811,15 @@ Important limitation:
 Implementation notes:
 
 - Add a `@[codegen]` handler for `inductive-type-definition`.
+- Add binder parsers for both `parameters` and `indices`; for compatibility,
+  allow old raw string binders and normalize them to default binder objects.
 - Add a constructor parser for `name`, `arguments`, and, after the schema
   improvement, `target`.
 - For `is_prop = true`, the declaration result should usually be `... → Prop`.
-  Without an explicit family type/result target, this cannot be reliably derived
-  from constructor arguments alone.
+  The `indices` array gives the family domain part, so an inductive with
+  `indices = [{"name": "n", "type": "Nat"}]` should at least target
+  `: Nat → Prop`. Constructor result targets are still needed for precise
+  constructor types.
 - For `is_prop = false`, default to `: Type` when no result universe is
   specified.
 
