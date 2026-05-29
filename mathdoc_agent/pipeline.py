@@ -597,7 +597,10 @@ def main() -> None:
     parser.add_argument(
         "--skip-deduced-from-claim-rewrite",
         action="store_true",
-        help="Skip the final LLM rewrite of deduced_from_claim dependencies.",
+        help=(
+            "Skip the final LLM rewrite of deduced_from_claim dependencies. "
+            "Residual dependencies are still materialized as explicit assertions."
+        ),
     )
     parser.add_argument(
         "--skip-proof-resolution",

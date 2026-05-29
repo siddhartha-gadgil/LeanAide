@@ -200,12 +200,15 @@ class DeducedFromClaimPatchSpec(BaseModel):
     )
     action: Literal[
         "replace_deduced_from_claim",
+        "insert_have_before",
         "insert_specialize_before",
         "insert_lemma_before",
     ] = Field(
         description=(
             "`replace_deduced_from_claim` only rewrites or removes the dependency list. "
-            "`insert_specialize_before` inserts a named non-destructive specialization step. "
+            "`insert_have_before` inserts a named `have`/assertion proved by a Lean term. "
+            "`insert_specialize_before` is accepted as a backwards-compatible alias for "
+            "`insert_have_before`; it must not mean Lean's destructive `specialize` tactic. "
             "`insert_lemma_before` inserts a named local theorem/lemma with its own proof."
         )
     )
