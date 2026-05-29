@@ -1596,10 +1596,24 @@ Implementation notes:
 
 open Lean Syntax Parser Command
 
-def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.Ident × Array (TSyntax ``bracketedBinder)) := do
+-- def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.Ident × Array (TSyntax ``bracketedBinder)) := do
+--   let mut paramString := ""
+--   for param in parameters do
+--     paramString := paramString ++ "(" ++ param ++ ") "
+--   let defString := s!"def {name} {paramString} : Unit := sorry"
+--   let .ok stx := runParserCategory (← getEnv) `command defString | throwError
+--     s!"codegen: failed to parse structure definition header: {defString}"
+--   match stx with
+--     | `(command| def $name:ident $params:bracketedBinder* : $_ := $_) =>
+--       return (name, params)
+--     | `(command| def $name:ident : $_ := $_) =>
+--       return (name, #[])
+--     | _ => throwError s!"codegen: unexpected syntax for structure definition header: {stx}"
+
+def getNameAndBinders (name: String) (parameters: Array (String × String × Option String)) : MetaM (Syntax.Ident × Array (TSyntax ``bracketedBinder)) := do
   let mut paramString := ""
   for param in parameters do
-    paramString := paramString ++ "(" ++ param ++ ") "
+    paramString := paramString ++ "(" ++ param.1 ++ ") "
   let defString := s!"def {name} {paramString} : Unit := sorry"
   let .ok stx := runParserCategory (← getEnv) `command defString | throwError
     s!"codegen: failed to parse structure definition header: {defString}"
@@ -1610,7 +1624,33 @@ def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.I
       return (name, #[])
     | _ => throwError s!"codegen: unexpected syntax for structure definition header: {stx}"
 
-def structureCommand (translator : CodeGenerator := {})(name: String) (parameters: Array String) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) :
+#check mkForallFVars
+#check withLocalDecl
+#check BinderInfo
+
+def getBinderInfo (os : Option String) : BinderInfo :=
+  match os with
+  | none => BinderInfo.default
+  | some s =>
+    if s == "implicit" then BinderInfo.implicit
+    else if s == "typeclass" then BinderInfo.instImplicit
+    else BinderInfo.default
+
+def withParamsLocalDecl {α} (translator : CodeGenerator := {}) (parameters : List (String × String × Option String)) (k : List Expr → TranslateM α) (l : List Expr := []) : TranslateM α :=
+  match parameters with
+  | [] => k l
+  | p :: rest => do
+    withLocalDecl (p.1.toName) (getBinderInfo p.2.2) (← elabTerm (← translator.translateToTerm p.2.1).raw none) fun expr =>
+      withParamsLocalDecl translator rest k (expr::l)
+
+def withTypeLocalDecl {α} (translator : CodeGenerator := {}) (name : String) (isProp : Bool) (parameters : List (String × String × Option String)) (k : TranslateM α) : TranslateM α :=
+  withParamsLocalDecl translator parameters fun l => do
+    let lastType := if isProp then mkSort levelZero else mkSort levelOne
+    let fullType ← mkForallFVars l.toArray lastType
+    withLocalDecl name.toName (BinderInfo.default) fullType fun _ =>
+      k
+
+def structureCommand (translator : CodeGenerator := {}) (name: String) (parameters: Array (String × String × Option String)) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) (isProp : Bool) :
   TranslateM (TSyntax `command) := do
   let structIdent := mkIdent name.toName
   let inputFields : Array (Syntax.Ident × Syntax.Term × Option Syntax.Term) ←  inputFieldsRaw.mapM fun (fieldName, fieldType, default?) => do
@@ -1653,11 +1693,19 @@ def structureDefinitionCode (translator : CodeGenerator := {}) : Option MVarId �
 | _, `command, js => do
   let .ok name := js.getObjValAs? String "name" | throwError
     s!"codegen: no 'name' found in 'structure_definition'"
-  let .ok parameters := js.getObjValAs? (Array String) "parameters" | throwError
+  let .ok parameters := js.getObjValAs? (Array Json) "parameters" | throwError
     s!"codegen: no 'parameters' found in 'structure_definition'"
+  let parametersRaw ← parameters.mapM fun paramJson => do
+    let .ok paramName := paramJson.getObjValAs? String "name" | throwError
+      s!"codegen: no 'name' found in structure field definition {paramJson}"
+    let .ok paramType := paramJson.getObjValAs? String "type" | throwError
+      s!"codegen: no 'type' found in structure field definition {paramJson}"
+    let binder := paramJson.getObjValAs? String "binder" |>.toOption
+    pure (paramName, paramType, binder)
   let .ok fields := js.getObjValAs? (Array Json) "fields" | throwError
     s!"codegen: no 'fields' found in 'structure_definition'"
   let isClass := js.getObjValAs? Bool "is_class" |>.toOption.getD false
+  let isProp := js.getObjValAs? Bool "isProp" |>.toOption.getD false
   let inputFieldsRaw ← fields.mapM fun fieldJson => do
     let .ok fieldName := fieldJson.getObjValAs? String "name" | throwError
       s!"codegen: no 'name' found in structure field definition {fieldJson}"
@@ -1666,7 +1714,7 @@ def structureDefinitionCode (translator : CodeGenerator := {}) : Option MVarId �
     let default := fieldJson.getObjValAs? String "default" |>.toOption
     pure (fieldName, fieldType, default)
 -- structureCommand name parameters inputFieldsRaw isClass
-  structureCommand translator name parameters inputFieldsRaw isClass
+  structureCommand translator name parametersRaw inputFieldsRaw isClass isProp
 | _, kind, _ => throwError
     s!"codegen: structure_definition does not work for kind {kind}"
 
