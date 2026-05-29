@@ -1705,6 +1705,14 @@ def structureCommand (translator : CodeGenerator := {}) (name: String) (paramete
       let params ← getBracketedBinders translator parameters
       `(commandSeq| class $structIdent:ident $params* where
           $ps:structSimpleBinder*)
+  else if isProp then
+    if parameters.isEmpty then
+      `(commandSeq| structure $structIdent:ident : Prop where
+        $ps:structSimpleBinder*)
+    else
+      let params ← getBracketedBinders translator parameters
+      `(commandSeq| structure $structIdent:ident $params* : Prop where
+          $ps:structSimpleBinder*)
   else
     if parameters.isEmpty then
       `(commandSeq| structure $structIdent:ident where
