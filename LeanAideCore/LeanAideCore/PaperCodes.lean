@@ -98,12 +98,14 @@ def translateToDef (statement: String) (translator : Translator) : TranslateM <|
     translator.translateDefCmdM? statement
 
 def translateToTermAux (term: String)(translator: Translator) : TranslateM Syntax.Term := do
-  let termStat := s!"Let my_new_term be {term}"
+  let termStat := s!"Let my_new_term := {term}"
   let termCmd ← translator.translateDefCmdM? termStat
   match termCmd with
   | .ok cmd =>
     let term ← commandToTerm cmd
-    pure term
+    match term with
+    | `(term| fun $_args* => $value) => pure value
+    | _ => pure term
   | .error errs =>
     throwError s!"codegen: failed to translate '{term}' to a term, errors: {errs.map (·.text)}"
 
@@ -1596,33 +1598,29 @@ Implementation notes:
 
 open Lean Syntax Parser Command
 
-def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.Ident × Array (TSyntax ``bracketedBinder)) := do
-  let mut paramString := ""
-  for param in parameters do
-    paramString := paramString ++ "(" ++ param ++ ") "
-  let defString := s!"def {name} {paramString} : Unit := sorry"
-  let .ok stx := runParserCategory (← getEnv) `command defString | throwError
-    s!"codegen: failed to parse structure definition header: {defString}"
-  match stx with
-    | `(command| def $name:ident $params:bracketedBinder* : $_ := $_) =>
-      return (name, params)
-    | `(command| def $name:ident : $_ := $_) =>
-      return (name, #[])
-    | _ => throwError s!"codegen: unexpected syntax for structure definition header: {stx}"
+def getBracketedBinders (translator: CodeGenerator)  (parameters: Array (String × String × Option String)) : TranslateM (Array (TSyntax ``bracketedBinder)) := do
+  parameters.mapM <| fun (nameStr, type, biStr) => do
+    let nameId := mkIdent nameStr.toName
+    let typeStx ← translator.translateToTerm type
+    match biStr with
+      | "default" => `(bracketedBinder| ($nameId:ident : $typeStx:term))
+      | "implicit" => `(bracketedBinder| {$nameId:ident : $typeStx:term})
+      | "typeclass" => `(bracketedBinder| [$nameId:ident : $typeStx:term])
+      | _ => `(bracketedBinder| ($nameId:ident : $typeStx:term))
 
-def structureCommand (translator : CodeGenerator := {})(name: String) (parameters: Array String) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) :
-  TranslateM (TSyntax `command) := do
+def structureCommand (translator : CodeGenerator := {})(name: String) (parameters: Array (String × String × Option String)) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) :
+  TranslateM (TSyntax `commandSeq) := do
   let structIdent := mkIdent name.toName
   let inputFields : Array (Syntax.Ident × Syntax.Term × Option Syntax.Term) ←  inputFieldsRaw.mapM fun (fieldName, fieldType, default?) => do
     let fieldIdent := mkIdent fieldName.toName
     let fieldType ← translator.translateToTerm fieldType
-    --let .ok fieldTypeStx := Parser.runParserCategory (← getEnv) `term fieldType | throwError s!"codegen: failed to parse field type: {fieldType}"
-    let defaultStx? : Option Syntax.Term ← match default? with
+    let defaultStx? : Option (Syntax.Term) ← match default? with
       | some defaultStr =>
         let defaultStx ← translator.translateToTerm defaultStr
-        --let .ok defaultStx := Parser.runParserCategory (← getEnv) `term defaultStr | throwError s!"codegen: failed to parse field default value: {defaultStr}"
-        some defaultStx
-      | none => none
+        pure <| some defaultStx
+      | none =>
+        traceAide `leanaide.papercodes.info s!"No default value for {fieldName}"
+        pure none
     pure (fieldIdent, fieldType, defaultStx?)
   let ps : Array (TSyntax ``structSimpleBinder) ←
     inputFields.mapM fun (fieldIdent, fieldType, defaultStx?) => do
@@ -1633,28 +1631,27 @@ def structureCommand (translator : CodeGenerator := {})(name: String) (parameter
           `(structSimpleBinder| $fieldIdent:ident : $fieldType:term)
   if isClass then
     if parameters.isEmpty then
-      `(command| class $structIdent:ident where
+      `(commandSeq| class $structIdent:ident where
         $ps:structSimpleBinder*)
     else
-      let (_, params) ← getNameAndBinders name parameters
-      `(command| class $structIdent:ident $params* where
+      let params ← getBracketedBinders translator parameters
+      `(commandSeq| class $structIdent:ident $params* where
           $ps:structSimpleBinder*)
   else
     if parameters.isEmpty then
-      `(command| structure $structIdent:ident where
+      `(commandSeq| structure $structIdent:ident where
         $ps:structSimpleBinder*)
     else
-      let (_, params) ← getNameAndBinders name parameters
-      `(command| structure $structIdent:ident $params* where
+      let params ← getBracketedBinders translator parameters
+      `(commandSeq| structure $structIdent:ident $params* where
           $ps:structSimpleBinder*)
 
 @[codegen "structure-definition"]
 def structureDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `command, js => do
+| _, `commandSeq, js => do
   let .ok name := js.getObjValAs? String "name" | throwError
-    s!"codegen: no 'name' found in 'structure_definition'"
-  let .ok parameters := js.getObjValAs? (Array String) "parameters" | throwError
-    s!"codegen: no 'parameters' found in 'structure_definition'"
+    s!"codegen: no 'name' found in 'structure_definition"
+  let parameters := js.getObjValAs? (Array String) "parameters" |>.toOption |>.getD #[]
   let .ok fields := js.getObjValAs? (Array Json) "fields" | throwError
     s!"codegen: no 'fields' found in 'structure_definition'"
   let isClass := js.getObjValAs? Bool "is_class" |>.toOption.getD false
@@ -1725,7 +1722,7 @@ Implementation notes:
 -/
 @[codegen "instance-definition"]
 def instanceDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `command, js => do
+| _, `commandSeq, js => do
   let .ok className := js.getObjValAs? String "class_name" | throwError
     s!"codegen: no 'class_name' found in 'instance_definition'"
   let target? := js.getObjValAs? String "target" |>.toOption
@@ -1739,15 +1736,19 @@ def instanceDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind:
     | none =>
       let classIdent := mkIdent className.toName
       `(term| $classIdent)
-  let .ok fields := js.getObjValAs? (Array (String × String)) "fields" | throwError
+  let .ok fields := js.getObjValAs? (Array Json) "fields" | throwError
     s!"codegen: no 'fields' found in 'instance_definition'"
   let name? := js.getObjValAs? String "name" |>.toOption
   let parameters := js.getObjValAs? (Array String) "parameters" |>.toOption |>.getD #[]
   let mut paramString := ""
   for param in parameters do
     paramString := paramString ++ " " ++ param
-  let (_, params) ← getNameAndBinders (name?.getD "dummy") parameters
-  let fieldList ← fields.mapM fun (fieldName, fieldVal) => do
+  let (_, params) ← getBracketedBinders (name?.getD "dummy") parameters
+  let fieldList ← fields.mapM fun (fieldJson) => do
+    let .ok fieldName := fieldJson.getObjValAs? String "name" | throwError
+      s!"codegen: no 'name' found in instance field"
+    let .ok fieldVal := fieldJson.getObjValAs? String "value" | throwError
+      s!"codegen: no 'value' found in instance field"
     let .ok val := Parser.runParserCategory (← getEnv) `term fieldVal | throwError
       s!"codegen: failed to parse instance field implementation expression: {fieldVal}"
     let valTerm : Syntax.Term := ⟨val⟩
@@ -1756,14 +1757,14 @@ def instanceDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind:
   match name?, params with
   | some name, #[] =>
     let nameIdent := mkIdent name.toName
-    `(command| instance $nameIdent:ident : $type := {
+    `(commandSeq| instance $nameIdent:ident : $type := {
       $fieldList:structInstField,* })
   | some name, ps =>
     let nameIdent := mkIdent name.toName
-    `(command| instance $nameIdent:ident $ps*  : $type := {
+    `(commandSeq | instance $nameIdent:ident $ps*  : $type := {
     $fieldList:structInstField,* })
   | none, _ =>
-    `(command| instance : $type := {
+    `(commandSeq| instance : $type := {
       $fieldList:structInstField,* })
 | _, kind, _ => throwError
     s!"codegen: instance_definition does not work for kind {kind}"
@@ -1820,7 +1821,7 @@ Important limitation:
 -/
 
 def inductiveCommand (_ : CodeGenerator := {}) (name: String) (parameters: Array String) (constructorsRaw : Array (String × Array String)) (isProp : Bool) :
-    TranslateM (TSyntax `command) := do
+    TranslateM (TSyntax `commandSeq) := do
   let inductiveIdent := mkIdent name.toName
   let ctorFields : Array (Syntax.Ident × Array (TSyntax ``bracketedBinder)) ← constructorsRaw.mapM
     fun (ctorName, ctorArgs) => do
@@ -1832,24 +1833,24 @@ def inductiveCommand (_ : CodeGenerator := {}) (name: String) (parameters: Array
       `(ctor| | $ctorIdent:ident $params*)
   if isProp then
     if parameters.isEmpty then
-      `(command| inductive $inductiveIdent:ident : Prop where
+      `(commandSeq| inductive $inductiveIdent:ident : Prop where
         $ctors:ctor*)
     else
       let (_, params) ← getNameAndBinders name parameters
-      `(command| inductive $inductiveIdent:ident $params* : Prop where
+      `(commandSeq| inductive $inductiveIdent:ident $params* : Prop where
           $ctors:ctor*)
   else
     if parameters.isEmpty then
-      `(command| inductive $inductiveIdent:ident where
+      `(commandSeq| inductive $inductiveIdent:ident where
         $ctors:ctor*)
     else
       let (_, params) ← getNameAndBinders name parameters
-      `(command| inductive $inductiveIdent:ident $params* where
+      `(commandSeq| inductive $inductiveIdent:ident $params* where
           $ctors:ctor*)
 
 @[codegen "inductive-type-definition"]
 def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `command, js => do
+| _, `commandSeq, js => do
   let .ok name := js.getObjValAs? String "name" | throwError
     s!"codegen: no 'name' found in 'inductive-type-definition'"
   let isProp := js.getObjValAs? Bool "is_prop" |>.toOption.getD false
