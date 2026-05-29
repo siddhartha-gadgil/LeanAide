@@ -67,8 +67,10 @@ classify it as kind='logical_sequence'. The logical-sequence handler will split
 the proof into many explicit steps and refine those steps further.
 If the fragment primarily instantiates an already-proved universal or
 implicational claim at particular local values or hypotheses, classify it as
-kind='specialize'. This proof kind creates a new named local lemma for the
-instance; it must not overwrite or forget the original general claim.
+kind='specialize'. This proof kind is exported as an additional named `have`
+for the specialized instance; it must not overwrite or forget the original
+general claim and must not be represented as Lean's destructive `specialize`
+tactic.
 """
 
 INDUCTION_INSTRUCTIONS = """
@@ -85,9 +87,10 @@ assumptions, and an exhaustiveness reason when stated. Do not invent missing cas
 SPECIALIZE_INSTRUCTIONS = """
 Refine a proof fragment whose purpose is to instantiate an already-proved
 claim, theorem, or hypothesis at particular local values or hypotheses.
-Return a new named local lemma for the specialized instance; do not model this
-as Lean's destructive `specialize h ...` tactic, because the original general
-claim must remain available.
+Return a new named local lemma for the specialized instance. The downstream
+JSON will be an additional `assert_statement`/`have`, not Lean's destructive
+`specialize h ...` tactic, because the original general claim must remain
+available.
 
 Fill:
 - `name`: a Lean-style ASCII identifier for the new specialized lemma.
@@ -275,8 +278,9 @@ Prefer a `logical_sequence`-style output:
 - use `components` when the proof naturally has several named subproofs;
 - each component kind should be one of the supported simpler kinds;
 - use `simple` for a local assertion, `calculation` for explicit algebra or
-  inequality chains, `specialize` for a named instance of an already-proved
-  universal or implicational claim, and `cases` or `induction` only when those
+  inequality chains, `specialize` only as a named `have` for an instance of an
+  already-proved universal or implicational claim, and `cases` or `induction`
+  only when those
   structures are explicitly present.
 Never resolve a proof by wrapping it in a component with the same kind and same
 goal as the input. In particular, do not create recursive `generic_element`
@@ -356,10 +360,11 @@ For each dependency entry:
   or local context, omit it from `deduced_from_claim`; it is already available.
 - If a dependency claim is available only through instantiating a general claim,
   theorem, or hypothesis at particular local values or hypotheses, insert a
-  `specialize` step immediately before the current object. The inserted step
-  must create a new named local lemma and must not overwrite or forget the
-  original general claim. Fill `name` with the new lemma name and `lean_term`
-  with the Lean term for the instance, such as `(h x hx)`.
+  named `have` step immediately before the current object. The inserted step
+  must be an `assert_statement` for the specialized lemma, must have `name` and
+  `lean_term`, and must not overwrite or forget the original general claim.
+  Fill `name` with the new lemma name and `lean_term` with the Lean term for
+  the instance, such as `(h x hx)`.
 - If a dependency claim is not yet available and must be proved before use,
   insert a separate named local theorem immediately before the current object.
   Give it a `name`, a proposition-shaped `claim`, and proof steps. Do not leave

@@ -227,8 +227,12 @@ class DeducedFromDataMixin(BaseModel):
 
 class LogicalProofStepData(DeducedFromDataMixin):
     type: str = "assert_statement"
+    name: Optional[str] = None
     claim: Optional[str] = None
     proof_method: Optional[str] = None
+    lean_term: Optional[str] = None
+    source_claim: Optional[str] = None
+    arguments: list[str] = Field(default_factory=list)
     assumption: Optional[str] = None
     variable_name: Optional[str] = None
     variable_type: Optional[str] = None
