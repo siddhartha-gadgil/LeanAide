@@ -1,0 +1,42 @@
+{
+  "document": {
+    "type": "document",
+    "body": [
+      {
+        "type": "structure-definition",
+        "label": "def:dragon_flight",
+        "name": "DragonFlight",
+        "is_class": false,
+        "parameters": [
+          "Species : Type"
+        ],
+        "fields": [
+          {
+            "name": "dragon",
+            "type": "Species"
+          },
+          {
+            "name": "wingspan",
+            "type": "Nat"
+          },
+          {
+            "name": "weight",
+            "type": "Nat"
+          },
+          {
+            "name": "liftCoefficient",
+            "type": "Nat"
+          },
+          {
+            "name": "can_fly",
+            "type": "(wingspan * liftCoefficient) > weight"
+          }
+        ],
+        "text": "A DragonFlight structure parameterizes a dragon species with its physical flight characteristics. It includes the wingspan, weight, and lift coefficient, along with a propositional proof that the total lift generated exceeds the dragon's weight, ensuring the creature is aerodynamically capable of flight.",
+        "id": "lean_definition_examples.root.dragon_flight",
+        "status": "resolved"
+      }
+    ],
+    "title": "Creative Lean 4 Definitions"
+  }
+}
