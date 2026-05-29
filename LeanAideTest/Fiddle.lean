@@ -30,7 +30,7 @@ example : 1 ≤ 2 := by first | (simp? ; done) | hammer
 
 universe u
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 example : ∀ {G : Type u} [inst : Group G] (a : G) (n : ℕ), a ^ n = 1 → ∃ m : ℕ, n = m * orderOf a := by sorry
 
@@ -149,7 +149,7 @@ def egTrace : CoreM Nat := do
 
 #eval egTrace
 
-set_option trace.Translate.info true
+-- set_option trace.Translate.info true
 #eval egTrace
 
 def egTrace' : CoreM Nat := do
@@ -161,3 +161,23 @@ set_option trace.leanaide.translate.debug true
 
 set_option pp.proofs false in
 #print Nat.zero_le
+
+/-!
+Testing introducing structure name and parsing field type.
+-/
+open Lean Meta Elab Term Parser
+
+def fieldParseTest : TermElabM Expr := do
+  let type := mkSort levelOne
+  withoutErrToSorry do
+  withLocalDeclD `MyStruct type fun structDecl => do
+    let s := "MyStruct"
+    let .ok stx :=
+      runParserCategory (← Lean.getEnv) `term s |
+        throwError "Failed to parse structure type"
+    let expr ← elabTerm stx none
+    logInfo m!"Parsed expression: {expr}"
+    Term.synthesizeSyntheticMVarsNoPostponing
+    return expr
+
+#eval fieldParseTest
