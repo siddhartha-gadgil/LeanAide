@@ -849,6 +849,37 @@ where typeStx (js: Json) :
       withoutModifyingState do
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in 'assertion_statement'"
+  let deducedFrom? := js.getObjValAs? (Array Json) "deduced_from_theorem" |>.toOption
+  let mut deductionHaves : Array Syntax.Tactic := #[]
+  match deducedFrom? with
+  | .some deducedFrom =>
+    for data in deducedFrom do
+      let thmLabel := data.getObjValAs? String "name" |>.toOption.getD "thm_used"
+      let leanTerm? := match data.getObjValAs? String "lean_term" with
+      | .ok t => some t
+      | .error _ =>
+        match data.getObjValAs? String "lean_name" with
+        | .ok n => some n
+        | .error _ => none
+      match leanTerm? with
+      | some leanTerm =>
+        let termStx := Parser.runParserCategory (← getEnv) `term leanTerm
+        match termStx with
+        | .ok stx =>
+          let stx : TSyntax `term := ⟨stx⟩
+          let haveTac ←
+          match data.getObjValAs? String "name" with
+          | .ok name =>
+            let nameStx := mkIdent name.toName
+            `(tactic| have $nameStx : $stx := by apply $stx)
+          | .error _ =>
+            `(tactic| have : $stx := by apply $stx)
+          deductionHaves := deductionHaves.push haveTac
+        | .error er =>
+          traceAide `leanaide.papercodes.info s!"codegen: failed to parse 'lean_term' {leanTerm} for theorem {thmLabel} with error:\n{er}"
+      | none =>
+        traceAide `leanaide.papercodes.info s!"codegen: no 'lean_term' or 'lean_name' found for theorem {thmLabel} used in deduction of assertion"
+  | none => pure ()
   let type ← translator.translateToPropStrict claim
   let mvar ← mkFreshExprMVar type
   let tacs ← findTacticsI mvar.mvarId!
