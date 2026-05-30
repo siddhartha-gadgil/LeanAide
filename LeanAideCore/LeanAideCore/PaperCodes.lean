@@ -868,15 +868,21 @@ where typeStx (js: Json) :
         let termStx := Parser.runParserCategory (← getEnv) `term leanTerm
         match termStx with
         | .ok stx =>
-          let stx : TSyntax `term := ⟨stx⟩
-          let haveTac ←
-          match data.getObjValAs? String "name" with
-          | .ok name =>
-            let nameStx := mkIdent name.toName
-            `(tactic| have $nameStx : $stx := by apply $stx)
-          | .error _ =>
-            `(tactic| have : $stx := by apply $stx)
-          deductionHaves := deductionHaves.push haveTac
+          try
+            let stx : TSyntax `term := ⟨stx⟩
+            withoutErrToSorry do
+              let e ← elabTerm stx none
+              Term.synthesizeSyntheticMVarsNoPostponing
+            let haveTac ←
+            match data.getObjValAs? String "name" with
+            | .ok name =>
+              let nameStx := mkIdent name.toName
+              `(tactic| have $nameStx : $stx := by apply $stx)
+            | .error _ =>
+              `(tactic| have : $stx := by apply $stx)
+            deductionHaves := deductionHaves.push haveTac
+          catch e =>
+            traceAide `leanaide.papercodes.info s!"codegen: failed to create have tactic for 'lean_term' {leanTerm} for theorem {thmLabel} with error:\n{← e.toMessageData.format}"
         | .error er =>
           traceAide `leanaide.papercodes.info s!"codegen: failed to parse 'lean_term' {leanTerm} for theorem {thmLabel} with error:\n{er}"
       | none =>
