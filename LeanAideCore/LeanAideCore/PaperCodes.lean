@@ -884,7 +884,9 @@ where typeStx (js: Json) :
   | none => pure ()
   let type ← translator.translateToPropStrict claim
   let mvar ← mkFreshExprMVar type
-  let tacs ← findTacticsI mvar.mvarId!
+  let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError
+    s!"codegen: failed to apply deduction theorems for assertion; deduction tactics:\n{deductionHaves}"
+  let tacs ← findTacticsI mvarId
   addPrelude <| "Assume: " ++ claim
   return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type)
 
