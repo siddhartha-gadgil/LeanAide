@@ -293,6 +293,45 @@ the intended representation and recorded the coercion. If the source has
 integer homogeneity, a theorem with only `Nat` homogeneity should be rejected or
 flagged as weaker.
 
+A good way to reduce this drift is to include previously generated Lean code in
+later prompts, but the context should be curated and constraint-oriented rather
+than a raw dump of the whole file. Later translation prompts should receive the
+available declaration environment:
+
+```text
+Previously generated Lean declarations available:
+- IsPseudoLengthFunction :
+  {G : Type u} -> [Group G] -> (G -> ℝ) -> Prop
+- IsLengthFunction :
+  {G : Type u} -> [Group G] -> (G -> ℝ) -> Prop
+- IsHomogeneousPseudoLength :
+  {G : Type u} -> [Group G] -> (G -> ℝ) -> Prop
+```
+
+and explicit constraints:
+
+```text
+Use these names exactly when relevant.
+Do not replace `l : G -> ℝ` by bundled seminorm structures unless this
+representation change has already been recorded.
+Do not change integer homogeneity to natural-number homogeneity.
+Preserve additive versus multiplicative notation from the source.
+```
+
+Universal prompt recommendation:
+
+- include prior generated declarations with names and types;
+- include selected Mathlib declarations that have been accepted for reuse;
+- include earlier local theorem names and exact Lean statements;
+- suppress earlier theorem proofs by replacing them with `by sorry` when they
+  are included only as context, since later translation usually needs the
+  theorem name and statement rather than its proof term;
+- include "must use" and "must not replace" constraints;
+- keep this as a compact declaration environment, not the entire generated
+  Lean file;
+- validate after generation that the output used the intended names and did not
+  silently switch representations.
+
 ### 8. Generated Helper Claims Can Be False
 
 The bottom sorry list and theorem bodies show helper claims that are not merely
@@ -511,6 +550,18 @@ the result is incomplete by construction.
    validation, and examples. Do not bury them as `#check` strings in generated
    Lean.
 
+8. Pass a compact generated-code context into later prompts.
+
+   Each later statement/proof prompt should receive the already accepted Lean
+   declaration environment: generated names and types, selected Mathlib names,
+   local theorem names, and exact prior statements. Earlier theorem proofs can
+   normally be suppressed and represented as `by sorry` for brevity; the
+   important context is the statement and the stable name. This should be
+   accompanied by explicit constraints about representations that must be
+   preserved. The prompt should not receive the whole generated file unless
+   necessary, because raw code dumps add noise and can make the model imitate
+   failed attempts.
+
 ## General Improvements For LeanAide Codegen
 
 1. Add strict/incomplete modes.
@@ -592,4 +643,3 @@ These examples should guide tests, not special-case code.
 - The `corollary_15` generated theorem shows why downstream theorems must be
   dependency-aware and why `Nat`/`Int`, additive/multiplicative, and bundled/
   unbundled drift must be rejected.
-
