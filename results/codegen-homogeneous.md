@@ -505,6 +505,286 @@ also passes semantic validation.
 For proof repair prompts, store whether the prompt allowed sorries. If it did,
 the result is incomplete by construction.
 
+## Translation Failure Diagnosis From Prompt Logs
+
+The log records a useful pattern for failed translations:
+
+1. the source text to be translated;
+2. the prompt sent to the LLM, usually with retrieved examples;
+3. several returned candidate translations;
+4. `Trying to elaborate ...`;
+5. the frontend errors for each candidate.
+
+This sequence should be treated as a first-class diagnostic artifact. It shows
+not only that Lean rejected a candidate, but also why the prompt made that
+candidate likely.
+
+For each failure, keep both translation inputs:
+
+- the local/source text without generated-code prelude;
+- the enriched text with prelude, generated declarations, selected Mathlib
+  declarations, and local context.
+
+If the no-prelude translation invents identifiers, that is expected. If the
+with-prelude translation still invents identifiers or changes representation,
+then the prelude is missing binding constraints or is being outweighed by
+retrieved examples.
+
+### Invented Identifiers From Missing Declaration Context
+
+Example source:
+
+```text
+There exists a homogeneous length function l on G.
+```
+
+Representative candidates:
+
+```lean
+∀ (G : Type u_1) [Group G], ∃ l : LengthFunction G,
+  LengthFunction.IsHomogeneous l
+
+∀ (G : Type u_1) [Group G], Nonempty (HomogeneousLengthFunction G)
+```
+
+Representative errors:
+
+```text
+Function expected at LengthFunction ...
+The identifier LengthFunction is unknown
+
+Function expected at HomogeneousLengthFunction ...
+The identifier HomogeneousLengthFunction is unknown
+```
+
+Diagnosis:
+
+The prompt used generic Mathlib examples but did not give the model the local
+generated declaration environment. The model therefore invented natural names
+such as `LengthFunction` and `HomogeneousLengthFunction`. These names are
+mathematically reasonable, but unavailable in the Lean environment. A later
+candidate expanded the predicate as `(l : G -> ℝ) -> Prop`; that elaborates, but
+is semantically useless because it forgets the definition.
+
+General prompt improvement:
+
+- include accepted generated declarations and their exact types;
+- explicitly say that the model must not invent declaration names;
+- tell the model to expand an unavailable concept only if no local declaration
+  is provided;
+- reject candidates whose target is merely `Prop` or `(l : ...) -> Prop` when
+  the source asks for a specific predicate;
+- include a list of allowed local names and selected Mathlib names.
+
+### Representation Drift Caused By Retrieved Examples
+
+Example source:
+
+```text
+Let A be an abelian group. Let p : A -> R be a homogeneous pseudo-length
+function. Then p factors through the quotient A/T(A). The induced function on
+A/T(A) is again a homogeneous pseudo-length function.
+```
+
+Representative candidates drifted between:
+
+```lean
+p : A → R
+p : AddGroupSeminorm A
+p : Seminorm ℤ A
+IsHomogeneousPseudoLengthFunction p
+```
+
+Representative errors included:
+
+```text
+Function expected at LinearOrderedRing ...
+The identifier LinearOrderedRing is unknown
+
+Function expected at IsHomogeneousPseudoLengthFunction ...
+The identifier IsHomogeneousPseudoLengthFunction is unknown
+```
+
+Diagnosis:
+
+The examples encouraged plausible Mathlib representations, but the source and
+the surrounding document were using an unbundled function `p : A -> R`. The
+prompt did not state which representation was already chosen for pseudo-length
+functions, nor which local predicate should express homogeneity. The LLM
+therefore tried several incompatible formalizations. Some are close to existing
+Mathlib idioms, but they are not faithful to the document's current formal
+representation.
+
+General prompt improvement:
+
+- pass a representation contract with every statement translation;
+- mark source variables as fixed and non-replaceable unless an explicit coercion
+  or bundled representation has already been introduced;
+- include "forbidden substitutions", for example `p : A -> ℝ` must not become
+  `p : Seminorm ℤ A` or `p : AddGroupSeminorm A` unless requested;
+- require the translator to preserve the codomain and scalar domain;
+- validate the candidate against this contract before accepting it.
+
+### Local Context Is Presented As Prose, Not Lean Bindings
+
+Example source:
+
+```text
+Fix G : Type u_1
+Fix inst : Group G
+Fix l : G -> R
+Set z := y x y^{-1}.
+x = y^{-1} z y
+```
+
+Representative candidate:
+
+```lean
+∀ {G : Type u_1} [Group G] (l : G → ℝ) ... (x y : G),
+  x = y⁻¹ * z * y
+```
+
+Representative error:
+
+```text
+Type mismatch
+  z
+has type ?m.1
+but is expected to have type G
+```
+
+Diagnosis:
+
+The context line `Set z := ...` was available as natural language, but not as a
+typed Lean binder or a `let`. The translator reused the name `z` in the target
+without binding it. Similar failures occur when prose definitions such as
+`f(m,k) := ...`, `c := [x,y]`, or `S_{2n}` appear in the prompt but are not
+represented as Lean-local definitions.
+
+General prompt improvement:
+
+- provide local context as a Lean-like environment:
+
+  ```lean
+  variable {G : Type u_1} [Group G]
+  variable (l : G → ℝ)
+  variable (x y : G)
+  let z : G := y * x * y⁻¹
+  ```
+
+- distinguish assumptions, fixed variables, and local definitions;
+- require every identifier used in the output to be either bound in the output,
+  listed in the local environment, or a known declaration;
+- reject outputs with free identifiers not present in the allowed environment.
+
+### Candidate Extraction Can Damage Otherwise Useful Output
+
+One candidate was returned inside a fenced code block and included local `let`
+bindings:
+
+```lean
+let c : G := ⁅x, y⁆
+let f : ℤ → ℤ → ℝ := fun (m k : ℤ) => l (x ^ m * c ^ k)
+...
+```
+
+The elaboration log then tried fragments where `f` and `sSum` appeared without
+their `let` binders, producing errors such as:
+
+```text
+Function expected at f ...
+The identifier f is unknown
+```
+
+Diagnosis:
+
+This is partly a prompt issue and partly a Lean-side extraction issue. The
+prompt says "Give ONLY the Lean code", but candidates can still arrive wrapped
+in markdown fences. The theorem elaborator does not consistently apply
+`extractLean` before trying theorem expressions, and its line-block fallback can
+try subfragments that have lost essential preceding `let` bindings. This
+creates misleading secondary errors.
+
+General prompt/codegen improvement:
+
+- strengthen the prompt: "Return a single Lean term or theorem statement; do
+  not use markdown fences; do not add explanatory text";
+- apply `extractLean` to theorem-statement candidates before elaboration, not
+  only to definition commands;
+- when trying sub-blocks, preserve dependent `let` bindings or avoid sub-block
+  fallback for multi-line theorem expressions;
+- classify markdown-fenced output as a format violation separately from a
+  mathematical translation failure.
+
+### Complex Constructions Need Structured Translation Tasks
+
+Examples that failed at translation include:
+
+```text
+Let VQ := A tensor_Z Q. There exists a seminorm normQ on VQ such that
+normQ(a tensor 1)=p(a) for every a in A.
+```
+
+and:
+
+```text
+There exist a real Banach space B and a group homomorphism phi : G -> (B,+)
+such that l(g)=||phi(g)||_B for every g in G.
+```
+
+Representative codegen diagnostic:
+
+```text
+failed to translate ... to a proposition even with 'full statement'
+```
+
+Diagnosis:
+
+These statements combine object construction, quotient/tensor notation, bundled
+structures, norm notation, and universal properties. A single theorem-translation
+prompt asks the model to infer all missing Lean primitives at once. Retrieved
+examples about unrelated Mathlib theorems do not provide the required local
+construction schema.
+
+General prompt improvement:
+
+- split translation into subtasks:
+  1. identify required objects and their Lean representations;
+  2. identify required existing Mathlib declarations;
+  3. translate the theorem statement using only those representations;
+  4. report unresolved primitives rather than inventing names;
+- include source text and generated-code context together;
+- ask for a structured response when the translator cannot produce a faithful
+  Lean statement, for example:
+
+  ```json
+  {
+    "status": "needs_primitives",
+    "missing": ["Lean representation of A tensor_Z Q", "seminorm on quotient"],
+    "partial_statement": "..."
+  }
+  ```
+
+### Prompt Selection Should Prefer Local Relevance Over Topical Similarity
+
+Several prompts used retrieved examples that were topically related to groups,
+quotients, norms, or homogeneity, but not aligned with the local representation
+chosen by the document. This caused the translator to follow examples too
+literally, because the prompt also says "Follow EXACTLY the examples given."
+
+General prompt improvement:
+
+- rank examples by structural match, not only topic: same binder shape,
+  bundled/unbundled representation, additive/multiplicative convention, scalar
+  domain, and quotient/construction schema;
+- include negative constraints when examples use a nearby but wrong
+  representation;
+- include a short "current document vocabulary" section before retrieved
+  examples;
+- lower the authority of retrieved examples by saying they illustrate syntax,
+  while the local declaration environment and representation contract are
+  binding.
+
 ## General Improvements For `mathdoc_agent`
 
 1. Add a final Lean-facing schema lint pass.
@@ -562,6 +842,14 @@ the result is incomplete by construction.
    necessary, because raw code dumps add noise and can make the model imitate
    failed attempts.
 
+9. Feed translation-failure diagnostics back into prompt construction.
+
+   Store each failed translation with source text, prompt, retrieved examples,
+   candidates, and elaboration errors. Classify failures such as invented
+   identifiers, representation drift, free local variables, fenced-code format
+   violations, and unsupported constructions. Use these classes to choose repair
+   prompts and to improve example retrieval.
+
 ## General Improvements For LeanAide Codegen
 
 1. Add strict/incomplete modes.
@@ -606,6 +894,13 @@ the result is incomplete by construction.
 
    If a proof was produced by a prompt that allowed `sorry`, record that fact in
    the declaration metadata and return incomplete status.
+
+9. Normalize theorem candidates before elaboration.
+
+   The theorem-statement path should apply `extractLean` to remove markdown
+   fences before calling `elabThm4`. If line-block fallback is retained, it
+   should not try fragments that lose required `let` bindings or local context;
+   such failures should be reported as candidate-format/extraction failures.
 
 ## Minimal Acceptance Criteria For Future Runs
 
