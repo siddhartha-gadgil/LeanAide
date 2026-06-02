@@ -108,6 +108,13 @@ def grindWithSuggestions : MetaM (TSyntax ``tacticSeq) := do
 elab "#view_grind_suggestions" : command => do
   Command.liftTermElabM do
     let tacticSeq ← grindWithSuggestions
+    let type ←  Term.mkConst ``True
+    let stx ← `(by $tacticSeq)
+    let exp ←
+      withoutErrToSorry do
+        elabTerm stx (some type)
+    Term.synthesizeSyntheticMVarsNoPostponing
+    logInfo m!"Grind proof term: {← PrettyPrinter.ppExpr exp}"
     let view ← ppCategory ``tacticSeq tacticSeq
     logInfo m!"Grind suggestions:\n {view}"
 
