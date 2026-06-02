@@ -87,7 +87,31 @@ def suggestionsForGrind (goal: MVarId) (maxSuggestions: Nat := 15)  : MetaM (Arr
   all.filterM fun name => checkGrind name
 
 def grindWithSuggestions : MetaM (TSyntax ``tacticSeq) := do
-  `(tacticSeq| grind? +locals +suggestions (instances := 5000)(splits := 5)(ematch := 10)(canonHeartbeats := 5000) (splitImp := true)(splitIndPred := true))
+  let localId := mkIdent `locals
+  let suggestionsId := mkIdent `suggestions
+  let instancesId := mkIdent `instances
+  let instancesItem ← `(configItem| ($instancesId:ident := 5000))
+  let splitsId := mkIdent `splits
+  let splitsItem ← `(configItem| ($splitsId:ident := 5))
+  let ematchId := mkIdent `ematch
+  let ematchItem ← `(configItem| ($ematchId:ident := 10))
+  let canonHeartbeatsId := mkIdent `canonHeartbeats
+  let canonHeartbeatsItem ← `(configItem| ($canonHeartbeatsId:ident := 5000))
+  let splitImpId := mkIdent `splitImp
+  let trueId := mkIdent `true
+  let splitImpItem ← `(configItem| ($splitImpId:ident := $trueId))
+  let splitIndPredId := mkIdent `splitIndPred
+  let splitIndPredItem ← `(configItem| ($splitIndPredId:ident := $trueId))
+  let config ← `(optConfig| +$localId +$suggestionsId $instancesItem $splitsItem $ematchItem $canonHeartbeatsItem $splitImpItem $splitIndPredItem)
+  `(tacticSeq| grind? $config)
+
+elab "#view_grind_suggestions" : command => do
+  Command.liftTermElabM do
+    let tacticSeq ← grindWithSuggestions
+    let view ← ppCategory ``tacticSeq tacticSeq
+    logInfo m!"Grind suggestions:\n {view}"
+
+-- #view_grind_suggestions
 
 def simpWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions: Nat := 15) : MetaM (TSyntax ``tacticSeq) := do
   let names ← suggestionsForGoal goal maxSuggestions
