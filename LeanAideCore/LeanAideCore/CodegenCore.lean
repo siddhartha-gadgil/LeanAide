@@ -321,13 +321,9 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
           getCode translator goal? ``commandSeq source
       catch e =>
         let err ←   e.toMessageData.toString
-        let errs := "Error: " ++  err |>.splitOn "\n"
-        let errStxs : List Syntax.Command ←
-          errs.mapM fun err =>
-          let errStx := Syntax.mkStrLit <| err
-          `(command| #check $errStx)
-        let errStxs := errStxs.toArray
-        pure <| some <| ← `(commandSeq| $errStxs*)
+        traceAide `leanaide.codegen.info s!"Error in processing source for command {source.pretty};\nError: {err}"
+        traceAide `leanaide.codegen.info err
+        pure <| some <| ← `(commandSeq| #eval "command skipped due to error in processing source")
 
     match code? with
     | none => do -- error with obtaining commands
