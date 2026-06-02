@@ -97,7 +97,7 @@ def defParse := Cli.Cmd.parse process [] |>.toOption.get!.2
 def Translator.CliDefault := Translator.ofCli defParse
 
 def Translator.CliDefaultJson := json% {"useInstructions": false,
- "toChat": "simple",
+ "toChat": "detailed",
  "server": {"openAI": {"model": "gpt-5.5", "authHeader?": null}},
  "roundTripSelect": false,
  "roundTrip": false,

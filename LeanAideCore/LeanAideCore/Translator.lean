@@ -125,7 +125,7 @@ structure Translator where
   /-- Builder for prompt examples given sentence. -/
   pb : PromptExampleBuilder := .default
   /-- Chat examples, i.e., the dialogues of `user` and `assistant`, from the examples. -/
-  toChat : ChatExampleType := .simple
+  toChat : ChatExampleType := .detailed
   /-- Relevant definitions to include in the prompt -/
   messageBuilder : MessageBuilder := server.messageBuilder
   useInstructions : Bool := messageBuilder.useInstructions
@@ -140,7 +140,7 @@ deriving Repr, FromJson, ToJson
 def Translator.forDef (t: Translator)  : Translator :=
   let chat : ChatExampleType := match t.toChat with
   | .simple => .doc
-  | .detailed => .detailedDoc
+  | .detailed => .detailed
   | x => x
   {t with toChat := chat}
 
