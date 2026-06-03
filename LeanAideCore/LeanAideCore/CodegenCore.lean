@@ -212,11 +212,8 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         getCode translator (some goal) ``tacticSeq source
       catch e =>
         let err ←   e.toMessageData.toString
-        traceAide `leanaide.codegen.info err
-        --let sourceId := mkIdent (s!"error_source_{hash source}").toName
-        let strLit := Syntax.mkStrLit s!"Error in processing:{source.pretty}"
-        let sourceTacs ← `(tacticSeq| trace $strLit)
-        pure <| some <| sourceTacs
+        traceAide `leanaide.codegen.info s!"Error in getCode `tacticSeq for source {source.pretty}\nError: {err}"
+        `(tacticSeq | skip)
     match code? with
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
