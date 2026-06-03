@@ -475,7 +475,7 @@ def MessageBuilder.header := "You are a coding assistant who translates from nat
 inductive MessageBuilder where
   | syslessBuilder
   | sysBuilder (developerId := "system")
-  | directBuilder (headMessage := MessageBuilder.header) (egsHead := "The following are some examples of statements and their translations (proofs are suppressed for brevity):") (egQueryHead := "## Natural language statement\n\n") (egResponseHead := "## Lean Code\n\n") (userHead := "user")
+  | directBuilder (headMessage := MessageBuilder.header) (egsHead := "## Examples\n\nThe following are some examples of statements and their translations (proofs are suppressed for brevity):") (egQueryHead := "### Natural language statement\n\n") (egResponseHead := "### Lean Code\n\n") (userHead := "user")
 deriving Repr, FromJson, ToJson, Inhabited, DecidableEq
 
 def MessageBuilder.buildMessages (mb: MessageBuilder)

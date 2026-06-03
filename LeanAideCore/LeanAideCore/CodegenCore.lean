@@ -330,12 +330,12 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
       continue
     | some code => do
       accum := accum.push code
+      Translate.addCommands code
   if accum.isEmpty then
     let empty : Array <| TSyntax `command := #[]
     `(commandSeq| $empty*)
   else
     let res ← flattenCommandSeq accum
-    Translate.addCommands res
     return res
 
 
@@ -655,12 +655,6 @@ def namesFromCommands (cmds: Array Syntax.Command) : Array Name :=
     | `(command| theorem $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
     | `(command| def $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
     | _ => acc) #[]
-
-def theoremsWithoutProofs (cmd: Syntax.Command) : TermElabM (Syntax.Command) :=
-  match cmd with
-  | `(command| theorem $name:ident $args:bracketedBinder* : $_type := $_pf) =>
-      `(command| theorem $name:ident $args:bracketedBinder* : $_type := by sorry)
-  | comm => pure comm
 
 end Codegen
 open Codegen

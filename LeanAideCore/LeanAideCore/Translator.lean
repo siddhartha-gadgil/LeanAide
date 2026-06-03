@@ -109,9 +109,16 @@ def translateMessages (s: String)(promptPairs: Array (String × Json))
     else
         let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
         s!"Your goal is to translate from natural language to Lean. The following are some definitions that may be relevant:\n\n{defsBlob}"
-
-  trace[Translate.info] m!"examples: \n{(examples).size}"
-  let s' := preludeCode ++ s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
+  let cmdPrelude ←  match ← cmdPreludeBriefBlob? with
+    | some cmdPreludeBlob => do
+        traceAide `leanaide.translate.info s!"Using command prelude in prompt:\n{cmdPreludeBlob}"
+        pure s!"## Code context:\n\nYour translation is a continuation of the following code. The proofs of theorems have been suppressed for brevity.\n\n Use the definitions in this code whenever applicable.\n```\n\n{cmdPreludeBlob}\n````\n\n"
+    | none =>
+      traceAide `leanaide.translate.info s!"No command prelude to include in prompt."
+      pure ""
+  traceAide `leanaide.translate.info s!"examples: \n{(examples).size}"
+  let s' :=
+    preludeCode ++ cmdPrelude ++ s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"
   mkMessages s' examples (← transPrompt) msg
 
 /--
