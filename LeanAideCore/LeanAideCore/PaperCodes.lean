@@ -871,7 +871,7 @@ where typeStx (js: Json) :
           try
             let stx : TSyntax `term := ⟨stx⟩
             withoutErrToSorry do
-              let e ← elabTerm stx none
+              let _ ← elabTerm stx none
               Term.synthesizeSyntheticMVarsNoPostponing
             let haveTac ←
             match data.getObjValAs? String "name" with
@@ -1676,18 +1676,18 @@ def withParamsLocalDecl {α} (translator : CodeGenerator := {}) (parameters : Li
     withLocalDecl (p.1.toName) (getBinderInfo p.2.2) (← elabTerm (← translator.translateToTerm p.2.1).raw none) fun expr =>
       withParamsLocalDecl translator rest k (expr::l)
 
-def withTypeLocalDecl {α} (translator : CodeGenerator := {}) (name : String) (isProp : Bool) (parameters : List (String × String × Option String)) (k : TranslateM α) : TranslateM α :=
-  withParamsLocalDecl translator parameters fun l => do
+def withTypeLocalDecl {α} (translator : CodeGenerator := {}) (name : String) (isProp : Bool) (parameters : List (String × String × Option String)) (k : Expr → TranslateM α) : TranslateM α :=
+  withoutModifyingState <| withParamsLocalDecl translator parameters fun l => do
     let lastType := if isProp then mkSort levelZero else mkSort levelOne
     let fullType ← mkForallFVars l.toArray lastType
-    withLocalDecl name.toName (BinderInfo.default) fullType fun _ =>
-      k
+    withLocalDecl name.toName (BinderInfo.default) fullType fun expr =>
+      k expr
 
 def structureCommand (translator : CodeGenerator := {}) (name: String) (parameters: Array (String × String × Option String)) (inputFieldsRaw : Array (String × String × Option String)) (isClass: Bool) (isProp : Bool) :
   TranslateM (TSyntax `commandSeq) := do
   let structIdent := mkIdent name.toName
   let inputFields : Array (Syntax.Ident × Syntax.Term × Option Syntax.Term) ←  inputFieldsRaw.mapM fun (fieldName, fieldType, default?) => do
-    withTypeLocalDecl translator name isProp parameters.toList <| do
+    withTypeLocalDecl translator name isProp parameters.toList fun _ => do
     let fieldIdent := mkIdent fieldName.toName
     let fieldType ← translator.translateToTerm fieldType
     let defaultStx? : Option (Syntax.Term) ← match default? with
@@ -1841,7 +1841,7 @@ def instanceDefinitionCode (_ : CodeGenerator := {}) : Option MVarId →  (kind:
   let .ok fields := js.getObjValAs? (Array Json) "fields" | throwError
     s!"codegen: no 'fields' found in 'instance_definition'"
   let name? := js.getObjValAs? String "name" |>.toOption
-  let parameters := js.getObjValAs? (Array String) "parameters" |>.toOption |>.getD #[]
+  let parameters := js.getObjValAs? (Array String) "parameters" |>.toOption.getD #[]
   let mut paramString := ""
   for param in parameters do
     paramString := paramString ++ " " ++ param
@@ -1881,7 +1881,11 @@ Fields:
 - `name`: Lean inductive declaration name.
 - `is_prop`: whether the inductive family lives in `Prop`; otherwise emit a
   normal `Type` inductive.
-- `parameters`: optional array of declaration binders.
+- `parameters`: optional array of declaration binder objects with `name`,
+  `type`, and optional `binder`.
+- `indices`: optional array of index binder objects with the same shape as
+  `parameters`. These describe the indexed family arguments, e.g. `n : Nat` in
+  `Even : Nat → Prop`.
 - `constructors`: array of constructor objects:
   - `name`: constructor name.
   - `arguments`: array of named typed arguments, e.g.
@@ -1896,6 +1900,23 @@ Expected Lean behavior:
   inductive Even : Nat → Prop where
     | zero_even : Even 0
     | step_even (n : Nat) (h : Even n) : Even (n + 2)
+  ```
+
+  Example input:
+
+  ```json
+  {
+    "type": "inductive-type-definition",
+    "name": "Even",
+    "is_prop": true,
+    "indices": [
+      {"name": "n", "type": "Nat", "binder": "default"}
+    ],
+    "constructors": [
+      {"name": "zero_even", "arguments": []},
+      {"name": "step_even", "arguments": ["n : Nat", "h : Even n"]}
+    ]
+  }
   ```
 
 - For types, emit an inductive type:
@@ -1920,35 +1941,47 @@ Important limitation:
   - `{"name": "zero_even", "arguments": [], "target": "Even 0"}`
   - `{"name": "step_even", "arguments": ["n : Nat", "h : Even n"], "target": "Even (n + 2)"}`
 
+Implementation notes:
+
+- Add a `@[codegen]` handler for `inductive-type-definition`.
+- Add binder parsers for both `parameters` and `indices`; for compatibility,
+  allow old raw string binders and normalize them to default binder objects.
+- Add a constructor parser for `name`, `arguments`, and, after the schema
+  improvement, `target`.
+- For `is_prop = true`, the declaration result should usually be `... → Prop`.
+  The `indices` array gives the family domain part, so an inductive with
+  `indices = [{"name": "n", "type": "Nat"}]` should at least target
+  `: Nat → Prop`. Constructor result targets are still needed for precise
+  constructor types.
+- For `is_prop = false`, default to `: Type` when no result universe is
+  specified.
 -/
 
-def inductiveCommand (_ : CodeGenerator := {}) (name: String) (parameters: Array String) (constructorsRaw : Array (String × Array String)) (isProp : Bool) :
+def inductiveCommand (translator : CodeGenerator := {}) (name: String) (parametersRaw : Array (String × String × Option String))
+  (indicesRaw : Array (String × String × Option String)) (constructorsRaw : Array (String × Array String)) (isProp : Bool) :
     TranslateM (TSyntax `commandSeq) := do
   let inductiveIdent := mkIdent name.toName
+  let typeExprWithoutParams ← withoutModifyingState <| withParamsLocalDecl translator parametersRaw.toList fun _ =>
+    withTypeLocalDecl translator name isProp indicesRaw.toList fun expr => return expr
+  let typeStxWithoutParams ← delabDetailed typeExprWithoutParams
+  let fullTypeExpr ← withTypeLocalDecl translator name isProp (parametersRaw.toList ++ indicesRaw.toList) fun expr => return expr
   let ctorFields : Array (Syntax.Ident × Array (TSyntax ``bracketedBinder)) ← constructorsRaw.mapM
     fun (ctorName, ctorArgs) => do
-      let ctorIdent := mkIdent ctorName.toName
-      let (_, params) ← getNameAndBinders ctorName ctorArgs
-      pure (ctorIdent, params)
+      withParamsLocalDecl translator parametersRaw.toList fun _ =>
+        withLocalDecl name.toName BinderInfo.default fullTypeExpr fun _ => do
+          let ctorIdent := mkIdent ctorName.toName
+          let (_, params) ← getNameAndBinders ctorName ctorArgs
+          pure (ctorIdent, params)
   let ctors : Array (TSyntax ``ctor) ←
     ctorFields.mapM fun (ctorIdent, params) => do
       `(ctor| | $ctorIdent:ident $params*)
-  if isProp then
-    if parameters.isEmpty then
-      `(commandSeq| inductive $inductiveIdent:ident : Prop where
-        $ctors:ctor*)
-    else
-      let (_, params) ← getNameAndBinders name parameters
-      `(commandSeq| inductive $inductiveIdent:ident $params* : Prop where
-          $ctors:ctor*)
+  if parametersRaw.isEmpty then
+    `(commandSeq| inductive $inductiveIdent:ident : $typeStxWithoutParams where
+      $ctors:ctor*)
   else
-    if parameters.isEmpty then
-      `(commandSeq| inductive $inductiveIdent:ident where
+    let params ← getBracketedBinders translator parametersRaw
+    `(commandSeq| inductive $inductiveIdent:ident $params* : $typeStxWithoutParams where
         $ctors:ctor*)
-    else
-      let (_, params) ← getNameAndBinders name parameters
-      `(commandSeq| inductive $inductiveIdent:ident $params* where
-          $ctors:ctor*)
 
 @[codegen "inductive-type-definition"]
 def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
@@ -1956,8 +1989,22 @@ def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId �
   let .ok name := js.getObjValAs? String "name" | throwError
     s!"codegen: no 'name' found in 'inductive-type-definition'"
   let isProp := js.getObjValAs? Bool "is_prop" |>.toOption.getD false
-  let .ok parameters := js.getObjValAs? (Array String) "parameters" | throwError
-    s!"codegen: no 'parameters' found in 'inductive-type-definition'"
+  let parameters := js.getObjValAs? (Array Json) "parameters" |>.toOption.getD #[]
+  let parametersRaw ← parameters.mapM fun paramJson => do
+    let .ok paramName := paramJson.getObjValAs? String "name" | throwError
+      s!"codegen: no 'name' found in inductive field definition {paramJson}"
+    let .ok paramType := paramJson.getObjValAs? String "type" | throwError
+      s!"codegen: no 'type' found in inductive field definition {paramJson}"
+    let binder := paramJson.getObjValAs? String "binder" |>.toOption
+    pure (paramName, paramType, binder)
+  let indices := js.getObjValAs? (Array Json) "indices" |>.toOption.getD #[]
+  let indicesRaw ← indices.mapM fun indexJson => do
+    let .ok indexName := indexJson.getObjValAs? String "name" | throwError
+      s!"codegen: no 'name' found in inductive index definition {indexJson}"
+    let .ok indexType := indexJson.getObjValAs? String "type" | throwError
+      s!"codegen: no 'type' found in inductive index definition {indexJson}"
+    let binder := indexJson.getObjValAs? String "binder" |>.toOption
+    pure (indexName, indexType, binder)
   let .ok constructors := js.getObjValAs? (Array Json) "constructors" | throwError
     s!"codegen: no 'constructors' found in 'inductive-type-definition'"
   let constructorsRaw ← constructors.mapM fun constructorJson => do
@@ -1966,7 +2013,7 @@ def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId �
     let .ok constructorArgs := constructorJson.getObjValAs? (Array String) "arguments" | throwError
       s!"codegen: no 'arguments' found in inductive constructor definition {constructorJson}"
     pure (constructorName, constructorArgs)
-  inductiveCommand translator name parameters constructorsRaw isProp
+  inductiveCommand translator name parametersRaw indicesRaw constructorsRaw isProp
 | _, kind, _ => throwError
     s!"codegen: inductive_type_definition does not work for kind {kind}"
 
