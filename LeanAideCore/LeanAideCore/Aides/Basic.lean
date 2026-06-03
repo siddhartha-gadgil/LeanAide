@@ -237,6 +237,11 @@ def projectID : IO String := do
   | none => throw <| IO.userError "PROJECT_ID not set"
   | some id => return id
 
+def theoremsWithoutProofs (cmd: Syntax.Command) : TermElabM (Syntax.Command) :=
+  match cmd with
+  | `(command| theorem $name:ident $args:bracketedBinder* : $_type := $_pf) =>
+      `(command| theorem $name:ident $args:bracketedBinder* : $_type := by sorry)
+  | comm => pure comm
 
 
 def gitHash : IO String := do

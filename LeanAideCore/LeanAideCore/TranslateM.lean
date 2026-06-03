@@ -258,6 +258,15 @@ def cmdPreludeBlob : TranslateM String := do
   let cmds := cmds.map (·.pretty)
   return cmds.foldr (· ++ "\n" ++ · ) "\n\n"
 
+def cmdPreludeBriefBlob : TranslateM String := do
+  let cmds := (← get).cmdPrelude
+  let cmds ←
+    cmds.mapM (fun cmd => do
+      let brief ← theoremsWithoutProofs cmd
+      PrettyPrinter.ppCommand brief)
+  let cmds := cmds.map (·.pretty)
+  return cmds.foldl (· ++ "\n" ++ · ) "import Mathlib\n"
+
 def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
   discard <|  runFrontendM (← ppCommand cmd).pretty true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}

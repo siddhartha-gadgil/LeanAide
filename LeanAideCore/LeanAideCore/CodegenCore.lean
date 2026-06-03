@@ -656,12 +656,6 @@ def namesFromCommands (cmds: Array Syntax.Command) : Array Name :=
     | `(command| def $name:ident $_:bracketedBinder* : $_ := $_) => acc.push name.getId
     | _ => acc) #[]
 
-def theoremsWithoutProofs (cmd: Syntax.Command) : TermElabM (Syntax.Command) :=
-  match cmd with
-  | `(command| theorem $name:ident $args:bracketedBinder* : $_type := $_pf) =>
-      `(command| theorem $name:ident $args:bracketedBinder* : $_type := by sorry)
-  | comm => pure comm
-
 end Codegen
 open Codegen
 
