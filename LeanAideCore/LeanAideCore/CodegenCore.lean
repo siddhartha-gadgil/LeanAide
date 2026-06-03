@@ -330,12 +330,12 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
       continue
     | some code => do
       accum := accum.push code
+      Translate.addCommands code
   if accum.isEmpty then
     let empty : Array <| TSyntax `command := #[]
     `(commandSeq| $empty*)
   else
     let res ← flattenCommandSeq accum
-    Translate.addCommands res
     return res
 
 
