@@ -836,6 +836,48 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("representation_drift", codes)
         self.assertIn("integer_to_natural_drift", codes)
 
+    def test_finalize_lean_facing_json_quarantines_risky_proof_assertions(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "f(m,k) = l(x^m c^k)",
+                                        "proof_sanity": {
+                                            "status": "needs_review",
+                                            "issues": [
+                                                {
+                                                    "reason": "m and k are not in scope.",
+                                                    "suggested_repair": "Introduce typed variables first.",
+                                                }
+                                            ],
+                                        },
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        step = finalized["document"]["body"][0]["proof"]["proof_steps"][0]
+        self.assertEqual(step["type"], "paragraph")
+        self.assertEqual(step["quarantined_type"], "assert_statement")
+        self.assertIn("Quarantined generated assertion", step["text"])
+        codes = {
+            issue["code"]
+            for issue in step["lean_validation"]["issues"]
+        }
+        self.assertIn("quarantined_proof_sanity_assertion", codes)
+
     async def test_proof_sanity_audit_marks_counterexample_prone_assertions(self) -> None:
         data = {
             "document": {

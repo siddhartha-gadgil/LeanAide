@@ -232,6 +232,39 @@ def _annotate_object(value: dict[str, Any], issues: list[dict[str, str]]) -> dic
     return annotated
 
 
+def _quarantine_risky_assertion(value: dict[str, Any], path: str) -> tuple[dict[str, Any], list[dict[str, str]]]:
+    if value.get("type") != "assert_statement":
+        return value, []
+    proof_sanity = value.get("proof_sanity")
+    if not (
+        isinstance(proof_sanity, dict)
+        and proof_sanity.get("status") == "needs_review"
+    ):
+        return value, []
+
+    claim = value.get("claim")
+    claim_text = claim if isinstance(claim, str) and claim.strip() else "<missing claim>"
+    issue = _issue(
+        path,
+        "quarantined_proof_sanity_assertion",
+        (
+            "Assertion was marked needs_review by the proof-sanity auditor; "
+            "converted to a no-code paragraph so Lean codegen does not try to "
+            "prove it as a `have`."
+        ),
+    )
+    return (
+        {
+            **value,
+            "type": "paragraph",
+            "text": f"Quarantined generated assertion: {claim_text}",
+            "quarantined_type": "assert_statement",
+            "formalization_status": "needs_review",
+        },
+        [issue],
+    )
+
+
 def _normalize_theorem_dependencies(
     value: dict[str, Any],
     path: str,
@@ -333,6 +366,8 @@ def _normalize_value(value: Any, path: str = "") -> tuple[Any, list[dict[str, st
     normalized, dependency_issues = _normalize_theorem_dependencies(normalized, path)
     local_issues.extend(dependency_issues)
     local_issues.extend(_validate_semantics(normalized, path))
+    normalized, quarantine_issues = _quarantine_risky_assertion(normalized, path)
+    local_issues.extend(quarantine_issues)
     if local_issues:
         normalized = _annotate_object(normalized, local_issues)
         issues.extend(local_issues)

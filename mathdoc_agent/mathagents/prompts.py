@@ -156,6 +156,20 @@ introduced in the proof over raw display notation: use `barL` instead of
 `\\bar l`, `normQ` instead of `‖·‖_ℚ` or `||·||_Q`, `VQ` instead of
 `V_ℚ`, `twoN` instead of subscripted `2n` notation when it is an object name,
 and `expectation`/`finite average` prose instead of `𝔼` when possible.
+Before emitting an assertion, check that every local object named in the claim
+has actually been introduced in the available proof context. If a previous step
+only proves an existential statement, do not refer to its witnesses by names
+such as `q_1`, `r`, `M_n`, or `K_n` unless the proof explicitly destructures the
+existential or introduces those names with a `let_statement`/witness step.
+When the source uses probabilistic shorthand, do not invent expectation,
+random-variable, or stochastic-process assertions unless the probability space,
+distribution, and process variables have been introduced. Prefer the exact
+deterministic finite-average or two-case inequality stated in the source; if
+the formal stochastic setup is missing, record it as an unresolved detail.
+In noncommutative algebra, preserve the exact order and parentheses supplied by
+the source. Do not replace a recurrence or product expression by a more
+convenient one unless it follows by associativity alone or an explicit
+commutation/conjugation hypothesis is available.
 Do not expand omitted arguments, but do keep all intermediate equations and
 algebraic rewrites that are present in the source text.
 Avoid extracting obvious typing side conditions as standalone assertions, for
@@ -187,6 +201,12 @@ source supports them:
 Do not put method names, tactic names, or bare labels in `deduced_from_claim`.
 Keep local hypotheses out of `deduced_from_theorem`; reserve that field for
 standard mathematical results.
+Before emitting a calculation step, check that all variables and indexed
+families appearing in `lhs` and `rhs` are in scope. If the calculation uses
+witnesses extracted from an existential statement, add or preserve the witness
+introduction step first. For noncommutative products, only use associativity
+for regrouping; never commute factors or change the order of multiplication
+unless the source explicitly supplies the needed commutation fact.
 Use the most specific `calculation_kind` when the source supports it. Core
 calculation kinds are:
 equality_chain, inequality_chain, mixed_relation_chain, rewrite_by_hypothesis,
@@ -301,6 +321,13 @@ the diagram chase".
 Do not turn nested local reasoning into theorem-like child nodes unless the
 source explicitly names a reusable local claim. Prefer `assert_statement` for
 ordinary intermediate facts so the surrounding proof context is preserved.
+Do not introduce helper assertions whose variables are not already in the local
+context. If a proof uses an unnamed witness from an existential claim, make the
+witness introduction explicit before later assertions use that witness. If a
+method relies on substantial omitted setup, such as a probability space,
+random walk, Hamel basis coordinates, quotient/completion construction, or
+noncommutative product recurrence, expose only the stated local facts and mark
+the missing setup as unresolved rather than inventing a formal assertion.
 """
 
 CLAIM_AUDIT_INSTRUCTIONS = """
