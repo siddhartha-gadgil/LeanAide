@@ -18,6 +18,7 @@ from mathdoc_agent.models.refinement_specs import (
     CasesRefinementSpec,
     DeducedFromClaimRewriteSpec,
     DocumentRefinementSpec,
+    InformalNotationRepairSpec,
     InductionRefinementSpec,
     ProofResolutionSpec,
     ProofSanityAuditSpec,
@@ -131,6 +132,16 @@ proof_sanity_audit_agent = _agent(
     "Proof-step sanity auditor",
     prompts.PROOF_SANITY_AUDIT_INSTRUCTIONS,
     ProofSanityAuditSpec,
+)
+proof_sanity_repair_agent = _agent(
+    "Proof-step sanity repairer",
+    prompts.PROOF_SANITY_REPAIR_INSTRUCTIONS,
+    ProofSanityAuditSpec,
+)
+informal_notation_repair_agent = _agent(
+    "Informal notation repairer",
+    prompts.INFORMAL_NOTATION_REPAIR_INSTRUCTIONS,
+    InformalNotationRepairSpec,
 )
 
 proof_resolution_agents = {

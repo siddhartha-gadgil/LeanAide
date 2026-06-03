@@ -206,6 +206,29 @@ def _replace_claim(root: Any, patch: ProofSanityPatchSpec) -> None:
         parent[key]["claim"] = patch.claim
 
 
+def _clear_proof_sanity_marker(value: dict[str, Any]) -> None:
+    value.pop("proof_sanity", None)
+    if value.get("formalization_status") == "needs_review":
+        value.pop("formalization_status", None)
+
+
+def _replace_claim_and_clear(root: Any, patch: ProofSanityPatchSpec) -> None:
+    if patch.claim is None:
+        return
+    parent, key = _resolve_path(root, patch.path)
+    target: Any
+    if isinstance(parent, list) and isinstance(key, int):
+        target = parent[key]
+    elif isinstance(parent, dict) and isinstance(key, str):
+        target = parent[key]
+    else:
+        return
+    if not isinstance(target, dict):
+        return
+    target["claim"] = patch.claim
+    _clear_proof_sanity_marker(target)
+
+
 def _replace_assertion_with_steps(root: Any, patch: ProofSanityPatchSpec) -> None:
     if not patch.proof_steps:
         _mark_needs_review(root, patch)
@@ -218,6 +241,20 @@ def _replace_assertion_with_steps(root: Any, patch: ProofSanityPatchSpec) -> Non
             "status": "rewritten",
             "issues": [{"reason": patch.reason, "notes": patch.notes}],
         },
+    }
+    if isinstance(parent, list) and isinstance(key, int):
+        parent[key] = replacement
+    elif isinstance(parent, dict) and isinstance(key, str):
+        parent[key] = replacement
+
+
+def _replace_assertion_with_steps_and_clear(root: Any, patch: ProofSanityPatchSpec) -> None:
+    if not patch.proof_steps:
+        return
+    parent, key = _resolve_path(root, patch.path)
+    replacement = {
+        "type": "proof",
+        "proof_steps": [_step_data(step) for step in patch.proof_steps],
     }
     if isinstance(parent, list) and isinstance(key, int):
         parent[key] = replacement
@@ -241,6 +278,82 @@ def apply_proof_sanity_patches(
         except (KeyError, IndexError, TypeError, ValueError):
             continue
     return result
+
+
+def _marked_proof_sanity_entries(value: Any, *, path: str = "") -> list[dict[str, Any]]:
+    entries: list[dict[str, Any]] = []
+    if isinstance(value, dict):
+        proof_sanity = value.get("proof_sanity")
+        claim = value.get("claim")
+        if (
+            value.get("type") == "assert_statement"
+            and isinstance(claim, str)
+            and isinstance(proof_sanity, dict)
+            and proof_sanity.get("status") == "needs_review"
+        ):
+            entries.append(
+                {
+                    "path": path or "/",
+                    "claim": claim,
+                    "container": _container_summary(value),
+                    "issues": proof_sanity.get("issues", []),
+                }
+            )
+        for key, item in value.items():
+            if isinstance(item, (dict, list)):
+                entries.extend(_marked_proof_sanity_entries(item, path=_child_path(path, key)))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            if isinstance(item, (dict, list)):
+                entries.extend(_marked_proof_sanity_entries(item, path=_child_path(path, index)))
+    return entries
+
+
+def apply_proof_sanity_repairs(
+    data: dict[str, Any],
+    patches: list[ProofSanityPatchSpec],
+) -> dict[str, Any]:
+    result = deepcopy(data)
+    for patch in patches:
+        try:
+            if patch.action == "replace_claim":
+                _replace_claim_and_clear(result, patch)
+            elif patch.action == "replace_assertion_with_steps":
+                _replace_assertion_with_steps_and_clear(result, patch)
+        except (KeyError, IndexError, TypeError, ValueError):
+            continue
+    return result
+
+
+async def repair_proof_sanity_issues(
+    data: dict[str, Any],
+    agent: Any | None,
+) -> dict[str, Any]:
+    """Repair assertions marked by the proof-sanity audit instead of exporting flags."""
+    if agent is None:
+        return data
+    entries = _marked_proof_sanity_entries(data)
+    if not entries:
+        return data
+    spec = await run_agent_typed(
+        agent,
+        {
+            "task": (
+                "Repair proof-step assertions that were marked risky before "
+                "Lean codegen. Return concrete replacements, not review flags."
+            ),
+            "assertion_entries": entries,
+            "patch_rules": {
+                "replace_claim": "Use when one scoped replacement claim fixes the issue.",
+                "replace_assertion_with_steps": (
+                    "Use when a missing local definition/witness-introduction step "
+                    "must be inserted before the repaired assertion."
+                ),
+            },
+        },
+        ProofSanityAuditSpec,
+    )
+    return apply_proof_sanity_repairs(data, spec.patches)
 
 
 async def audit_proof_steps_for_counterexamples(

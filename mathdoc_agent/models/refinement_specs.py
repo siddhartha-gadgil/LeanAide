@@ -191,6 +191,27 @@ class ClaimAuditSpec(BaseModel):
     notes: list[str] = Field(default_factory=list)
 
 
+class InformalNotationPatchSpec(BaseModel):
+    path: str = Field(
+        description=(
+            "JSON pointer path to the string field being repaired, for example "
+            "`/document/body/0/proof/proof_steps/1/claim`."
+        )
+    )
+    replacement: str = Field(
+        description=(
+            "Replacement text with scoped ASCII identifiers/prose and no display-only "
+            "notation, pseudo-subscripts, or informal function-call notation."
+        )
+    )
+    notes: list[str] = Field(default_factory=list)
+
+
+class InformalNotationRepairSpec(BaseModel):
+    patches: list[InformalNotationPatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
 class DeducedFromClaimPatchSpec(BaseModel):
     path: str = Field(
         description=(

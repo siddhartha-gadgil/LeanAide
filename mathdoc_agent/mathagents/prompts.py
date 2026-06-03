@@ -378,6 +378,41 @@ not enough mathematical content to form a proposition, leave the entry
 unpatched and add a note explaining the issue.
 """
 
+INFORMAL_NOTATION_REPAIR_INSTRUCTIONS = """
+Repair generated PaperStructure JSON string fields that still contain informal
+local notation before Lean code generation.
+
+You are given entries with JSON pointer paths, field names, current text, and
+nearby container context. Return a patch for every entry. Each patch replacement
+must preserve the same mathematical meaning while removing notation that is
+display-only, locally ambiguous, or unlikely to be scoped by Lean translation.
+
+Do not leave:
+- pseudo-subscript names such as `C_n`, `C_{n+1}`, `G_ab`, `S_{2n}`;
+- LaTeX commands such as `\\bar`, `\\mathbb`, `\\operatorname`;
+- norm bars such as `||phi(g)||_B` or `‖a • v‖`;
+- informal tensor notation such as `tensor_Z`;
+- informal multi-argument calls such as `f(0,n)` or `B(x, ε/3)`;
+- quotient abbreviations such as `A/T(A)` unless already bound as a local
+  identifier;
+- assignment-shaped assertion text such as `V := G tensor_Z R`;
+- prose assignments in a variable name.
+
+Preferred repairs:
+- use scoped ASCII identifiers such as `Cn`, `CnPlusOne`, `GAb`, `S2n`,
+  `barL`, `normB`, `VQ`;
+- replace `A tensor_Z Q` by `A tensor over Z with Q` or by the local identifier
+  already used in context, such as `VQ`, when that is clearly the same object;
+- replace `||phi(g)||_B` by `normB(phi applied to g)`;
+- replace `f(m,k)` by `f applied to m and k`, or by a typed/local instance if
+  the context supplies one;
+- keep statements as mathematical propositions, not instructions.
+
+Do not delete content and do not mark entries unsupported. If exact Lean syntax
+is unavailable, use precise ASCII mathematical prose that has no informal local
+notation.
+"""
+
 DEDUCED_FROM_CLAIM_REWRITE_INSTRUCTIONS = """
 Rewrite generated PaperStructure JSON entries that contain `deduced_from_claim`
 so they correspond to Lean proof structure.
@@ -432,4 +467,23 @@ When a risk is present:
 
 The goal is to prevent false or over-generalized helper claims from being sent
 to Lean as if they were valid proof obligations.
+"""
+
+PROOF_SANITY_REPAIR_INSTRUCTIONS = """
+Repair proof-step assertions that were marked risky by the proof-sanity audit.
+
+You are given assertion entries containing the original claim, the reason it was
+marked risky, and a suggested repair. Return a patch for every entry whenever a
+local repair is possible. Prefer:
+- `replace_claim` when a weaker, scoped, or definitional claim is the right
+  repair;
+- `replace_assertion_with_steps` when the assertion needs an explicit
+  definition/witness-introduction step followed by the repaired assertion.
+
+Do not return `mark_needs_review`. Do not leave review annotations in place.
+Do not invent a stronger theorem. If a universal assertion is over-scoped,
+replace it by the corresponding local assertion or add an explicit local
+definition/binder step. If a claim uses unbound sequence-style names, either
+replace them by already introduced scoped identifiers or add a step introducing
+the finite sequence/indexed family before the assertion.
 """

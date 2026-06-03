@@ -27,9 +27,15 @@ from mathdoc_agent.orchestration.document_orchestrator import (
     document_from_text,
     refine_math_document,
 )
+from mathdoc_agent.orchestration.informal_notation_repair import (
+    repair_informal_notation_for_lean,
+)
 from mathdoc_agent.orchestration.lean_lint import finalize_lean_facing_json
 from mathdoc_agent.orchestration.mathlib_reuse import record_mathlib_definitions
-from mathdoc_agent.orchestration.proof_sanity import audit_proof_steps_for_counterexamples
+from mathdoc_agent.orchestration.proof_sanity import (
+    audit_proof_steps_for_counterexamples,
+    repair_proof_sanity_issues,
+)
 from mathdoc_agent.plugins.document_types import default_document_handler_registry
 from mathdoc_agent.plugins.proof_types import default_proof_handler_registry
 from mathdoc_agent.registries.document_handlers import DocumentHandlerRegistry
@@ -38,8 +44,10 @@ from mathdoc_agent.registries.proof_handlers import ProofHandlerRegistry
 
 _DEFAULT_CLAIM_AGENT = object()
 _DEFAULT_DEDUCED_FROM_CLAIM_AGENT = object()
+_DEFAULT_INFORMAL_NOTATION_AGENT = object()
 _DEFAULT_PROOF_RESOLUTION_AGENTS = object()
 _DEFAULT_PROOF_SANITY_AGENT = object()
+_DEFAULT_PROOF_SANITY_REPAIR_AGENT = object()
 _LEANAIDE_LAKE_NAME = "LeanAide"
 _LEANAIDE_PROCESS_URL = "http://localhost:7654"
 _LEANAIDE_READY_PREFIX = "Server ready"
@@ -483,7 +491,9 @@ async def generate_math_document_json(
     indent: int = 2,
     claim_agent: Any | None = _DEFAULT_CLAIM_AGENT,
     deduced_from_claim_agent: Any | None = _DEFAULT_DEDUCED_FROM_CLAIM_AGENT,
+    informal_notation_agent: Any | None = _DEFAULT_INFORMAL_NOTATION_AGENT,
     proof_sanity_agent: Any | None = _DEFAULT_PROOF_SANITY_AGENT,
+    proof_sanity_repair_agent: Any | None = _DEFAULT_PROOF_SANITY_REPAIR_AGENT,
     proof_resolution_agents: (
         dict[str, object] | None | object
     ) = _DEFAULT_PROOF_RESOLUTION_AGENTS,
@@ -513,6 +523,26 @@ async def generate_math_document_json(
             else proof_sanity_agent
         )
     )
+    resolved_informal_notation_agent = (
+        definitions.informal_notation_repair_agent
+        if informal_notation_agent is _DEFAULT_INFORMAL_NOTATION_AGENT
+        and using_default_registries
+        else (
+            None
+            if informal_notation_agent is _DEFAULT_INFORMAL_NOTATION_AGENT
+            else informal_notation_agent
+        )
+    )
+    resolved_proof_sanity_repair_agent = (
+        definitions.proof_sanity_repair_agent
+        if proof_sanity_repair_agent is _DEFAULT_PROOF_SANITY_REPAIR_AGENT
+        and using_default_registries
+        else (
+            None
+            if proof_sanity_repair_agent is _DEFAULT_PROOF_SANITY_REPAIR_AGENT
+            else proof_sanity_repair_agent
+        )
+    )
     resolved_proof_resolution_agents = (
         definitions.proof_resolution_agents
         if proof_resolution_agents is _DEFAULT_PROOF_RESOLUTION_AGENTS and using_default_registries
@@ -540,9 +570,22 @@ async def generate_math_document_json(
     )
     data = await audit_claims_for_lean(data, resolved_claim_agent)
     data = materialize_remaining_deduced_from_claims(data)
+    data = await repair_informal_notation_for_lean(
+        data,
+        resolved_informal_notation_agent,
+    )
     data = await audit_proof_steps_for_counterexamples(
         data,
         resolved_proof_sanity_agent,
+    )
+    data = await repair_proof_sanity_issues(
+        data,
+        resolved_proof_sanity_repair_agent,
+    )
+    data = materialize_remaining_deduced_from_claims(data)
+    data = await repair_informal_notation_for_lean(
+        data,
+        resolved_informal_notation_agent,
     )
     data = finalize_lean_facing_json(data)
     return json.dumps(data, indent=indent, ensure_ascii=False)
@@ -560,7 +603,9 @@ def generate_math_document_json_sync(
     indent: int = 2,
     claim_agent: Any | None = _DEFAULT_CLAIM_AGENT,
     deduced_from_claim_agent: Any | None = _DEFAULT_DEDUCED_FROM_CLAIM_AGENT,
+    informal_notation_agent: Any | None = _DEFAULT_INFORMAL_NOTATION_AGENT,
     proof_sanity_agent: Any | None = _DEFAULT_PROOF_SANITY_AGENT,
+    proof_sanity_repair_agent: Any | None = _DEFAULT_PROOF_SANITY_REPAIR_AGENT,
     proof_resolution_agents: (
         dict[str, object] | None | object
     ) = _DEFAULT_PROOF_RESOLUTION_AGENTS,
@@ -577,7 +622,9 @@ def generate_math_document_json_sync(
             indent=indent,
             claim_agent=claim_agent,
             deduced_from_claim_agent=deduced_from_claim_agent,
+            informal_notation_agent=informal_notation_agent,
             proof_sanity_agent=proof_sanity_agent,
+            proof_sanity_repair_agent=proof_sanity_repair_agent,
             proof_resolution_agents=proof_resolution_agents,
         )
     )
@@ -625,6 +672,14 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--skip-informal-notation-repair",
+        action="store_true",
+        help=(
+            "Skip the LLM repair pass that removes informal local notation from "
+            "Lean-facing JSON string fields."
+        ),
+    )
+    parser.add_argument(
         "--skip-proof-resolution",
         action="store_true",
         help=(
@@ -658,6 +713,11 @@ def main() -> None:
             None
             if args.skip_deduced_from_claim_rewrite
             else definitions.deduced_from_claim_rewrite_agent
+        ),
+        informal_notation_agent=(
+            None
+            if args.skip_informal_notation_repair
+            else definitions.informal_notation_repair_agent
         ),
         proof_resolution_agents=(
             None if args.skip_proof_resolution else definitions.proof_resolution_agents
