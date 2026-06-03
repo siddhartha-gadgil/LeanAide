@@ -192,6 +192,16 @@ def _proof_label(node: ProofNode) -> str | None:
     return None
 
 
+def _source_data(node: DocumentNode | ProofNode) -> dict[str, Any]:
+    return _without_none(
+        {
+            "text": node.text,
+            "id": node.id,
+            "label": getattr(node, "label", None),
+        }
+    )
+
+
 def _is_assumption_text(text: str | None) -> bool:
     if text is None:
         return False
@@ -366,6 +376,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
                 "claim": statement.statement if statement else node.text,
                 "hypothesis": _assumption_steps(statement.assumptions) if statement and statement.assumptions else None,
                 "proof": proof,
+                "source": _source_data(node),
                 "id": node.id,
                 "status": node.status.value,
             }
@@ -383,6 +394,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
                 "definition": data.definitions or node.text,
                 "name": data.term or node.title or node.label or node.id,
                 "notation": data.notation,
+                "source": _source_data(node),
                 "id": node.id,
                 "status": node.status.value,
             }

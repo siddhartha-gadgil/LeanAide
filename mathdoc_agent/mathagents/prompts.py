@@ -373,3 +373,36 @@ For each dependency entry:
 Return only structured patches. Do not invent Lean terms or local names when the
 context does not support them; leave the dependency unchanged instead.
 """
+
+PROOF_SANITY_AUDIT_INSTRUCTIONS = """
+Audit generated proof-step assertions before Lean code generation.
+
+You are given a bounded list of assertion entries that deterministic checks
+consider risky. For each entry, decide whether the claim is mathematically safe
+as an intermediate assertion in its local context.
+
+Flag only real risks:
+- the assertion is stronger than what the source text or dependencies justify;
+- the assertion quantifies over new arbitrary variables not in local context;
+- the assertion has a simple counterexample as stated;
+- the assertion uses informal local notation that cannot be scoped, such as
+  subscripted pseudo-variables, display-only function calls, or unbound local
+  abbreviations;
+- the assertion turns a local definition or side condition into a universal
+  theorem.
+
+Do not object merely because a proof is hard. Do not invent missing mathematics.
+If a claim is clean, return no patch for it.
+
+When a risk is present:
+- use `mark_needs_review` when the right fix is unclear. Give a concrete reason
+  and a short suggested repair;
+- use `replace_claim` only when the intended weaker/local claim is obvious from
+  the supplied context;
+- use `replace_assertion_with_steps` only when the assertion clearly bundles
+  several smaller mathematical claims and those smaller claims are present in
+  the context.
+
+The goal is to prevent false or over-generalized helper claims from being sent
+to Lean as if they were valid proof obligations.
+"""

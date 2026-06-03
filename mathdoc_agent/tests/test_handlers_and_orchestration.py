@@ -33,6 +33,8 @@ from mathdoc_agent.models.refinement_specs import (
     DocumentRefinementSpec,
     InductionRefinementSpec,
     ProofResolutionSpec,
+    ProofSanityAuditSpec,
+    ProofSanityPatchSpec,
     SimpleProofRefinementSpec,
     StructuredProofRefinementSpec,
 )
@@ -43,12 +45,14 @@ from mathdoc_agent.orchestration.deduced_from_claim_rewrite import (
     rewrite_deduced_from_claims_for_lean,
 )
 from mathdoc_agent.orchestration.document_orchestrator import document_from_text, refine_math_document
+from mathdoc_agent.orchestration.lean_lint import finalize_lean_facing_json
 from mathdoc_agent.orchestration.proof_orchestrator import refine_proof_tree
 from mathdoc_agent.orchestration.proof_resolution import (
     DIRECT_CODEGEN_PROOF_KINDS,
     proof_kind_needs_resolution,
     resolve_unhandled_proof_tree,
 )
+from mathdoc_agent.orchestration.proof_sanity import audit_proof_steps_for_counterexamples
 from mathdoc_agent.orchestration.worklist import walk_proof_nodes
 from mathdoc_agent.plugins.document_types import default_document_handler_registry
 from mathdoc_agent.plugins.proof_types import default_proof_handler_registry
@@ -256,6 +260,22 @@ class DeducedFromClaimRewriteAgent:
                     )
                 )
         return DeducedFromClaimRewriteSpec(patches=patches)
+
+
+class ProofSanityAgent:
+    def __call__(self, payload):
+        entries = {entry["claim"]: entry for entry in payload["assertion_entries"]}
+        patches = []
+        if "For all c and all m, x = c * y." in entries:
+            patches.append(
+                ProofSanityPatchSpec(
+                    path=entries["For all c and all m, x = c * y."]["path"],
+                    action="mark_needs_review",
+                    reason="The assertion quantifies over new arbitrary variables and is false in general.",
+                    suggested_repair="Use only the local instance needed in the proof.",
+                )
+            )
+        return ProofSanityAuditSpec(patches=patches)
 
 
 class ProofResolutionAgent:
@@ -757,6 +777,92 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             ["P", "Q"],
         )
         self.assertNotIn("deduced_from_claim", rewritten["proof_steps"][1])
+
+    def test_finalize_lean_facing_json_removes_results_used_and_materializes_claims(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "assert_statement",
+                            "claim": "Q",
+                            "deduced_from_claim": ["P"],
+                            "results_used": [{"target_identifier": "h"}],
+                            "deduced_from_theorem": [
+                                {
+                                    "claim": "If P then Q.",
+                                    "lean_name": "some_theorem",
+                                }
+                            ],
+                        }
+                    ]
+                }
+            }
+        )
+
+        body = finalized["document"]["body"]
+        self.assertEqual([step["claim"] for step in body], ["P", "Q"])
+        self.assertNotIn("deduced_from_claim", body[1])
+        self.assertNotIn("results_used", body[1])
+        dependency = body[1]["deduced_from_theorem"][0]
+        self.assertEqual(dependency["formalization_status"], "unresolved_lean_term")
+        self.assertEqual(finalized["lean_validation"]["status"], "needs_review")
+
+    def test_finalize_lean_facing_json_flags_semantic_drift_from_source(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "For every p : AddGroupSeminorm A, p is homogeneous over ℕ.",
+                            "source": {
+                                "text": (
+                                    "Let A be an abelian group and let p : A -> R be "
+                                    "a homogeneous pseudo-length function for every integer n."
+                                )
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        theorem = finalized["document"]["body"][0]
+        codes = {
+            issue["code"]
+            for issue in theorem["lean_validation"]["issues"]
+        }
+        self.assertIn("representation_drift", codes)
+        self.assertIn("integer_to_natural_drift", codes)
+
+    async def test_proof_sanity_audit_marks_counterexample_prone_assertions(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "Q",
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "For all c and all m, x = c * y.",
+                                    "proof_method": "obvious",
+                                }
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+
+        audited = await audit_proof_steps_for_counterexamples(data, ProofSanityAgent())
+
+        step = audited["document"]["body"][0]["proof"]["proof_steps"][0]
+        self.assertEqual(step["proof_sanity"]["status"], "needs_review")
+        self.assertEqual(step["formalization_status"], "needs_review")
 
     def test_default_registry_has_reasonable_taxonomy_handlers(self) -> None:
         registry = proof_registry()

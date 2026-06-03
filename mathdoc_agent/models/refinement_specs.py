@@ -247,3 +247,44 @@ class DeducedFromClaimPatchSpec(BaseModel):
 class DeducedFromClaimRewriteSpec(BaseModel):
     patches: list[DeducedFromClaimPatchSpec] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
+
+
+class ProofSanityPatchSpec(BaseModel):
+    path: str = Field(
+        description=(
+            "JSON pointer path to the assert_statement or calculation assertion "
+            "whose proof-step claim should be marked or repaired."
+        )
+    )
+    action: Literal["mark_needs_review", "replace_claim", "replace_assertion_with_steps"] = Field(
+        description=(
+            "`mark_needs_review` records a counterexample/strength/unbound-variable "
+            "risk without changing the claim. `replace_claim` rewrites only the "
+            "claim string. `replace_assertion_with_steps` replaces an assertion "
+            "with a smaller Proof object."
+        )
+    )
+    reason: str = Field(
+        description=(
+            "Concrete reason the claim is risky, e.g. stronger than the source, "
+            "has unbound variables, or has an obvious counterexample."
+        )
+    )
+    claim: str | None = Field(
+        default=None,
+        description="Replacement claim when action is `replace_claim`.",
+    )
+    proof_steps: list[LogicalProofStepData] = Field(
+        default_factory=list,
+        description="Smaller proof steps when action is `replace_assertion_with_steps`.",
+    )
+    suggested_repair: str | None = Field(
+        default=None,
+        description="Short general repair suggestion.",
+    )
+    notes: list[str] = Field(default_factory=list)
+
+
+class ProofSanityAuditSpec(BaseModel):
+    patches: list[ProofSanityPatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
