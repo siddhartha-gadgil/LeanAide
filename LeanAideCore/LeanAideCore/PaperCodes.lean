@@ -876,7 +876,7 @@ where typeStx (js: Json) :
           try
             let stx : TSyntax `term := ⟨stx⟩
             withoutErrToSorry do
-              let e ← elabTerm stx none
+              let _ ← elabTerm stx none
               Term.synthesizeSyntheticMVarsNoPostponing
             let haveTac ←
             match data.getObjValAs? String "name" with
