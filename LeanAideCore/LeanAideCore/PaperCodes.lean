@@ -421,8 +421,26 @@ where
         pure h.size
       | Except.error _ => pure 0
     traceAide `leanaide.papercodes.info s!"hypothesis size: {hypSize} in proof"
+    let thm ← withPreludes claim
+    let name := (js.getObjValAs? Name "name").toOption.getD <| ← translator.server.theoremName thm
+    traceAide `leanaide.papercodes.info s!"Theorem name from server: {name} for {thm}"
+    let name :=
+      if name.toString = "[anonymous]" then
+
+        let hash := thm.hash
+        let name := s!"thm_{hash}"
+        name.toName
+      else
+        name
+    traceAide `leanaide.papercodes.info s!"Theorem name: {name} for {thm}"
+    let typeStx ← delabDetailed type
     let proofStx? ← proof?.mapM fun
       pf => withoutModifyingState do
+      -- Adding dummy statement for prompt, will be rolled back
+      let nameIdent := mkIdent name
+      let dummyCmd ← `(command| theorem $nameIdent : $typeStx := by sorry)
+      Translate.addCommand dummyCmd
+      -- Finding proof
       let pfGoal ← mkFreshExprMVar type
       let (pfGoal', names') ← extractIntros pfGoal.mvarId! hypSize
       traceAide `leanaide.papercodes.debug s!"Extracted intros, names: {names'}"
@@ -455,19 +473,6 @@ where
         s!"codegen: no proof translation found for {pf}"
       pure pfStx
     traceAide `leanaide.papercodes.info s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
-    let thm ← withPreludes claim
-    let name := (js.getObjValAs? Name "name").toOption.getD <| ← translator.server.theoremName thm
-    traceAide `leanaide.papercodes.info s!"Theorem name from server: {name} for {thm}"
-    let name :=
-      if name.toString = "[anonymous]" then
-
-        let hash := thm.hash
-        let name := s!"thm_{hash}"
-        name.toName
-      else
-        name
-    traceAide `leanaide.papercodes.info s!"Theorem name: {name} for {thm}"
-    let typeStx ← delabDetailed type
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
