@@ -156,6 +156,20 @@ introduced in the proof over raw display notation: use `barL` instead of
 `\\bar l`, `normQ` instead of `‖·‖_ℚ` or `||·||_Q`, `VQ` instead of
 `V_ℚ`, `twoN` instead of subscripted `2n` notation when it is an object name,
 and `expectation`/`finite average` prose instead of `𝔼` when possible.
+Before emitting an assertion, check that every local object named in the claim
+has actually been introduced in the available proof context. If a previous step
+only proves an existential statement, do not refer to its witnesses by names
+such as `q_1`, `r`, `M_n`, or `K_n` unless the proof explicitly destructures the
+existential or introduces those names with a `let_statement`/witness step.
+When the source uses probabilistic shorthand, do not invent expectation,
+random-variable, or stochastic-process assertions unless the probability space,
+distribution, and process variables have been introduced. Prefer the exact
+deterministic finite-average or two-case inequality stated in the source; if
+the formal stochastic setup is missing, record it as an unresolved detail.
+In noncommutative algebra, preserve the exact order and parentheses supplied by
+the source. Do not replace a recurrence or product expression by a more
+convenient one unless it follows by associativity alone or an explicit
+commutation/conjugation hypothesis is available.
 Do not expand omitted arguments, but do keep all intermediate equations and
 algebraic rewrites that are present in the source text.
 Avoid extracting obvious typing side conditions as standalone assertions, for
@@ -187,6 +201,12 @@ source supports them:
 Do not put method names, tactic names, or bare labels in `deduced_from_claim`.
 Keep local hypotheses out of `deduced_from_theorem`; reserve that field for
 standard mathematical results.
+Before emitting a calculation step, check that all variables and indexed
+families appearing in `lhs` and `rhs` are in scope. If the calculation uses
+witnesses extracted from an existential statement, add or preserve the witness
+introduction step first. For noncommutative products, only use associativity
+for regrouping; never commute factors or change the order of multiplication
+unless the source explicitly supplies the needed commutation fact.
 Use the most specific `calculation_kind` when the source supports it. Core
 calculation kinds are:
 equality_chain, inequality_chain, mixed_relation_chain, rewrite_by_hypothesis,
@@ -301,6 +321,13 @@ the diagram chase".
 Do not turn nested local reasoning into theorem-like child nodes unless the
 source explicitly names a reusable local claim. Prefer `assert_statement` for
 ordinary intermediate facts so the surrounding proof context is preserved.
+Do not introduce helper assertions whose variables are not already in the local
+context. If a proof uses an unnamed witness from an existential claim, make the
+witness introduction explicit before later assertions use that witness. If a
+method relies on substantial omitted setup, such as a probability space,
+random walk, Hamel basis coordinates, quotient/completion construction, or
+noncommutative product recurrence, expose only the stated local facts and mark
+the missing setup as unresolved rather than inventing a formal assertion.
 """
 
 CLAIM_AUDIT_INSTRUCTIONS = """
@@ -351,6 +378,41 @@ not enough mathematical content to form a proposition, leave the entry
 unpatched and add a note explaining the issue.
 """
 
+INFORMAL_NOTATION_REPAIR_INSTRUCTIONS = """
+Repair generated PaperStructure JSON string fields that still contain informal
+local notation before Lean code generation.
+
+You are given entries with JSON pointer paths, field names, current text, and
+nearby container context. Return a patch for every entry. Each patch replacement
+must preserve the same mathematical meaning while removing notation that is
+display-only, locally ambiguous, or unlikely to be scoped by Lean translation.
+
+Do not leave:
+- pseudo-subscript names such as `C_n`, `C_{n+1}`, `G_ab`, `S_{2n}`;
+- LaTeX commands such as `\\bar`, `\\mathbb`, `\\operatorname`;
+- norm bars such as `||phi(g)||_B` or `‖a • v‖`;
+- informal tensor notation such as `tensor_Z`;
+- informal multi-argument calls such as `f(0,n)` or `B(x, ε/3)`;
+- quotient abbreviations such as `A/T(A)` unless already bound as a local
+  identifier;
+- assignment-shaped assertion text such as `V := G tensor_Z R`;
+- prose assignments in a variable name.
+
+Preferred repairs:
+- use scoped ASCII identifiers such as `Cn`, `CnPlusOne`, `GAb`, `S2n`,
+  `barL`, `normB`, `VQ`;
+- replace `A tensor_Z Q` by `A tensor over Z with Q` or by the local identifier
+  already used in context, such as `VQ`, when that is clearly the same object;
+- replace `||phi(g)||_B` by `normB(phi applied to g)`;
+- replace `f(m,k)` by `f applied to m and k`, or by a typed/local instance if
+  the context supplies one;
+- keep statements as mathematical propositions, not instructions.
+
+Do not delete content and do not mark entries unsupported. If exact Lean syntax
+is unavailable, use precise ASCII mathematical prose that has no informal local
+notation.
+"""
+
 DEDUCED_FROM_CLAIM_REWRITE_INSTRUCTIONS = """
 Rewrite generated PaperStructure JSON entries that contain `deduced_from_claim`
 so they correspond to Lean proof structure.
@@ -372,4 +434,56 @@ For each dependency entry:
 
 Return only structured patches. Do not invent Lean terms or local names when the
 context does not support them; leave the dependency unchanged instead.
+"""
+
+PROOF_SANITY_AUDIT_INSTRUCTIONS = """
+Audit generated proof-step assertions before Lean code generation.
+
+You are given a bounded list of assertion entries that deterministic checks
+consider risky. For each entry, decide whether the claim is mathematically safe
+as an intermediate assertion in its local context.
+
+Flag only real risks:
+- the assertion is stronger than what the source text or dependencies justify;
+- the assertion quantifies over new arbitrary variables not in local context;
+- the assertion has a simple counterexample as stated;
+- the assertion uses informal local notation that cannot be scoped, such as
+  subscripted pseudo-variables, display-only function calls, or unbound local
+  abbreviations;
+- the assertion turns a local definition or side condition into a universal
+  theorem.
+
+Do not object merely because a proof is hard. Do not invent missing mathematics.
+If a claim is clean, return no patch for it.
+
+When a risk is present:
+- use `mark_needs_review` when the right fix is unclear. Give a concrete reason
+  and a short suggested repair;
+- use `replace_claim` only when the intended weaker/local claim is obvious from
+  the supplied context;
+- use `replace_assertion_with_steps` only when the assertion clearly bundles
+  several smaller mathematical claims and those smaller claims are present in
+  the context.
+
+The goal is to prevent false or over-generalized helper claims from being sent
+to Lean as if they were valid proof obligations.
+"""
+
+PROOF_SANITY_REPAIR_INSTRUCTIONS = """
+Repair proof-step assertions that were marked risky by the proof-sanity audit.
+
+You are given assertion entries containing the original claim, the reason it was
+marked risky, and a suggested repair. Return a patch for every entry whenever a
+local repair is possible. Prefer:
+- `replace_claim` when a weaker, scoped, or definitional claim is the right
+  repair;
+- `replace_assertion_with_steps` when the assertion needs an explicit
+  definition/witness-introduction step followed by the repaired assertion.
+
+Do not return `mark_needs_review`. Do not leave review annotations in place.
+Do not invent a stronger theorem. If a universal assertion is over-scoped,
+replace it by the corresponding local assertion or add an explicit local
+definition/binder step. If a claim uses unbound sequence-style names, either
+replace them by already introduced scoped identifiers or add a step introducing
+the finite sequence/indexed family before the assertion.
 """

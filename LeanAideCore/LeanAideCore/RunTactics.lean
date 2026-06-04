@@ -102,7 +102,9 @@ def grindWithSuggestions : MetaM (TSyntax ``tacticSeq) := do
   let splitImpItem ← `(configItem| ($splitImpId:ident := $trueId))
   let splitIndPredId := mkIdent `splitIndPred
   let splitIndPredItem ← `(configItem| ($splitIndPredId:ident := $trueId))
-  let config ← `(optConfig| +$localId +$suggestionsId $instancesItem $splitsItem $ematchItem $canonHeartbeatsItem $splitImpItem $splitIndPredItem)
+  let _config ← `(optConfig| +$localId +$suggestionsId $instancesItem $splitsItem $ematchItem $canonHeartbeatsItem $splitImpItem $splitIndPredItem)
+  -- minimized config to allow running
+  let config ← `(optConfig| +$localId)
   `(tacticSeq| grind? $config)
 
 elab "#view_grind_suggestions" : command => do

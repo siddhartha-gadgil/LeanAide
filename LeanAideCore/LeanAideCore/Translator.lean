@@ -112,7 +112,7 @@ def translateMessages (s: String)(promptPairs: Array (String × Json))
   let cmdPrelude ←  match ← cmdPreludeBriefBlob? with
     | some cmdPreludeBlob => do
         traceAide `leanaide.translate.info s!"Using command prelude in prompt:\n{cmdPreludeBlob}"
-        pure s!"## Code context:\n\nYour translation is a continuation of the following code. The proofs of theorems have been suppressed for brevity.\n\n Use the definitions in this code whenever applicable.\n```\n\n{cmdPreludeBlob}\n````\n\n"
+        pure s!"## Code context:\n\nYour translation is a continuation of the following code. The proofs of theorems have been suppressed for brevity.\n\n Use the definitions in this code whenever possible. Also ensure that the choice of variables, their types, definitions used etc is consistent with this code.\n```\n\n{cmdPreludeBlob}\n````\n\n"
     | none =>
       traceAide `leanaide.translate.info s!"No command prelude to include in prompt."
       pure ""

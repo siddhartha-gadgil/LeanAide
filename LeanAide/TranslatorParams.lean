@@ -112,7 +112,7 @@ def Translator.CliDefaultJson := json% {"useInstructions": false,
  "messageBuilder": {"directBuilder":
   {"userHead": "user",
   "headMessage":
-  "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. The translated code is preceded by `import Mathlib._`, so do not include import statements. Suppress proofs for brevity. Follow EXACTLY the examples given.",
+  "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. The translated code is preceded by `import Mathlib._`, so do not include import statements. Suppress proofs for brevity.",
   "egsHead":
   "The following are some examples of statements and their translations (proofs are suppressed for brevity):",
   "egResponseHead": "## Lean Code\n\n",

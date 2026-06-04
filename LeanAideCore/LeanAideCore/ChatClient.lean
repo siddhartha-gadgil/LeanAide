@@ -470,7 +470,7 @@ def syslessMessages (sys: String)(egs : List <| ChatPair)
 
 def sysPrompt' := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. Follow EXACTLY the examples given."
 
-def MessageBuilder.header := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. The translated code is preceded by `import Mathlib._`, so do not include import statements. Suppress proofs for brevity. Follow EXACTLY the examples given."
+def MessageBuilder.header := "You are a coding assistant who translates from natural language to Lean Theorem Prover code following examples. The translated code is preceded by `import Mathlib._`, so do not include import statements. Suppress proofs for brevity."
 
 inductive MessageBuilder where
   | syslessBuilder
