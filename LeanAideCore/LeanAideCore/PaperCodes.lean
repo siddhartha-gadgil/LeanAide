@@ -1657,7 +1657,7 @@ def getNameAndBinders (name: String)(parameters: Array String) : MetaM (Syntax.I
     | _ => throwError s!"codegen: unexpected syntax for structure definition header: {stx}"
 
 def getBracketedBinders (translator: CodeGenerator)  (parameters: Array (String × String × Option String)) : TranslateM (Array (TSyntax ``bracketedBinder)) := do
-  parameters.mapM <| fun (nameStr, type, biStr) => do
+  parameters.mapM fun (nameStr, type, biStr) => do
     let nameId := mkIdent nameStr.toName
     let typeStx ← translator.translateToTerm type
     match biStr with
@@ -1893,8 +1893,11 @@ Fields:
   `Even : Nat → Prop`.
 - `constructors`: array of constructor objects:
   - `name`: constructor name.
-  - `arguments`: array of named typed arguments, e.g.
-    `["n : Nat", "h : Even n"]`.
+  - `arguments`: array of JSON objects with string fields `name` and `type`,
+    e.g. `[{"name": "n", "type": "Nat"}, {"name": "h", "type": "Even n"}]`.
+  - `index_args`: optional array of strings giving the index values for this
+    constructor. For `Even : Nat → Prop`, `step_even` has
+    `"index_args": ["n + 2"]`.
 - `text`: source prose for comments or repair prompts.
 
 Expected Lean behavior:
@@ -1919,7 +1922,14 @@ Expected Lean behavior:
     ],
     "constructors": [
       {"name": "zero_even", "arguments": []},
-      {"name": "step_even", "arguments": ["n : Nat", "h : Even n"]}
+      {
+        "name": "step_even",
+        "arguments": [
+          {"name": "n", "type": "Nat"},
+          {"name": "h", "type": "Even n"}
+        ],
+        "index_args": ["n + 2"]
+      }
     ]
   }
   ```
@@ -1932,54 +1942,63 @@ Expected Lean behavior:
     | node (left : BinaryTree α) (label : α) (right : BinaryTree α) : BinaryTree α
   ```
 
-Important limitation:
+Index/result information:
 
-- The current JSON schema records constructor arguments but not constructor
-  result targets. For many inductive families, especially propositions such as
-  `Even : Nat → Prop`, the target of each constructor is essential:
-  `zero_even : Even 0`, `step_even ... : Even (n + 2)`.
-- Recommended Lean-side fallback for now: use `text` plus constructor arguments
-  to prompt/repair the full declaration, or emit a commented TODO if targets
-  cannot be inferred.
-- Recommended Python/schema improvement: add optional constructor field
-  `target` or `result` so the JSON can explicitly contain:
-  - `{"name": "zero_even", "arguments": [], "target": "Even 0"}`
-  - `{"name": "step_even", "arguments": ["n : Nat", "h : Even n"], "target": "Even (n + 2)"}`
+- The Python schema now records constructor index values using optional
+  `index_args`. For indexed families, Lean codegen should combine the inductive
+  declaration name, parameters, and `index_args` to form constructor result
+  targets. For example, for `Even` with one index, `index_args = ["n + 2"]`
+  means the constructor target is `Even (n + 2)`.
+- If `index_args` is absent for an indexed family, codegen should not invent a
+  target silently. Use `text` plus constructor arguments to prompt/repair the
+  full declaration, or emit a commented TODO if the target cannot be inferred.
+- For non-indexed inductive types, constructor targets are usually the family
+  applied to parameters, e.g. `BinaryTree α`.
 
 Implementation notes:
 
 - Add a `@[codegen]` handler for `inductive-type-definition`.
 - Add binder parsers for both `parameters` and `indices`; for compatibility,
   allow old raw string binders and normalize them to default binder objects.
-- Add a constructor parser for `name`, `arguments`, and, after the schema
-  improvement, `target`.
+- Add a constructor parser for `name`, structured `arguments`, and optional
+  `index_args`. For compatibility with old hand-written JSON, it is acceptable
+  to normalize legacy string arguments such as `"n : Nat"` to
+  `{"name": "n", "type": "Nat"}` before codegen.
 - For `is_prop = true`, the declaration result should usually be `... → Prop`.
   The `indices` array gives the family domain part, so an inductive with
   `indices = [{"name": "n", "type": "Nat"}]` should at least target
-  `: Nat → Prop`. Constructor result targets are still needed for precise
-  constructor types.
+  `: Nat → Prop`. Constructor `index_args` should provide the constructor
+  result indices needed for precise constructor types.
 - For `is_prop = false`, default to `: Type` when no result universe is
   specified.
 -/
 
 def inductiveCommand (translator : CodeGenerator := {}) (name: String) (parametersRaw : Array (String × String × Option String))
-  (indicesRaw : Array (String × String × Option String)) (constructorsRaw : Array (String × Array String)) (isProp : Bool) :
+  (indicesRaw : Array (String × String × Option String)) (constructorsRaw : Array (String × Array (String × String) × Array String)) (isProp : Bool) :
     TranslateM (TSyntax `commandSeq) := do
   let inductiveIdent := mkIdent name.toName
-  let typeExprWithoutParams ← withoutModifyingState <| withParamsLocalDecl translator parametersRaw.toList fun _ =>
-    withTypeLocalDecl translator name isProp indicesRaw.toList fun expr => return expr
-  let typeStxWithoutParams ← delabDetailed typeExprWithoutParams
+  let typeStxWithoutParams ← withoutModifyingState <| withParamsLocalDecl translator parametersRaw.toList fun _ =>
+    withTypeLocalDecl translator name isProp indicesRaw.toList fun expr => return ← delabDetailed expr
   let fullTypeExpr ← withTypeLocalDecl translator name isProp (parametersRaw.toList ++ indicesRaw.toList) fun expr => return expr
-  let ctorFields : Array (Syntax.Ident × Array (TSyntax ``bracketedBinder)) ← constructorsRaw.mapM
-    fun (ctorName, ctorArgs) => do
+  let explicitParamsIdents : Array Ident := parametersRaw.filterMap fun (name, _, binder) =>
+    match getBinderInfo binder with
+    | BinderInfo.default => some (mkIdent name.toName)
+    | _ => none
+  let ctorFields : Array (Syntax.Ident × Array (TSyntax ``bracketedBinder) × Array Term) ← constructorsRaw.mapM
+    fun (ctorName, ctorArgs, index_args) => do
       withParamsLocalDecl translator parametersRaw.toList fun _ =>
         withLocalDecl name.toName BinderInfo.default fullTypeExpr fun _ => do
           let ctorIdent := mkIdent ctorName.toName
-          let (_, params) ← getNameAndBinders ctorName ctorArgs
-          pure (ctorIdent, params)
+          let ctorArgsWithBinderInfo := ctorArgs.map fun (name, type) => (name, type, some "default")
+          let ctorParamsStx ← getBracketedBinders translator ctorArgsWithBinderInfo
+          withParamsLocalDecl translator ctorArgsWithBinderInfo.toList fun _ => do
+            let indexArgsStx ← index_args.mapM fun index_arg => do
+              let index_term ← translator.translateToTerm index_arg
+              pure index_term
+            pure (ctorIdent, ctorParamsStx, indexArgsStx)
   let ctors : Array (TSyntax ``ctor) ←
-    ctorFields.mapM fun (ctorIdent, params) => do
-      `(ctor| | $ctorIdent:ident $params*)
+    ctorFields.mapM fun (ctorIdent, ctorParams, index_args) => do
+      `(ctor| | $ctorIdent:ident $ctorParams* : $inductiveIdent $explicitParamsIdents* $index_args*)
   if parametersRaw.isEmpty then
     `(commandSeq| inductive $inductiveIdent:ident : $typeStxWithoutParams where
       $ctors:ctor*)
@@ -2015,12 +2034,38 @@ def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId �
   let constructorsRaw ← constructors.mapM fun constructorJson => do
     let .ok constructorName := constructorJson.getObjValAs? String "name" | throwError
       s!"codegen: no 'name' found in inductive constructor definition {constructorJson}"
-    let .ok constructorArgs := constructorJson.getObjValAs? (Array String) "arguments" | throwError
+    let .ok constructorArgs := constructorJson.getObjValAs? (Array Json) "arguments" | throwError
       s!"codegen: no 'arguments' found in inductive constructor definition {constructorJson}"
-    pure (constructorName, constructorArgs)
+    let constructorArgsRaw ← constructorArgs.mapM fun ctorArgJson => do
+      let .ok ctorArgName := ctorArgJson.getObjValAs? String "name" | throwError
+        s!"codegen: no 'name' found in inductive constructor argument {ctorArgJson}"
+      let .ok ctorArgType := ctorArgJson.getObjValAs? String "type" | throwError
+        s!"codegen: no 'type' found in inductive constructor argument {ctorArgJson}"
+      pure (ctorArgName, ctorArgType)
+    let indexArgs := constructorJson.getObjValAs? (Array String) "index_args" |>.toOption.getD #[]
+    pure (constructorName, constructorArgsRaw, indexArgs)
   inductiveCommand translator name parametersRaw indicesRaw constructorsRaw isProp
 | _, kind, _ => throwError
     s!"codegen: inductive_type_definition does not work for kind {kind}"
+
+/-
+- `name`: Lean inductive declaration name.
+- `is_prop`: whether the inductive family lives in `Prop`; otherwise emit a
+  normal `Type` inductive.
+- `parameters`: optional array of declaration binder objects with `name`,
+  `type`, and optional `binder`.
+- `indices`: optional array of index binder objects with the same shape as
+  `parameters`. These describe the indexed family arguments, e.g. `n : Nat` in
+  `Even : Nat → Prop`.
+- `constructors`: array of constructor objects:
+  - `name`: constructor name.
+  - `arguments`: array of JSON objects with string fields `name` and `type`,
+    e.g. `[{"name": "n", "type": "Nat"}, {"name": "h", "type": "Even n"}]`.
+  - `index_args`: optional array of strings giving the index values for this
+    constructor. For `Even : Nat → Prop`, `step_even` has
+    `"index_args": ["n + 2"]`.
+- `text`: source prose for comments or repair prompts.
+-/
 
 /-!
 ## Adding handlers for different schema elements
