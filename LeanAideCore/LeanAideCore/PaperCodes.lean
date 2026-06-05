@@ -516,7 +516,7 @@ where
         | `(command| noncomputable def $_defName:ident $args:bracketedBinder* := $value) =>
             `(command| noncomputable def $nameStx $args*:= $value)
         | _ => throwError s!"commandToTerm: unsupported command {cmd}"
-        let cmds := #[← `(#check "Obtained definition"), cmd]
+        let cmds := #[cmd]
         `(commandSeq| $cmds*)
       | .error errs =>
         try
