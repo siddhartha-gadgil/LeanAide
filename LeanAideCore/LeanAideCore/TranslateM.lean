@@ -279,8 +279,11 @@ def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
   let cmds := getCommands cmds
   modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
 
-def addDefn (dfn: DefData) : TranslateM Unit := do
+def registerDefnEnv (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statementStx
+  modify fun s => {s with defs := s.defs.push dfn}
+
+def addDefn (dfn: DefData) : TranslateM Unit := do
   modify fun s => {s with defs := s.defs.push dfn}
 
 def addRecentTranslation (input: String) (output: String) : TranslateM Unit := do

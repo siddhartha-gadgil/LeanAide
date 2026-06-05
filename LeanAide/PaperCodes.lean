@@ -54,7 +54,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
       doc? := none
     }
     addDefn defn
-    traceAide `leanaide.papercodes.info s!"Added theorem definition: {defn.name}"
+    -- traceAide `leanaide.papercodes.info s!"Added theorem definition: {defn.name}"
     if isProp then
       `(commandSeq| theorem $n : $stx := by $pf)
     else
@@ -222,7 +222,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
       | some data =>
         -- If we have a definition, we add it to the definitions
         -- and return the command
-        addDefn data
+        registerDefnEnv data
       | none =>
         traceAide `leanaide.papercodes.info s!"codegen: No definition found for 'let_statement' {statement} with value {value}"
       addPrelude statement
