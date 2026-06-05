@@ -1980,7 +1980,7 @@ def getFullType (translator : CodeGenerator := {}) (isProp : Bool) (parameters :
     return fullType
 
 def inductiveCommand (translator : CodeGenerator := {}) (name: String) (parametersRaw : Array (String × String × Option String))
-  (indicesRaw : Array (String × String × Option String)) (constructorsRaw : Array (String × Array (String × String) × Array String)) (isProp : Bool) :
+  (indicesRaw : Array (String × String × Option String)) (constructorsRaw : Array (String × Array (String × String × Option String) × Array String)) (isProp : Bool) :
     TranslateM (TSyntax `commandSeq) := do
   let inductiveIdent := mkIdent name.toName
   let typeExprWithoutParams ← withoutModifyingState <| withParamsLocalDecl translator parametersRaw.toList fun _ => getFullType translator isProp indicesRaw.toList
@@ -1995,9 +1995,9 @@ def inductiveCommand (translator : CodeGenerator := {}) (name: String) (paramete
       withParamsLocalDecl translator parametersRaw.toList fun _ =>
         withLocalDecl name.toName BinderInfo.default fullTypeExpr fun _ => do
           let ctorIdent := mkIdent ctorName.toName
-          let ctorArgsWithBinderInfo := ctorArgs.map fun (name, type) => (name, type, some "default")
-          let ctorParamsStx ← getBracketedBinders translator ctorArgsWithBinderInfo
-          withParamsLocalDecl translator ctorArgsWithBinderInfo.toList fun _ => do
+          --let ctorArgsWithBinderInfo := ctorArgs.map fun (name, type) => (name, type, some "default")
+          let ctorParamsStx ← getBracketedBinders translator ctorArgs
+          withParamsLocalDecl translator ctorArgs.toList fun _ => do
             let indexArgsStx ← index_args.mapM fun index_arg => do
               let index_term ← translator.translateToTerm index_arg
               pure index_term
@@ -2047,7 +2047,8 @@ def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId �
         s!"codegen: no 'name' found in inductive constructor argument {ctorArgJson}"
       let .ok ctorArgType := ctorArgJson.getObjValAs? String "type" | throwError
         s!"codegen: no 'type' found in inductive constructor argument {ctorArgJson}"
-      pure (ctorArgName, ctorArgType)
+      let ctorArgDefault := ctorArgJson.getObjValAs? String "binder" |>.toOption
+      pure (ctorArgName, ctorArgType, ctorArgDefault)
     let indexArgs := constructorJson.getObjValAs? (Array String) "index_args" |>.toOption.getD #[]
     pure (constructorName, constructorArgsRaw, indexArgs)
   inductiveCommand translator name parametersRaw indicesRaw constructorsRaw isProp
