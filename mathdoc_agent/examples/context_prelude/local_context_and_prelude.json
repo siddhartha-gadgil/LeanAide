@@ -1,0 +1,112 @@
+{
+  "document": {
+    "type": "document",
+    "title": "Local Context and Prelude Fixture",
+    "body": [
+      {
+        "type": "definition",
+        "label": "Definition 1",
+        "header": "Definition",
+        "name": "ToyPseudoLength",
+        "definition": "Let G be a group. A function l : G -> R is a toy pseudo-length if l(1)=0.",
+        "source": {
+          "text": "Let \\(G\\) be a group. A function \\(l : G \\to \\mathbb{R}\\) is a toy pseudo-length if \\(l(1)=0\\).",
+          "id": "context_prelude.root.def-1",
+          "label": "Definition 1"
+        },
+        "id": "context_prelude.root.def-1",
+        "status": "resolved"
+      },
+      {
+        "type": "definition",
+        "label": "Definition 2",
+        "header": "Definition",
+        "name": "ToyLength",
+        "definition": "Let G be a group. A toy pseudo-length l : G -> R is a toy length if l(g)=0 implies g=1 for every g in G.",
+        "source": {
+          "text": "Let \\(G\\) be a group. A toy pseudo-length \\(l : G \\to \\mathbb{R}\\) is a toy length if \\(l(g)=0\\) implies \\(g=1\\) for every \\(g\\in G\\).",
+          "id": "context_prelude.root.def-2",
+          "label": "Definition 2"
+        },
+        "id": "context_prelude.root.def-2",
+        "status": "resolved"
+      },
+      {
+        "type": "theorem",
+        "label": "Theorem 1",
+        "header": "Theorem",
+        "name": "toy_length_zero_at_one",
+        "hypothesis": [
+          {
+            "type": "assume_statement",
+            "assumption": "G is a group."
+          },
+          {
+            "type": "let_statement",
+            "variable_name": "l",
+            "variable_type": "G -> R",
+            "statement": "Let l : G -> R."
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "l is a toy length."
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "For every g in G, l(g)=0."
+          }
+        ],
+        "claim": "l(1)=0.",
+        "source": {
+          "text": "Let \\(G\\) be a group and let \\(l : G \\to \\mathbb{R}\\) be a toy length. Assume that \\(l(g)=0\\) for every \\(g\\in G\\). Then \\(l(1)=0\\).",
+          "id": "context_prelude.root.theorem-1",
+          "label": "Theorem 1"
+        },
+        "proof": {
+          "type": "proof",
+          "proof_steps": [
+            {
+              "type": "theorem",
+              "label": "Auxiliary Lemma",
+              "header": "Lemma",
+              "name": "zero_on_all_elements",
+              "claim": "For every x in G, l(x)=0.",
+              "source": {
+                "text": "We first prove the auxiliary lemma that, for every \\(x\\in G\\), \\(l(x)=0\\). This is just \\(h_0\\), applied to \\(x\\).",
+                "id": "context_prelude.root.theorem-1.proof.lemma-zero-on-all",
+                "label": "Auxiliary Lemma"
+              },
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "assert_statement",
+                    "claim": "l(x)=0 for an arbitrary x in G.",
+                    "proof_method": "Apply the assumption that l(g)=0 for every g in G to x.",
+                    "id": "context_prelude.root.theorem-1.proof.lemma-zero-on-all.proof.step-1",
+                    "status": "resolved"
+                  }
+                ],
+                "id": "context_prelude.root.theorem-1.proof.lemma-zero-on-all.proof",
+                "status": "resolved"
+              },
+              "id": "context_prelude.root.theorem-1.proof.lemma-zero-on-all",
+              "status": "resolved"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "l(1)=0.",
+              "proof_method": "Apply the auxiliary lemma to x=1.",
+              "id": "context_prelude.root.theorem-1.proof.step-2",
+              "status": "resolved"
+            }
+          ],
+          "id": "context_prelude.root.theorem-1.proof",
+          "status": "resolved"
+        },
+        "id": "context_prelude.root.theorem-1",
+        "status": "resolved"
+      }
+    ]
+  }
+}

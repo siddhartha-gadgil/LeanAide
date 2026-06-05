@@ -1,0 +1,36 @@
+{
+  "document": {
+    "type": "document",
+    "title": "Definition Uses Previous Definition",
+    "body": [
+      {
+        "type": "definition",
+        "label": "Definition 1",
+        "header": "Definition",
+        "name": "ToyPseudoLength",
+        "definition": "Let G be a group. A function l : G -> R is a toy pseudo-length if l(1)=0.",
+        "source": {
+          "text": "Let \\(G\\) be a group. A function \\(l : G \\to \\mathbb{R}\\) is a toy pseudo-length if \\(l(1)=0\\).",
+          "id": "definition_uses_previous.root.def-1",
+          "label": "Definition 1"
+        },
+        "id": "definition_uses_previous.root.def-1",
+        "status": "resolved"
+      },
+      {
+        "type": "definition",
+        "label": "Definition 2",
+        "header": "Definition",
+        "name": "ToyBoundedLength",
+        "definition": "Let G be a group. A toy pseudo-length l : G -> R is a toy bounded length if l(g)<=1 for every g in G.",
+        "source": {
+          "text": "Let \\(G\\) be a group. A toy pseudo-length \\(l : G \\to \\mathbb{R}\\) is a toy bounded length if \\(l(g)\\le 1\\) for every \\(g\\in G\\).",
+          "id": "definition_uses_previous.root.def-2",
+          "label": "Definition 2"
+        },
+        "id": "definition_uses_previous.root.def-2",
+        "status": "resolved"
+      }
+    ]
+  }
+}
