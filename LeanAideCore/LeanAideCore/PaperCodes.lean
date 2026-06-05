@@ -1679,7 +1679,7 @@ def withParamsLocalDecl {α} (translator : CodeGenerator := {}) (parameters : Li
   | [] => k l
   | p :: rest => do
     withLocalDecl (p.1.toName) (getBinderInfo p.2.2) (← elabTerm (← translator.translateToTerm p.2.1).raw none) fun expr =>
-      withParamsLocalDecl translator rest k (expr::l)
+      withParamsLocalDecl translator rest k (l++[expr])
 
 def withTypeLocalDecl {α} (translator : CodeGenerator := {}) (name : String) (isProp : Bool) (parameters : List (String × String × Option String)) (k : Expr → TranslateM α) : TranslateM α :=
   withoutModifyingState <| withParamsLocalDecl translator parameters fun l => do
