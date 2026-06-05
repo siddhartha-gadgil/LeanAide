@@ -91,7 +91,8 @@ The Python exporter now emits `proof` here as a `Proof` object with
   definitions.
 - Declaration nodes for structures, instances, and inductive types now use the
   updated formats documented below: binder-object `parameters`, inductive
-  `indices`, structure `isProp`, and instance `gives`.
+  `indices`, structure `isProp`, instance `gives`, and structured inductive
+  constructor `arguments` with optional `index_args`.
 - The Python pipeline runs a pre-codegen `deduced_from_claim` rewrite pass
   unless `--skip-deduced-from-claim-rewrite` is used. This pass removes
   dependencies already present in hypotheses/local context and rewrites
@@ -653,9 +654,11 @@ mathdoc_agent/examples/lean_definition_examples.json
 - Inductive declarations may also have `indices`, with the same object shape as
   `parameters`. Indices are part of the family target rather than ordinary
   parameters.
-- Strings in fields and constructor arguments are already close to Lean syntax.
-  Initially, parse them as raw syntax snippets and generate conservative code;
-  later they can be passed through translator/code repair if elaboration fails.
+- Strings in fields and constructor argument types are already close to Lean
+  syntax. Constructor arguments are now objects with separate `name` and `type`
+  fields; parse the `type` as a raw syntax snippet and generate conservative
+  code. Later these can be passed through translator/code repair if elaboration
+  fails.
 - Useful fallback: if a declaration cannot be generated precisely, emit a
   commented block with the intended declaration and a `-- TODO` note rather than
   generating malformed Lean.
@@ -838,8 +841,11 @@ Fields:
   `Even : Nat → Prop`.
 - `constructors`: array of constructor objects:
   - `name`: constructor name.
-  - `arguments`: array of named typed arguments, e.g.
-    `["n : Nat", "h : Even n"]`.
+  - `arguments`: array of JSON objects with string fields `name` and `type`,
+    e.g. `[{"name": "n", "type": "Nat"}, {"name": "h", "type": "Even n"}]`.
+  - `index_args`: optional array of strings giving the index values for this
+    constructor. For `Even : Nat → Prop`, `step_even` has
+    `"index_args": ["n + 2"]`.
 - `text`: source prose for comments or repair prompts.
 
 Expected Lean behavior:
@@ -864,7 +870,14 @@ Expected Lean behavior:
     ],
     "constructors": [
       {"name": "zero_even", "arguments": []},
-      {"name": "step_even", "arguments": ["n : Nat", "h : Even n"]}
+      {
+        "name": "step_even",
+        "arguments": [
+          {"name": "n", "type": "Nat"},
+          {"name": "h", "type": "Even n"}
+        ],
+        "index_args": ["n + 2"]
+      }
     ]
   }
   ```
@@ -877,32 +890,33 @@ Expected Lean behavior:
     | node (left : BinaryTree α) (label : α) (right : BinaryTree α) : BinaryTree α
   ```
 
-Important limitation:
+Index/result information:
 
-- The current JSON schema records constructor arguments but not constructor
-  result targets. For many inductive families, especially propositions such as
-  `Even : Nat → Prop`, the target of each constructor is essential:
-  `zero_even : Even 0`, `step_even ... : Even (n + 2)`.
-- Recommended Lean-side fallback for now: use `text` plus constructor arguments
-  to prompt/repair the full declaration, or emit a commented TODO if targets
-  cannot be inferred.
-- Recommended Python/schema improvement: add optional constructor field
-  `target` or `result` so the JSON can explicitly contain:
-  - `{"name": "zero_even", "arguments": [], "target": "Even 0"}`
-  - `{"name": "step_even", "arguments": ["n : Nat", "h : Even n"], "target": "Even (n + 2)"}`
+- The Python schema now records constructor index values using optional
+  `index_args`. For indexed families, Lean codegen should combine the inductive
+  declaration name, parameters, and `index_args` to form constructor result
+  targets. For example, for `Even` with one index, `index_args = ["n + 2"]`
+  means the constructor target is `Even (n + 2)`.
+- If `index_args` is absent for an indexed family, codegen should not invent a
+  target silently. Use `text` plus constructor arguments to prompt/repair the
+  full declaration, or emit a commented TODO if the target cannot be inferred.
+- For non-indexed inductive types, constructor targets are usually the family
+  applied to parameters, e.g. `BinaryTree α`.
 
 Implementation notes:
 
 - Add a `@[codegen]` handler for `inductive-type-definition`.
 - Add binder parsers for both `parameters` and `indices`; for compatibility,
   allow old raw string binders and normalize them to default binder objects.
-- Add a constructor parser for `name`, `arguments`, and, after the schema
-  improvement, `target`.
+- Add a constructor parser for `name`, structured `arguments`, and optional
+  `index_args`. For compatibility with old hand-written JSON, it is acceptable
+  to normalize legacy string arguments such as `"n : Nat"` to
+  `{"name": "n", "type": "Nat"}` before codegen.
 - For `is_prop = true`, the declaration result should usually be `... → Prop`.
   The `indices` array gives the family domain part, so an inductive with
   `indices = [{"name": "n", "type": "Nat"}]` should at least target
-  `: Nat → Prop`. Constructor result targets are still needed for precise
-  constructor types.
+  `: Nat → Prop`. Constructor `index_args` should provide the constructor
+  result indices needed for precise constructor types.
 - For `is_prop = false`, default to `: Type` when no result universe is
   specified.
 
@@ -912,10 +926,10 @@ Implementation notes:
    for valid Lean in the current examples.
 2. Add `instance-definition`, initially with the conservative bundled-structure
    heuristic and repair fallback.
-3. Extend the Python constructor schema with optional constructor targets.
-4. Add `inductive-type-definition` after target/result data is available, or
-   implement a prompt-backed fallback for examples where targets must be
-   inferred from prose.
+3. Add `inductive-type-definition` using structured constructor arguments and
+   `index_args` where present.
+4. Implement a prompt-backed fallback for examples where indexed constructor
+   targets must still be inferred from prose.
 
 ## Calculation Lowering for `grind`
 

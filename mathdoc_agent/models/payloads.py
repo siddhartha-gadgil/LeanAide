@@ -165,9 +165,38 @@ class InstanceDefinitionData(DocumentKindData):
         return _coerce_instance_gives(value)
 
 
+class ConstructorArgumentData(BaseModel):
+    name: str
+    type: str
+
+
+def _coerce_constructor_arguments(value: object) -> object:
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        return value
+    result: list[object] = []
+    for item in value:
+        if isinstance(item, str):
+            if ":" in item:
+                name, type_ = item.split(":", 1)
+                result.append({"name": name.strip(), "type": type_.strip()})
+            else:
+                result.append({"name": "_", "type": item.strip()})
+        else:
+            result.append(item)
+    return result
+
+
 class InductiveConstructorData(BaseModel):
     name: Optional[str] = None
-    arguments: list[str] = Field(default_factory=list)
+    arguments: list[ConstructorArgumentData] = Field(default_factory=list)
+    index_args: list[str] = Field(default_factory=list)
+
+    @field_validator("arguments", mode="before")
+    @classmethod
+    def _validate_arguments(cls, value: object) -> object:
+        return _coerce_constructor_arguments(value)
 
 
 class InductiveTypeDefinitionData(DocumentKindData):
