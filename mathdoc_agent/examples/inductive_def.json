@@ -1,0 +1,104 @@
+{
+  "document": {
+    "type": "document",
+    "body": [
+      {
+        "type": "inductive-type-definition",
+        "label": "ind:even",
+        "name": "Test",
+        "is_prop": true,
+        "parameters": [
+          {
+            "name": "α",
+            "type": "Type",
+            "binder": "implicit" 
+          },
+          {
+            "name": "s",
+            "type": "String",
+            "binder": "default" 
+          },
+          {
+            "name": "b",
+            "type": "Bool"
+          }
+        ],
+        "indices": [
+          {
+            "name": "i1",
+            "type": "Nat",
+            "binder": "default"
+          },
+          {
+            "name": "i2",
+            "type": "Bool",
+            "binder": "default"
+          }
+        ],
+        "constructors": [
+          {
+            "name": "first",
+            "arguments": [
+              {
+                "name": "optN",
+                "type": "Option Nat"
+              },
+              {
+                "name": "t",
+                "type": "Bool"
+              }
+            ],
+            "index_args": ["0","true"]
+          },
+          {
+            "name": "next",
+            "arguments": [
+              {
+                "name": "a",
+                "type": "α"
+              },
+              {
+                "name": "h",
+                "type": "Prop"
+              }
+            ],
+            "index_args": ["1","b"]
+          },
+          {
+            "name": "final",
+            "arguments": [
+              {
+                "name": "n",
+                "type": "Nat"
+              }
+            ],
+            "index_args": ["n + 2", "false"]
+          },
+          {
+            "name": "last",
+            "arguments": [
+              {
+                "name": "bo",
+                "type": "Bool"
+              },
+              {
+                "name": "n",
+                "type": "Nat"
+              }
+            ],
+            "index_args": ["n + 3", "!bo"]
+          },
+          {
+            "name": "no_more",
+            "arguments": [],
+            "index_args": ["0", "true"]
+          }
+        ],
+        "text": "A weird inductive type",
+        "id": "lean_definition_examples.root.even",
+        "status": "resolved"
+      }
+    ],
+    "title": "Lean Definition Examples"
+  }
+}
