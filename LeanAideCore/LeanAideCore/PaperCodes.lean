@@ -1973,12 +1973,18 @@ Implementation notes:
   specified.
 -/
 
+def getFullType (translator : CodeGenerator := {}) (isProp : Bool) (parameters : List (String × String × Option String)) : TranslateM Expr :=
+  withoutModifyingState <| withParamsLocalDecl translator parameters fun l => do
+    let lastType := if isProp then mkSort levelZero else mkSort levelOne
+    let fullType ← mkForallFVars l.toArray lastType
+    return fullType
+
 def inductiveCommand (translator : CodeGenerator := {}) (name: String) (parametersRaw : Array (String × String × Option String))
   (indicesRaw : Array (String × String × Option String)) (constructorsRaw : Array (String × Array (String × String) × Array String)) (isProp : Bool) :
     TranslateM (TSyntax `commandSeq) := do
   let inductiveIdent := mkIdent name.toName
-  let typeStxWithoutParams ← withoutModifyingState <| withParamsLocalDecl translator parametersRaw.toList fun _ =>
-    withTypeLocalDecl translator name isProp indicesRaw.toList fun expr => return ← delabDetailed expr
+  let typeExprWithoutParams ← withoutModifyingState <| withParamsLocalDecl translator parametersRaw.toList fun _ => getFullType translator isProp indicesRaw.toList
+  let typeStxWithoutParams ← delabDetailed typeExprWithoutParams
   let fullTypeExpr ← withTypeLocalDecl translator name isProp (parametersRaw.toList ++ indicesRaw.toList) fun expr => return expr
   let explicitParamsIdents : Array Ident := parametersRaw.filterMap fun (name, _, binder) =>
     match getBinderInfo binder with
