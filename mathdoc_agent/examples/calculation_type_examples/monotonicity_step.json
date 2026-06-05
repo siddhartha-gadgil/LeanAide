@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:monotonicity_step",
         "header": "Theorem",
+        "name": "calc_monotonicity_step",
         "claim": "If a≤b, then a+c≤b+c.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "monotonicity_step.root.calculation",
           "status": "resolved",
           "text": "Apply monotonicity of adding c."
+        },
+        "source": {
+          "text": "Theorem. If a≤b, then a+c≤b+c.\n\nProof. Apply monotonicity of adding c.",
+          "id": "monotonicity_step.root.theorem",
+          "label": "calc:monotonicity_step"
         },
         "id": "monotonicity_step.root.theorem",
         "status": "resolved"

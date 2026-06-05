@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:definition_unfolding",
         "header": "Theorem",
+        "name": "calc_definition_unfolding",
         "claim": "double x = x+x.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "definition_unfolding.root.calculation",
           "status": "resolved",
           "text": "Unfold the definition of double."
+        },
+        "source": {
+          "text": "Theorem. double x = x+x.\n\nProof. Unfold the definition of double.",
+          "id": "definition_unfolding.root.theorem",
+          "label": "calc:definition_unfolding"
         },
         "id": "definition_unfolding.root.theorem",
         "status": "resolved"

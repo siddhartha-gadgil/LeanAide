@@ -80,6 +80,13 @@ class UnknownDocumentHandler(DocumentRefinementHandler[DocumentRefinementSpec]):
             data = metadata_entries_to_dict(child.data_entries)
             if child.statement is not None:
                 data["statement"] = child.statement
+            assumptions = [
+                entry.value
+                for entry in child.data_entries
+                if entry.key == "assumption" and entry.value.strip()
+            ]
+            if assumptions and child_kind in THEOREM_LIKE_KINDS:
+                data["assumptions"] = assumptions
             if child_kind == DocumentKind.structure_definition.value:
                 data = StructureDefinitionData(
                     name=child.name or child.title or child.label or child.id_suffix,

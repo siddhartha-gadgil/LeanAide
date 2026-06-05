@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import re
 from typing import Any
 
 from mathdoc_agent.mathagents.runner import run_agent_typed
@@ -174,11 +175,29 @@ def _pop_remaining_claim_dependencies(value: dict[str, Any]) -> list[str]:
     return [item for item in dependencies if isinstance(item, str) and item.strip()]
 
 
+def _lean_identifier_from_text(value: str, *, fallback: str = "local_obligation") -> str:
+    words = [word for word in re.split(r"[^A-Za-z0-9]+", value) if word]
+    if not words:
+        words = [word for word in re.split(r"[^A-Za-z0-9]+", fallback) if word]
+    if not words:
+        return fallback
+    identifier = "_".join(word.lower() for word in words[:8])
+    if not identifier[0].isalpha():
+        identifier = f"n_{identifier}"
+    return identifier
+
+
 def _materialized_have_from_claim(claim: str) -> dict[str, Any]:
+    name = _lean_identifier_from_text(claim)
     return {
         "type": "assert_statement",
+        "name": name,
         "claim": claim,
-        "proof_method": "Materialized from deduced_from_claim.",
+        "proof_method": "Named local obligation from unresolved claim dependency.",
+        "source": {
+            "text": claim,
+            "kind": "deduced_from_claim",
+        },
     }
 
 

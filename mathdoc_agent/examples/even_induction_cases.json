@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:even_or_next_even",
         "header": "Theorem",
+        "name": "thm_even_or_next_even",
         "claim": "For every natural number n, either n is even or n+1 is even.",
         "proof": {
           "type": "induction_proof",
@@ -77,6 +78,11 @@
           "id": "even_induction_cases.root.thm_even_or_next_even.proof.root",
           "status": "resolved",
           "text": "We prove this by induction on n. For n=0, n is even. For the induction step, assume that either n is even or n+1 is even. We split into cases. If n is even, then n=2k for some natural number k, hence n+2=2(k+1) is even, so the right side of the desired disjunction holds. If n+1 is even, then the left side of the desired disjunction holds."
+        },
+        "source": {
+          "text": "Theorem. For every natural number n, either n is even or n+1 is even.\n\nProof. We prove this by induction on n. For n=0, n is even. For the induction\nstep, assume that either n is even or n+1 is even. We split into cases. If n is\neven, then n=2k for some natural number k, hence n+2=2(k+1) is even, so the\nright side of the desired disjunction holds. If n+1 is even, then the left side\nof the desired disjunction holds.",
+          "id": "even_induction_cases.root.thm_even_or_next_even",
+          "label": "thm:even_or_next_even"
         },
         "id": "even_induction_cases.root.thm_even_or_next_even",
         "status": "resolved"

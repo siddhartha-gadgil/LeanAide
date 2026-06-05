@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:equality_chain",
         "header": "Theorem",
+        "name": "calc_equality_chain",
         "claim": "The expression (x+1)^2 equals x^2+2*x+1.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "equality_chain_square_sum.root.calculation",
           "status": "resolved",
           "text": "Expand the square and collect terms."
+        },
+        "source": {
+          "text": "Theorem. The expression (x+1)^2 equals x^2+2*x+1.\n\nProof. Expand the square and collect terms.",
+          "id": "equality_chain_square_sum.root.theorem",
+          "label": "calc:equality_chain"
         },
         "id": "equality_chain_square_sum.root.theorem",
         "status": "resolved"

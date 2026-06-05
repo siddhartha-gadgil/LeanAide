@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:casewise_calculation",
         "header": "Theorem",
+        "name": "calc_casewise_calculation",
         "claim": "|x| equals x when x is nonnegative and -x otherwise.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "casewise_calculation.root.calculation",
           "status": "resolved",
           "text": "Split on whether x is nonnegative and simplify in each case."
+        },
+        "source": {
+          "text": "Theorem. |x| equals x when x is nonnegative and -x otherwise.\n\nProof. Split on whether x is nonnegative and simplify in each case.",
+          "id": "casewise_calculation.root.theorem",
+          "label": "calc:casewise_calculation"
         },
         "id": "casewise_calculation.root.theorem",
         "status": "resolved"

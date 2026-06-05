@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:limit_two_x_at_three",
         "header": "Theorem",
+        "name": "thm_limit_two_x_at_three",
         "claim": "The function f(x)=2x has limit 6 as x tends to 3.",
         "proof": {
           "type": "epsilon_delta_proof",
@@ -28,6 +29,7 @@
                 "type": "theorem",
                 "label": "epsilon_delta_linear_limit.root.thm_limit_two_x_at_three.proof.root.verify_bound",
                 "header": "Claim",
+                "name": "epsilon_delta_linear_limit_root_thm_limit_two_x_at_three_proof_root_verify_bound",
                 "claim": "|2x-6| < epsilon.",
                 "proof": {
                   "type": "proof",
@@ -66,6 +68,11 @@
           },
           "id": "epsilon_delta_linear_limit.root.thm_limit_two_x_at_three.proof.root",
           "status": "resolved"
+        },
+        "source": {
+          "text": "Theorem. The function f(x)=2x has limit 6 as x tends to 3.\n\nProof. Let epsilon>0 and choose delta=epsilon/2. Since epsilon is positive,\ndelta is positive. If |x-3|<delta, then |2x-6|=2|x-3|<2delta=epsilon.",
+          "id": "epsilon_delta_linear_limit.root.thm_limit_two_x_at_three",
+          "label": "thm:limit_two_x_at_three"
         },
         "id": "epsilon_delta_linear_limit.root.thm_limit_two_x_at_three",
         "status": "resolved"

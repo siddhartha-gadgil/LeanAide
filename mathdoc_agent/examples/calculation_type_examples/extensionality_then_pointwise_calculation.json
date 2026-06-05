@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:extensionality_then_pointwise_calculation",
         "header": "Theorem",
+        "name": "calc_extensionality_then_pointwise_calculation",
         "claim": "Two functions are equal when their values agree pointwise.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "extensionality_then_pointwise_calculation.root.calculation",
           "status": "resolved",
           "text": "Apply function extensionality and calculate at an arbitrary point."
+        },
+        "source": {
+          "text": "Theorem. Two functions are equal when their values agree pointwise.\n\nProof. Apply function extensionality and calculate at an arbitrary point.",
+          "id": "extensionality_then_pointwise_calculation.root.theorem",
+          "label": "calc:extensionality_then_pointwise_calculation"
         },
         "id": "extensionality_then_pointwise_calculation.root.theorem",
         "status": "resolved"

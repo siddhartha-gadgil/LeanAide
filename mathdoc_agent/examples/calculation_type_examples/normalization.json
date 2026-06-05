@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:normalization",
         "header": "Theorem",
+        "name": "calc_normalization",
         "claim": "(x+y)^2 normalizes to x^2+2*x*y+y^2.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "normalization.root.calculation",
           "status": "resolved",
           "text": "Normalize the polynomial expression."
+        },
+        "source": {
+          "text": "Theorem. (x+y)^2 normalizes to x^2+2*x*y+y^2.\n\nProof. Normalize the polynomial expression.",
+          "id": "normalization.root.theorem",
+          "label": "calc:normalization"
         },
         "id": "normalization.root.theorem",
         "status": "resolved"

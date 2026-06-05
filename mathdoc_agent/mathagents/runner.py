@@ -16,6 +16,7 @@ from mathdoc_agent.mathagents.leansearch import LeanSearchError, lookup_theorems
 T = TypeVar("T", bound=BaseModel)
 _LEANSEARCH_CACHE: dict[str, str | None] = {}
 DEFAULT_AGENT_TIMEOUT_SECONDS = 600.0
+DEFAULT_AGENT_RETRY_COUNT = 1
 THEOREM_LIKE_LEANSEARCH_KINDS = {"theorem", "lemma"}
 
 
@@ -90,6 +91,17 @@ def _agent_timeout_seconds() -> float | None:
     except ValueError:
         return DEFAULT_AGENT_TIMEOUT_SECONDS
     return None if timeout <= 0 else timeout
+
+
+def _agent_retry_count() -> int:
+    value = os.environ.get("MATHDOC_AGENT_AGENT_RETRIES")
+    if value is None:
+        return DEFAULT_AGENT_RETRY_COUNT
+    try:
+        retries = int(value)
+    except ValueError:
+        return DEFAULT_AGENT_RETRY_COUNT
+    return max(0, retries)
 
 
 def _leansearch_enabled() -> bool:
@@ -211,21 +223,26 @@ async def run_agent_typed(
         result = await Runner.run(agent, sdk_input)
         return result.final_output
 
-    _log_agent_event("calling", agent, output_type, input_payload)
-    try:
-        timeout = _agent_timeout_seconds()
-        if timeout is None:
-            output = await _run_agent_raw()
-        else:
-            output = await asyncio.wait_for(_run_agent_raw(), timeout=timeout)
-    except asyncio.TimeoutError as exc:
-        _log_agent_event("timed out", agent, output_type, input_payload)
-        raise TimeoutError(
-            f"Agent {_agent_name(agent)} timed out after {_agent_timeout_seconds()} seconds"
-        ) from exc
-    except Exception:
-        _log_agent_event("failed", agent, output_type, input_payload)
-        raise
+    timeout = _agent_timeout_seconds()
+    retries = _agent_retry_count()
+    for attempt in range(retries + 1):
+        _log_agent_event("calling" if attempt == 0 else "retrying", agent, output_type, input_payload)
+        try:
+            if timeout is None:
+                output = await _run_agent_raw()
+            else:
+                output = await asyncio.wait_for(_run_agent_raw(), timeout=timeout)
+            break
+        except asyncio.TimeoutError as exc:
+            _log_agent_event("timed out", agent, output_type, input_payload)
+            if attempt < retries:
+                continue
+            raise TimeoutError(
+                f"Agent {_agent_name(agent)} timed out after {timeout} seconds"
+            ) from exc
+        except Exception:
+            _log_agent_event("failed", agent, output_type, input_payload)
+            raise
     try:
         if isinstance(output, output_type):
             coerced = output

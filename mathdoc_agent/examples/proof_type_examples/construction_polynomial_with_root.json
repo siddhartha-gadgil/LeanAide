@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:polynomial_with_prescribed_root",
         "header": "Theorem",
+        "name": "thm_polynomial_with_prescribed_root",
         "claim": "For every real number a, there exists a nonzero polynomial p such that p(a)=0.",
         "proof": {
           "type": "construction_proof",
@@ -28,6 +29,7 @@
                 "type": "theorem",
                 "label": "construction_polynomial_with_root.root.construction_polynomial_with_root.proof.root.verify_root",
                 "header": "Claim",
+                "name": "construction_polynomial_with_root_root_construction_polynomial_with_root_proof_root_verify_root",
                 "claim": "p(a)=0.",
                 "proof": {
                   "type": "proof",
@@ -58,6 +60,11 @@
           },
           "id": "construction_polynomial_with_root.root.construction_polynomial_with_root.proof.root",
           "status": "resolved"
+        },
+        "source": {
+          "text": "Theorem. For every real number a, there exists a nonzero polynomial p such that p(a)=0.\n\nProof. Construct the polynomial p(x)=x-a. This polynomial is nonzero, and evaluating at x=a gives p(a)=a-a=0.",
+          "id": "construction_polynomial_with_root.root.construction_polynomial_with_root",
+          "label": "thm:polynomial_with_prescribed_root"
         },
         "id": "construction_polynomial_with_root.root.construction_polynomial_with_root",
         "status": "resolved"

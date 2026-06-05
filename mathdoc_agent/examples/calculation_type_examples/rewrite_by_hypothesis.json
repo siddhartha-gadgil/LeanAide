@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:rewrite_by_hypothesis",
         "header": "Theorem",
+        "name": "calc_rewrite_by_hypothesis",
         "claim": "If x=y, then f x = f y.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "rewrite_by_hypothesis.root.calculation",
           "status": "resolved",
           "text": "Rewrite x to y using the hypothesis."
+        },
+        "source": {
+          "text": "Theorem. If x=y, then f x = f y.\n\nProof. Rewrite x to y using the hypothesis.",
+          "id": "rewrite_by_hypothesis.root.theorem",
+          "label": "calc:rewrite_by_hypothesis"
         },
         "id": "rewrite_by_hypothesis.root.theorem",
         "status": "resolved"

@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:add_subtract_intermediate",
         "header": "Theorem",
+        "name": "calc_add_subtract_intermediate",
         "claim": "f x - f y can be split through an intermediate z.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "add_subtract_intermediate.root.calculation",
           "status": "resolved",
           "text": "Insert and subtract f z."
+        },
+        "source": {
+          "text": "Theorem. f x - f y can be split through an intermediate z.\n\nProof. Insert and subtract f z.",
+          "id": "add_subtract_intermediate.root.theorem",
+          "label": "calc:add_subtract_intermediate"
         },
         "id": "add_subtract_intermediate.root.theorem",
         "status": "resolved"

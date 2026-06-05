@@ -128,6 +128,57 @@ class OpaqueProofHandler(ProofRefinementHandler[None]):
         return True
 
 
+class StepLikeProofHandler(ProofRefinementHandler[None]):
+    """Handle proof children that are already JSON proof-step statements."""
+
+    kind = ProofKind.simple.value
+
+    def __init__(self, step_type: str) -> None:
+        self.step_type = step_type
+
+    def _text(self, node: ProofNode) -> str:
+        return " ".join((node.goal or node.text or "").split())
+
+    def _let_step(self, node: ProofNode) -> LogicalProofStepData:
+        text = self._text(node)
+        variable_name: str | None = None
+        variable_type: str | None = None
+        match = re.match(
+            r"(?i)\s*let\s+([A-Za-z_][A-Za-z0-9_']*)\s*(?::|be|denote|=)\s*(.*?)[.]?\s*$",
+            text,
+        )
+        if match:
+            variable_name = match.group(1)
+            variable_type = match.group(2).strip() or None
+        return LogicalProofStepData(
+            type="let_statement",
+            variable_name=variable_name,
+            variable_type=variable_type,
+            statement=text or None,
+        )
+
+    def _step(self, node: ProofNode) -> LogicalProofStepData:
+        text = self._text(node)
+        if self.step_type == "let_statement":
+            return self._let_step(node)
+        if self.step_type == "assume_statement":
+            return LogicalProofStepData(type="assume_statement", assumption=text or None)
+        return LogicalProofStepData(type="assert_statement", claim=text or None)
+
+    async def refine(self, node: ProofNode, context: ProofContext) -> ProofNode:
+        data = SimpleProofData(proof_steps=[self._step(node)])
+        return node.model_copy(
+            update={
+                "kind": ProofKind.simple,
+                "status": NodeStatus.resolved,
+                "data": data.model_dump(),
+            }
+        )
+
+    def is_resolved(self, node: ProofNode, context: ProofContext) -> bool:
+        return node.status == NodeStatus.resolved
+
+
 class InductionHandler(ProofRefinementHandler[InductionRefinementSpec]):
     kind = ProofKind.induction.value
     output_model = InductionRefinementSpec

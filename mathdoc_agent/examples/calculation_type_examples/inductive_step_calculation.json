@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:inductive_step_calculation",
         "header": "Theorem",
+        "name": "calc_inductive_step_calculation",
         "claim": "The successor step for the sum of the first n natural numbers follows by arithmetic.",
         "proof": {
           "type": "proof",
@@ -34,6 +35,11 @@
           "id": "inductive_step_calculation.root.calculation",
           "status": "resolved",
           "text": "Use the induction hypothesis and normalize the successor expression."
+        },
+        "source": {
+          "text": "Theorem. The successor step for the sum of the first n natural numbers follows by arithmetic.\n\nProof. Use the induction hypothesis and normalize the successor expression.",
+          "id": "inductive_step_calculation.root.theorem",
+          "label": "calc:inductive_step_calculation"
         },
         "id": "inductive_step_calculation.root.theorem",
         "status": "resolved"

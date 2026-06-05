@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:cannot_reach_one_by_twos",
         "header": "Theorem",
+        "name": "thm_cannot_reach_one_by_twos",
         "claim": "Starting from 0 and repeatedly adding or subtracting 2, one cannot reach 1.",
         "proof": {
           "type": "proof",
@@ -37,6 +38,11 @@
           ],
           "id": "invariant_parity_reachability.root.invariant_parity_reachability.proof.root",
           "status": "resolved"
+        },
+        "source": {
+          "text": "Theorem. Starting from 0 and repeatedly adding or subtracting 2, one cannot reach 1.\n\nProof. The invariant is parity. Starting from 0, the current number is even. Adding or subtracting 2 preserves parity, so every reachable number is even. Since 1 is odd, 1 is not reachable.",
+          "id": "invariant_parity_reachability.root.invariant_parity_reachability",
+          "label": "thm:cannot_reach_one_by_twos"
         },
         "id": "invariant_parity_reachability.root.invariant_parity_reachability",
         "status": "resolved"
