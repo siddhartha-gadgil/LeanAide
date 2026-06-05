@@ -14,6 +14,7 @@ from mathdoc_agent.models.payloads import (
     CasesData,
     DefinitionData,
     InductionData,
+    InductiveConstructorData,
     InductiveTypeDefinitionData,
     InstanceDefinitionData,
     SimpleProofData,
@@ -32,6 +33,16 @@ def _without_none(value: dict[str, Any]) -> dict[str, Any]:
 
 def _model_dump_json(value: BaseModel) -> dict[str, Any]:
     return value.model_dump(mode="json", exclude_none=True)
+
+
+def _inductive_constructor_json(value: InductiveConstructorData) -> dict[str, Any]:
+    return _without_none(
+        {
+            "name": value.name,
+            "arguments": [_model_dump_json(argument) for argument in value.arguments],
+            "index_args": value.index_args or None,
+        }
+    )
 
 
 def _lean_identifier_from_text(value: str, *, fallback: str = "generated_name") -> str:
@@ -190,6 +201,16 @@ def _proof_label(node: ProofNode) -> str | None:
     if node.goal and not _is_instructional_claim(node.goal):
         return node.goal
     return None
+
+
+def _source_data(node: DocumentNode | ProofNode) -> dict[str, Any]:
+    return _without_none(
+        {
+            "text": node.text,
+            "id": node.id,
+            "label": getattr(node, "label", None),
+        }
+    )
 
 
 def _is_assumption_text(text: str | None) -> bool:
@@ -366,6 +387,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
                 "claim": statement.statement if statement else node.text,
                 "hypothesis": _assumption_steps(statement.assumptions) if statement and statement.assumptions else None,
                 "proof": proof,
+                "source": _source_data(node),
                 "id": node.id,
                 "status": node.status.value,
             }
@@ -383,6 +405,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
                 "definition": data.definitions or node.text,
                 "name": data.term or node.title or node.label or node.id,
                 "notation": data.notation,
+                "source": _source_data(node),
                 "id": node.id,
                 "status": node.status.value,
             }
@@ -435,7 +458,7 @@ def _document_node_data(node: DocumentNode) -> dict[str, Any]:
                 "parameters": [_model_dump_json(parameter) for parameter in data.parameters] or None,
                 "indices": [_model_dump_json(index) for index in data.indices] or None,
                 "constructors": [
-                    _model_dump_json(constructor)
+                    _inductive_constructor_json(constructor)
                     for constructor in data.constructors
                 ],
                 "text": node.text or None,

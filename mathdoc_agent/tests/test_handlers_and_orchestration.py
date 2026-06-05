@@ -12,6 +12,7 @@ from mathdoc_agent.models.base import DocumentKind, NodeStatus, ProofKind
 from mathdoc_agent.models.payloads import (
     CalcRelation,
     CalcStep,
+    ConstructorArgumentData,
     InductiveConstructorData,
     InstanceGiveData,
     LocalClaimData,
@@ -31,8 +32,11 @@ from mathdoc_agent.models.refinement_specs import (
     DeducedFromClaimRewriteSpec,
     DocumentChildSpec,
     DocumentRefinementSpec,
+    InformalNotationRepairSpec,
     InductionRefinementSpec,
     ProofResolutionSpec,
+    ProofSanityAuditSpec,
+    ProofSanityPatchSpec,
     SimpleProofRefinementSpec,
     StructuredProofRefinementSpec,
 )
@@ -43,12 +47,18 @@ from mathdoc_agent.orchestration.deduced_from_claim_rewrite import (
     rewrite_deduced_from_claims_for_lean,
 )
 from mathdoc_agent.orchestration.document_orchestrator import document_from_text, refine_math_document
+from mathdoc_agent.orchestration.informal_notation_repair import (
+    repair_informal_notation_for_lean,
+)
+from mathdoc_agent.orchestration.lean_lint import finalize_lean_facing_json
 from mathdoc_agent.orchestration.proof_orchestrator import refine_proof_tree
 from mathdoc_agent.orchestration.proof_resolution import (
     DIRECT_CODEGEN_PROOF_KINDS,
     proof_kind_needs_resolution,
     resolve_unhandled_proof_tree,
 )
+from mathdoc_agent.orchestration.proof_sanity import audit_proof_steps_for_counterexamples
+from mathdoc_agent.orchestration.proof_sanity import repair_proof_sanity_issues
 from mathdoc_agent.orchestration.worklist import walk_proof_nodes
 from mathdoc_agent.plugins.document_types import default_document_handler_registry
 from mathdoc_agent.plugins.proof_types import default_proof_handler_registry
@@ -258,6 +268,49 @@ class DeducedFromClaimRewriteAgent:
         return DeducedFromClaimRewriteSpec(patches=patches)
 
 
+class ProofSanityAgent:
+    def __call__(self, payload):
+        entries = {entry["claim"]: entry for entry in payload["assertion_entries"]}
+        patches = []
+        if "For all c and all m, x = c * y." in entries:
+            patches.append(
+                ProofSanityPatchSpec(
+                    path=entries["For all c and all m, x = c * y."]["path"],
+                    action="mark_needs_review",
+                    reason="The assertion quantifies over new arbitrary variables and is false in general.",
+                    suggested_repair="Use only the local instance needed in the proof.",
+                )
+            )
+        return ProofSanityAuditSpec(patches=patches)
+
+
+class InformalNotationAgent:
+    def __call__(self, payload):
+        patches = []
+        for entry in payload["notation_entries"]:
+            text = entry["text"]
+            text = text.replace("VQ = A tensor_Z Q", "VQ is A tensor over Z with Q")
+            text = text.replace("||phi(g)||_B", "normB(phi applied to g)")
+            text = text.replace("G_ab", "GAb")
+            patches.append({"path": entry["path"], "replacement": text})
+        return InformalNotationRepairSpec(patches=patches)
+
+
+class ProofSanityRepairAgent:
+    def __call__(self, payload):
+        patches = []
+        for entry in payload["assertion_entries"]:
+            patches.append(
+                ProofSanityPatchSpec(
+                    path=entry["path"],
+                    action="replace_claim",
+                    reason="repair risky assertion",
+                    claim="f is defined by f applied to m and k equals l applied to x",
+                )
+            )
+        return ProofSanityAuditSpec(patches=patches)
+
+
 class ProofResolutionAgent:
     def __call__(self, payload):
         return ProofResolutionSpec(
@@ -391,7 +444,11 @@ class DefinitionDocumentParserAgent:
                     indices=[ParameterData(name="n", type="Nat")],
                     constructors=[
                         InductiveConstructorData(name="zero", arguments=[]),
-                        InductiveConstructorData(name="step", arguments=["Even n"]),
+                        InductiveConstructorData(
+                            name="step",
+                            arguments=[ConstructorArgumentData(name="h", type="Even n")],
+                            index_args=["n + 2"],
+                        ),
                     ],
                 ),
             ]
@@ -758,6 +815,204 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertNotIn("deduced_from_claim", rewritten["proof_steps"][1])
 
+    def test_finalize_lean_facing_json_removes_results_used_and_materializes_claims(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "assert_statement",
+                            "claim": "Q",
+                            "deduced_from_claim": ["P"],
+                            "results_used": [{"target_identifier": "h"}],
+                            "deduced_from_theorem": [
+                                {
+                                    "claim": "If P then Q.",
+                                    "lean_name": "some_theorem",
+                                }
+                            ],
+                        }
+                    ]
+                }
+            }
+        )
+
+        body = finalized["document"]["body"]
+        self.assertEqual([step["claim"] for step in body], ["P", "Q"])
+        self.assertNotIn("deduced_from_claim", body[1])
+        self.assertNotIn("results_used", body[1])
+        dependency = body[1]["deduced_from_theorem"][0]
+        self.assertEqual(dependency["lean_name"], "some_theorem")
+        self.assertNotIn("formalization_status", dependency)
+        codes = {
+            issue["code"]
+            for issue in finalized["lean_validation"]["issues"]
+        }
+        self.assertIn("removed_results_used", codes)
+        self.assertNotIn("lean_name_without_lean_term", codes)
+
+    def test_finalize_lean_facing_json_flags_semantic_drift_from_source(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "For every p : AddGroupSeminorm A, p is homogeneous over ℕ.",
+                            "source": {
+                                "text": (
+                                    "Let A be an abelian group and let p : A -> R be "
+                                    "a homogeneous pseudo-length function for every integer n."
+                                )
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        theorem = finalized["document"]["body"][0]
+        codes = {
+            issue["code"]
+            for issue in theorem["lean_validation"]["issues"]
+        }
+        self.assertIn("representation_drift", codes)
+        self.assertIn("integer_to_natural_drift", codes)
+
+    async def test_informal_notation_repair_rewrites_codegen_fields(self) -> None:
+        repaired = await repair_informal_notation_for_lean(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "VQ = A tensor_Z Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "l(g)=||phi(g)||_B on G_ab",
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            },
+            InformalNotationAgent(),
+        )
+
+        theorem = repaired["document"]["body"][0]
+        self.assertEqual(theorem["claim"], "VQ is A tensor over Z with Q")
+        step = theorem["proof"]["proof_steps"][0]
+        self.assertEqual(step["claim"], "l(g)=normB(phi applied to g) on GAb")
+
+    def test_finalize_lean_facing_json_does_not_quarantine_risky_proof_assertions(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "f applied to m and k equals l of x",
+                                        "proof_sanity": {
+                                            "status": "needs_review",
+                                            "issues": [
+                                                {
+                                                    "reason": "m and k are not in scope.",
+                                                    "suggested_repair": "Introduce typed variables first.",
+                                                }
+                                            ],
+                                        },
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        step = finalized["document"]["body"][0]["proof"]["proof_steps"][0]
+        self.assertEqual(step["type"], "assert_statement")
+        self.assertNotIn("quarantined_type", step)
+
+    async def test_proof_sanity_audit_marks_counterexample_prone_assertions(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "Q",
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "For all c and all m, x = c * y.",
+                                    "proof_method": "obvious",
+                                }
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+
+        audited = await audit_proof_steps_for_counterexamples(data, ProofSanityAgent())
+
+        step = audited["document"]["body"][0]["proof"]["proof_steps"][0]
+        self.assertEqual(step["proof_sanity"]["status"], "needs_review")
+        self.assertEqual(step["formalization_status"], "needs_review")
+
+    async def test_proof_sanity_repair_replaces_claim_and_clears_marker(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "Q",
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "f applied to m and k equals l applied to x",
+                                    "proof_sanity": {
+                                        "status": "needs_review",
+                                        "issues": [
+                                            {
+                                                "reason": "m and k are not in scope.",
+                                                "suggested_repair": "Use the scoped definition of f.",
+                                            }
+                                        ],
+                                    },
+                                    "formalization_status": "needs_review",
+                                }
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+
+        repaired = await repair_proof_sanity_issues(data, ProofSanityRepairAgent())
+
+        step = repaired["document"]["body"][0]["proof"]["proof_steps"][0]
+        self.assertEqual(
+            step["claim"],
+            "f is defined by f applied to m and k equals l applied to x",
+        )
+        self.assertNotIn("proof_sanity", step)
+        self.assertNotIn("formalization_status", step)
+
     def test_default_registry_has_reasonable_taxonomy_handlers(self) -> None:
         registry = proof_registry()
         for kind in (
@@ -953,7 +1208,8 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(body[2]["name"], "Even")
         self.assertTrue(body[2]["is_prop"])
         self.assertEqual(body[2]["indices"][0]["name"], "n")
-        self.assertEqual(body[2]["constructors"][1]["arguments"], ["Even n"])
+        self.assertEqual(body[2]["constructors"][1]["arguments"], [{"name": "h", "type": "Even n"}])
+        self.assertEqual(body[2]["constructors"][1]["index_args"], ["n + 2"])
 
     async def test_proof_paragraph_attaches_to_preceding_theorem(self) -> None:
         document = document_from_text("Theorem. P.\n\nProof. This follows directly.", title="Proof Paragraph")

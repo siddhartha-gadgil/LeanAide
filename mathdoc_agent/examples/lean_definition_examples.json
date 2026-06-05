@@ -94,8 +94,17 @@
           {
             "name": "step_even",
             "arguments": [
-              "n : Nat",
-              "h : Even n"
+              {
+                "name": "n",
+                "type": "Nat"
+              },
+              {
+                "name": "h",
+                "type": "Even n"
+              }
+            ],
+            "index_args": [
+              "n + 2"
             ]
           }
         ],
@@ -123,9 +132,18 @@
           {
             "name": "node",
             "arguments": [
-              "left : BinaryTree α",
-              "label : α",
-              "right : BinaryTree α"
+              {
+                "name": "left",
+                "type": "BinaryTree α"
+              },
+              {
+                "name": "label",
+                "type": "α"
+              },
+              {
+                "name": "right",
+                "type": "BinaryTree α"
+              }
             ]
           }
         ],
