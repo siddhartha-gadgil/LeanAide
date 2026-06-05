@@ -258,6 +258,25 @@ def cmdPreludeBlob : TranslateM String := do
   let cmds := cmds.map (·.pretty)
   return cmds.foldr (· ++ "\n" ++ · ) "\n\n"
 
+def commandNeededForFrontendPrelude (cmd : Syntax.Command) : TranslateM Bool := do
+  match ← DefData.ofSyntax? cmd with
+  | some dfn => return (← getEnv).find? dfn.name |>.isNone
+  | none => return true
+
+def cmdPreludeForFrontendBlob? : TranslateM <| Option String := do
+  let cmds := (← get).cmdPrelude
+  let cmds ← cmds.filterM commandNeededForFrontendPrelude
+  if cmds.isEmpty then return none
+  let cmds ←
+    cmds.mapM (fun cmd => PrettyPrinter.ppCommand cmd)
+  let cmds := cmds.map (·.pretty)
+  return some <| cmds.foldr (· ++ "\n" ++ · ) "\n\n"
+
+def withCommandPrelude (body : String) : TranslateM String := do
+  match ← cmdPreludeForFrontendBlob? with
+  | some prelude => return prelude ++ "\n" ++ body
+  | none => return body
+
 def cmdPreludeBriefBlob? : TranslateM <| Option String := do
   let cmds := (← get).cmdPrelude
   if cmds.isEmpty then return none

@@ -18,6 +18,27 @@ def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
   | Except.error err => return Except.error err
   | Except.ok stx => return Except.ok stx
 
+def checkTypeElabFrontWithCommandPreludeM (type : String) :
+    TranslateM <| List String := do
+  checkElabFrontM (← withCommandPrelude s!"example : {type} := by sorry")
+
+def elabFrontTheoremExprWithCommandPreludeM (type : String) :
+    TranslateM <| Except (List String) Expr := do
+  let n := `my_shiny_new_theorem
+  let input ←
+    withCommandPrelude
+      s!"set_option autoImplicit false in\nnoncomputable def {n} : {type} := by sorry"
+  let (env, logs) ← runFrontendM input
+  let errors := logs.toList.filter (·.severity == MessageSeverity.error)
+  let errorStrings ← errors.mapM (·.data.toString)
+  if errors.isEmpty then
+    let seek? : Option ConstantInfo := env.find? n
+    match seek? with
+    | none => return Except.error ["Could not find theorem after elaboration"]
+    | some seek => return Except.ok seek.type
+  else
+    return Except.error errorStrings
+
 def elabThm4Aux (s : String)
   (_levelNames : List Lean.Name := levelNames)
   : TranslateM <| Except ElabError Expr := do
@@ -36,12 +57,12 @@ def elabThm4Aux (s : String)
     -- | Except.error err₁ =>
       let frontEndErrs ← do
         try
-          checkTypeElabFrontM s
+          checkTypeElabFrontWithCommandPreludeM s
         catch e =>
           let error ← e.toMessageData.toString
           pure [error]
       if frontEndErrs.isEmpty then
-        match ← elabFrontTheoremExprM s with
+        match ← elabFrontTheoremExprWithCommandPreludeM s with
         | Except.error err₂ =>
           let res := .parsed s "" err₂ ctx?
           traceAide `leanaide.elaboration.info (toJson res).compress
