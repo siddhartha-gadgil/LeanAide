@@ -11,6 +11,7 @@ from mathdoc_agent.models.document import DocumentNode
 from mathdoc_agent.models.payloads import (
     CalcRelation,
     CalcStep,
+    ConstructorArgumentData,
     DeducedFromTheoremData,
     InductionData,
     InductiveConstructorData,
@@ -272,13 +273,28 @@ class ModelAndBuilderTests(unittest.TestCase):
             indices=[ParameterData(name="n", type="Nat")],
             constructors=[
                 InductiveConstructorData(name="zero", arguments=[]),
-                InductiveConstructorData(name="step", arguments=["Even n"]),
+                InductiveConstructorData(
+                    name="step",
+                    arguments=[ConstructorArgumentData(name="h", type="Even n")],
+                    index_args=["n + 2"],
+                ),
             ],
         )
         self.assertEqual(inductive.kind, DocumentKind.inductive_type_definition)
         self.assertEqual(inductive.model_dump()["type"], "inductive-type-definition")
         self.assertTrue(inductive.data["is_prop"])
         self.assertEqual(inductive.data["indices"][0]["name"], "n")
+        self.assertEqual(inductive.data["constructors"][1]["arguments"][0]["name"], "h")
+        self.assertEqual(inductive.data["constructors"][1]["arguments"][0]["type"], "Even n")
+        self.assertEqual(inductive.data["constructors"][1]["index_args"], ["n + 2"])
+
+    def test_inductive_constructor_accepts_legacy_string_arguments(self) -> None:
+        constructor = InductiveConstructorData(name="step", arguments=["n : Nat", "h : Even n"])
+        dumped = constructor.model_dump()
+        self.assertEqual(
+            dumped["arguments"],
+            [{"name": "n", "type": "Nat"}, {"name": "h", "type": "Even n"}],
+        )
 
 
 if __name__ == "__main__":

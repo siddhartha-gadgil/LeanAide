@@ -12,6 +12,7 @@ from mathdoc_agent.models.base import DocumentKind, NodeStatus, ProofKind
 from mathdoc_agent.models.payloads import (
     CalcRelation,
     CalcStep,
+    ConstructorArgumentData,
     InductiveConstructorData,
     InstanceGiveData,
     LocalClaimData,
@@ -443,7 +444,11 @@ class DefinitionDocumentParserAgent:
                     indices=[ParameterData(name="n", type="Nat")],
                     constructors=[
                         InductiveConstructorData(name="zero", arguments=[]),
-                        InductiveConstructorData(name="step", arguments=["Even n"]),
+                        InductiveConstructorData(
+                            name="step",
+                            arguments=[ConstructorArgumentData(name="h", type="Even n")],
+                            index_args=["n + 2"],
+                        ),
                     ],
                 ),
             ]
@@ -1203,7 +1208,8 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(body[2]["name"], "Even")
         self.assertTrue(body[2]["is_prop"])
         self.assertEqual(body[2]["indices"][0]["name"], "n")
-        self.assertEqual(body[2]["constructors"][1]["arguments"], ["Even n"])
+        self.assertEqual(body[2]["constructors"][1]["arguments"], [{"name": "h", "type": "Even n"}])
+        self.assertEqual(body[2]["constructors"][1]["index_args"], ["n + 2"])
 
     async def test_proof_paragraph_attaches_to_preceding_theorem(self) -> None:
         document = document_from_text("Theorem. P.\n\nProof. This follows directly.", title="Proof Paragraph")

@@ -6,6 +6,7 @@ from pathlib import Path
 from mathdoc_agent.export.json import to_json
 from mathdoc_agent.models.base import DocumentKind
 from mathdoc_agent.models.payloads import (
+    ConstructorArgumentData,
     InductiveConstructorData,
     InstanceGiveData,
     ParameterData,
@@ -106,7 +107,11 @@ class DocumentParserAgent:
                         InductiveConstructorData(name="zero_even", arguments=[]),
                         InductiveConstructorData(
                             name="step_even",
-                            arguments=["n : Nat", "h : Even n"],
+                            arguments=[
+                                ConstructorArgumentData(name="n", type="Nat"),
+                                ConstructorArgumentData(name="h", type="Even n"),
+                            ],
+                            index_args=["n + 2"],
                         ),
                     ],
                 ),
@@ -126,9 +131,9 @@ class DocumentParserAgent:
                         InductiveConstructorData(
                             name="node",
                             arguments=[
-                                "left : BinaryTree α",
-                                "label : α",
-                                "right : BinaryTree α",
+                                ConstructorArgumentData(name="left", type="BinaryTree α"),
+                                ConstructorArgumentData(name="label", type="α"),
+                                ConstructorArgumentData(name="right", type="BinaryTree α"),
                             ],
                         ),
                     ],

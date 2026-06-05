@@ -33,6 +33,22 @@ definitions, theorem-like statements, structure/instance/inductive definitions,
 proofs, calculations, examples, remarks, local claims, or `unknown` when the
 parser cannot classify it safely.
 
+For `inductive-type-definition`, constructor `arguments` are structured objects:
+
+```json
+{
+  "name": "step_even",
+  "arguments": [
+    { "name": "n", "type": "Nat" },
+    { "name": "h", "type": "Even n" }
+  ],
+  "index_args": ["n + 2"]
+}
+```
+
+The optional `index_args` field gives the index values of the inductive family
+for that constructor.
+
 ## Command Line: Fake-Agent Examples
 
 Run commands from the repository root.
