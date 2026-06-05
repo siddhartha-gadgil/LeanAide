@@ -10,6 +10,7 @@ from mathdoc_agent.handlers.proof_handlers import (
     OpaqueProofHandler,
     SimpleProofHandler,
     SpecializeHandler,
+    StepLikeProofHandler,
     StructuredProofHandler,
     UnknownProofHandler,
 )
@@ -46,6 +47,8 @@ def default_proof_handler_registry(
     registry.register(ProofKind.calculation.value, CalculationHandler(calculation_agent))
     registry.register(ProofKind.local_claim.value, LocalClaimHandler(local_claim_agent))
     registry.register(ProofKind.specialize.value, SpecializeHandler(specialize_agent))
+    for step_kind in ("let_statement", "assume_statement", "assert_statement"):
+        registry.register(step_kind, StepLikeProofHandler(step_kind))
     for structured_kind in STRUCTURED_PROOF_KINDS:
         registry.register(structured_kind.value, StructuredProofHandler(structured_kind, structured_agent))
     return registry

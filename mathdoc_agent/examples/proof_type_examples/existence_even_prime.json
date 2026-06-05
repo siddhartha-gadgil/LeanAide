@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:even_prime_exists",
         "header": "Theorem",
+        "name": "thm_even_prime_exists",
         "claim": "There exists a prime number that is even.",
         "proof": {
           "type": "existence_proof",
@@ -28,6 +29,11 @@
           },
           "id": "existence_even_prime.root.existence_even_prime.proof.root",
           "status": "resolved"
+        },
+        "source": {
+          "text": "Theorem. There exists a prime number that is even.\n\nProof. Take the witness 2. The number 2 is prime, and 2 is even.",
+          "id": "existence_even_prime.root.existence_even_prime",
+          "label": "thm:even_prime_exists"
         },
         "id": "existence_even_prime.root.existence_even_prime",
         "status": "resolved"

@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:additive_identity_unique",
         "header": "Theorem",
+        "name": "thm_additive_identity_unique",
         "claim": "In a group, the additive identity is unique.",
         "proof": {
           "type": "uniqueness_proof",
@@ -25,6 +26,11 @@
           "claim": "In a group, the additive identity is unique.",
           "id": "uniqueness_additive_identity.root.uniqueness_additive_identity.proof.root",
           "status": "resolved"
+        },
+        "source": {
+          "text": "Theorem. In a group, the additive identity is unique.\n\nProof. Suppose e and e' are both additive identities. Since e is an identity, e+e'=e'. Since e' is an identity, e+e'=e. Hence e=e'.",
+          "id": "uniqueness_additive_identity.root.uniqueness_additive_identity",
+          "label": "thm:additive_identity_unique"
         },
         "id": "uniqueness_additive_identity.root.uniqueness_additive_identity",
         "status": "resolved"

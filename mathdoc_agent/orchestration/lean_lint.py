@@ -49,6 +49,15 @@ _BUNDLED_REPRESENTATION_TERMS = (
     "HomogeneousLengthFunction",
 )
 
+_SOURCE_CONTEXT_PREFIXES = (
+    "let ",
+    "assume ",
+    "assume that ",
+    "suppose ",
+    "suppose that ",
+    "fix ",
+)
+
 
 def _escape_pointer_part(part: str) -> str:
     return part.replace("~", "~0").replace("/", "~1")
@@ -113,6 +122,94 @@ def _claim_text(value: dict[str, Any]) -> str:
         return claim
     definition = value.get("definition")
     return definition if isinstance(definition, str) else ""
+
+
+def _normalize_source_context_text(text: str) -> str:
+    text = re.sub(r"\s+", " ", text).strip()
+    text = text.replace("\\(", "").replace("\\)", "")
+    text = text.replace("$", "")
+    return text[:-1].strip() if text.endswith(".") else text
+
+
+def _source_context_assumptions(source: str) -> list[str]:
+    source = source.strip()
+    if not source:
+        return []
+    source = re.sub(r"\s+", " ", source)
+    source = re.sub(r"\$\$(.*?)\$\$", " ", source)
+    sentences = [
+        sentence.strip()
+        for sentence in re.split(r"(?<=[.!?])\s+", source)
+        if sentence.strip()
+    ]
+    assumptions: list[str] = []
+    for sentence in sentences:
+        lowered = sentence.lower()
+        if lowered.startswith(("then ", "therefore ", "hence ")):
+            break
+        if re.match(r"^(for every|for all|if)\b", lowered):
+            break
+        if lowered.startswith(_SOURCE_CONTEXT_PREFIXES):
+            assumptions.append(_normalize_source_context_text(sentence))
+            continue
+        if assumptions:
+            break
+    return assumptions
+
+
+def _same_text(left: str, right: str) -> bool:
+    return " ".join(left.split()).casefold() == " ".join(right.split()).casefold()
+
+
+def _promote_source_context_hypotheses(value: dict[str, Any]) -> dict[str, Any]:
+    if value.get("type") != "theorem":
+        return value
+    assumptions = _source_context_assumptions(_source_text(value))
+    if not assumptions:
+        return value
+    existing = value.get("hypothesis")
+    hypotheses = list(existing) if isinstance(existing, list) else []
+    existing_assumptions = [
+        item.get("assumption")
+        for item in hypotheses
+        if isinstance(item, dict) and isinstance(item.get("assumption"), str)
+    ]
+    added = False
+    for assumption in assumptions:
+        if any(_same_text(assumption, existing_item) for existing_item in existing_assumptions):
+            continue
+        hypotheses.append({"type": "assume_statement", "assumption": assumption})
+        existing_assumptions.append(assumption)
+        added = True
+    if not added:
+        return value
+    return {**value, "hypothesis": hypotheses}
+
+
+def _repair_stale_materialized_claim_obligation(value: dict[str, Any]) -> dict[str, Any]:
+    if (
+        value.get("type") != "assert_statement"
+        or value.get("proof_method") != "Materialized from deduced_from_claim."
+    ):
+        return value
+    claim = value.get("claim")
+    if not isinstance(claim, str) or not claim.strip():
+        return value
+    repaired = {
+        **value,
+        "proof_method": "Named local obligation from unresolved claim dependency.",
+    }
+    repaired.setdefault("name", _lean_identifier_from_text(claim, fallback="local_obligation"))
+    source = repaired.get("source")
+    if not isinstance(source, dict):
+        repaired["source"] = {"text": claim, "kind": "deduced_from_claim"}
+    else:
+        repaired["source"] = {
+            **source,
+            "text": source.get("text") if isinstance(source.get("text"), str) else claim,
+            "kind": source.get("kind") if isinstance(source.get("kind"), str) else "deduced_from_claim",
+        }
+    return repaired
 
 
 def _source_declares_unbundled_function(source: str) -> bool:
@@ -254,6 +351,21 @@ def _normalize_theorem_dependencies(
             isinstance(lean_name, str)
             and lean_name.strip()
             and not (isinstance(lean_term, str) and lean_term.strip())
+        ):
+            item = {
+                key: entry
+                for key, entry in item.items()
+                if key != "lean_name"
+            }
+            item.setdefault("lean_name_candidate", lean_name)
+            item.setdefault("verification_status", "unverified")
+            changed = True
+            normalized_dependencies.append(item)
+            continue
+        if (
+            isinstance(lean_name, str)
+            and lean_name.strip()
+            and not (isinstance(lean_term, str) and lean_term.strip())
             and item.get("requires_instantiation") is True
         ):
             item = {
@@ -332,6 +444,8 @@ def _normalize_value(value: Any, path: str = "") -> tuple[Any, list[dict[str, st
             local_issues.extend(_lint_string_field(key, item, _child_path(path, key)))
 
     normalized, dependency_issues = _normalize_theorem_dependencies(normalized, path)
+    normalized = _repair_stale_materialized_claim_obligation(normalized)
+    normalized = _promote_source_context_hypotheses(normalized)
     local_issues.extend(dependency_issues)
     local_issues.extend(_validate_semantics(normalized, path))
     if local_issues:

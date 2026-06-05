@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:continuous_bounded_interval",
         "header": "Theorem",
+        "name": "thm_continuous_bounded_interval",
         "claim": "Every continuous real-valued function on [0,1] is bounded.",
         "proof": {
           "type": "reduction_proof",
@@ -29,6 +30,11 @@
           },
           "id": "reduction_bounded_on_interval.root.thm_continuous_bounded_interval.proof.root",
           "status": "resolved"
+        },
+        "source": {
+          "text": "Theorem. Every continuous real-valued function on [0,1] is bounded.\n\nProof. Reduce to the theorem that a continuous function on a compact space is\nbounded. The interval [0,1] is compact, so the compact-domain theorem applies\nto the given function.",
+          "id": "reduction_bounded_on_interval.root.thm_continuous_bounded_interval",
+          "label": "thm:continuous_bounded_interval"
         },
         "id": "reduction_bounded_on_interval.root.thm_continuous_bounded_interval",
         "status": "resolved"

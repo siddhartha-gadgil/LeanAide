@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:mixed_relation_chain",
         "header": "Theorem",
+        "name": "calc_mixed_relation_chain",
         "claim": "If x= y and y < z, then x < z.",
         "proof": {
           "type": "proof",
@@ -34,6 +35,11 @@
           "id": "mixed_relation_chain_nonnegative.root.calculation",
           "status": "resolved",
           "text": "Rewrite by x=y and then use y<z."
+        },
+        "source": {
+          "text": "Theorem. If x= y and y < z, then x < z.\n\nProof. Rewrite by x=y and then use y<z.",
+          "id": "mixed_relation_chain_nonnegative.root.theorem",
+          "label": "calc:mixed_relation_chain"
         },
         "id": "mixed_relation_chain_nonnegative.root.theorem",
         "status": "resolved"

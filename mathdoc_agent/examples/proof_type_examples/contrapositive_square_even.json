@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:square_even_contrapositive",
         "header": "Theorem",
+        "name": "thm_square_even_contrapositive",
         "claim": "If n^2 is even, then n is even.",
         "proof": {
           "type": "proof",
@@ -21,6 +22,11 @@
           ],
           "id": "contrapositive_square_even.root.contrapositive_square_even.proof.root",
           "status": "resolved"
+        },
+        "source": {
+          "text": "Theorem. If n^2 is even, then n is even.\n\nProof. We prove the contrapositive. Assume n is odd, so n=2k+1 for some integer k. Then n^2=(2k+1)^2=2(2k^2+2k)+1, which is odd. Therefore if n^2 is even, n is even.",
+          "id": "contrapositive_square_even.root.contrapositive_square_even",
+          "label": "thm:square_even_contrapositive"
         },
         "id": "contrapositive_square_even.root.contrapositive_square_even",
         "status": "resolved"

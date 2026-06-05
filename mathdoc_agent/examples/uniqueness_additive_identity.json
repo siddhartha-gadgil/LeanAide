@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:unique_additive_identity",
         "header": "Theorem",
+        "name": "thm_unique_additive_identity",
         "claim": "In an additive group, there is a unique additive identity.",
         "proof": {
           "type": "uniqueness_proof",
@@ -38,6 +39,7 @@
                 "type": "theorem",
                 "label": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root.uniqueness",
                 "header": "Claim",
+                "name": "uniqueness_additive_identity_root_thm_unique_additive_identity_proof_root_uniqueness",
                 "claim": "Any two additive identities are equal.",
                 "proof": {
                   "type": "proof",
@@ -88,6 +90,11 @@
           "claim": "There is a unique additive identity.",
           "id": "uniqueness_additive_identity.root.thm_unique_additive_identity.proof.root",
           "status": "resolved"
+        },
+        "source": {
+          "text": "Theorem. In an additive group, there is a unique additive identity.\n\nProof. Existence is given by the identity element 0. For uniqueness, suppose e\nand e' are both additive identities. Since e is an identity, e+e'=e'. Since e'\nis an identity, e+e'=e. Hence e=e'.",
+          "id": "uniqueness_additive_identity.root.thm_unique_additive_identity",
+          "label": "thm:unique_additive_identity"
         },
         "id": "uniqueness_additive_identity.root.thm_unique_additive_identity",
         "status": "resolved"

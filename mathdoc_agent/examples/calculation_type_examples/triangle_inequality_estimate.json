@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:triangle_inequality_estimate",
         "header": "Theorem",
+        "name": "calc_triangle_inequality_estimate",
         "claim": "|x+z|≤|x|+|z|.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "triangle_inequality_estimate.root.calculation",
           "status": "resolved",
           "text": "Apply the triangle inequality."
+        },
+        "source": {
+          "text": "Theorem. |x+z|≤|x|+|z|.\n\nProof. Apply the triangle inequality.",
+          "id": "triangle_inequality_estimate.root.theorem",
+          "label": "calc:triangle_inequality_estimate"
         },
         "id": "triangle_inequality_estimate.root.theorem",
         "status": "resolved"

@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "thm:even_iff_square_even",
         "header": "Theorem",
+        "name": "thm_even_iff_square_even",
         "claim": "For an integer n, n is even if and only if n^2 is even.",
         "proof": {
           "type": "bi-implication_cases_proof",
@@ -31,6 +32,11 @@
           },
           "id": "equivalence_even_square.root.equivalence_even_square.proof.root",
           "status": "resolved"
+        },
+        "source": {
+          "text": "Theorem. For an integer n, n is even if and only if n^2 is even.\n\nProof. For the forward direction, if n=2k then n^2=2(2k^2), so n^2 is even. For the reverse direction, use the contrapositive: if n is odd, then n^2 is odd.",
+          "id": "equivalence_even_square.root.equivalence_even_square",
+          "label": "thm:even_iff_square_even"
         },
         "id": "equivalence_even_square.root.equivalence_even_square",
         "status": "resolved"

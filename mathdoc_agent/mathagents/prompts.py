@@ -20,6 +20,12 @@ The `statement` field must be a mathematical assertion, not an instruction to
 the reader or prover. Do not write imperative/task text such as "show that",
 "prove", "conclude", "negate the desired conclusion", or "produce a witness"
 as a statement.
+If the source theorem starts with ambient context such as "Let G be a group",
+"Let l be a homogeneous pseudo-length function", "Assume ...", or "Suppose ...",
+include those assumptions in `data_entries` using repeated key `assumption`
+entries, and keep the `statement` field for the conclusion. Do not leave such
+context only in proof text, and do not later materialize it as a proof-step
+assertion.
 Avoid local-definition syntax inside theorem statements, especially phrases
 such as `if C_n := ... then ...`. Instead state the local definition as a named
 function or object in mathematical prose: for example, "Let C : Nat -> G be
@@ -133,10 +139,13 @@ fields when the source supports them:
   object must have a `claim` field giving the general theorem, and may have
   `name`, `description`, `lean_name`, and `lean_term` fields. Use `lean_name`
   only for an exact Lean/Mathlib declaration name found by LeanSearch; do not
-  invent Lean names. If the theorem is used after instantiating it at particular
-  local values or hypotheses, add `lean_term` with the exact Lean expression for
-  that instance, such as `(Nat.succ_le_succ hnm)` or `(le_trans hxy hyz)`. Omit
-  `lean_term` when the specific instantiated term is not clear.
+  invent Lean names. Do not fill `lean_name` just because LeanSearch returned a
+  nearby candidate; leave the Lean name absent unless the candidate is exactly
+  the theorem being used. If the theorem is used after instantiating it at
+  particular local values or hypotheses, add `lean_term` with the exact Lean
+  expression for that instance, such as `(Nat.succ_le_succ hnm)` or
+  `(le_trans hxy hyz)`. Omit `lean_term` when the specific instantiated term is
+  not clear.
 Do not put method names, tactic names, or bare labels in `deduced_from_claim`.
 For example, do not write `Second derivative test` as a claim dependency; use
 `deduced_from_theorem` with a theorem object whose `claim` states the test and
@@ -178,6 +187,13 @@ Avoid extracting obvious typing side conditions as standalone assertions, for
 example `x ∈ G`, `s^{-1} ∈ G`, `n > 0`, or "`l` is a pseudo-length function",
 when they are already hypotheses or fixed-variable context. Keep them in
 assumptions, variable types, or proof methods instead.
+If a proof uses a complex construction, such as a quotient, tensor product,
+completion, induced function, lifted map, or destructuring an existential
+theorem, introduce explicit named objects with `let_statement` steps and record
+the required properties as separate assertions. Do not ask downstream Lean code
+to invent the object from prose such as "choose the quotient map" or "take the
+completion"; name the object, its type, the defining map or theorem application,
+and the properties that must be verified.
 """
 
 CALCULATION_INSTRUCTIONS = """

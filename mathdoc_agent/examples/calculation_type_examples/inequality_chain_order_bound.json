@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:inequality_chain",
         "header": "Theorem",
+        "name": "calc_inequality_chain",
         "claim": "If a ≤ b and b ≤ c, then a ≤ c.",
         "proof": {
           "type": "proof",
@@ -34,6 +35,11 @@
           "id": "inequality_chain_order_bound.root.calculation",
           "status": "resolved",
           "text": "Chain the two inequalities."
+        },
+        "source": {
+          "text": "Theorem. If a ≤ b and b ≤ c, then a ≤ c.\n\nProof. Chain the two inequalities.",
+          "id": "inequality_chain_order_bound.root.theorem",
+          "label": "calc:inequality_chain"
         },
         "id": "inequality_chain_order_bound.root.theorem",
         "status": "resolved"

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import asyncio
 import io
 import json
 import unittest
 from contextlib import redirect_stderr
+from unittest.mock import patch
 
 from mathdoc_agent.export.json import to_json
 from mathdoc_agent.mathagents import definitions
@@ -40,7 +42,7 @@ from mathdoc_agent.models.refinement_specs import (
     SimpleProofRefinementSpec,
     StructuredProofRefinementSpec,
 )
-from mathdoc_agent.orchestration.context import build_proof_context
+from mathdoc_agent.orchestration.context import ProofContext, build_proof_context
 from mathdoc_agent.orchestration.claim_audit import audit_claims_for_lean
 from mathdoc_agent.orchestration.deduced_from_claim_rewrite import (
     materialize_remaining_deduced_from_claims,
@@ -690,6 +692,57 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("completed Named logging agent -> SimpleProofRefinementSpec", logs)
         self.assertIn("node=p.root", logs)
 
+    async def test_agent_runner_retries_timeout(self) -> None:
+        class SlowThenFastAgent:
+            name = "Slow then fast agent"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            async def __call__(self, _payload):
+                self.calls += 1
+                if self.calls == 1:
+                    await asyncio.sleep(0.05)
+                return {"proof_steps": [{"type": "assert_statement", "claim": "P"}]}
+
+        agent = SlowThenFastAgent()
+        stderr = io.StringIO()
+        with patch.dict(
+            "os.environ",
+            {
+                "MATHDOC_AGENT_AGENT_TIMEOUT_SECONDS": "0.01",
+                "MATHDOC_AGENT_AGENT_RETRIES": "1",
+            },
+        ):
+            with redirect_stderr(stderr):
+                result = await run_agent_typed(agent, {}, SimpleProofRefinementSpec)
+
+        self.assertEqual(agent.calls, 2)
+        self.assertEqual(result.proof_steps[0].claim, "P")
+        logs = stderr.getvalue()
+        self.assertIn("timed out Slow then fast agent", logs)
+        self.assertIn("retrying Slow then fast agent", logs)
+
+    async def test_step_like_proof_handler_handles_let_statement_without_classifier(self) -> None:
+        registry = default_proof_handler_registry()
+        handler = registry.get("let_statement")
+        node = ProofNode(
+            id="p.let",
+            kind="let_statement",
+            status=NodeStatus.raw,
+            text="Let V be a normed vector space.",
+            goal="Let V be a normed vector space.",
+        )
+
+        refined = await handler.refine(node, ProofContext())
+        exported = json.loads(to_json(refined))
+
+        self.assertEqual(refined.status, NodeStatus.resolved)
+        self.assertEqual(exported["type"], "proof")
+        self.assertEqual(exported["proof_steps"][0]["type"], "let_statement")
+        self.assertEqual(exported["proof_steps"][0]["variable_name"], "V")
+        self.assertEqual(exported["proof_steps"][0]["variable_type"], "a normed vector space")
+
     async def test_claim_audit_repairs_claims_with_agent_patches(self) -> None:
         data = {
             "document": {
@@ -793,8 +846,13 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             steps[0],
             {
                 "type": "assert_statement",
+                "name": "p",
                 "claim": "P",
-                "proof_method": "Materialized from deduced_from_claim.",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                    "text": "P",
+                    "kind": "deduced_from_claim",
+                },
             },
         )
         self.assertEqual(steps[1]["claim"], "Q")
@@ -842,14 +900,66 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("deduced_from_claim", body[1])
         self.assertNotIn("results_used", body[1])
         dependency = body[1]["deduced_from_theorem"][0]
-        self.assertEqual(dependency["lean_name"], "some_theorem")
-        self.assertNotIn("formalization_status", dependency)
+        self.assertNotIn("lean_name", dependency)
+        self.assertEqual(dependency["lean_name_candidate"], "some_theorem")
+        self.assertEqual(dependency["verification_status"], "unverified")
         codes = {
             issue["code"]
             for issue in finalized["lean_validation"]["issues"]
         }
         self.assertIn("removed_results_used", codes)
         self.assertNotIn("lean_name_without_lean_term", codes)
+
+    def test_finalize_lean_facing_json_promotes_source_context_to_hypotheses(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "For every x, l x = 0.",
+                            "source": {
+                                "text": (
+                                    "Let G be a group. Let l : G -> R be a "
+                                    "homogeneous pseudo-length function. Then "
+                                    "for every x, l x = 0."
+                                )
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        theorem = finalized["document"]["body"][0]
+        assumptions = [item["assumption"] for item in theorem["hypothesis"]]
+        self.assertEqual(
+            assumptions,
+            [
+                "Let G be a group",
+                "Let l : G -> R be a homogeneous pseudo-length function",
+            ],
+        )
+
+    def test_finalize_lean_facing_json_repairs_stale_materialized_claim_marker(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "assert_statement",
+                            "claim": "P",
+                            "proof_method": "Materialized from deduced_from_claim.",
+                        }
+                    ]
+                }
+            }
+        )
+
+        step = finalized["document"]["body"][0]
+        self.assertEqual(step["proof_method"], "Named local obligation from unresolved claim dependency.")
+        self.assertEqual(step["name"], "p")
+        self.assertEqual(step["source"], {"text": "P", "kind": "deduced_from_claim"})
 
     def test_finalize_lean_facing_json_flags_semantic_drift_from_source(self) -> None:
         finalized = finalize_lean_facing_json(

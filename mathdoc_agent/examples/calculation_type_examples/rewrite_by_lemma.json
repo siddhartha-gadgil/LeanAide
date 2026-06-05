@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:rewrite_by_lemma",
         "header": "Theorem",
+        "name": "calc_rewrite_by_lemma",
         "claim": "x+0 = x.",
         "proof": {
           "type": "proof",
@@ -26,6 +27,11 @@
           "id": "rewrite_by_lemma.root.calculation",
           "status": "resolved",
           "text": "Rewrite using the add_zero lemma."
+        },
+        "source": {
+          "text": "Theorem. x+0 = x.\n\nProof. Rewrite using the add_zero lemma.",
+          "id": "rewrite_by_lemma.root.theorem",
+          "label": "calc:rewrite_by_lemma"
         },
         "id": "rewrite_by_lemma.root.theorem",
         "status": "resolved"

@@ -6,6 +6,7 @@
         "type": "theorem",
         "label": "calc:calculation_to_contradiction",
         "header": "Theorem",
+        "name": "calc_calculation_to_contradiction",
         "claim": "The assumptions a<b and b<a lead to a contradiction.",
         "proof": {
           "type": "proof",
@@ -34,6 +35,11 @@
           "id": "calculation_to_contradiction.root.calculation",
           "status": "resolved",
           "text": "Chain the strict inequalities to obtain a<a."
+        },
+        "source": {
+          "text": "Theorem. The assumptions a<b and b<a lead to a contradiction.\n\nProof. Chain the strict inequalities to obtain a<a.",
+          "id": "calculation_to_contradiction.root.theorem",
+          "label": "calc:calculation_to_contradiction"
         },
         "id": "calculation_to_contradiction.root.theorem",
         "status": "resolved"
