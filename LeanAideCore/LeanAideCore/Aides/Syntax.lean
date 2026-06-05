@@ -116,6 +116,88 @@ def getCommands : TSyntax `commandSeq → Array (TSyntax `command)
 def mkCommandSeq : Array (TSyntax `command) → CoreM (TSyntax `commandSeq)
   | cs => `(commandSeq| $cs*)
 
+/-- Delaborate a local declaration type for use in generated binder syntax. -/
+def delabLocalDeclType (e : Expr) : MetaM Syntax.Term := withOptions (fun opts =>
+    let opts := pp.motives.pi.set opts true
+    let opts := pp.numericTypes.set opts true
+    let opts := pp.deepTerms.set opts true
+    let opts := pp.funBinderTypes.set opts true
+    let opts := pp.piBinderTypes.set opts true
+    let opts := pp.letVarTypes.set opts true
+    let opts := pp.coercions.types.set opts true
+    let opts := pp.motives.nonConst.set opts true
+    let opts := pp.fullNames.set opts true
+    pp.unicode.fun.set opts true) do
+  PrettyPrinter.delab e
+
+/--
+Convert a local declaration into a `bracketedBinder`.
+
+The binder shape is preserved:
+* `BinderInfo.default` becomes `(x : T)`;
+* `BinderInfo.implicit` becomes `{x : T}`;
+* `BinderInfo.strictImplicit` becomes `⦃x : T⦄`;
+* `BinderInfo.instImplicit` becomes `[x : T]`.
+
+Local `let` declarations are skipped, because a `variable` command cannot
+preserve their values.
+-/
+def localDeclToBracketedBinder? (decl : LocalDecl) :
+    MetaM (Option (TSyntax `Lean.Parser.Term.bracketedBinder)) := do
+  if decl.isImplementationDetail then
+    return none
+  match decl with
+  | .cdecl _ _ userName type binderInfo .. =>
+      let nameStx := mkIdent userName
+      let typeStx ← delabLocalDeclType type
+      let binder ←
+        match binderInfo with
+        | BinderInfo.default =>
+            `(bracketedBinder| ($nameStx:ident : $typeStx:term))
+        | BinderInfo.implicit =>
+            `(bracketedBinder| {$nameStx:ident : $typeStx:term})
+        | BinderInfo.strictImplicit =>
+            `(bracketedBinder| ⦃$nameStx:ident : $typeStx:term⦄)
+        | BinderInfo.instImplicit =>
+            `(bracketedBinder| [$nameStx:ident : $typeStx:term])
+      return some binder
+  | .ldecl .. =>
+      return none
+
+/-- Return the current local context as `bracketedBinder`s in dependency order. -/
+def localContextBracketedBinders :
+    MetaM (Array (TSyntax `Lean.Parser.Term.bracketedBinder)) := do
+  let mut binders : Array (TSyntax `Lean.Parser.Term.bracketedBinder) := #[]
+  for decl in (← getLCtx) do
+    if let some binder ← localDeclToBracketedBinder? decl then
+      binders := binders.push binder
+  return binders
+
+/--
+Build a single `variable ...` command from the current local context.
+Returns `none` when there are no non-implementation-detail variable declarations.
+-/
+def variableCommandFromLocalContext? : MetaM (Option (TSyntax `command)) := do
+  let binders ← localContextBracketedBinders
+  if binders.isEmpty then
+    return none
+  else
+    return some (← `(command| variable $binders*))
+
+/--
+Build a command sequence that checks `propStx` under variable declarations
+reconstructed from the current local context.
+-/
+def exampleCommandSeqFromLocalContext (propStx : Syntax.Term) :
+    MetaM (TSyntax ``commandSeq) := do
+  match ← variableCommandFromLocalContext? with
+  | none =>
+      `(commandSeq| example : $propStx:term := by sorry)
+  | some varCmd =>
+      `(commandSeq|
+        $varCmd:command
+        example : $propStx:term := by sorry)
+
 def flattenCommandSeq (cs: Array <| TSyntax `commandSeq) :
   CoreM (TSyntax `commandSeq) :=
   mkCommandSeq (cs.map getCommands |>.flatten)
