@@ -359,6 +359,58 @@ def defsNameBlob : TranslateM <| Array <| Name × String := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => do pure (dfn.name, ← dfn.statement)
 
+def binderInfoContextString (binderInfo : BinderInfo) (name type : String) : String :=
+  match binderInfo with
+  | BinderInfo.default => s!"({name} : {type})"
+  | BinderInfo.implicit => "{" ++ name ++ " : " ++ type ++ "}"
+  | BinderInfo.strictImplicit => "⦃" ++ name ++ " : " ++ type ++ "⦄"
+  | BinderInfo.instImplicit => "[" ++ name ++ " : " ++ type ++ "]"
+
+def localDeclContextLine? (decl : LocalDecl) : TranslateM (Option String) := do
+  if decl.isImplementationDetail then
+    return none
+  match decl with
+  | .cdecl _ _ userName type binderInfo .. =>
+      let typeStr := (← PrettyPrinter.ppExpr type).pretty
+      return some <| binderInfoContextString binderInfo userName.toString typeStr
+  | .ldecl _ _ userName type value .. =>
+      let typeStr := (← PrettyPrinter.ppExpr type).pretty
+      let valueStr := (← PrettyPrinter.ppExpr value).pretty
+      return some s!"let {userName} : {typeStr} := {valueStr}"
+
+def availableVariablesBlob : TranslateM String := do
+  let mut lines : Array String := #[]
+  for decl in (← getLCtx) do
+    if let some line ← localDeclContextLine? decl then
+      lines := lines.push line
+  let body :=
+    if lines.isEmpty then
+      "(none)"
+    else
+      lines.foldl (fun acc line => acc ++ line ++ "\n") ""
+  return "Available variables:\n" ++ body
+
+def defDataContextLine (dfn : DefData) : TranslateM String := do
+  let typeStr := (← ppTerm dfn.type).pretty
+  return s!"{dfn.name} : {typeStr}"
+
+def availableDeclarationsBlob (defs : Array DefData) : TranslateM String := do
+  let lines ← defs.mapM defDataContextLine
+  let body :=
+    if lines.isEmpty then
+      "(none)"
+    else
+      lines.foldl (fun acc line => acc ++ line ++ "\n") ""
+  return "Available previous declarations:\n" ++ body
+
+def availableContextBlobWithDefs (defs : Array DefData) : TranslateM String := do
+  let vars ← availableVariablesBlob
+  let decls ← availableDeclarationsBlob defs
+  return vars ++ "\n" ++ decls
+
+def availableContextBlob : TranslateM String := do
+  availableContextBlobWithDefs (← getDefs)
+
 def addTheorem (thm: LabelledTheorem) : TranslateM Unit := do
   modify fun s => {s with labelledTheorems := s.labelledTheorems.push thm}
 def getTheorems : TranslateM <| Array LabelledTheorem := do
