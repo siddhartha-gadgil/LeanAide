@@ -8,7 +8,7 @@
         "label": "Definition 1",
         "header": "Definition",
         "name": "ToyPseudoLength",
-        "definition": "Let G be a group. A function l : G -> R is a toy pseudo-length if l(1)=0.",
+        "definition": "Let G be a group. A function l : G -> \\mathbb{R} is a toy pseudo-length if l(1)=0.",
         "source": {
           "text": "Let \\(G\\) be a group. A function \\(l : G \\to \\mathbb{R}\\) is a toy pseudo-length if \\(l(1)=0\\).",
           "id": "context_prelude.root.def-1",
@@ -22,7 +22,7 @@
         "label": "Definition 2",
         "header": "Definition",
         "name": "ToyLength",
-        "definition": "Let G be a group. A toy pseudo-length l : G -> R is a toy length if l(g)=0 implies g=1 for every g in G.",
+        "definition": "Let G be a group. A toy pseudo-length l : G -> \\mathbb{R} is a toy length if l(g)=0 implies g=1 for every g in G.",
         "source": {
           "text": "Let \\(G\\) be a group. A toy pseudo-length \\(l : G \\to \\mathbb{R}\\) is a toy length if \\(l(g)=0\\) implies \\(g=1\\) for every \\(g\\in G\\).",
           "id": "context_prelude.root.def-2",
@@ -44,8 +44,8 @@
           {
             "type": "let_statement",
             "variable_name": "l",
-            "variable_type": "G -> R",
-            "statement": "Let l : G -> R."
+            "variable_type": "G -> \\mathbb{R}",
+            "statement": "Let l : G -> \\mathbb{R}."
           },
           {
             "type": "assume_statement",

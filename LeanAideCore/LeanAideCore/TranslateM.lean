@@ -307,6 +307,8 @@ def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
 
 def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
   let cmds := getCommands cmds
+  for cmd in cmds do
+    discard <| runFrontendM (← ppCommand cmd).pretty true
   modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
 
 def registerDefnEnv (dfn: DefData) : TranslateM Unit := do
