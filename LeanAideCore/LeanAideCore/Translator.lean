@@ -109,13 +109,29 @@ def translateMessages (s: String)(promptPairs: Array (String × Json))
     else
         let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
         s!"Your goal is to translate from natural language to Lean. The following are some definitions that may be relevant:\n\n{defsBlob}"
-  let cmdPrelude ←  match ← cmdPreludeBriefBlob? with
-    | some cmdPreludeBlob => do
-        traceAide `leanaide.translate.info s!"Using command prelude in prompt:\n{cmdPreludeBlob}"
-        pure s!"## Code context:\n\nYour translation is a continuation of the following code. The proofs of theorems have been suppressed for brevity.\n\n Use the definitions in this code whenever possible. Also ensure that the choice of variables, their types, definitions used etc is consistent with this code.\n```\n\n{cmdPreludeBlob}\n````\n\n"
-    | none =>
-      traceAide `leanaide.translate.info s!"No command prelude to include in prompt."
-      pure ""
+  let cmdPrelude? ← cmdPreludeBriefBlob?
+  let localContext? ← availableVariablesBlob?
+  let cmdPrelude ←
+    match cmdPrelude?, localContext? with
+    | none, none =>
+        traceAide `leanaide.translate.info s!"No command prelude or local context to include in prompt."
+        pure ""
+    | _, _ => do
+        let codeContext ←
+          match cmdPrelude? with
+          | some cmdPreludeBlob =>
+              traceAide `leanaide.translate.info s!"Using command prelude in prompt:\n{cmdPreludeBlob}"
+              pure s!"## Code context:\n\nYour translation is a continuation of the following code. The proofs of theorems have been suppressed for brevity.\n\n Use the definitions in this code whenever possible. Also ensure that the choice of variables, their types, definitions used etc is consistent with this code.\n```\n\n{cmdPreludeBlob}\n```\n\n"
+          | none =>
+              traceAide `leanaide.translate.info s!"No command prelude to include in prompt."
+              pure ""
+        let localContext ←
+          match localContext? with
+          | some localContextBlob =>
+              traceAide `leanaide.translate.info s!"Using local context in prompt:\n{localContextBlob}"
+              pure s!"## Local context:\n\nUse only identifiers from Mathlib, the provided code context, or the following local context. Preserve binder roles and types.\n\n```text\n{localContextBlob}\n```\n\n"
+          | none => pure ""
+        pure <| codeContext ++ localContext
   traceAide `leanaide.translate.info s!"examples: \n{(examples).size}"
   let s' :=
     preludeCode ++ cmdPrelude ++ s!"Translate the following statement into Lean 4:\n## {header}: " ++ s ++ "\n\nGive ONLY the Lean code"

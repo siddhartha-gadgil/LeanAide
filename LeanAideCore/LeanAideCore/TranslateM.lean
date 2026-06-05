@@ -272,10 +272,21 @@ def cmdPreludeForFrontendBlob? : TranslateM <| Option String := do
   let cmds := cmds.map (·.pretty)
   return some <| cmds.foldr (· ++ "\n" ++ · ) "\n\n"
 
+def variablePreludeForFrontendBlob? : TranslateM <| Option String := do
+  match ← variableCommandFromLocalContext? with
+  | some cmd => return some (← PrettyPrinter.ppCommand cmd).pretty
+  | none => return none
+
 def withCommandPrelude (body : String) : TranslateM String := do
-  match ← cmdPreludeForFrontendBlob? with
-  | some prelude => return prelude ++ "\n" ++ body
-  | none => return body
+  let preludes := #[
+    ← cmdPreludeForFrontendBlob?,
+    ← variablePreludeForFrontendBlob?
+  ].filterMap id
+  match preludes.toList with
+  | [] => return body
+  | prelude :: rest =>
+      let prelude := rest.foldl (· ++ "\n" ++ ·) prelude
+      return prelude ++ "\n" ++ body
 
 def cmdPreludeBriefBlob? : TranslateM <| Option String := do
   let cmds := (← get).cmdPrelude
@@ -397,17 +408,29 @@ def localDeclContextLine? (decl : LocalDecl) : TranslateM (Option String) := do
       let valueStr := (← PrettyPrinter.ppExpr value).pretty
       return some s!"let {userName} : {typeStr} := {valueStr}"
 
-def availableVariablesBlob : TranslateM String := do
+def localContextLines : TranslateM (Array String) := do
   let mut lines : Array String := #[]
   for decl in (← getLCtx) do
     if let some line ← localDeclContextLine? decl then
       lines := lines.push line
+  return lines
+
+def availableVariablesBlob : TranslateM String := do
+  let lines ← localContextLines
   let body :=
     if lines.isEmpty then
       "(none)"
     else
       lines.foldl (fun acc line => acc ++ line ++ "\n") ""
   return "Available variables:\n" ++ body
+
+def availableVariablesBlob? : TranslateM (Option String) := do
+  let lines ← localContextLines
+  if lines.isEmpty then
+    return none
+  else
+    let body := lines.foldl (fun acc line => acc ++ line ++ "\n") ""
+    return some <| "Available variables:\n" ++ body
 
 def defDataContextLine (dfn : DefData) : TranslateM String := do
   let typeStr := (← ppTerm dfn.type).pretty
