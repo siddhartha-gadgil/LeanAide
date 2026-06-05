@@ -55,7 +55,9 @@ For inductive-type-definition children, set `name`, `is_prop`, parameters,
 indices, and constructors. Parameters and indices use the same `name`, `type`,
 `binder` object shape as structure parameters. Each constructor should include
 its name, when stated, and `arguments` as an array of objects with `name` and
-`type`. For indexed inductive families, a constructor may also include
+`type`, plus optional `binder`; constructor argument `binder` uses the same
+`default`, `implicit`, or `typeclass` values and defaults to `default` when
+omitted. For indexed inductive families, a constructor may also include
 `index_args`, an array of strings giving the index values for that constructor.
 Use `data_entries` only for small string metadata as key/value pairs.
 Prefer labels that are stable source labels such as `Lemma 1`, `Proposition 7`,

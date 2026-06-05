@@ -165,9 +165,8 @@ class InstanceDefinitionData(DocumentKindData):
         return _coerce_instance_gives(value)
 
 
-class ConstructorArgumentData(BaseModel):
-    name: str
-    type: str
+class ConstructorArgumentData(ParameterData):
+    pass
 
 
 def _coerce_constructor_arguments(value: object) -> object:
@@ -180,9 +179,21 @@ def _coerce_constructor_arguments(value: object) -> object:
         if isinstance(item, str):
             if ":" in item:
                 name, type_ = item.split(":", 1)
-                result.append({"name": name.strip(), "type": type_.strip()})
+                result.append(
+                    {
+                        "name": name.strip(),
+                        "type": type_.strip(),
+                        "binder": BinderKind.default.value,
+                    }
+                )
             else:
-                result.append({"name": "_", "type": item.strip()})
+                result.append(
+                    {
+                        "name": "_",
+                        "type": item.strip(),
+                        "binder": BinderKind.default.value,
+                    }
+                )
         else:
             result.append(item)
     return result

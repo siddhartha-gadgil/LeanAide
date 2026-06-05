@@ -39,15 +39,16 @@ For `inductive-type-definition`, constructor `arguments` are structured objects:
 {
   "name": "step_even",
   "arguments": [
-    { "name": "n", "type": "Nat" },
-    { "name": "h", "type": "Even n" }
+    { "name": "n", "type": "Nat", "binder": "default" },
+    { "name": "h", "type": "Even n", "binder": "default" }
   ],
   "index_args": ["n + 2"]
 }
 ```
 
 The optional `index_args` field gives the index values of the inductive family
-for that constructor.
+for that constructor. Constructor argument `binder` is optional and may be
+`default`, `implicit`, or `typeclass`; omitted means `default`.
 
 ## Command Line: Fake-Agent Examples
 

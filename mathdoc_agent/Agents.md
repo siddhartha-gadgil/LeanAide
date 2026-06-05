@@ -255,15 +255,17 @@ Structured inductive constructor output:
 {
   "name": "step_even",
   "arguments": [
-    {"name": "n", "type": "Nat"},
-    {"name": "h", "type": "Even n"}
+    {"name": "n", "type": "Nat", "binder": "default"},
+    {"name": "h", "type": "Even n", "binder": "default"}
   ],
   "index_args": ["n + 2"]
 }
 ```
 
 `index_args` is optional and should contain the index values for the constructor
-target when the inductive type is indexed.
+target when the inductive type is indexed. Constructor argument `binder` is
+optional and may be `default`, `implicit`, or `typeclass`; omitted means
+`default`.
 
 ## Proof Classification Agent
 
@@ -1268,4 +1270,3 @@ Expected output schema: `LocalClaimRefinementSpec`.
 
 With no agent, local claims are passed through or decomposed deterministically by
 the handler.
-

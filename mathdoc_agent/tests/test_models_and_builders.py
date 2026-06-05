@@ -286,6 +286,7 @@ class ModelAndBuilderTests(unittest.TestCase):
         self.assertEqual(inductive.data["indices"][0]["name"], "n")
         self.assertEqual(inductive.data["constructors"][1]["arguments"][0]["name"], "h")
         self.assertEqual(inductive.data["constructors"][1]["arguments"][0]["type"], "Even n")
+        self.assertEqual(inductive.data["constructors"][1]["arguments"][0]["binder"], "default")
         self.assertEqual(inductive.data["constructors"][1]["index_args"], ["n + 2"])
 
     def test_inductive_constructor_accepts_legacy_string_arguments(self) -> None:
@@ -293,8 +294,25 @@ class ModelAndBuilderTests(unittest.TestCase):
         dumped = constructor.model_dump()
         self.assertEqual(
             dumped["arguments"],
-            [{"name": "n", "type": "Nat"}, {"name": "h", "type": "Even n"}],
+            [
+                {"name": "n", "type": "Nat", "binder": "default"},
+                {"name": "h", "type": "Even n", "binder": "default"},
+            ],
         )
+
+    def test_inductive_constructor_arguments_accept_binders(self) -> None:
+        constructor = InductiveConstructorData(
+            name="step",
+            arguments=[
+                {"name": "α", "type": "Type", "binder": "implicit"},
+                {"name": "inst", "type": "Inhabited α", "binder": "typeclass"},
+                {"name": "x", "type": "α"},
+            ],
+        )
+        dumped = constructor.model_dump()
+        self.assertEqual(dumped["arguments"][0]["binder"], "implicit")
+        self.assertEqual(dumped["arguments"][1]["binder"], "typeclass")
+        self.assertEqual(dumped["arguments"][2]["binder"], "default")
 
 
 if __name__ == "__main__":

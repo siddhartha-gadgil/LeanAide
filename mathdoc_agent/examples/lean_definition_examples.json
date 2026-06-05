@@ -96,11 +96,13 @@
             "arguments": [
               {
                 "name": "n",
-                "type": "Nat"
+                "type": "Nat",
+                "binder": "default"
               },
               {
                 "name": "h",
-                "type": "Even n"
+                "type": "Even n",
+                "binder": "default"
               }
             ],
             "index_args": [
@@ -134,15 +136,18 @@
             "arguments": [
               {
                 "name": "left",
-                "type": "BinaryTree α"
+                "type": "BinaryTree α",
+                "binder": "default"
               },
               {
                 "name": "label",
-                "type": "α"
+                "type": "α",
+                "binder": "default"
               },
               {
                 "name": "right",
-                "type": "BinaryTree α"
+                "type": "BinaryTree α",
+                "binder": "default"
               }
             ]
           }

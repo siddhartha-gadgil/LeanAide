@@ -41,11 +41,13 @@
             "arguments": [
               {
                 "name": "optN",
-                "type": "Option Nat"
+                "type": "Option Nat",
+                "binder": "default"
               },
               {
                 "name": "t",
-                "type": "Bool"
+                "type": "Bool",
+                "binder": "default"
               }
             ],
             "index_args": ["0","true"]
@@ -55,11 +57,13 @@
             "arguments": [
               {
                 "name": "a",
-                "type": "α"
+                "type": "α",
+                "binder": "default"
               },
               {
                 "name": "h",
-                "type": "Prop"
+                "type": "Prop",
+                "binder": "default"
               }
             ],
             "index_args": ["1","b"]
@@ -69,7 +73,8 @@
             "arguments": [
               {
                 "name": "n",
-                "type": "Nat"
+                "type": "Nat",
+                "binder": "default"
               }
             ],
             "index_args": ["n + 2", "false"]
@@ -79,11 +84,13 @@
             "arguments": [
               {
                 "name": "bo",
-                "type": "Bool"
+                "type": "Bool",
+                "binder": "default"
               },
               {
                 "name": "n",
-                "type": "Nat"
+                "type": "Nat",
+                "binder": "default"
               }
             ],
             "index_args": ["n + 3", "!bo"]

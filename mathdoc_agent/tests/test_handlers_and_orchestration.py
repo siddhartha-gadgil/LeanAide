@@ -1318,7 +1318,10 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(body[2]["name"], "Even")
         self.assertTrue(body[2]["is_prop"])
         self.assertEqual(body[2]["indices"][0]["name"], "n")
-        self.assertEqual(body[2]["constructors"][1]["arguments"], [{"name": "h", "type": "Even n"}])
+        self.assertEqual(
+            body[2]["constructors"][1]["arguments"],
+            [{"name": "h", "type": "Even n", "binder": "default"}],
+        )
         self.assertEqual(body[2]["constructors"][1]["index_args"], ["n + 2"])
 
     async def test_proof_paragraph_attaches_to_preceding_theorem(self) -> None:
