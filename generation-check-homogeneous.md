@@ -160,6 +160,38 @@ Precise changes needed:
    `cmdPreludeForFrontendBlob?`, run from a fixed base environment, and include
    all accumulated generated commands textually.
 
+   The preferred robust fix is the environment-relative option: add an optional
+   cache salt/environment-hash parameter to `runFrontEndForMessages` and
+   `checkElabFrontM` in `LeanAideCore/LeanAideCore/SimpleFrontend.lean`. The
+   current cache path is based only on `input.hash` and `leanToolchain`, so it is
+   unsound whenever the same input string is elaborated in different generated
+   environments. In the `TranslateM` checks, the salt can be the hash of the
+   full unfiltered generated context, for example `cmdPreludeBlob.hash`, or a
+   hash of the relevant `TranslateM` state if generated declarations can enter
+   the environment outside `cmdPrelude`.
+
+   Suggested shape:
+
+   ```lean
+   def runFrontEndForMessages
+       (input : String) (envHash? : Option UInt64 := none) : MetaM MessageLog := do
+     let salt := envHash?.map toString |>.getD "noenv"
+     let cacheFile := (← cachePath) / "frontend" /
+       s!"{input.hash}_{salt}_{← leanToolchain}.json"
+     ...
+
+   def checkElabFrontM
+       (s : String) (envHash? : Option UInt64 := none) : MetaM (List String) := do
+     let log ← runFrontEndForMessages s envHash?
+     ...
+   ```
+
+   Then `translateDefCmdM?` and the theorem elaboration checks should pass this
+   salt whenever they call `checkElabFrontM (← withCommandPrelude ...)`. With
+   this change, `commandNeededForFrontendPrelude` can continue serving as a
+   duplicate-declaration guard, but cached frontend results will no longer be
+   reused across incompatible generated environments.
+
 2. In `LeanAideCore/LeanAideCore/Translate.lean`, keep
    `translateDefCmdM?` validation and prompt context aligned: the string passed
    to `checkElabFrontM (← withCommandPrelude s)` must contain every local
