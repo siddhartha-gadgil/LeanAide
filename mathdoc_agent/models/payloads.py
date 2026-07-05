@@ -276,6 +276,8 @@ class LogicalProofStepData(DeducedFromDataMixin):
     assumption: Optional[str] = None
     variable_name: Optional[str] = None
     variable_type: Optional[str] = None
+    value: Optional[str] = None
+    properties: Optional[str] = None
     statement: Optional[str] = None
 
 

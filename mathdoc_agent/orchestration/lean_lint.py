@@ -58,6 +58,14 @@ _SOURCE_CONTEXT_PREFIXES = (
     "fix ",
 )
 
+_LOCAL_DEFINITION_PREFIXES = (
+    "let ",
+    "define ",
+    "set ",
+    "put ",
+    "write ",
+)
+
 
 def _escape_pointer_part(part: str) -> str:
     return part.replace("~", "~0").replace("/", "~1")
@@ -99,6 +107,40 @@ def _lean_identifier_from_text(value: str, *, fallback: str = "generated_name") 
     return identifier
 
 
+def _camel_token(value: str) -> str:
+    words = [word for word in re.split(r"[^A-Za-z0-9]+", value) if word]
+    if not words:
+        return ""
+    return "".join(word[:1].upper() + word[1:] for word in words)
+
+
+def _ascii_identifier(value: str, *, fallback: str = "localObject") -> str:
+    value = value.strip().strip("$")
+    value = re.sub(
+        r"\\([A-Za-z]+)\s*\{([^{}]+)\}",
+        lambda match: match.group(1) + _camel_token(match.group(2)),
+        value,
+    )
+    value = re.sub(
+        r"([A-Za-z]+)_\{([^{}]+)\}",
+        lambda match: match.group(1) + _camel_token(match.group(2)),
+        value,
+    )
+    value = re.sub(
+        r"([A-Za-z]+)_([A-Za-z0-9]+)",
+        lambda match: match.group(1) + _camel_token(match.group(2)),
+        value,
+    )
+    value = re.sub(r"\\([A-Za-z]+)", r"\1", value)
+    parts = [part for part in re.split(r"[^A-Za-z0-9_']+", value) if part]
+    if not parts:
+        return fallback
+    identifier = "".join(parts)
+    if not re.match(r"[A-Za-z_]", identifier):
+        identifier = f"n{identifier}"
+    return identifier
+
+
 def _assignment_name(value: str) -> str | None:
     match = re.match(r"\s*([A-Za-z_][A-Za-z0-9_']*)\s*(?::=|=)", value)
     if match:
@@ -131,30 +173,109 @@ def _normalize_source_context_text(text: str) -> str:
     return text[:-1].strip() if text.endswith(".") else text
 
 
-def _source_context_assumptions(source: str) -> list[str]:
+def _split_source_context_sentences(source: str) -> list[str]:
     source = source.strip()
     if not source:
         return []
     source = re.sub(r"\s+", " ", source)
     source = re.sub(r"\$\$(.*?)\$\$", " ", source)
-    sentences = [
+    return [
         sentence.strip()
         for sentence in re.split(r"(?<=[.!?])\s+", source)
         if sentence.strip()
     ]
-    assumptions: list[str] = []
-    for sentence in sentences:
+
+
+def _definition_body(sentence: str) -> str | None:
+    text = _normalize_source_context_text(sentence)
+    lowered = text.lower()
+    for prefix in _LOCAL_DEFINITION_PREFIXES:
+        if lowered.startswith(prefix):
+            return text[len(prefix) :].strip()
+    return None
+
+
+def _argument_names(raw_args: str) -> list[str]:
+    args: list[str] = []
+    for raw_arg in raw_args.split(","):
+        arg = raw_arg.strip()
+        if not arg:
+            continue
+        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_']*", arg):
+            args.append(arg)
+        else:
+            args.append(_ascii_identifier(arg, fallback="arg"))
+    return args
+
+
+def _function_definition_step(body: str) -> dict[str, Any] | None:
+    match = re.match(
+        r"\s*([A-Za-z_][A-Za-z0-9_']*)\s*\(([^()]*)\)\s*(?::=|=|is defined as)\s*(.+?)\s*$",
+        body,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None
+    name = _ascii_identifier(match.group(1))
+    args = _argument_names(match.group(2))
+    rhs = match.group(3).strip()
+    value = f"fun {' '.join(args)} => {rhs}" if args else rhs
+    return {
+        "type": "let_statement",
+        "variable_name": name,
+        "value": value,
+        "statement": f"Let {name} be defined by {name} applied to {' and '.join(args)} = {rhs}.",
+    }
+
+
+def _object_definition_step(body: str) -> dict[str, Any] | None:
+    match = re.match(
+        r"\s*([A-Za-z_][A-Za-z0-9_']*|[A-Za-z]+_\{[^{}]+\}|[A-Za-z]+_[A-Za-z0-9]+)\s*(?::=|=|is defined as)\s*(.+?)\s*$",
+        body,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None
+    name = _ascii_identifier(match.group(1))
+    rhs = match.group(2).strip()
+    return {
+        "type": "let_statement",
+        "variable_name": name,
+        "value": rhs,
+        "statement": f"Let {name} be defined as {rhs}.",
+    }
+
+
+def _definition_step_from_sentence(sentence: str) -> dict[str, Any] | None:
+    body = _definition_body(sentence)
+    if body is None:
+        return None
+    return _function_definition_step(body) or _object_definition_step(body)
+
+
+def _source_context_steps(source: str) -> list[dict[str, Any]]:
+    steps: list[dict[str, Any]] = []
+    for sentence in _split_source_context_sentences(source):
         lowered = sentence.lower()
         if lowered.startswith(("then ", "therefore ", "hence ")):
             break
         if re.match(r"^(for every|for all|if)\b", lowered):
             break
-        if lowered.startswith(_SOURCE_CONTEXT_PREFIXES):
-            assumptions.append(_normalize_source_context_text(sentence))
+        definition_step = _definition_step_from_sentence(sentence)
+        if definition_step is not None:
+            steps.append(definition_step)
             continue
-        if assumptions:
+        if lowered.startswith(_SOURCE_CONTEXT_PREFIXES):
+            steps.append(
+                {
+                    "type": "assume_statement",
+                    "assumption": _normalize_source_context_text(sentence),
+                }
+            )
+            continue
+        if steps:
             break
-    return assumptions
+    return steps
 
 
 def _same_text(left: str, right: str) -> bool:
@@ -164,8 +285,8 @@ def _same_text(left: str, right: str) -> bool:
 def _promote_source_context_hypotheses(value: dict[str, Any]) -> dict[str, Any]:
     if value.get("type") != "theorem":
         return value
-    assumptions = _source_context_assumptions(_source_text(value))
-    if not assumptions:
+    context_steps = _source_context_steps(_source_text(value))
+    if not context_steps:
         return value
     existing = value.get("hypothesis")
     hypotheses = list(existing) if isinstance(existing, list) else []
@@ -174,11 +295,30 @@ def _promote_source_context_hypotheses(value: dict[str, Any]) -> dict[str, Any]:
         for item in hypotheses
         if isinstance(item, dict) and isinstance(item.get("assumption"), str)
     ]
+    existing_defs = {
+        item.get("variable_name")
+        for item in hypotheses
+        if isinstance(item, dict)
+        and item.get("type") == "let_statement"
+        and isinstance(item.get("variable_name"), str)
+    }
     added = False
-    for assumption in assumptions:
+    for step in context_steps:
+        if step.get("type") == "let_statement":
+            variable_name = step.get("variable_name")
+            if isinstance(variable_name, str) and variable_name in existing_defs:
+                continue
+            hypotheses.append(step)
+            if isinstance(variable_name, str):
+                existing_defs.add(variable_name)
+            added = True
+            continue
+        assumption = step.get("assumption")
+        if not isinstance(assumption, str):
+            continue
         if any(_same_text(assumption, existing_item) for existing_item in existing_assumptions):
             continue
-        hypotheses.append({"type": "assume_statement", "assumption": assumption})
+        hypotheses.append(step)
         existing_assumptions.append(assumption)
         added = True
     if not added:
@@ -210,6 +350,37 @@ def _repair_stale_materialized_claim_obligation(value: dict[str, Any]) -> dict[s
             "kind": source.get("kind") if isinstance(source.get("kind"), str) else "deduced_from_claim",
         }
     return repaired
+
+
+def _local_definition_from_step(value: dict[str, Any]) -> dict[str, Any] | None:
+    step_type = value.get("type")
+    if step_type not in {"let_statement", "assume_statement", "assert_statement"}:
+        return None
+    text_key = {
+        "let_statement": "statement",
+        "assume_statement": "assumption",
+        "assert_statement": "claim",
+    }.get(str(step_type))
+    text = value.get(text_key) if text_key is not None else None
+    if not isinstance(text, str) or not text.strip():
+        return None
+    definition_step = _definition_step_from_sentence(text)
+    if definition_step is None:
+        return None
+    preserved = {
+        key: item
+        for key, item in value.items()
+        if key
+        not in {
+            "type",
+            "claim",
+            "assumption",
+            "proof_method",
+            "deduced_from_claim",
+            "deduced_from_theorem",
+        }
+    }
+    return {**preserved, **definition_step}
 
 
 def _source_declares_unbundled_function(source: str) -> bool:
@@ -444,6 +615,14 @@ def _normalize_value(value: Any, path: str = "") -> tuple[Any, list[dict[str, st
             local_issues.extend(_lint_string_field(key, item, _child_path(path, key)))
 
     normalized, dependency_issues = _normalize_theorem_dependencies(normalized, path)
+    local_definition = _local_definition_from_step(normalized)
+    if local_definition is not None:
+        normalized = local_definition
+        local_issues = [
+            issue
+            for issue in local_issues
+            if issue["code"] != "informal_pseudo_notation"
+        ]
     normalized = _repair_stale_materialized_claim_obligation(normalized)
     normalized = _promote_source_context_hypotheses(normalized)
     local_issues.extend(dependency_issues)

@@ -268,6 +268,8 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
         return s!" with value `{valueStr}`"
     let valueStr := valueStr?.getD ""
     let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}{valueStr}"
+    -- TODO: Avoid emitting diagnostic `#check` commands into generated code or
+    -- into command preludes when a check/failure is only for codegen tracing.
     let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
     return some stx
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -520,6 +522,9 @@ where
         `(commandSeq| $cmds*)
       | .error errs =>
         try
+          -- TODO: Avoid this fallback for ordinary definitions. Predicate and
+          -- type-valued definitions should remain `def`/`abbrev` declarations,
+          -- not be converted into existential theorem declarations.
           let claim := s!"There exists {name} such that:\n{statement}"
           let type ←
             translator.translateToPropStrict claim

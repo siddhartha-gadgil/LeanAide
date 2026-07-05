@@ -941,6 +941,64 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             ],
         )
 
+    def test_finalize_lean_facing_json_promotes_source_local_definitions(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "f(0,n) is bounded above.",
+                            "source": {
+                                "text": (
+                                    "Let G be a group. Let f(m,k)=l(x^m c^k). "
+                                    "Then f(0,n) is bounded above."
+                                )
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        theorem = finalized["document"]["body"][0]
+        self.assertEqual(theorem["hypothesis"][0]["type"], "assume_statement")
+        local_def = theorem["hypothesis"][1]
+        self.assertEqual(local_def["type"], "let_statement")
+        self.assertEqual(local_def["variable_name"], "f")
+        self.assertEqual(local_def["value"], "fun m k => l(x^m c^k)")
+        self.assertIn("Let f be defined", local_def["statement"])
+
+    def test_finalize_lean_facing_json_converts_assignment_steps_to_lets(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "Let S_{2n} := the sum of the first 2n signs.",
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        step = finalized["document"]["body"][0]["proof"]["proof_steps"][0]
+        self.assertEqual(step["type"], "let_statement")
+        self.assertEqual(step["variable_name"], "S2n")
+        self.assertEqual(step["value"], "the sum of the first 2n signs")
+        self.assertNotIn("claim", step)
+        self.assertNotIn("lean_validation", step)
+
     def test_finalize_lean_facing_json_repairs_stale_materialized_claim_marker(self) -> None:
         finalized = finalize_lean_facing_json(
             {

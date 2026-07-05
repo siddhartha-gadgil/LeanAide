@@ -1,5 +1,249 @@
 # Generation check for `results/homogeneous.md`
 
+## Update: July 4-5 codegen run from `results/homogeneous.json`
+
+Run under diagnosis:
+
+```bash
+lake env .lake/build/bin/codegen results/homogeneous.json
+```
+
+The run was interrupted after many hours. I did not rerun Lean/codegen for this
+audit; the diagnosis below is from `.logs/2026-07-04.log`,
+`.logs/2026-07-05.log`, `LeanAideCore/LeanAideCore/PaperCodes.lean`, and
+`LeanAide/PaperCodes.lean`.
+
+The logs contain about 152k elaboration records with `cmdErrors`, about 531k
+individual command-error entries, and only 13 source-level
+`Error in processing source for command` events. The large error count is
+therefore mostly repeated elaboration of later prompts/checks in a poisoned
+command context, not 531k independent JSON defects. The strongest evidence is
+that the same earlier invalid theorem and skipped-command markers appear in the
+frontend input for later unrelated translations.
+
+Representative repeated prelude fragment:
+
+```lean
+theorem is_length_of_pos_of_ne_one : {G : Type u} → [Group G] → (G → ℝ) → Prop := by
+  intro G
+  intro inst
+  intro f
+  exact True
+#eval "command skipped due to error in processing source"
+#eval "command skipped due to error in processing source"
+```
+
+Representative repeated `cmdElabError`:
+
+```text
+type of theorem 'is_length_of_pos_of_ne_one' is not a proposition
+  {G : Type u} → [Group G] → (G → ℝ) → Prop
+```
+
+This invalid command explains a large fraction of the later noise: every later
+frontend check that includes the accumulated prelude can fail before reaching,
+or independently of, the command currently being translated.
+
+### Main failure mechanisms
+
+1. **Predicate definitions are still falling through to theorem fallback.**
+
+   The bad command above is not a valid theorem because its declared type is a
+   function returning `Prop`, not a proposition. It is exactly the shape expected
+   for a predicate definition such as:
+
+   ```lean
+   def IsHomogeneousPseudoLength {G : Type u} [Group G] (l : G → ℝ) : Prop := ...
+   ```
+
+   `LeanAideCore/LeanAideCore/PaperCodes.lean` translates JSON `"definition"`
+   entries by calling `translateDefCmdM?`; if that fails, `defCode` builds an
+   existential prose claim, translates it with `translateToPropStrict`, asks
+   automation for a proof, and emits a theorem. That fallback is too broad for
+   mathematical predicates and type-valued definitions. When the original object
+   is a definition whose target is `Prop`, the result must remain a `def` or
+   `abbrev`, not become a theorem with type
+   `{G} → [Group G] → (G → ℝ) → Prop`.
+
+   General fix: make definition generation preserve the definition/proposition
+   boundary. If a translated definition candidate has type `... → Prop` or
+   `Prop`, emit it as a renamed `def`/`abbrev` with the requested JSON name. Use
+   the existential theorem fallback only for objects that are explicitly
+   existence claims, not for failed definitions.
+
+2. **Failed/generated placeholder commands are added to the command prelude.**
+
+   `LeanAideCore/LeanAideCore/CodegenCore.lean` catches a source-processing
+   exception and returns:
+
+   ```lean
+   #eval "command skipped due to error in processing source"
+   ```
+
+   The same function then calls `Translate.addCommands code` on every returned
+   command sequence. `Translate.addCommands` elaborates and appends those
+   commands to `cmdPrelude`. Consequently, skipped-command markers become part
+   of later prompt/context blobs. Worse, if a bad command has already been added
+   to `cmdPrelude`, `cmdPreludeForFrontendBlob?` and `cmdPreludeBriefBlob?` can
+   carry it into every subsequent frontend elaboration and LLM prompt.
+
+   General fix: only successful, semantically useful commands should enter the
+   accumulated prelude. Keep skipped-command placeholders out of `cmdPrelude`,
+   or stop emitting them as commands at all and record the failure separately.
+   `addCommands` should append a command only if frontend elaboration succeeds
+   for that command; failed commands must not be retained for future prompts.
+
+3. **Some natural-language hypotheses are not converted into Lean binders or
+   local definitions before claims use them.**
+
+   Several later candidate statements contain free symbols such as `f`, `x`,
+   `y`, `c`, `ε`, `S2n`, `s`, or `a`. For example, one failed candidate had a
+   theorem statement involving:
+
+   ```lean
+   f 0 (n : ℤ) ≤ ...
+   ```
+
+   while `f` appeared only in prose context such as
+   `f(m,k)=l(x^m c^k)`. The result is an elaboration failure for an unknown
+   identifier, or a stuck typeclass/metavariable problem caused by missing
+   types.
+
+   General fix: the Python stage should turn notation-introducing prose into
+   structured `let_statement` objects with explicit Lean values, for example
+   `f : ℤ → ℤ → ℝ := fun m k => l (x ^ m * c ^ k)`, and should introduce
+   typed binders for all variables used by the claim. On the Lean side,
+   candidate theorem/assertion translations should be rejected and repaired if
+   they contain identifiers that are neither locally bound nor known
+   declarations.
+
+4. **Group power and commutator notation is still under-specified.**
+
+   Common `cmdElabError` lines include:
+
+   ```text
+   failed to synthesize instance of type class
+     HPow G ℤ ?m.8
+   ```
+
+   and stuck multiplication/inverse problems for terms like
+   `x * y * x⁻¹ * y⁻¹` when the generated candidate has not made the group
+   variables and their types explicit. This is not a LeanSearch problem; it is
+   a formalization-context problem. The translator must consistently choose the
+   intended algebraic notation, the exponent type, and the group context before
+   generating statements that use `g ^ n`, commutators, or iterated powers.
+
+   General fix: generated JSON should carry exact Lean terms for recurring
+   local definitions such as commutators and functions of powers, and prompts
+   should require the LLM to reuse those terms rather than re-invent notation.
+   The Lean checker should reject candidates with unresolved `HPow`, `HMul`, or
+   inverse metavariables before proof generation.
+
+5. **Some translated claims are terms rather than propositions.**
+
+   Repeated `Type mismatch` entries show candidate theorem targets ending in an
+   `ℝ` expression rather than a proposition, for example a generated target
+   ending after:
+
+   ```lean
+   ... + ↑n * (l y + l z)
+   ```
+
+   with no comparison. This is a statement-translation defect: the theorem
+   command parser accepts the syntax shape, but elaboration correctly rejects it
+   because theorem targets must be propositions.
+
+   General fix: `translateToPropStrictAux` should continue enforcing that
+   accepted theorem/assertion candidates elaborate to `Prop`, but it should also
+   feed the proposition/term distinction into the repair prompt. For
+   definitions, the analogous check should be different: definitions may have
+   type `Prop`, `Type`, or a value type, but they should not be converted into
+   theorem declarations unless the JSON object is actually a theorem.
+
+6. **The probability section lacks enough formal context.**
+
+   The July 5 log contains failures and timeouts involving missing probability
+   and measure-theory structure, including missing `MeasurableSpace Ω`,
+   `MeasureTheory.ae` implicit arguments, `Pairwise` implicit type inference,
+   and max-heartbeat failures in `whnf`/`isDefEq`. These arise when prose about
+   random signs, expectations, and sums is translated directly to Lean without
+   explicitly fixing the probability space, random variables, measurability,
+   integrability, and finite-index conventions.
+
+   General fix: Python should emit an explicit formal local context for
+   probability lemmas before the Lean translation step. If the source text only
+   sketches a probabilistic estimate, the generated theorem should either carry
+   the full required hypotheses or be split into smaller named lemmas whose
+   assumptions are formal and local.
+
+7. **Direct executable invocation can bypass rebuilding.**
+
+   The command used the already-built executable:
+
+   ```bash
+   lake env .lake/build/bin/codegen results/homogeneous.json
+   ```
+
+   The binary timestamp is newer than the active `PaperCodes.lean` files in
+   this checkout, so this run probably did include the recent fixes. Still,
+   this command does not rebuild before running. For future diagnostics, prefer:
+
+   ```bash
+   lake exe codegen results/homogeneous.json
+   ```
+
+   or explicitly rebuild before using `.lake/build/bin/codegen`, so the source
+   under `LeanAideCore/LeanAideCore/PaperCodes.lean` and `LeanAide/PaperCodes.lean`
+   is guaranteed to match the executable.
+
+### Code locations implicated
+
+- `LeanAideCore/LeanAideCore/PaperCodes.lean`: `defCode` is the source of the
+  over-broad existential theorem fallback for failed definitions.
+- `LeanAideCore/LeanAideCore/PaperCodes.lean`: `Translator.translateToPropStrictAux`
+  accepts only proposition-like theorem/assertion translations, but its LLM
+  repair loop is affected by invalid accumulated preludes.
+- `LeanAideCore/LeanAideCore/CodegenCore.lean`: `getCodeCommands` emits skipped
+  placeholders and then adds returned commands to the prelude.
+- `LeanAideCore/LeanAideCore/TranslateM.lean`: `addCommands`,
+  `cmdPreludeForFrontendBlob?`, and `cmdPreludeBriefBlob?` currently have no
+  guard against propagating failed or diagnostic commands.
+- `LeanAide/PaperCodes.lean`: the theorem wrapper follows the same
+  `translateToPropStrict` path, so its theorem/proof translation is vulnerable
+  to the same poisoned context and missing-binder failures.
+
+### Recommended fixes
+
+1. Change definition codegen so predicate/type-valued definitions remain
+   definitions. Remove or sharply restrict the existential fallback in
+   `defCode`; it should not run merely because `translateDefCmdM?` failed for a
+   JSON object of type `"definition"`.
+
+2. Change command accumulation so only successfully elaborated user-visible
+   declarations are added to `cmdPrelude`. Do not add
+   `#eval "command skipped due to error in processing source"` or any failed
+   command to the prelude used for frontend checks or prompts.
+
+3. When checking a new candidate from the LLM, separate errors caused by the
+   current candidate from errors caused by previous prelude commands. A clean
+   successful-prelude-only environment should be used for candidate elaboration.
+
+4. Add a Lean-side candidate rejection pass for unbound identifiers and stuck
+   algebraic typeclass metavariables before proof search. The repair prompt
+   should explicitly ask for missing binders/local definitions or reuse of the
+   existing local context.
+
+5. Strengthen Python JSON generation for local notation: every notation
+   introduced in prose and used later should become a typed `let_statement`,
+   `assume_statement`, or named lemma with a Lean term. This is especially
+   important for `f(m,k)`, commutators, quotient representatives, probabilistic
+   random variables, and aggregate variables such as `S2n`.
+
+6. For probability/measure-theory sections, generate the formal probability
+   context first and force all subsequent statements to reuse that context.
+   Missing measure-space, measurability, integrability, and finite-index
+   assumptions should be Python-side generation errors, not left to codegen.
+
 ## Run
 
 Command run, without `--lean`:

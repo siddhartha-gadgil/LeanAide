@@ -32,6 +32,11 @@ function or object in mathematical prose: for example, "Let C : Nat -> G be
 defined by C n = ... . For every n, ... C n ...". Use ASCII identifier-style
 names such as `C`, `normQ`, `barL`, `VQ`, `twoN`, and `sumSigns` in statements
 when the source notation is display-heavy.
+When ambient theorem context introduces local notation by an assignment, such
+as `Let f(m,k)=...`, `Set c := ...`, or `Write S_{2n}=...`, do not leave that
+assignment only inside the theorem statement. Put it in `data_entries` as an
+assumption/local-context item when available, or phrase it so downstream proof
+refinement can emit a `let_statement` with `variable_name` and `value`.
 If a proof immediately follows a theorem-like statement, attach the proof text
 to thdefinitionsm-like child in `proof_text`. Do not emit the proof as a separate
 paragraph. A text beginning with "Proof." or "Proof:" is never a paragraph.
@@ -43,6 +48,9 @@ key `definiens` for only the mathematical definition, without Markdown headers,
 bold markers, numbering labels, or explanatory prose. Use key `notation` only
 when the source explicitly defines notation. Never use prose names containing
 spaces, hyphens, parentheses, LaTeX, or display math as the definition `term`.
+If a definition introduces a predicate or property, make the definiens clearly
+predicate-shaped: state the parameters and the proposition that defines the
+property. Do not rephrase predicate definitions as existence theorems.
 For structure-definition children, set `name`, `is_class`, `isProp`,
 parameters, extends, and fields. Use `is_class=true` for class-like structures
 such as groups. Parameters must be objects with `name`, `type`, and optional
@@ -131,6 +139,13 @@ identifier-style names such as `normQ`, `basisNorm`, `iota`, `eps`, `twoN`,
 `(B, iota)`, subscripts, Greek letters, comma-separated tuples, or LaTeX as a
 variable name; if the source constructs several objects, split them into
 separate `let_statement` steps with one identifier each.
+For every local definition, fill `let_statement.value` with the defining
+expression or first-class mathematical description. For example, from
+`f(m,k)=l(x^m c^k)` emit `variable_name="f"` and
+`value="fun m k => l(x^m c^k)"`; from `c=[x,y]` emit
+`variable_name="c"` and a value describing the commutator of `x` and `y`.
+Do not represent these local definitions as `assert_statement` claims or leave
+them only in proof methods.
 Whenever an `assert_statement` has a `proof_method`, also fill dependency
 fields when the source supports them:
 - `deduced_from_claim`: local/contextual claims used for the assertion, stated
@@ -348,6 +363,12 @@ method relies on substantial omitted setup, such as a probability space,
 random walk, Hamel basis coordinates, quotient/completion construction, or
 noncommutative product recurrence, expose only the stated local facts and mark
 the missing setup as unresolved rather than inventing a formal assertion.
+When a proof uses stochastic or expectation notation, first introduce the
+probability space, random variables, distribution assumptions, measurability or
+integrability assumptions, and finite-index conventions if the source provides
+them. If the source does not provide this formal context, keep the step as
+unresolved detail or a precise finite-average statement; do not emit a theorem
+claim with free probability objects.
 """
 
 CLAIM_AUDIT_INSTRUCTIONS = """
@@ -426,6 +447,9 @@ Preferred repairs:
 - replace `||phi(g)||_B` by `normB(phi applied to g)`;
 - replace `f(m,k)` by `f applied to m and k`, or by a typed/local instance if
   the context supplies one;
+- when the entry itself introduces notation by assignment, such as
+  `f(m,k) := ...` or `S_{2n} = ...`, preserve it as a local definition with an
+  ASCII name and a clear defining value rather than as a later free symbol;
 - keep statements as mathematical propositions, not instructions.
 
 Do not delete content and do not mark entries unsupported. If exact Lean syntax
