@@ -44,6 +44,143 @@ This invalid command explains a large fraction of the later noise: every later
 frontend check that includes the accumulated prelude can fail before reaching,
 or independently of, the command currently being translated.
 
+### Root cause of `is_length_of_pos_of_ne_one`
+
+The fallback theorem `is_length_of_pos_of_ne_one` was caused by the translation
+of `Definition 2` in `results/homogeneous.json`, not by the homogeneous
+definition itself. The JSON entry is:
+
+```json
+{
+  "type": "definition",
+  "label": "Definition 2",
+  "definition": "Let G be a group with identity element e. A pseudo-length function l : G → ℝ is a length function if, for every g ∈ G, g ≠ e implies 0 < l(g).",
+  "name": "IsLength"
+}
+```
+
+The LLM did produce the right kind of command for this entry:
+
+```lean
+def IsLength {G : Type u} [Group G] (l : G → ℝ) : Prop :=
+  IsPseudoLengthFunction l ∧ ∀ g : G, g ≠ 1 → 0 < l g
+```
+
+and also produced variants named `IsLengthFunction`. The failure was in the
+validation path, not in the first translation. The frontend cache used for this
+candidate, `.leanaide_cache/frontend/14394085108435377132_v4.28.0.json`,
+contains:
+
+```text
+Unknown identifier `IsPseudoLengthFunction`
+```
+
+That error is spurious for this codegen run: `IsPseudoLengthFunction` had been
+generated immediately before and was available in the translation environment.
+The mismatch comes from the Lean validation entry point. In
+`LeanAideCore/LeanAideCore/Translate.lean`, `translateDefCmdM?` checks each
+candidate by calling:
+
+```lean
+let check <- checkElabFrontM (← withCommandPrelude s)
+```
+
+`withCommandPrelude` uses `cmdPreludeForFrontendBlob?`, which filters commands
+through `commandNeededForFrontendPrelude` in
+`LeanAideCore/LeanAideCore/TranslateM.lean`:
+
+```lean
+match ← DefData.ofSyntax? cmd with
+| some dfn => return (← getEnv).find? dfn.name |>.isNone
+| none => return true
+```
+
+This drops local generated definitions when they are already present in the
+current Meta environment. That can be needed to avoid duplicate declarations,
+because `runFrontendM` in `LeanAideCore/LeanAideCore/SimpleFrontend.lean` starts
+from the current environment. However, `checkElabFrontM` calls
+`runFrontEndForMessages`, whose cache key depends on the input string and Lean
+toolchain, not on the current generated environment. The filtered input is
+therefore environment-sensitive but cached as if it were environment-independent.
+In this run the frontend read the cached result for the reduced input and
+rejected the good `IsLength` candidate with `Unknown identifier
+IsPseudoLengthFunction`.
+
+After that false rejection, `LeanAideCore/LeanAideCore/PaperCodes.lean` took the
+definition fallback path in `defCode`: it translated the prose
+`There exists IsLength such that: ...` as a proposition, extracted only the
+predicate type
+
+```lean
+{G : Type u} → [Group G] → (G → ℝ) → Prop
+```
+
+and then emitted:
+
+```lean
+theorem is_length_of_pos_of_ne_one :
+    {G : Type u} → [Group G] → (G → ℝ) → Prop := by
+  intro G
+  intro inst
+  intro f
+  exact True
+```
+
+This is invalid because a theorem declaration must have a target of type
+`Prop`, whereas the displayed target is a predicate/type shape. Once this bad
+theorem entered the accumulated command prelude, it poisoned the next definition
+(`IsHomogeneousPseudoLength`) and many later checks. The logs show the bad
+theorem included in the prompt prelude for Definition 3, followed by frontend
+failures whose first error is again:
+
+```text
+type of theorem `is_length_of_pos_of_ne_one` is not a proposition
+  {G : Type u} → [Group G] → (G → ℝ) → Prop
+```
+
+There are secondary issues in the homogeneous candidates, especially around
+integer powers (`g ^ n` with `n : ℤ`) and checking proposition fragments without
+their full binder context. Those are real generalization problems, but they are
+not the first cause of this fallback chain. The first fix is to make frontend
+validation use a coherent context/cache policy. Either check from a fixed base
+environment with the full generated textual prelude, or check from the current
+environment and include a generated-environment fingerprint in the frontend
+cache key. The second fix is to remove or sharply restrict the
+definition-to-theorem fallback: failed predicate/type-valued definitions must not
+be converted into existential theorem declarations.
+
+Precise changes needed:
+
+1. In `LeanAideCore/LeanAideCore/TranslateM.lean`, decide whether frontend
+   validation is environment-relative or text-standalone. The problematic code is
+   `commandNeededForFrontendPrelude`. If checks are environment-relative, keep a
+   duplicate-declaration filter but make the frontend cache key include a
+   fingerprint of the current generated environment or command prelude. If
+   checks are text-standalone, remove this filter for
+   `cmdPreludeForFrontendBlob?`, run from a fixed base environment, and include
+   all accumulated generated commands textually.
+
+2. In `LeanAideCore/LeanAideCore/Translate.lean`, keep
+   `translateDefCmdM?` validation and prompt context aligned: the string passed
+   to `checkElabFrontM (← withCommandPrelude s)` must contain every local
+   generated definition/theorem that the LLM saw in the prompt. If a reduced
+   prelude is kept for duplicate-declaration avoidance, do not reuse cached
+   frontend results unless the cache key records the environment/prelude on which
+   the reduced input depends.
+
+3. In `LeanAideCore/LeanAideCore/PaperCodes.lean` and
+   `LeanAide/PaperCodes.lean`, restrict `defCode` fallback. When a JSON
+   `"definition"` fails to translate as a command, do not convert it into a
+   theorem unless the extracted target is actually a proposition of type `Prop`
+   and the source was explicitly an existence claim. Predicate declarations of
+   shape `... → Prop`, structures, type-valued definitions, and abbreviations
+   should remain definitions or be reported as definition-generation failures.
+
+4. Before any command is added to `cmdPrelude`, check that the full command
+   sequence elaborates without frontend errors. Do not add skipped-command
+   markers, failed theorem fallbacks, `#eval` failure markers, or `#check`
+   diagnostics to the accumulated prelude used for later prompts/checks.
+
 ### Main failure mechanisms
 
 1. **Predicate definitions are still falling through to theorem fallback.**

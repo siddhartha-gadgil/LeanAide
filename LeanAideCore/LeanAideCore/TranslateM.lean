@@ -260,6 +260,12 @@ def cmdPreludeBlob : TranslateM String := do
 
 def commandNeededForFrontendPrelude (cmd : Syntax.Command) : TranslateM Bool := do
   match ← DefData.ofSyntax? cmd with
+  -- TODO: This duplicate-declaration filter can be useful only because
+  -- `runFrontendM` starts from the current environment. It is unsafe with the
+  -- current frontend cache, whose key depends on the input string/toolchain but
+  -- not on the current generated environment. Either include a generated-env
+  -- fingerprint in the cache key, or run frontend checks from a fixed base
+  -- environment with the full generated textual prelude.
   | some dfn => return (← getEnv).find? dfn.name |>.isNone
   | none => return true
 
