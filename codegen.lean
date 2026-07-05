@@ -25,6 +25,11 @@ def outputPathFor (inputPath : System.FilePath) : System.FilePath :=
   let stem := stripJsonSuffix inputName
   System.mkFilePath ["CodeGen", stem ++ ".lean"]
 
+def liveOutputPathFor (inputPath : System.FilePath) : System.FilePath :=
+  let inputName := inputPath.fileName.getD "generated.json"
+  let stem := stripJsonSuffix inputName
+  System.mkFilePath ["CodeGen", "Live", stem ++ ".lean"]
+
 def taskJson (js : Json) : Json :=
   match js.getObjVal? "document_json" with
   | Except.ok _ => js
@@ -130,7 +135,7 @@ def runCodegen (inputPath : System.FilePath) : IO UInt32 := do
       maxHeartbeats := 0
       maxRecDepth := 1000000 }
   let translator : Translator := {}
-  let core := leanFromStructuredJsonTask (taskJson js) translator |>.runToCore
+  let core := leanFromStructuredJsonTask (taskJson js) translator |>.runToCore (outputFile? := some (outputPathFor inputPath))
   let result ← core.run' ctx {env := env} |>.runToIO'
   match result.getObjValAs? String "result" with
   | Except.ok "success" =>

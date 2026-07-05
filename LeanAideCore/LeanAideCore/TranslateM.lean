@@ -159,6 +159,7 @@ structure Translate.State where
   defs : Array (DefData) := #[]
   preludes : Array String := #[]
   varPreludes : Array String := #[]
+  outputFile : Option System.FilePath := none
   errorLog : Array ElabErrorData := #[]
   context : Option String := none
   labelledTheorems : Array LabelledTheorem := #[]
@@ -316,6 +317,18 @@ def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
   for cmd in cmds do
     discard <| runFrontendM (← ppCommand cmd).pretty true
   modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
+
+def writeCommands  (cmds : TSyntax ``commandSeq) : TranslateM Unit := do
+  match (← get).outputFile with
+  | none => return
+  | some file => do
+    let contents ← IO.FS.readFile file
+    let cmds := getCommands cmds
+    let mut lines : Array String := #[]
+    for cmd in cmds do
+      let cmdStr := (← ppCommand cmd).pretty
+      lines := lines.push cmdStr
+    IO.FS.writeFile file <| contents ++ (lines.foldr (· ++ "\n" ++ · ) "")
 
 def registerDefnEnv (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statementStx
@@ -541,10 +554,15 @@ def runWithEmbeddings (em : EmbedMap)
   x.run' {} |>.run'.run'
 
 
-def runToCore (x: TranslateM α) (em?: Option EmbedMap := none) : CoreM α := do
+def runToCore (x: TranslateM α) (em?: Option EmbedMap := none) (outputFile?: Option System.FilePath := none) : CoreM α := do
   match em? with
   | some em => runWithEmbeddings em x
-  | none => x.run' {} |>.run'.run'
+  | none =>
+    match outputFile? with
+    | some file => do
+      IO.FS.writeFile file topCode
+      x.run' {outputFile := some file} |>.run'.run'
+    | none => x.run' {} |>.run'.run'
 
 section Async
 open Std.Internal.IO.Async Async
@@ -608,14 +626,15 @@ structure Translate.SavedState where
   preludes : Array String
   context : Option String
   recentTranslations: Array ChatPair
+  outputFile : Option System.FilePath
 
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
-    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context, recentTranslations := σ.recentTranslations}
+    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
     return (saved, σ)
   restoreState := fun ss => do
   modify fun s =>
-      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, preludes := ss.preludes, context := ss.context, recentTranslations := ss.recentTranslations}
+      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, preludes := ss.preludes, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
 
 
 structure CodeElabResult where
