@@ -90,7 +90,7 @@ def translateToDef (statement: String) (translator : Translator) : TranslateM <|
   try
     let .ok stx := Parser.runParserCategory (← getEnv) `command statement | throwError
       s!"codegen: failed to parse '{statement}' as a command"
-    let checks ← checkElabFrontM statement
+    let checks ← checkElabFrontM statement (← cmdPreludeBlob).hash
     unless checks.isEmpty do
       throwError s!"codegen: failed to elaborate '{statement}' as a command, errors: {checks}"
     return .ok ⟨stx⟩
@@ -190,7 +190,7 @@ def getResultUsed? (translator: Translator) (js: Json) : TranslateM (Option Synt
   | .error _, .error _ =>
     let .ok statement := js.getObjValAs? String "statement" | throwError "'ResultUsed' must have 'statement'"
     let type ← translator.translateToPropStrict statement
-    getExactTerm? type
+    getExactTerm? type (← cmdPreludeBlob).hash
   | _, .ok mathlibIdentifier =>
     return mkIdent mathlibIdentifier.toName
   | .ok targetIdentifier, _ =>

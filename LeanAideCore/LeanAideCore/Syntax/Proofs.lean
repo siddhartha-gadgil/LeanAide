@@ -176,7 +176,7 @@ instance : DefinitionCommand Comment where
 
 open Discussion in
 def definitionCommandsAux [DefinitionCommand α] (prevName : Syntax.Term) (d : α) : TermElabM (List Syntax.Command  × Name) := do
-  let (elemDef, name) ← definitionCommandPair d
+  let (elemDef, name) ← definitionCommandPair d |>.run' {}
   let descName := name ++ "chat".toName
   let appendIdent := mkIdent ``append
   let descId := mkIdent descName

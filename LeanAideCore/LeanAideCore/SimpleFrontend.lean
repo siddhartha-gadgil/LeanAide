@@ -41,8 +41,11 @@ def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment 
 
 -- variable [LeanAideBaseDir]
 
-def runFrontEndForMessages (input: String) : MetaM MessageLog := do
-  let cacheFile := (← cachePath) / "frontend" / s!"{input.hash}_{← leanToolchain}.json"
+def runFrontEndForMessages (input: String) (envHash? : Option UInt64) : MetaM MessageLog := do
+  let hashString := match envHash? with
+  | none => ""
+  | some h => s!"_{h}"
+  let cacheFile := (← cachePath) / "frontend" / s!"{input.hash}{hashString}_{← leanToolchain}.json"
   if (← cacheFile.pathExists) then
     let content ← IO.FS.readFile cacheFile
     let json := Json.parse content
@@ -193,8 +196,8 @@ def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
   else
     return Except.error errorStrings
 
-def checkElabFrontM(s: String) : MetaM <| List String := do
-  let log ← runFrontEndForMessages  s
+def checkElabFrontM(s: String) (envHash? : Option UInt64) : MetaM <| List String := do
+  let log ← runFrontEndForMessages  s envHash?
   let mut l := []
   for msg in log.toList do
     if msg.severity == MessageSeverity.error then
@@ -204,11 +207,11 @@ def checkElabFrontM(s: String) : MetaM <| List String := do
       l := l.append [x]
   return l
 
-def checkTypeElabFrontM(s: String) : MetaM <| List String := do
-  checkElabFrontM s!"example : {s} := by sorry"
+def checkTypeElabFrontM(s: String) (envHash? : Option UInt64) : MetaM <| List String := do
+  checkElabFrontM s!"example : {s} := by sorry" envHash?
 
-def checkTermElabFrontM(s: String) : MetaM <| List String := do
-  checkElabFrontM s!"example := {s}"
+def checkTermElabFrontM(s: String) (envHash? : Option UInt64) : MetaM <| List String := do
+  checkElabFrontM s!"example := {s}" envHash?
 
 
 

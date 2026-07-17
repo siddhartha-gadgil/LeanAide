@@ -18,8 +18,8 @@ deriving Inhabited, ToJson, FromJson
 def MessageCore.ofMessageM (msg: Message) : MetaM MessageCore := do
   return {severity := msg.severity, text := ← msg.data.toString}
 
-def runFrontEndMsgCoreM (inp : String) : MetaM (List MessageCore) := do
-  let msgs ← runFrontEndForMessages inp -- cache this
+def runFrontEndMsgCoreM (inp : String) (envHash? : Option UInt64) : MetaM (List MessageCore) := do
+  let msgs ← runFrontEndForMessages inp envHash?
   msgs.toList.mapM fun msg => MessageCore.ofMessageM msg
 
 
@@ -79,7 +79,7 @@ def checkGrind (name: Name) : MetaM Bool := do
   let id := mkIdent name
   let p ← `(grindParam| $id:ident)
   let stx ←  `(command| example : 1 = 1 := by grind [$p])
-  let l ← checkElabFrontM (← ppCommand stx).pretty
+  let l ← checkElabFrontM (← ppCommand stx).pretty none
   return l.isEmpty
 
 def suggestionsForGrind (goal: MVarId) (maxSuggestions: Nat := 15)  : MetaM (Array Name) := do
@@ -276,11 +276,11 @@ def frontendCodeForTactics (mvarId : MVarId) (tactics : Array Syntax.Tactic): Te
   let egCode := s!"example : {typeView} := {termView}"
   return egCode
 
-def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic): TermElabM <| MessageLog  :=
+def runTacticsAndGetMessages (mvarId : MVarId) (tactics : Array Syntax.Tactic)(envHash? : Option UInt64) : TermElabM <| MessageLog  :=
     mvarId.withContext do
   let egCode ← frontendCodeForTactics mvarId tactics
   traceAide `leanaide.interpreter.info s!"Running frontend with code:\n{egCode}"
-  let msgs' ← runFrontEndForMessages egCode
+  let msgs' ← runFrontEndForMessages egCode envHash?
   traceAide `leanaide.interpreter.info s!"Ran frontend, Messages:"
   for msg in msgs'.toList do
     traceAide `leanaide.interpreter.info s!"{← msg.data.toString}"
@@ -303,7 +303,7 @@ def getTacticsFromMessageData? (s: String) :
     -- traceAide `leanaide.interpreter.info s!"Message: {s} does not start with Try this:"
     return none
 
-def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (strict : Bool := false) (previous: String := ""): TermElabM <| Option (Array Syntax.Tactic) :=
+def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (envHash? : Option UInt64) (strict : Bool := false) (previous: String := ""): TermElabM <| Option (Array Syntax.Tactic) :=
     withoutModifyingState do
   -- Add code from earlier theorems in the document
   let egCode ← frontendCodeForTactics goal tactics
@@ -313,7 +313,7 @@ def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (st
     else
       previous ++ "\n\n" ++ egCode
   traceAide `leanaide.interpreter.info s!"Running frontend with code:\n{egCode}"
-  let msgs' ← runFrontEndMsgCoreM egCode
+  let msgs' ← runFrontEndMsgCoreM egCode envHash?
   traceAide `leanaide.interpreter.debug s!"Ran frontend, Messages:"
   if strict then
     for msg in msgs' do
@@ -331,16 +331,16 @@ def runTacticsAndGetTryThis? (goal : MVarId) (tactics : Array Syntax.Tactic) (st
   else
     return some <| trys.foldl (fun acc (tacs, _) => acc ++ tacs) #[]
 
-def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)) (strict : Bool := true) (previous: String := ""): TermElabM <| Option (TSyntax ``tacticSeq) := do
+def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)) (envHash? : Option UInt64) (strict : Bool := true) (previous: String := ""): TermElabM <| Option (TSyntax ``tacticSeq) := do
   tacticSeqs.findSomeM?
     fun tacticSeq => do
       let tacs := getTactics tacticSeq
-      let tacs? ← runTacticsAndGetTryThis? goal tacs strict previous
+      let tacs? ← runTacticsAndGetTryThis? goal tacs envHash? strict previous
       tacs?.mapM fun tacs => mkTacticSeq tacs
 
 
-def getQuickTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?), ← `(tacticSeq| grind?)] (strict := true)
+def getQuickTactics? (goal: MVarId) (envHash? : Option UInt64) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+  let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?), ← `(tacticSeq| grind?)] envHash? (strict := true)
   match tactics? with
   | none => return none
   | some tacs =>
@@ -351,8 +351,8 @@ def getQuickTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) 
       let tacticCode ←  `(tacticSeq| $tacsArr*)
       return some tacticCode
 
-def getExactTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| exact?))]
+def getExactTactics? (goal: MVarId) (envHash? : Option UInt64) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| exact?))] envHash?
   match tactics? with
   | none => return none
   | some tacs =>
@@ -362,9 +362,9 @@ def getExactTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) 
       let tacticCode ←  `(tacticSeq| $tacs*)
       return some tacticCode
 
-def getExactTerm? (goal: Expr) : TermElabM <| Option Syntax.Term := do
+def getExactTerm? (goal: Expr) (envHash? : Option UInt64) : TermElabM <| Option Syntax.Term := do
   let mvarId ← mkFreshExprMVar goal
-  let tacticCode? ← getExactTactics? mvarId.mvarId!
+  let tacticCode? ← getExactTactics? mvarId.mvarId! envHash?
   tacticCode?.bindM fun tacticCode => do
     match tacticCode with
     | `(tacticSeq| exact $t:term) =>
@@ -372,9 +372,9 @@ def getExactTerm? (goal: Expr) : TermElabM <| Option Syntax.Term := do
     | _ =>
       return none
 
-def getExactTermParts? (goal: Expr) : TermElabM <| Option <| Array Name := do
+def getExactTermParts? (goal: Expr) (envHash? : Option UInt64) : TermElabM <| Option <| Array Name := do
   let mvarId ← mkFreshExprMVar goal
-  let tacticCode? ← getExactTactics? mvarId.mvarId!
+  let tacticCode? ← getExactTactics? mvarId.mvarId! envHash?
   tacticCode?.mapM fun tacticCode => do
     match tacticCode with
     | `(tacticSeq| exact $t:term) =>
@@ -387,7 +387,7 @@ def getExactTermParts? (goal: Expr) : TermElabM <| Option <| Array Name := do
 elab "#exact? " goal:term : command => Command.liftTermElabM do
   let goal ← elabTerm goal none
   let mvarId ← mkFreshExprMVar goal
-  let tacticCode? ← getQuickTactics? mvarId.mvarId!
+  let tacticCode? ← getQuickTactics? mvarId.mvarId! none
   match tacticCode? with
   | none => logWarning "exact? tactic failed to find any tactics"
   | some tacticCode =>
@@ -396,8 +396,8 @@ elab "#exact? " goal:term : command => Command.liftTermElabM do
 -- #exact? ∀ (n m : Nat), n + m = m + n
 
 open PrettyPrinter
-def runTacticsAndGetTryThisI (goal : MVarId) (tactics : Array Syntax.Tactic): TermElabM <|  (Array Syntax.Tactic) := do
-  let tacs? ← runTacticsAndGetTryThis? goal tactics
+def runTacticsAndGetTryThisI (goal : MVarId) (tactics : Array Syntax.Tactic) (envHash? : Option UInt64) : TermElabM <|  (Array Syntax.Tactic) := do
+  let tacs? ← runTacticsAndGetTryThis? goal tactics envHash?
   -- traceAide `leanaide.interpreter.info s!"Tactics for goal: {← PrettyPrinter.ppExpr goal}"
   -- if let some tacs := tacs? then
   --   let view ← ppCategory ``tacticSeq <| ← `(tacticSeq|$tacs*)
@@ -414,8 +414,8 @@ def runTacticsAndGetTryThisI (goal : MVarId) (tactics : Array Syntax.Tactic): Te
   return res
   -- return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
-def runTacticsAndFindTryThisI (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)): TermElabM <|  (Array Syntax.Tactic) := do
-  let tacs? ← runTacticsAndFindTryThis? goal tacticSeqs
+def runTacticsAndFindTryThisI (goal : MVarId) (tacticSeqs : List (TSyntax ``tacticSeq)) (envHash? : Option UInt64) : TermElabM <|  (Array Syntax.Tactic) := do
+  let tacs? ← runTacticsAndFindTryThis? goal tacticSeqs envHash?
   let autoTacs ← ppCategory ``tacticSeq <|
     ← flattenTacticSeq tacticSeqs.toArray
   let headerText := s!"Automation Tactics {autoTacs} for goal: {← PrettyPrinter.ppExpr <| ← goal.getType}"
