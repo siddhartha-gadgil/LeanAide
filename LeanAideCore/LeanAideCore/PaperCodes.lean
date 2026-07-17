@@ -522,9 +522,6 @@ where
         `(commandSeq| $cmds*)
       | .error errs =>
         try
-          -- TODO: Avoid this fallback for ordinary definitions. Predicate and
-          -- type-valued definitions should remain `def`/`abbrev` declarations,
-          -- not be converted into existential theorem declarations.
           let claim := s!"There exists {name} such that:\n{statement}"
           let type ←
             translator.translateToPropStrict claim
@@ -548,7 +545,10 @@ where
             `(command| theorem $name : $typeStx := by $proofStx)
           let resolvedCmds ←
             cmdResolveExistsHave typeStx
-          mkCommandSeq <| #[head] ++ resolvedCmds
+          if resolvedCmds.size > 1 then
+            mkCommandSeq <| #[head] ++ resolvedCmds
+          else
+            throwError s!"codegen: no definition translation found for {statement}; outputs: {errs.map (·.text)}\nDid not fall back to existential definition because {← ppExpr type} did not produce multiple resolved commands"
         catch e =>
           let innerMsg ←  e.toMessageData.format
           let outputs := errs.map (·.text)
