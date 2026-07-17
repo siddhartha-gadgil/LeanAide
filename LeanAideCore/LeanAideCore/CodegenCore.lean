@@ -320,9 +320,7 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
         let err ←   e.toMessageData.toString
         traceAide `leanaide.codegen.info s!"Error in processing source for command {source.pretty};\nError: {err}"
         traceAide `leanaide.codegen.info err
-        -- TODO: Do not emit diagnostic `#eval`/`#check` commands for failures
-        -- into generated code, and do not add such diagnostics to `cmdPrelude`.
-        pure <| some <| ← `(commandSeq| #eval "command skipped due to error in processing source")
+        continue
 
     match code? with
     | none => do -- error with obtaining commands
