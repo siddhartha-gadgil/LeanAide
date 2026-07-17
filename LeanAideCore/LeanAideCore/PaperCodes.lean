@@ -268,8 +268,6 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
         return s!" with value `{valueStr}`"
     let valueStr := valueStr?.getD ""
     let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}{valueStr}"
-    -- TODO: Avoid emitting diagnostic `#check` commands into generated code or
-    -- into command preludes when a check/failure is only for codegen tracing.
     let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
     return some stx
 | some goal, ``tacticSeq, js => goal.withContext do
