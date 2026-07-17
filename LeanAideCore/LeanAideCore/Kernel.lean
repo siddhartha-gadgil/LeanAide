@@ -40,32 +40,32 @@ The core functions of LeanAide, implemented directly in the server and via query
 -/
 class Kernel where
   /-- Translate a theorem from natural language to Lean code, specifically the `Expr` corresponding to the `Prop`. -/
-  translateThm : String → TermElabM (Except (Array ElabError) Expr)
+  translateThm : String → TranslateM (Except (Array ElabError) Expr)
   /-- Translate a definition from natural language to Lean code, specifically the `Syntax.Command` corresponding to the `def`. -/
-  translateDef : String → TermElabM (Except (Array CmdElabError) Syntax.Command)
+  translateDef : String → TranslateM (Except (Array CmdElabError) Syntax.Command)
   /-- Translate a theorem from natural language to Lean code, returning the name, the `Expr` corresponding to the `Prop`, and the `Syntax.Command` corresponding to the full theorem statement (including `theorem ... : ... := ...`). -/
-  translateThmDetailed : String → Option Name → TermElabM (Name × Expr × Syntax.Command)
+  translateThmDetailed : String → Option Name → TranslateM (Name × Expr × Syntax.Command)
   /-- Generate documentation for a theorem, given its name and statement. -/
-  theoremDoc : Name → Syntax.Command → TermElabM String
+  theoremDoc : Name → Syntax.Command → TranslateM String
   /-- Generate documentation for a definition, given its name and statement. -/
-  defDoc : Name → Syntax.Command → TermElabM String
+  defDoc : Name → Syntax.Command → TranslateM String
   /-- Suggest a name for a theorem given its natural language statement. -/
   theoremName : String → MetaM Name
   /-- Prove a theorem given its natural language statement, its Lean code, and its statement. -/
-  proveForFormalization : String → Expr → Syntax.Command → TermElabM String
+  proveForFormalization : String → Expr → Syntax.Command → TranslateM String
   /-- Convert a natural language statement to a JSON object. -/
   jsonStructured : String → MetaM Json
   /-- Convert a JSON object to Lean code. -/
-  codeFromJson : Json → TermElabM (TSyntax ``commandSeq)
+  codeFromJson : Json → TranslateM (TSyntax ``commandSeq)
   /-- Elaborate a sequence of Lean commands. -/
-  elabCode : TSyntax ``commandSeq → TermElabM CodeElabResult
+  elabCode : TSyntax ``commandSeq → TranslateM CodeElabResult
   /-- Query the LeanAide server with a natural language statement. -/
   mathQuery (s: String) (history : List ChatPair := []) (n: Nat := 3) : MetaM (List String)
 
 class ToCommandSeq (α : Type) where
-  commandSeq : α → TermElabM (TSyntax ``commandSeq)
+  commandSeq : α → TranslateM (TSyntax ``commandSeq)
 
-def toCommandSeq {α : Type} [inst: ToCommandSeq α] (a : α) : TermElabM (TSyntax ``commandSeq) :=
+def toCommandSeq {α : Type} [inst: ToCommandSeq α] (a : α) : TranslateM (TSyntax ``commandSeq) :=
   inst.commandSeq a
 
 structure TheoremStatementText where
@@ -213,9 +213,9 @@ def jsonForTask {α : Type} [inst: JsonForTask α] (a : α) : MetaM Json :=
   inst.toJsonForTask a
 
 class FromTaskJson (α : Type) where
-  fromJsonForTask : Json → TermElabM α
+  fromJsonForTask : Json → TranslateM α
 
-def fromTaskJson (α : Type) [inst: FromTaskJson α] (json : Json) : TermElabM α :=
+def fromTaskJson (α : Type) [inst: FromTaskJson α] (json : Json) : TranslateM α :=
   inst.fromJsonForTask json
 
 -- #eval taskList TheoremStatementText TheoremProofCode
@@ -224,7 +224,7 @@ namespace Kernel
 
 /--
 Translate a theorem from a natural language document to Lean code via a structured proof -/
-def leanFromDoc [kernel: Kernel] (doc: String) : TermElabM (TSyntax ``commandSeq) := do
+def leanFromDoc [kernel: Kernel] (doc: String) : TranslateM (TSyntax ``commandSeq) := do
   let json ← kernel.jsonStructured doc
   codeFromJson json
 
@@ -233,7 +233,7 @@ Prove a theorem given its natural language statement, its Lean `Expr`, and its s
 the documentation and the Lean code for the proof.
 -/
 def proveWithCode [kernel: Kernel] (theorem_text: String) (theorem_code: Expr) (theorem_statement : TSyntax `command) :
-    TermElabM (String × (TSyntax ``commandSeq)) := do
+    TranslateM (String × (TSyntax ``commandSeq)) := do
   let doc ← kernel.proveForFormalization theorem_text theorem_code theorem_statement
   return (doc, ← kernel.leanFromDoc doc)
 
@@ -367,7 +367,7 @@ The various core functions of LeanAide, implemented via querying the LeanAide se
 def translateThmEncode (text: String) : MetaM Json :=
   return Json.mkObj [("task", "translate_thm"), ("theorem_text", text)]
 
-def translateThmDecode (response: Json) : TermElabM (Except (Array ElabError) Expr) := do
+def translateThmDecode (response: Json) : TranslateM (Except (Array ElabError) Expr) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok thmCodeTxt := response.getObjValAs? String "theorem_code" | throwError "response has no 'theorem_code' field"
@@ -385,7 +385,7 @@ def translateThmDecode (response: Json) : TermElabM (Except (Array ElabError) Ex
     throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.translateThm]
-def translateThm [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array ElabError) Expr) := do
+def translateThm [pipe: LeanAidePipe] (text: String) : TranslateM (Except (Array ElabError) Expr) := do
   let response ← response <| ← translateThmEncode text
   translateThmDecode response
 
@@ -396,7 +396,7 @@ def translateThmDetailedEncode (text: String) (name? : Option Name) : MetaM Json
   | none =>
     return Json.mkObj [("task", "translate_thm_detailed"), ("theorem_text", text)]
 
-def translateThmDetailedDecode (response: Json) : TermElabM (Name × Expr × Syntax.Command) := do
+def translateThmDetailedDecode (response: Json) : TranslateM (Name × Expr × Syntax.Command) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok name := response.getObjValAs? Name "theorem_name" | throwError "response has no 'theorem_name' field"
@@ -416,14 +416,14 @@ def translateThmDetailedDecode (response: Json) : TermElabM (Name × Expr × Syn
     throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.translateThmDetailed]
-def translateThmDetailed [pipe: LeanAidePipe] (text: String) (name? : Option Name) : TermElabM (Name × Expr × Syntax.Command) := do
+def translateThmDetailed [pipe: LeanAidePipe] (text: String) (name? : Option Name) : TranslateM (Name × Expr × Syntax.Command) := do
   let response ← response <| ← translateThmDetailedEncode text name?
   translateThmDetailedDecode response
 
 def translateDefEncode (text: String) : MetaM Json :=
   return Json.mkObj [("task", "translate_def"), ("definition_text", text)]
 
-def translateDefDecode (response: Json) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
+def translateDefDecode (response: Json) : TranslateM (Except (Array CmdElabError) Syntax.Command) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok defCodeTxt := response.getObjValAs? String "definition_code" | throwError "response has no 'definition_code' field"
@@ -441,14 +441,14 @@ def translateDefDecode (response: Json) : TermElabM (Except (Array CmdElabError)
     throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.translateDef]
-def translateDef [pipe: LeanAidePipe] (text: String) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
+def translateDef [pipe: LeanAidePipe] (text: String) : TranslateM (Except (Array CmdElabError) Syntax.Command) := do
   let response ← response <| ← translateDefEncode text
   translateDefDecode response
 
 def theoremDocEncode (name: Name) (stx: Syntax.Command) : MetaM Json := do
   return Json.mkObj [("task", "theorem_doc"), ("theorem_name", toString name), ("theorem_statement", (← PrettyPrinter.ppCommand stx).pretty)]
 
-def theoremDocDecode (response: Json) : TermElabM String := do
+def theoremDocDecode (response: Json) : TranslateM String := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok doc := response.getObjValAs? String "theorem_doc" | throwError "response has no 'theorem_doc' field"
@@ -460,7 +460,7 @@ def theoremDocDecode (response: Json) : TermElabM String := do
     throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.theoremDoc]
-def theoremDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM String := do
+def theoremDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TranslateM String := do
   let req ←  theoremDocEncode name stx
   let response ← response req
   theoremDocDecode response
@@ -468,7 +468,7 @@ def theoremDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermEla
 def defDocEncode (name: Name) (stx: Syntax.Command) : MetaM Json := do
   return Json.mkObj [("task", "def_doc"), ("definition_name", toString name), ("definition_code", (← PrettyPrinter.ppCommand stx).pretty)]
 
-def defDocDecode (response: Json) : TermElabM String := do
+def defDocDecode (response: Json) : TranslateM String := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok doc := response.getObjValAs? String "doc" | throwError "response has no 'doc' field"
@@ -480,7 +480,7 @@ def defDocDecode (response: Json) : TermElabM String := do
     throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.defDoc]
-def defDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM String := do
+def defDoc [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TranslateM String := do
   let req ← defDocEncode name stx
   let response ← response req
   defDocDecode response
@@ -508,7 +508,7 @@ def theoremName [pipe: LeanAidePipe] (text: String) : MetaM Name := do
 def proveForFormalizationEncode (theoremText: String) (theoremCode: Expr) (theoremStatement : TSyntax `command) : MetaM Json := do
   return Json.mkObj [("task", "prove_for_formalization"), ("theorem_text", theoremText), ("theorem_code", (← ppExpr theoremCode).pretty), ("theorem_statement", (← PrettyPrinter.ppCommand theoremStatement).pretty)]
 
-def proveForFormalizationDecode (response: Json) : TermElabM String := do
+def proveForFormalizationDecode (response: Json) : TranslateM String := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .some proof := (response.getObjValAs? String "document_text").toOption |>.orElse (fun _ => response.getObjValAs? String "document" |>.toOption) | throwError "response has no 'document_text' field; {response}"
@@ -520,7 +520,7 @@ def proveForFormalizationDecode (response: Json) : TermElabM String := do
     throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.proveForFormalization]
-def proveForFormalization [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) (theoremStatement : Syntax.Command) : TermElabM String := do
+def proveForFormalization [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) (theoremStatement : Syntax.Command) : TranslateM String := do
   let req ← proveForFormalizationEncode theoremText theoremCode theoremStatement
   let response ← response req
   proveForFormalizationDecode response
@@ -548,7 +548,7 @@ def jsonStructured [pipe: LeanAidePipe] (document: String) : MetaM Json := do
 def codeFromJsonEncode (json: Json) : MetaM Json :=
   return Json.mkObj [("task", "lean_from_json_structured"), ("document_json", json)]
 
-def codeFromJsonDecode (response: Json) : TermElabM (TSyntax ``commandSeq) := do
+def codeFromJsonDecode (response: Json) : TranslateM (TSyntax ``commandSeq) := do
   match response.getObjValAs? String "result" with
   | .ok "success" =>
     let .ok code := response.getObjValAs? String "document_code" | throwError "response has no 'document_code' field"
@@ -560,7 +560,7 @@ def codeFromJsonDecode (response: Json) : TermElabM (TSyntax ``commandSeq) := do
     throwError s!"Invalid response {response.pretty}"
 
 @[inherit_doc Kernel.codeFromJson]
-def codeFromJson [pipe: LeanAidePipe] (json: Json) : TermElabM (TSyntax ``commandSeq) := do
+def codeFromJson [pipe: LeanAidePipe] (json: Json) : TranslateM (TSyntax ``commandSeq) := do
   let req ← codeFromJsonEncode json
   let response ← response req
   codeFromJsonDecode response
@@ -576,17 +576,17 @@ def elabCodeEncode (stx: TSyntax ``commandSeq) : MetaM Json := do
   let code ← showCommandSeq stx
   return Json.mkObj [("task", "elaborate"), ("document_code", code)]
 
-def elabCodeDecode (response: Json) : TermElabM CodeElabResult := do
+def elabCodeDecode (response: Json) : TranslateM CodeElabResult := do
   let .ok decls := response.getObjValAs? (List Name) "declarations" | throwError "response has no 'declarations' field"
   let .ok logs := response.getObjValAs? (List String) "logs" | throwError "response has no 'logs' field"
   let .ok sorries := response.getObjValAs? (List Json) "sorries" | throwError "response has no 'sorries' field"
-  let sorries ←  sorries.mapM getSorriesFromJson
+  let sorries ←  sorries.mapM (fun js ↦ getSorriesFromJson js)
   let .ok sorriesAfterPurge := response.getObjValAs? (List Json) "sorries_after_purge" | throwError "response has no 'sorries_after_purge' field"
-  let sorriesAfterPurge ← sorriesAfterPurge.mapM getSorriesFromJson
+  let sorriesAfterPurge ← sorriesAfterPurge.mapM (fun js ↦ getSorriesFromJson js)
   return { declarations := decls, logs := logs, sorries := sorries, sorriesAfterPurge := sorriesAfterPurge }
 
 @[inherit_doc Kernel.elabCode]
-def elabCode [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM CodeElabResult := do
+def elabCode [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TranslateM CodeElabResult := do
   let req ← elabCodeEncode stx
   let response ← response req
   elabCodeDecode response
@@ -658,23 +658,23 @@ The following functions provide asynchronous versions of the core LeanAide comma
 -/
 
 @[inherit_doc translateThm]
-def translateThmAsync [pipe: LeanAidePipe] (text: String) : TermElabM (Deferred (m := TermElabM) (Except (Array ElabError) Expr)) :=
+def translateThmAsync [pipe: LeanAidePipe] (text: String) : TranslateM (Deferred (m := TranslateM) (Except (Array ElabError) Expr)) :=
   queryAsync translateThmEncode translateThmDecode text
 
 @[inherit_doc translateThmDetailed]
-def translateThmDetailedAsync [pipe: LeanAidePipe] (text: String) (name? : Option Name) : TermElabM (Deferred (m := TermElabM) (Name × Expr × Syntax.Command)) :=
+def translateThmDetailedAsync [pipe: LeanAidePipe] (text: String) (name? : Option Name) : TranslateM (Deferred (m := TranslateM) (Name × Expr × Syntax.Command)) :=
   queryAsync (fun x => translateThmDetailedEncode x.1 x.2) translateThmDetailedDecode (text, name?)
 
 @[inherit_doc translateDef]
-def translateDefAsync [pipe: LeanAidePipe] (text: String) : TermElabM (Deferred (m := TermElabM) (Except (Array CmdElabError) Syntax.Command)) :=
+def translateDefAsync [pipe: LeanAidePipe] (text: String) : TranslateM (Deferred (m := TranslateM) (Except (Array CmdElabError) Syntax.Command)) :=
   queryAsync translateDefEncode translateDefDecode text
 
 @[inherit_doc theoremDoc]
-def theoremDocAsync [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM (Deferred (m := TermElabM) String) :=
+def theoremDocAsync [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TranslateM (Deferred (m := TranslateM) String) :=
   queryAsync (fun x => theoremDocEncode x.1 x.2) theoremDocDecode (name, stx)
 
 @[inherit_doc defDoc]
-def defDocAsync [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TermElabM (Deferred (m := TermElabM) String) :=
+def defDocAsync [pipe: LeanAidePipe] (name: Name) (stx: Syntax.Command) : TranslateM (Deferred (m := TranslateM) String) :=
   queryAsync (fun x => defDocEncode x.1 x.2) defDocDecode (name, stx)
 
 @[inherit_doc theoremName]
@@ -682,7 +682,7 @@ def theoremNameAsync [pipe: LeanAidePipe] (text: String) : MetaM (Deferred (m :=
   queryAsync theoremNameEncode theoremNameDecode text
 
 @[inherit_doc proveForFormalization]
-def proveForFormalizationAsync [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) (theoremStatement : Syntax.Command) : TermElabM (Deferred (m := TermElabM) String) :=
+def proveForFormalizationAsync [pipe: LeanAidePipe] (theoremText: String) (theoremCode: Expr) (theoremStatement : Syntax.Command) : TranslateM (Deferred (m := TranslateM) String) :=
   queryAsync (fun x => proveForFormalizationEncode x.1 x.2.1 x.2.2) proveForFormalizationDecode (theoremText, (theoremCode, theoremStatement))
 
 @[inherit_doc jsonStructured]
@@ -690,11 +690,11 @@ def jsonStructuredAsync [pipe: LeanAidePipe] (document: String) : MetaM (Deferre
   queryAsync jsonStructuredEncode jsonStructuredDecode document
 
 @[inherit_doc codeFromJson]
-def codeFromJsonAsync [pipe: LeanAidePipe] (json: Json) : TermElabM (Deferred (m := TermElabM) (TSyntax ``commandSeq)) :=
+def codeFromJsonAsync [pipe: LeanAidePipe] (json: Json) : TranslateM (Deferred (m := TranslateM) (TSyntax ``commandSeq)) :=
   queryAsync codeFromJsonEncode codeFromJsonDecode json
 
 @[inherit_doc elabCode]
-def elabCodeAsync [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TermElabM (Deferred (m := TermElabM) CodeElabResult) :=
+def elabCodeAsync [pipe: LeanAidePipe] (stx: TSyntax ``commandSeq) : TranslateM (Deferred (m := TranslateM) CodeElabResult) :=
   queryAsync elabCodeEncode elabCodeDecode stx
 
 @[inherit_doc mathQuery]
@@ -839,7 +839,7 @@ def getCodeJsonTokenM (json: Json) : MetaM UInt64 := do
 
 open LeanAidePipe
 def updateCodeByToken (token: UInt64) :
-    TermElabM (Option (TSyntax ``commandSeq))  := do
+    TranslateM (Option (TSyntax ``commandSeq))  := do
   let pipe ← getPipeM
   let req := Json.mkObj [("mode", "lookup"), ("token", toJson token)]
   let json ← pipe.response req
@@ -858,7 +858,7 @@ def mkQueryM {α : Type}(x : α) (β : Type) [TaskList α β] [JsonForTask α][F
   let .ok token := json.getObjValAs? UInt64 "token" | throwError "response {json.pretty} has no 'token' field"
   return token
 
-def getQuery? (β : Type) (token: UInt64) [FromTaskJson β] : TermElabM (Option β) := do
+def getQuery? (β : Type) (token: UInt64) [FromTaskJson β] : TranslateM (Option β) := do
   let pipe ← getPipeM
   let req := Json.mkObj [("mode", "lookup"), ("token", toJson token)]
   let json ← pipe.response req
@@ -868,17 +868,17 @@ def getQuery? (β : Type) (token: UInt64) [FromTaskJson β] : TermElabM (Option 
   | .completed _ result => return some <| ← fromTaskJson β result
   | .running _ => return none
 
-def getQueryM? (β : Type) (tokenM: MetaM UInt64) [FromTaskJson β] : TermElabM (Option β) := do
+def getQueryM? (β : Type) (tokenM: MetaM UInt64) [FromTaskJson β] : TranslateM (Option β) := do
   let token ← tokenM
   getQuery? β token
 
 def getCommandSeq? (β : Type) (token: UInt64) [FromTaskJson β][ToCommandSeq β] :
-  TermElabM (Option (TSyntax ``commandSeq)) := do
+  TranslateM (Option (TSyntax ``commandSeq)) := do
   let q? ← (getQuery? β token)
   q?.mapM toCommandSeq
 
 def writeCommandSeq  (β : Type) (token: UInt64) (file : System.FilePath) [FromTaskJson β][ToCommandSeq β] :
-  TermElabM Bool := do
+  TranslateM Bool := do
   let q? ← (getQuery? β token)
   match ← q?.mapM toCommandSeq with
   | some cs => do
@@ -898,20 +898,20 @@ def QueryToken.get {α : Type}(x : α) (β : Type) [TaskList α β] [JsonForTask
   let tokenM ←  mkQueryM x β
   return { token := tokenM, fromTaskJsonβ := inst }
 
-def QueryToken.lookup? (self: QueryToken β) : TermElabM (Option β) := do
+def QueryToken.lookup? (self: QueryToken β) : TranslateM (Option β) := do
   @getQueryM? β (pure self.token) self.fromTaskJsonβ
 
-def QueryToken.lookupM? (selfM: MetaM (QueryToken β)) : TermElabM (Option β) := do
+def QueryToken.lookupM? (selfM: MetaM (QueryToken β)) : TranslateM (Option β) := do
   let self ← selfM
   @getQueryM? β (pure self.token) self.fromTaskJsonβ
 
-def getM (x? : TermElabM (Option β)) : TermElabM β := do
+def getM (x? : TranslateM (Option β)) : TranslateM β := do
   let xOpt ← x?
   match xOpt with
   | some x => return x
   | none => throwError "Result not ready yet. Please try again later."
 
-def checkM (x? : TermElabM (Option β)) : TermElabM Bool := do
+def checkM (x? : TranslateM (Option β)) : TranslateM Bool := do
   let xOpt ← x?
   return xOpt.isSome
 
@@ -950,8 +950,8 @@ syntax (name := lookupCmd) "#lookup" term "from" ident : command
       let stx ← `(getCommandSeq? $type $tokenIdent)
       let expM ← elabTerm stx none
       let csExp := toExpr (``commandSeq : Lean.SyntaxNodeKinds)
-      let x? ← unsafe evalExpr (TermElabM (Option (TSyntax ``commandSeq))) (← mkAppM ``TermElabM #[← mkAppM ``Option #[← mkAppM ``TSyntax #[csExp]]]) expM
-      x?
+      let x? ← unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) (← mkAppM ``TranslateM #[← mkAppM ``Option #[← mkAppM ``TSyntax #[csExp]]]) expM
+      x?.run' {}
     match result? with
     | some result =>
       Command.liftTermElabM do Tactic.TryThis.addSuggestion stx result
@@ -972,8 +972,9 @@ syntax (name := writeCmd) "#write" term "to_file" filepath "from" ident : comman
       let stx ← `(getCommandSeq? $type $tokenIdent)
       let expM ← elabTerm stx none
       let csExp := toExpr (``commandSeq : Lean.SyntaxNodeKinds)
-      let x? ← unsafe evalExpr (TermElabM (Option (TSyntax ``commandSeq))) (← mkAppM ``TermElabM #[← mkAppM ``Option #[← mkAppM ``TSyntax #[csExp]]]) expM
-      x?
+      let x? ←
+        unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) (← mkAppM ``TranslateM #[← mkAppM ``Option #[← mkAppM ``TSyntax #[csExp]]]) expM
+      x?.run' {}
     match result? with
     | some result =>
       Command.liftTermElabM do IO.FS.writeFile file <| (← topCodeM) ++ (← showCommandSeq result)
@@ -990,9 +991,9 @@ syntax (name := lookupCmdNaive) "#lookup_naive" ident : command
     let rhs? : Option Syntax.Term ← Command.liftTermElabM do
       let lkp ← mkAppM ``QueryToken.lookupM? #[mkConst tokenIdent.getId]
       let chkM  ←
-        unsafe evalExpr (TermElabM Bool) (← mkAppM ``TermElabM #[mkConst ``Bool])
+        unsafe evalExpr (TranslateM Bool) (← mkAppM ``TranslateM #[mkConst ``Bool])
           (← mkAppM ``checkM #[lkp])
-      let chk ← chkM
+      let chk ← chkM.run' {}
       if chk then
         let exp ← mkAppM ``getM #[lkp]
         PrettyPrinter.delab exp
@@ -1010,37 +1011,37 @@ syntax (name := lookupCmdNaive) "#lookup_naive" ident : command
 namespace KernelM
 
 @[inherit_doc Kernel.translateThm]
-def translateThm (text: String) : TermElabM (Except (Array ElabError) Expr) := do
+def translateThm (text: String) : TranslateM (Except (Array ElabError) Expr) := do
   (← getKernelM).translateThm text
 
 @[inherit_doc Kernel.translateThm]
-def translateThmFallback (text: String) : TermElabM <| Except String Expr := do
+def translateThmFallback (text: String) : TranslateM <| Except String Expr := do
   match (← translateThm text) with
   | .ok e => return .ok e
   | .error errs =>
      return .error <| ←  ElabError.fallback errs |>.run' {}
 
 @[inherit_doc Kernel.translateThmDetailed]
-def translateThmDetailed (text: String) (name? : Option Name) : TermElabM (Name × Expr × Syntax.Command) := do
+def translateThmDetailed (text: String) (name? : Option Name) : TranslateM (Name × Expr × Syntax.Command) := do
   (← getKernelM).translateThmDetailed text name?
 
 @[inherit_doc Kernel.translateDef]
-def translateDef (text: String) : TermElabM (Except (Array CmdElabError) Syntax.Command) := do
+def translateDef (text: String) : TranslateM (Except (Array CmdElabError) Syntax.Command) := do
   (← getKernelM).translateDef text
 
 @[inherit_doc Kernel.translateDef]
-def translateDefFallback (text: String) : TermElabM <| Except String Syntax.Command := do
+def translateDefFallback (text: String) : TranslateM <| Except String Syntax.Command := do
   match (← translateDef text) with
   | .ok e => return .ok e
   | .error errs =>
      return .error <| ←  CmdElabError.fallback errs |>.run' {}
 
 @[inherit_doc Kernel.theoremDoc]
-def theoremDoc (name: Name) (stx: Syntax.Command) : TermElabM String := do
+def theoremDoc (name: Name) (stx: Syntax.Command) : TranslateM String := do
   (← getKernelM).theoremDoc name stx
 
 @[inherit_doc Kernel.defDoc]
-def defDoc (name: Name) (stx: Syntax.Command) : TermElabM String := do
+def defDoc (name: Name) (stx: Syntax.Command) : TranslateM String := do
   (← getKernelM).defDoc name stx
 
 @[inherit_doc Kernel.theoremName]
@@ -1048,7 +1049,7 @@ def theoremName (text: String) : MetaM Name := do
   (← getKernelM).theoremName text
 
 @[inherit_doc Kernel.proveForFormalization]
-def proveForFormalization (theorem_text: String) (theorem_code: Expr) (theorem_statement: TSyntax `command) : TermElabM String := do
+def proveForFormalization (theorem_text: String) (theorem_code: Expr) (theorem_statement: TSyntax `command) : TranslateM String := do
   (← getKernelM).proveForFormalization theorem_text theorem_code theorem_statement
 
 @[inherit_doc Kernel.jsonStructured]
@@ -1056,7 +1057,7 @@ def jsonStructured (document: String) : MetaM Json := do
   (← getKernelM).jsonStructured document
 
 @[inherit_doc Kernel.codeFromJson]
-def codeFromJson (json: Json) : TermElabM (TSyntax ``commandSeq) := do
+def codeFromJson (json: Json) : TranslateM (TSyntax ``commandSeq) := do
   (← getKernelM).codeFromJson json
 
 @[inherit_doc Kernel.mathQuery]
@@ -1069,31 +1070,31 @@ end KernelM
 Syntax for a command that defines something in Lean, returning the `Syntax.Command` and the `Name` defined.
 -/
 class DefinitionCommand (α : Type) where
-  cmd (x: α)  : TermElabM <| Syntax.Command × Name
+  cmd (x: α)  : TranslateM <| Syntax.Command × Name
 
 /--
 Syntax for a command that defines something in Lean, returning the `Syntax.Command`.
 -/
-def definitionCommand {α} [r : DefinitionCommand α] (x: α)  : TermElabM Syntax.Command := do
+def definitionCommand {α} [r : DefinitionCommand α] (x: α)  : TranslateM Syntax.Command := do
   let pair ← r.cmd x
   return pair.1
 
 @[inherit_doc DefinitionCommand]
-def definitionCommandPair {α} [r : DefinitionCommand α] (x: α)  : TermElabM (Syntax.Command × Name) :=
+def definitionCommandPair {α} [r : DefinitionCommand α] (x: α)  : TranslateM (Syntax.Command × Name) :=
   r.cmd x
 
 /--
 A command that replaces a syntax node with a command generated from some input of type `α`. Used in `TryThis` suggestions.
 -/
 class ReplaceCommand (α : Type) where
-  replace (stx: Syntax) (x: α)  : TermElabM Unit
+  replace (stx: Syntax) (x: α)  : TranslateM Unit
 
 @[inherit_doc ReplaceCommand]
-def replaceCommand {α} [r : ReplaceCommand α] (x: α) (stx: Syntax)   : TermElabM Unit :=
+def replaceCommand {α} [r : ReplaceCommand α] (x: α) (stx: Syntax)   : TranslateM Unit :=
   r.replace stx x
 
 @[inherit_doc ReplaceCommand]
-def replaceCommandM {α} [r : ReplaceCommand α] (xm: TermElabM α) (stx: Syntax)   : TermElabM Unit := do
+def replaceCommandM {α} [r : ReplaceCommand α] (xm: TranslateM α) (stx: Syntax)   : TranslateM Unit := do
   r.replace stx (← xm)
 
 open Tactic in
@@ -1109,7 +1110,7 @@ instance replaceByDefn {α} [r : DefinitionCommand α] : ReplaceCommand α where
 Syntax for commands associated to some input of type `α`, returning an array of commands. Used in `TryThis` suggestions.
 -/
 class TermCommands (α : Type) where
-  commandArray (x: α)  : TermElabM (Array Syntax.Command)
+  commandArray (x: α)  : TranslateM (Array Syntax.Command)
 
 open Tactic in
 instance termCommands {α} [r : TermCommands α] : ReplaceCommand α where
@@ -1119,10 +1120,10 @@ instance termCommands {α} [r : TermCommands α] : ReplaceCommand α where
     TryThis.addSuggestion stx s
 
 class RelativeDefinitionCommand (α : Type) where
-  cmd (x: α) : Syntax.Term →  TermElabM Syntax.Command
+  cmd (x: α) : Syntax.Term →  TranslateM Syntax.Command
 
 def relativeDefinitionCommand {α} [r : RelativeDefinitionCommand α] (x: α)  :
-  Syntax.Term →   TermElabM Syntax.Command :=
+  Syntax.Term →   TranslateM Syntax.Command :=
   r.cmd x
 
 instance : TermCommands TheoremProofCode where

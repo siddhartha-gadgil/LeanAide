@@ -132,7 +132,7 @@ Executing various tasks with Json input and output. These are for the server. We
     * `List String` — candidate answers to the math question
 -/
 
-
+open Translate
 /--
 Implementation of the `Kernel` class which provides various functionalities such as translating theorems and definitions, generating documentation, naming theorems, proving theorems, converting to and from structured JSON, and elaborating code. This is the "server-side" implementation that uses the `Translator` to perform these tasks.
 -/
@@ -164,7 +164,7 @@ instance kernel : Kernel := {
       let thmFmt ← PrettyPrinter.ppExpr translation
       let mvar ← Lean.Meta.mkFreshExprMVar translation
       let pf? ←
-        getQuickTactics? mvar.mvarId!
+        getQuickTactics? mvar.mvarId! (← cmdPreludeBlob).hash
       let name := name?.getD (← try
         translator.server.theoremName text
         catch e =>

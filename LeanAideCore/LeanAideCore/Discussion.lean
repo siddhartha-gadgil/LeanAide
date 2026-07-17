@@ -365,7 +365,7 @@ instance ContinuationCommands.composition (α γ : Type) (β : outParam Type) [r
 instance {α β : Type} [inst : GenerateM α β][inst' : Append α β] [inst'' : DefinitionCommand β] : ContinuationCommands α β where
   continueCommandsM d stx := do
     let x ← inst.generateM d.last
-    let (elemDef, name) ← definitionCommandPair x
+    let (elemDef, name) ← definitionCommandPair x |>.run' {}
     let descName := name ++ "chat".toName
     let appendIdent := mkIdent ``append
     let descId := mkIdent descName

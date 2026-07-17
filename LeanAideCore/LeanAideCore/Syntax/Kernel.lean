@@ -82,7 +82,7 @@ open Lean.Parser.Command
   | _ => throwUnsupportedSyntax
   where go (s: String) (stx: Syntax) (name? : Option Name) : TermElabM Unit := do
     -- if s.endsWith "." then
-      let e? ← KernelM.translateThmFallback s
+      let e? ← KernelM.translateThmFallback s |>.run' {}
       let name ← match name? with
       | some name => pure name
       | none =>
@@ -162,7 +162,7 @@ open Command in
     -- let type : Expr ← elabFrontThmExprM fmt.pretty name true
     -- let some (desc, _) ←
     --   Translator.getTypeDescriptionM type {} | throwError "No description found for type {type}"
-    let desc ← KernelM.theoremDoc name stx'
+    let desc ← KernelM.theoremDoc name stx' |>.run' {}
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (desc ++ " -/")]
     let stx' ← `(command| $docs:docComment theorem $id:ident $ty $val)
     TryThis.addSuggestion stx stx'
@@ -174,7 +174,7 @@ open Command in
     -- let (type, value) ← elabFrontDefTypeValExprM fmt.pretty name true
     -- let some (desc, _) ←
     --   Translator.getDefDescriptionM type value name {} | throwError "No description found for type {type}"
-    let desc ← KernelM.defDoc name stx'
+    let desc ← KernelM.defDoc name stx' |>.run' {}
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (desc ++ " -/")]
     let stx' ← `(command| $docs:docComment def $id:ident $args* : $ty:term := $val:term)
     TryThis.addSuggestion stx stx'
@@ -186,7 +186,7 @@ open Command in
     -- let (type, value) ← elabFrontDefTypeValExprM fmt.pretty name true
     -- let some (desc, _) ←
     --   Translator.getDefDescriptionM type value name {} | throwError "No description found for type {type}"
-    let desc ← KernelM.defDoc name stx'
+    let desc ← KernelM.defDoc name stx' |>.run' {}
     let docs := mkNode ``Lean.Parser.Command.docComment #[mkAtom "/--", mkAtom (desc ++ " -/")]
     let stx' ← `(command| $docs:docComment noncomputable def $id:ident $args* : $ty:term := $val:term)
     TryThis.addSuggestion stx stx'
@@ -263,7 +263,7 @@ open Command Elab Term Meta in
     let tokenTerm ←  Term.elabTerm s (mkConst ``Json)
     let token ←
       unsafe evalExpr Nat (mkConst ``Nat) tokenTerm
-    match ← updateCodeByToken token.toUInt64 with
+    match ← updateCodeByToken token.toUInt64 |>.run' {} with
     | .some code =>
       TryThis.addSuggestion stx code
     | none =>

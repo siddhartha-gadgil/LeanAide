@@ -16,13 +16,13 @@ instance : Continuation Query Response where
 instance thmTextToCode : GenerateM TheoremText Conjecture where
   generateM t := do
     let (name, expr, cmd) ←
-      translateThmDetailed t.text t.name?
+      translateThmDetailed t.text t.name? |>.run' {}
     return { text:= t.text, name := name, type := expr,  statement := cmd }
 
 instance stringToThmCode : GenerateM String Conjecture where
   generateM s := do
     let (name, expr, cmd) ←
-      translateThmDetailed s none
+      translateThmDetailed s none |>.run' {}
     return { text:= s, name := name, type := expr,  statement := cmd }
 
 -- instance : GenerateM String TheoremCode where
@@ -44,23 +44,23 @@ instance : GenerateM Name TheoremCode where
 
 instance : GenerateM DefinitionText DefinitionCodeM where
   generateM d := do
-    let .ok (cmd : Syntax.Command) ← KernelM.translateDef d.text | throwError "Translation failed"
+    let .ok (cmd : Syntax.Command) ← KernelM.translateDef d.text |>.run' {} | throwError "Translation failed"
     let .some name := getCommandName cmd | throwError "Cannot extract name from definition"
     return { text := d.text, statement := cmd, name := name }
 
 instance : GenerateM Conjecture ProofDocument where
   generateM t := do
-    let doc ← proveForFormalization t.text t.type t.statement
+    let doc ← proveForFormalization t.text t.type t.statement |>.run' {}
     return { name := t.name, content := doc }
 
 instance : GenerateM ProofDocument StructuredProof where
   generateM d := do
-    let sdoc ← jsonStructured d.content
+    let sdoc ← jsonStructured d.content |>.run' {}
     return { name := d.name, json := sdoc }
 
 instance : GenerateM StructuredProof ProofCode where
   generateM s := do
-    let cmd ← codeFromJson s.json
+    let cmd ← codeFromJson s.json |>.run' {}
     return { name := s.name, code := cmd }
 
 instance queryResponse : GenerateM (Discussion Query) (Discussion Response) where

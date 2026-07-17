@@ -496,7 +496,7 @@ def translateDefCmdM? (s: String) (translator : Translator)
     | Except.error e =>
       checks := checks.push <| .unparsed s e context?
     | Except.ok cmd =>
-      let check ← checkElabFrontM (← withCommandPrelude s)
+      let check ← checkElabFrontM (← withCommandPrelude s) (← cmdPreludeBlob).hash
       if check.isEmpty then return .ok ⟨ cmd ⟩
       checks := checks.push (.parsed s check context?)
       trace[Translate.info] s!"Not a valid command:\n{s}"

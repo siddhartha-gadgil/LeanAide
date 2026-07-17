@@ -2,13 +2,14 @@ import Lean
 import LeanAideCore.Aides
 import LeanAideCore.SimpleFrontend
 import LeanAideCore.RunTactics
+import LeanAideCore.TranslateM
 -- import LeanSearchClient
 import Hammer
 
 open Lean Meta Elab Term PrettyPrinter Nat Tactic
 
 namespace LeanAide
-
+open Translate
 
 -- open LibrarySuggestions in
 -- def suggestionsForGoal' (goal: MVarId) (maxSuggestions: Nat := 30) : MetaM (Array Name) := do
@@ -46,8 +47,10 @@ open Parser.Tactic
 --       `(simpLemma| $id:ident)
 --   `(tacticSeq| simp? [$params,*])
 
-def getHammerTactics? (goal: MVarId) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndGetTryThis? goal #[(← `(tactic| hammer {aesopPremises := 5, autoPremises := 0}))]
+def getHammerTactics? (goal: MVarId) : TranslateM <| Option (TSyntax ``tacticSeq) := do
+  let tactics? ←
+    runTacticsAndGetTryThis? goal #[(← `(tactic| hammer {aesopPremises := 5, autoPremises := 0}))]
+      (← cmdPreludeBlob).hash
   match tactics? with
   | none => return none
   | some tacs =>
