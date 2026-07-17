@@ -133,7 +133,6 @@ def simpWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions
 
 
 open Parser.Tactic
--- TODO: add errors and warnings
 def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : TermElabM <| Option MVarId :=
     mvarId.withContext do
   -- let tacticCode ← `(tacticSeq| skip)
@@ -157,7 +156,7 @@ def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : Term
       s₀'.restore
       traceAide `leanaide.interpreter.info s!"Tactics returned multiple goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {mvars.length} instead of 1"
       s₀.restore
-      return none
+      throwError s!"Tactics returned multiple goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {mvars.length} instead of 1"
   catch e =>
     traceAide `leanaide.interpreter.info s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
     traceAide `leanaide.interpreter.info s!"Tactic code: \n{← ppCategory ``tacticSeq tacticCode}"
