@@ -21,6 +21,7 @@ def parseThm4 (s : String) : TermElabM <| Except String Syntax := do
 def checkTypeElabFrontWithCommandPreludeM (type : String) :
     TranslateM <| List String := do
   checkElabFrontM (← withCommandPrelude s!"example : {type} := by sorry")
+    (← cmdPreludeBlob).hash
 
 def elabFrontTheoremExprWithCommandPreludeM (type : String) :
     TranslateM <| Except (List String) Expr := do

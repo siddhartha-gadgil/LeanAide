@@ -183,7 +183,7 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
     throwError
       s!"codegen: no key or type found in JSON object {source} and no codegen functions returned a result"
 
-open Parser.Tactic
+open Parser.Tactic Translate
 /--
 Helper function to append tactics obtained from JSON sources to an existing sequence of tactics.
 -/
@@ -197,7 +197,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     return (← appendTacticSeqSeq accum (← `(tacticSeq| assumption)), none)
   catch _ =>
   traceAide `leanaide.codegen.info "Trying exact tactics or automation"
-  match ← getQuickTactics? goal with
+  match ← getQuickTactics? goal (← cmdPreludeBlob).hash with
   | some code => do
     traceAide `leanaide.codegen.info s!"exact tactics found for goal: {← ppExpr <| ← goal.getType}"
     -- traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
@@ -250,7 +250,8 @@ def findTactics? (goal :  MVarId):
   let simpWs ← simpWithSuggestions goal localNames
   runTacticsAndFindTryThis? goal ([← `(tacticSeq|  simp?), ← `(tacticSeq | grind?),
   -- ← `(tacticSeq| try?),
-  grindWs, simpWs, ← `(tacticSeq| try simp; exact?)] ++ (← getAutoTactics).toList) (strict := true)
+  grindWs, simpWs, ← `(tacticSeq| try simp; exact?)] ++ (← getAutoTactics).toList)
+    (← cmdPreludeBlob).hash (strict := true)
 
 def findTacticsI (goal :  MVarId):
     TranslateM (Array (Syntax.Tactic)) := goal.withContext do
@@ -320,9 +321,7 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
         let err ←   e.toMessageData.toString
         traceAide `leanaide.codegen.info s!"Error in processing source for command {source.pretty};\nError: {err}"
         traceAide `leanaide.codegen.info err
-        -- TODO: Do not emit diagnostic `#eval`/`#check` commands for failures
-        -- into generated code, and do not add such diagnostics to `cmdPrelude`.
-        pure <| some <| ← `(commandSeq| #eval "command skipped due to error in processing source")
+        continue
 
     match code? with
     | none => do -- error with obtaining commands

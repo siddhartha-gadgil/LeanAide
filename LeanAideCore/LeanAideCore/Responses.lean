@@ -197,6 +197,7 @@ def translateThmTask (data: Json) (translator : Translator) : TranslateM Json :=
         else
           return Json.mkObj [("result", "success"), ("theorem_code", translation)]
 
+open Translate
 /--
 Translates a theorem to Lean Code with detailed information, including an attempted proof using `exact?`. The `statement` is the theorem statement with proof (which may be `sorry`). Definitions used in the theorem and in the proof are also returned.
 
@@ -232,7 +233,7 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
         let typeStx ← delabDetailed translation
         let thmFmt ← PrettyPrinter.ppExpr translation
         let pf? ←
-          getQuickTactics? mvar.mvarId!
+          getQuickTactics? mvar.mvarId! (← cmdPreludeBlob).hash
         let name? := data.getObjValAs? Name "theorem_name" |>.toOption
         let name := name?.getD (← try
           translator.server.theoremName text
@@ -246,7 +247,7 @@ def translateThmDetailedTask (data: Json) (translator : Translator) : TranslateM
         let thmStx ←
           `(command| theorem $thmName : $typeStx := by $pf)
         let statementFormat ← PrettyPrinter.ppCommand thmStx
-        let defsInProof? ← getExactTermParts? translation
+        let defsInProof? ← getExactTermParts? translation (← cmdPreludeBlob).hash
         return Json.mkObj [("result", "success"), ("theorem_code",  thmFmt.pretty),
           ("theorem_name", toJson name), ("proved", pf?.isSome),
           ("theorem_statement", statementFormat.pretty), ("definitions_used", toJson defs),
@@ -502,7 +503,7 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
                 let thmFmt ← PrettyPrinter.ppExpr expr
                 let mvar ← Lean.Meta.mkFreshExprMVar expr
                 let pf? ←
-                  getQuickTactics? mvar.mvarId!
+                  getQuickTactics? mvar.mvarId! (← cmdPreludeBlob).hash
                 let name ← try
                   translator.server.theoremName desc
                   catch e =>
@@ -515,7 +516,7 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
                 let thmStx ←
                   `(command| theorem $thmName : $typeStx := by $pf)
                 let statementFormat ← PrettyPrinter.ppCommand thmStx
-                let defsInProof? ← getExactTermParts? expr
+                let defsInProof? ← getExactTermParts? expr (← cmdPreludeBlob).hash
                 return res.mergeObj <| Json.mkObj [("theorem",  thmFmt.pretty),
                   ("name", toJson name), ("proved", pf?.isSome),
                   ("statement", statementFormat.pretty), ("definitions_used", toJson defs),

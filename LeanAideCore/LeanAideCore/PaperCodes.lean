@@ -90,7 +90,7 @@ def translateToDef (statement: String) (translator : Translator) : TranslateM <|
   try
     let .ok stx := Parser.runParserCategory (← getEnv) `command statement | throwError
       s!"codegen: failed to parse '{statement}' as a command"
-    let checks ← checkElabFrontM statement
+    let checks ← checkElabFrontM statement (← cmdPreludeBlob).hash
     unless checks.isEmpty do
       throwError s!"codegen: failed to elaborate '{statement}' as a command, errors: {checks}"
     return .ok ⟨stx⟩
@@ -190,7 +190,7 @@ def getResultUsed? (translator: Translator) (js: Json) : TranslateM (Option Synt
   | .error _, .error _ =>
     let .ok statement := js.getObjValAs? String "statement" | throwError "'ResultUsed' must have 'statement'"
     let type ← translator.translateToPropStrict statement
-    getExactTerm? type
+    getExactTerm? type (← cmdPreludeBlob).hash
   | _, .ok mathlibIdentifier =>
     return mkIdent mathlibIdentifier.toName
   | .ok targetIdentifier, _ =>
@@ -268,8 +268,6 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
         return s!" with value `{valueStr}`"
     let valueStr := valueStr?.getD ""
     let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}{valueStr}"
-    -- TODO: Avoid emitting diagnostic `#check` commands into generated code or
-    -- into command preludes when a check/failure is only for codegen tracing.
     let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
     return some stx
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -522,9 +520,6 @@ where
         `(commandSeq| $cmds*)
       | .error errs =>
         try
-          -- TODO: Avoid this fallback for ordinary definitions. Predicate and
-          -- type-valued definitions should remain `def`/`abbrev` declarations,
-          -- not be converted into existential theorem declarations.
           let claim := s!"There exists {name} such that:\n{statement}"
           let type ←
             translator.translateToPropStrict claim
@@ -548,7 +543,10 @@ where
             `(command| theorem $name : $typeStx := by $proofStx)
           let resolvedCmds ←
             cmdResolveExistsHave typeStx
-          mkCommandSeq <| #[head] ++ resolvedCmds
+          if resolvedCmds.size > 1 then
+            mkCommandSeq <| #[head] ++ resolvedCmds
+          else
+            throwError s!"codegen: no definition translation found for {statement}; outputs: {errs.map (·.text)}\nDid not fall back to existential definition because {← ppExpr type} did not produce multiple resolved commands"
         catch e =>
           let innerMsg ←  e.toMessageData.format
           let outputs := errs.map (·.text)
