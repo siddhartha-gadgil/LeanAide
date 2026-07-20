@@ -47,6 +47,10 @@ def elabFrontTheoremExprWithCommandPreludeM (type : String) :
 def elabThm4Aux (s : String)
   (_levelNames : List Lean.Name := levelNames)
   : TranslateM <| Except ElabError Expr := do
+  -- TODO(generation-check-homogeneous): Preserve layout while parsing the full
+  -- extracted Lean declaration. Replacing newlines with spaces breaks valid
+  -- consecutive `let` terms; this caused the first valid Lemma 5 candidates to
+  -- fail before elaboration. Strip fences/prose without flattening Lean syntax.
   let s := s.replace "\n" " "
   let env ← getEnv
   let stx ←
@@ -93,6 +97,8 @@ def elabThm4 (s : String)
       -- TODO(generation-check-homogeneous): Replace exhaustive `lineBlocks`
       -- recovery with a bounded syntax-aware extraction (full response, fenced
       -- Lean declaration/term, and at most a small fixed set of prose suffixes).
+      -- Never accept an isolated proof line, `sorry`, or a line subset that has
+      -- discarded the `let` binders required by the candidate statement.
       let groups := lineBlocks s
       traceAide `leanaide.elaboration.info s!"Checking groups: {groups.length}"
       let elabs? ←  groups.findSomeM? (fun s => do

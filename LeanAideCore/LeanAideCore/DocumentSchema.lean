@@ -565,6 +565,9 @@ def docSchema : Json :=
 -- value (or an existence/assertion node) rather than allowing prose-only state.
 -- Probability spaces, random variables, finite sums, quotient representatives,
 -- and similar aggregate notation must be formalized before theorem translation.
+-- For Lemma 5-style independent signs, prefer the explicit finite product space
+-- `Fin (2*n) → Bool`, a checked integer sum, and a uniform finite average in the
+-- formal claim instead of prose names such as `f`, `S2n`, and "expectation".
 #schema_element "let_statement" := json% {"type": "object",
  "required": ["type", "variable_name"],
  "properties":

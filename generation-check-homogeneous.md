@@ -101,7 +101,7 @@ proofs, but they do not currently form complete declarations.
 | Lemma 2 | Corrected explicit formula for `C n` | Two `sorry` blocks, including the base case and conjugation-invariance step |
 | Lemma 3 | Corrected conjugacy hypotheses | Four `sorry` blocks; the asymptotic/division argument is not completed |
 | Lemma 4 | Corrected specialization of `f` | Three `sorry` blocks and many discarded prose steps (`skip`) |
-| Lemma 5 | No command emitted | Translation cannot bind `f`, the sign family, `S2n`, and expectation coherently; both theorem handlers fail |
+| Lemma 5 | No command emitted, despite valid finite-sample candidates | Prose-only `f`/`S2n` made the prompt fragile, but the decisive failure is in candidate checking: newlines are flattened, arbitrary line subsets are tried, and a recovered `sorry` fragment aborts the loop before later valid candidates |
 | Lemma 6 | Semantically wrong declaration | Emitted as `noncomputable def lemma_6 : ... → Prop := ... True`, not as the Rademacher estimate |
 | Proposition 7 | Correct top-level statement | Three `sorry` blocks and a proof-only universe `v`, causing the `[u,v]` versus `[u]` commit error |
 | Lemma 8 | Correct top-level statement | One `sorry`; does not implement induction/generation of the commutator subgroup |
@@ -181,11 +181,72 @@ The remaining prose assumptions are not enough to create Lean binders:
 - Lemma 12 uses `VQ := A ⊗[ℤ] ℚ` and `normQ` in prose. Rejected candidates use
   these identifiers before binding them.
 
+##### Lemma 5 had valid candidates that the checker never accepted
+
+The weak source context is not the whole explanation for Lemma 5. The LLM
+returned eight candidates, and several repaired the missing context by defining
+`c`, `f`, the finite sign space, the random-walk sum, and uniform expectation
+inside the statement. Exact candidates 3, 5, and 7 from the log compile
+independently with only the expected `declaration uses sorry` warning. Candidate
+3, for example, has the following proposition:
+
+```lean
+∀ {G : Type u} [Group G] {l : G → ℝ},
+  IsHomogeneousPseudoLengthFunction l →
+    ∀ (x y : G) (n : ℕ),
+      let c : G := commutatorOf x y
+      let f : ℤ → ℤ → ℝ := fun m k => l (x ^ m * c ^ k)
+      let S2n : (Fin (2 * n) → Bool) → ℤ := fun ε =>
+        ∑ i : Fin (2 * n), if ε i then (1 : ℤ) else (-1 : ℤ)
+      f 0 (n : ℤ) ≤
+        (Fintype.card (Fin (2 * n) → Bool) : ℝ)⁻¹ *
+          ∑ ε : (Fin (2 * n) → Bool),
+            f (S2n ε) (-(S2n ε) / (2 : ℤ))
+```
+
+This is the appropriate formal interpretation of the expectation: uniform
+averaging over every sign assignment `Fin (2*n) → Bool`. Independence is built
+into the product sample space, so no measure-theory objects are required merely
+to state the lemma. The proof must later establish that `S2n ε` is even and
+iterate Lemma 4, but these are proof obligations, not statement-elaboration
+problems.
+
+The valid statements were lost through the following checker sequence:
+
+1. `TheoremElabCheck.elabThm4Aux` executes
+   `s.replace "\n" " "` before parsing. The first candidates use Lean's
+   layout-sensitive consecutive `let` syntax. Flattening their newlines removes
+   the separators and makes otherwise valid declarations fail to parse.
+2. `elabThm4` then invokes `lineBlocks`, which enumerates every nonempty subset
+   of lines. Subsets can retain `f 0 ...` or `f S ...` while dropping the
+   preceding `let f` and `let S`, producing the logged `Function expected at f`
+   and unknown-`S` errors. Other subsets retain only a real-valued sum, so the
+   target is not a proposition. These diagnostics describe corrupted recovery
+   fragments, not the complete candidates returned by the model.
+3. Recovery can also find a fragment containing only `sorry` or a target ending
+   in `≤ sorry`. `elabThm4` returns that fragment as an elaborated expression.
+   In `translateToPropStrictAux`, the `type.hasSorry` branch throws immediately
+   instead of recording the bad candidate and continuing the `for out in
+   output` loop. Consequently the later valid finite-sample candidates are
+   never checked. The second registered theorem handler repeats the same failed
+   process.
+
+This failure occurs during top-level statement translation, before the dummy
+theorem used for proof prompts is installed; dummy-prelude contamination is not
+the cause here.
+
+Required changes: preserve newlines and parse the complete extracted Lean
+command; replace `lineBlocks` with bounded syntax-aware extraction of a fenced
+declaration or theorem term; never accept a recovery fragment containing
+`sorry`; and make an invalid/sorry/non-`Prop` candidate append a structured
+diagnostic and `continue` to the next LLM output rather than aborting the whole
+translation loop.
+
 The log reports exactly two top-level source-processing failures, for Lemmas 5
 and 12. Lemma 6 is more dangerous: it does not fail loudly, but translates to
 the wrong declaration.
 
-These statements should be supplied to codegen in already formal Lean shape.
+The source should still be supplied to codegen in already formal Lean shape.
 For the probability section, the most robust choice is a finite sample space
 `Fin (2*n) → Bool`, with explicit definitions for the sign, the sum, and the
 uniform expectation. This avoids introducing measure theory merely to express
@@ -654,10 +715,12 @@ and duplicating proof trees.
 1. Remove or close the open dummy theorem used during nested proof generation,
    validate frontend preludes separately, and never attribute a prelude error
    to the candidate being checked.
-2. Replace exponential `lineBlocks` recovery with a small bounded,
-   syntax-aware set of candidate extractions.
+2. Preserve Lean layout while parsing candidate declarations, and replace
+   exponential `lineBlocks` recovery with a small bounded, syntax-aware set of
+   candidate extractions that cannot promote `sorry` or proof-body fragments.
 3. Make `translateToPropStrict` genuinely `Prop`-strict for theorem JSON and
-   reject Lemma 6-style predicate/type results.
+   reject Lemma 6-style predicate/type results. Record candidate-local
+   `sorry`/mvar/non-`Prop` failures and continue checking later LLM outputs.
 4. Fix `constructionProofCode` by recursively instantiating the existence
    goal's assigned value, inferring its resolved type when needed, and,
    preferably, operating directly on the current existential goal without

@@ -49,6 +49,10 @@ def Translator.translateToPropStrictAux
   traceAide `leanaide.papercodes.info s!"Translating to proposition: {claim}, full statement: {thm}"
   let (js, _, _) ← translator.getLeanCodeJson claim
   let output ← getMessageContents js
+  -- TODO(generation-check-homogeneous): Treat each LLM output as an independent
+  -- candidate. Accumulate its parse/elaboration/Prop diagnostics and continue;
+  -- one malformed or unsafe recovery result must not prevent later candidates
+  -- from being checked (valid Lemma 5 candidates 3, 5, and 7 were skipped).
   for out in output do
     let el? ← elabThm4 out
     match el? with
@@ -57,6 +61,10 @@ def Translator.translateToPropStrictAux
     | Except.ok type =>
       let type ← instantiateMVars type
       Term.synthesizeSyntheticMVarsNoPostponing
+      -- TODO(generation-check-homogeneous): Record this candidate as rejected
+      -- and `continue` instead of throwing out of the complete candidate loop.
+      -- In particular, a `sorry` found by line-subset recovery is not a valid
+      -- translation and must not abort checks of later full declarations.
       if type.hasSorry || (← type.hasUnassignedExprMVar) then
         throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
       try
