@@ -496,6 +496,10 @@ def translateDefCmdM? (s: String) (translator : Translator)
     | Except.error e =>
       checks := checks.push <| .unparsed s e context?
     | Except.ok cmd =>
+      -- TODO(generation-check-homogeneous): Validate the accumulated prelude
+      -- separately and accept/reject this candidate using only diagnostics in
+      -- the candidate source range. A bad prelude must be a generator error,
+      -- not a repeated `CmdElabError` attached to every LLM candidate.
       let check ← checkElabFrontM (← withCommandPrelude s) (← cmdPreludeBlob).hash
       if check.isEmpty then return .ok ⟨ cmd ⟩
       checks := checks.push (.parsed s check context?)

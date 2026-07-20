@@ -21,6 +21,10 @@ Translating to a proposition in Lean, using the `translateToProp?` method of the
 -/
 
 
+-- TODO(generation-check-homogeneous): Make "Strict" mean that the returned
+-- expression itself has type `Prop`, not merely that `inferType` is a `Sort`.
+-- Reject predicate/type-valued translations, auto-implicit unbound identifiers,
+-- and unresolved algebraic typeclass metavariables before proof generation.
 def Translator.translateToPropStrictAux
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
@@ -268,6 +272,9 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
         return s!" with value `{valueStr}`"
     let valueStr := valueStr?.getD ""
     let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}{valueStr}"
+    -- TODO(generation-check-homogeneous): A lookup is diagnostic metadata, not
+    -- generated Lean code. Record this text in a log or source comment instead
+    -- of emitting `#check` and allowing it into `cmdPrelude`.
     let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
     return some stx
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -338,6 +345,9 @@ Generate code for a theorem, lemma, proposition, corollary, or claim. It process
 
 Should perhaps try to use automation if there is no proof.
 -/
+-- TODO(generation-check-homogeneous): Consolidate this registration with the
+-- `theoremCode` registration in `LeanAide/PaperCodes.lean`. The theorem schema
+-- must require a `Prop`; remove the non-`Prop` `noncomputable def` fallback.
 @[codegen "theorem"]
 def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
@@ -436,7 +446,11 @@ where
     let typeStx ← delabDetailed type
     let proofStx? ← proof?.mapM fun
       pf => withoutModifyingState do
-      -- Adding dummy statement for prompt, will be rolled back
+      -- TODO(generation-check-homogeneous): The enclosing theorem signature is
+      -- useful in the LLM prompt, but must be added through a prompt-only API.
+      -- Do not add this dummy to the frontend/elaboration prelude: its type may
+      -- be open in local free variables, and it also enables circular proofs.
+      -- If a command form is retained anywhere, close it with `mkForallFVars`.
       let nameIdent := mkIdent name
       let dummyCmd ← `(command| theorem $nameIdent : $typeStx := by sorry)
       Translate.addCommand dummyCmd
@@ -474,6 +488,9 @@ where
       pure pfStx
     traceAide `leanaide.papercodes.info s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
+    -- TODO(generation-check-homogeneous): Set `isProved` only after the complete
+    -- declaration elaborates successfully and its proof is hole-free. Presence
+    -- of a JSON `proof` field does not mean codegen completed the proof.
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?, ← isProp type)
@@ -506,6 +523,9 @@ where
     match
       ← translator.translateDefCmdM? statement with
       | .ok cmd =>
+        -- TODO(generation-check-homogeneous): Return the renamed command built
+        -- by this match. The current branch discards it below and returns the
+        -- original LLM command, losing the JSON-requested definition name.
         match cmd with
         | `(command| def $_defName:ident $args:bracketedBinder* : $type := $value) =>
             `(command| def $nameStx $args* : $type := $value)
@@ -519,6 +539,11 @@ where
         let cmds := #[cmd]
         `(commandSeq| $cmds*)
       | .error errs =>
+        -- TODO(generation-check-homogeneous): Remove or sharply restrict this
+        -- definition-to-existential-theorem fallback. Predicate, structure,
+        -- type-valued, and abbreviation definitions must remain definitions;
+        -- use an existence theorem only for an explicitly existential source
+        -- whose translated target has type `Prop`.
         try
           let claim := s!"There exists {name} such that:\n{statement}"
           let type ←
@@ -671,6 +696,10 @@ If goal is a `there exists` statement and binderName matches variable_name, it r
 -/
 @[codegen "let_statement"]
 def letCodeCore (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
+  -- TODO(generation-check-homogeneous): A notation-introducing `let_statement`
+  -- must materialize a typed Lean local definition. Do not silently keep a
+  -- missing `value` as prose only; repair/reject the node or derive a checked
+  -- value before later claims are allowed to use its `variable_name`.
   match s, js with
   | ``tacticSeq, js => do
     let statement := statement js
@@ -811,6 +840,10 @@ Generate code for an `assume_statement`. This is used to add an assumption to th
 @[codegen "assume_statement"]
 def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
+  -- TODO(generation-check-homogeneous): Support the structured schema emitted
+  -- by the pipeline (`variable_name`, `variable_type`, and `arguments`) by
+  -- constructing a typed local binder, or normalize it before this handler.
+  -- Requiring only an `assumption` string currently turns valid nodes into skip.
   let .ok statement :=
       js.getObjValAs? String "assumption" | throwError "No 'assumption' found in 'assume_statement'"
   addPrelude <| "Assume that: " ++ statement

@@ -284,6 +284,11 @@ def variablePreludeForFrontendBlob? : TranslateM <| Option String := do
   | some cmd => return some (← PrettyPrinter.ppCommand cmd).pretty
   | none => return none
 
+-- TODO(generation-check-homogeneous): Keep prompt-only declarations separate
+-- from the frontend prelude. Validate the command prelude on its own before
+-- appending `body`, and do not attribute prelude diagnostics to `body`. Any
+-- declaration open in local free variables must be closed before it can enter
+-- this global-command prelude; changing the order alone is not a complete fix.
 def withCommandPrelude (body : String) : TranslateM String := do
   let preludes := #[
     ← cmdPreludeForFrontendBlob?,
@@ -305,6 +310,9 @@ def cmdPreludeBriefBlob? : TranslateM <| Option String := do
   let cmds := cmds.map (·.pretty)
   return some <| cmds.foldl (· ++ "\n" ++ · ) "import Mathlib\n"
 
+-- TODO(generation-check-homogeneous): Make this operation transactional. Check
+-- error-severity messages and update the environment/prelude only on success;
+-- do not discard the `runFrontendM` result.
 def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
   discard <|  runFrontendM (← ppCommand cmd).pretty true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
@@ -320,9 +328,19 @@ def writeCommands  (cmds : Array <| TSyntax `command) : TranslateM Unit := do
       lines := lines.push cmdStr
     IO.FS.writeFile file <| contents ++ (lines.foldr (· ++ "\n" ++ · ) "")
 
+-- TODO(generation-check-homogeneous): Rename this state-only operation to
+-- `addCommandToPrelude` (and its plural analogue accordingly). The current name
+-- incorrectly suggests that the command is elaborated or run. Prompt-only
+-- context needs a separate API and must not be added here.
 def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
+-- TODO(generation-check-homogeneous): Split this into clearly named validation
+-- and commit operations (for example `runAndCommitCommands`). Elaborate the
+-- complete sequence in saved state, collect errors, and perform the environment
+-- update, output write, and prelude append atomically only after success. This
+-- full-declaration check must also reject proof terms with unexpected universe
+-- parameters and tactics appended after a goal-closing fallback.
 def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
   let cmds := getCommands cmds
   for cmd in cmds do

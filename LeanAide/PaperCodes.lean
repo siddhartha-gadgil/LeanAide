@@ -24,6 +24,10 @@ Generate code for a theorem, lemma, proposition, corollary, or claim. It process
 
 Should perhaps try to use automation if there is no proof.
 -/
+-- TODO(generation-check-homogeneous): Consolidate this registration with the
+-- `theoremCodeCore` registration in `LeanAideCore/LeanAideCore/PaperCodes.lean`.
+-- The theorem schema must require a `Prop`; remove the non-`Prop`
+-- `noncomputable def` fallback.
 @[codegen "theorem"]
 def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
@@ -168,6 +172,9 @@ where
     traceAide `leanaide.papercodes.info s!"codegen: Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
+    -- TODO(generation-check-homogeneous): Set `isProved` only after the complete
+    -- declaration elaborates successfully and its proof is hole-free. Presence
+    -- of a JSON `proof` field does not mean codegen completed the proof.
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?, ← isProp type)
@@ -178,6 +185,10 @@ If goal is a `there exists` statement and binderName matches variable_name, it r
 -/
 @[codegen "let_statement"]
 def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
+  -- TODO(generation-check-homogeneous): A notation-introducing `let_statement`
+  -- must materialize a typed Lean local definition. Do not silently keep a
+  -- missing `value` as prose only; repair/reject the node or derive a checked
+  -- value before later claims are allowed to use its `variable_name`.
   match s, js with
   | ``tacticSeq, js => do
     let statement := statement js
@@ -495,10 +506,19 @@ def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVa
       s!"codegen: no 'full_claim' found in 'construction_proof'"
     let .ok claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no 'claim' found in 'construction_proof'"
+    -- TODO(generation-check-homogeneous): Operate on `goal` and its actual
+    -- existential binders instead of retranslating/proving `full_claim` and
+    -- `claim` independently. Refine the witness once and discharge only the
+    -- resulting verification goal; complex constructions should invoke a
+    -- reusable library theorem rather than recursively replaying the proof tree.
     let existenceType ← translator.translateToPropStrict fullClaim
     let existenceGoal ← mkFreshExprMVar existenceType
     let existenceProofTacs ←
         existenceProof translator variableName construction verification existenceGoal.mvarId!
+    -- TODO(generation-check-homogeneous): Never delaborate the mvar expression.
+    -- Read its assignment with `getExprMVarAssignment?`, recursively resolve it
+    -- using `instantiateMVars`, infer/instantiate the assigned value's type, and
+    -- delaborate that type (or the assigned value when a value is required).
     let existenceSyntax ← delabDetailed existenceGoal
     let hash := fullClaim.hash
     let existsId := mkIdent (s!"assert_exists_{hash}").toName

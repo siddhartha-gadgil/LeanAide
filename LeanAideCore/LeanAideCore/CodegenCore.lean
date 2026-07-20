@@ -213,6 +213,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
       catch e =>
         let err ←   e.toMessageData.toString
         traceAide `leanaide.codegen.info s!"Error in getCode `tacticSeq for source {source.pretty}\nError: {err}"
+        -- TODO(generation-check-homogeneous): Preserve this structured error
+        -- and terminate generation for the affected subgoal (or emit one named
+        -- outermost hole with the JSON id/claim). `skip` falsely classifies a
+        -- failed assertion/theorem translation as a successful no-op.
         `(tacticSeq | skip)
     match code? with
     | none => do -- pure side effect, no code generated
@@ -256,6 +260,10 @@ def findTactics? (goal :  MVarId):
 def findTacticsI (goal :  MVarId):
     TranslateM (Array (Syntax.Tactic)) := goal.withContext do
   let tacs? ← findTactics? goal
+  -- TODO(generation-check-homogeneous): Return an explicit failure (`none` or
+  -- an error) when automation finds no proof. Do not treat `repeat sorry` as a
+  -- successful tactic sequence; best-effort output may add one terminal hole
+  -- only after all generation for this goal has stopped.
   let defaultTacs ← `(tacticSeq| repeat (sorry))
   return getTactics <| tacs?.getD defaultTacs
 
@@ -328,6 +336,10 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
       continue
     | some code => do
       accum := accum.push code
+      -- TODO(generation-check-homogeneous): Call a transactional command commit
+      -- here. Only successfully elaborated user declarations should be written
+      -- or added to the later prompt/frontend prelude; diagnostics and failed
+      -- placeholders must remain structured errors outside `cmdPrelude`.
       Translate.addCommands code
   if accum.isEmpty then
     let empty : Array <| TSyntax `command := #[]

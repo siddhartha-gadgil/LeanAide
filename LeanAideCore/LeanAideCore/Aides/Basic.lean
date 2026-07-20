@@ -302,6 +302,10 @@ partial def polyParser (parser: Parser) (input: String) (fileName := "<input>") 
     else
       return (← polyParser parser tail.toString fileName)
 
+-- TODO(generation-check-homogeneous): Do not use this power-set construction
+-- for LLM recovery: it returns `2^n - 1` line subsets. Replace its codegen use
+-- with a bounded syntax-aware candidate extractor, then remove this helper if
+-- no other caller requires the exhaustive behavior.
 partial def lineBlocks (input: String) : List String :=
   let tail := input.dropWhile (fun c => c != '\n') |>.drop 1
     if tail.isEmpty then

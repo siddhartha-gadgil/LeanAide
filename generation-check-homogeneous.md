@@ -1,5 +1,606 @@
 # Generation check for `results/homogeneous.md`
 
+## Update: July 20 partial live codegen run
+
+### Scope and outcome
+
+This update analyses the supplied partial output
+`CodeGen/Live/homogeneous.lean`, `.logs/2026-07-20.log`, the current
+`results/homogeneous.json`, and the current implementations under
+`LeanAideCore/` and `LeanAide/`. I also compiled both the live file and the
+earlier `CodeGen/homogeneous.lean` independently.
+
+The JSON contains five top-level definitions and fifteen top-level theorems.
+The live file committed:
+
+- all five definitions;
+- Lemmas 1--4;
+- a declaration named `lemma_6`, but not the statement of Lemma 6;
+- Proposition 7 and Lemmas 8--11;
+- Lemma 13.
+
+Lemma 5 and Lemma 12 failed statement translation and were omitted. The live
+file was last written at 14:26:59, after Lemma 13 was committed. The log
+continued until 14:38:31 while Theorem 14 and its proof steps were being
+processed, but Theorem 14 was never committed to the live file. Corollary 15
+was not reached as a top-level command. Thus the live file is an incremental,
+partial artifact, not the generated document returned by a successful
+`runCodegen` call.
+
+An independent check with
+
+```bash
+lake env lean CodeGen/Live/homogeneous.lean
+```
+
+fails. The decisive diagnostics are:
+
+```text
+line 234: AddConstAsyncResult.commitConst:
+          constant has level params [u, v] but expected [u]
+line 336: No goals to be solved
+line 459: expected ';' or line break
+line 459: Function expected at `sorry`
+line 455: unsolved goals in lemma_13
+```
+
+The file contains 105 textual occurrences of `sorry` and 165 `skip` tactics.
+Every emitted top-level theorem either contains a `sorry` or fails elaboration;
+there is no completed top-level proof in this partial output. Because the first
+syntax corruption in `lemma_13` occurs at line 459, the compiler cannot be
+used as evidence that the remaining 969 lines of that proof are valid.
+
+### What worked
+
+The most important improvement over the earlier run is that the frontend-cache
+context fix recommended below has now been implemented. In the current code:
+
+```lean
+checkElabFrontM (← withCommandPrelude s) (← cmdPreludeBlob).hash
+```
+
+passes an environment/prelude hash into the frontend cache key. This prevented
+the stale `Unknown identifier IsPseudoLengthFunction` result seen in the July
+4--5 run. All five foundational definition bodies now elaborate:
+
+```lean
+def IsPseudoLengthFunction ...
+def IsLengthFunction ...
+def IsHomogeneousPseudoLengthFunction ...
+def commutatorOf ...
+def AddCommGroup.IsTorsionFree ...
+```
+
+The main theorem statements through Lemma 11 are also substantially more
+faithful than in `CodeGen/homogeneous.lean`:
+
+- Lemma 1 now assumes a homogeneous pseudo-length function.
+- Lemma 2 defines the term being bounded instead of quantifying over an
+  arbitrary function `C`.
+- Lemma 3 includes the two conjugacy hypotheses needed for its conclusion.
+- Lemma 4 expands `f(m,k)` in terms of `l`, `x`, and the commutator instead of
+  asserting the convexity inequality for every arbitrary `f : ℤ → ℤ → ℝ`.
+- Proposition 7 and Lemmas 8--10 now carry the homogeneity/pseudo-length
+  hypotheses that were absent in the earlier file.
+- Lemma 9 now includes both factorization and preservation of the homogeneous
+  pseudo-length axioms.
+- Lemma 11 is emitted; it was absent from the earlier file.
+
+There is also useful proof material among the failures. Examples include the
+conjugation and power algebra in Lemmas 1--4, the construction of a function on
+the abelianization and its uniqueness in Lemma 9, and the finite-torsion
+calculation in Lemma 11. These fragments should be retained when repairing the
+proofs, but they do not currently form complete declarations.
+
+### Per-item translation and proof status
+
+| JSON item | July 20 translation | Proof/elaboration result |
+|---|---|---|
+| Definitions 1--4, 8 | Mathematically reasonable bodies; all elaborate | Successful definitions, but the requested JSON names are not preserved |
+| Lemma 1 | Corrected statement with homogeneity hypothesis | Two `sorry` blocks; useful conjugation argument around them |
+| Lemma 2 | Corrected explicit formula for `C n` | Two `sorry` blocks, including the base case and conjugation-invariance step |
+| Lemma 3 | Corrected conjugacy hypotheses | Four `sorry` blocks; the asymptotic/division argument is not completed |
+| Lemma 4 | Corrected specialization of `f` | Three `sorry` blocks and many discarded prose steps (`skip`) |
+| Lemma 5 | No command emitted | Translation cannot bind `f`, the sign family, `S2n`, and expectation coherently; both theorem handlers fail |
+| Lemma 6 | Semantically wrong declaration | Emitted as `noncomputable def lemma_6 : ... → Prop := ... True`, not as the Rademacher estimate |
+| Proposition 7 | Correct top-level statement | Three `sorry` blocks and a proof-only universe `v`, causing the `[u,v]` versus `[u]` commit error |
+| Lemma 8 | Correct top-level statement | One `sorry`; does not implement induction/generation of the commutator subgroup |
+| Lemma 9 | Correct top-level statement | Seven `sorry` blocks; a fallback `repeat sorry` closes the main goal at line 335, so the following `have` at line 336 produces `No goals to be solved` |
+| Lemma 10 | Correct top-level statement | One `sorry`; this should be a short direct torsion/homogeneity proof |
+| Lemma 11 | Correct factorization statement | Three `sorry` blocks; the local proof that torsion lies in the kernel is a useful completed fragment |
+| Lemma 12 | No command emitted | `VQ` and `normQ` remain prose-level names in rejected candidates, leaving a `sorry`/metavariable in the translated type |
+| Lemma 13 | Plausible top-level statement | Malformed generated syntax, 79 `sorry` occurrences, 130 `skip`s, unresolved `?m.*`, circular use of `lemma_13`, and repeated false or underspecified subclaims |
+| Theorem 14 | Translation/proof generation started | No command committed before interruption |
+| Corollary 15 | Not reached as a top-level item | No result in the live file |
+
+### Translation failures
+
+#### 1. `translateToPropStrict` does not require a proposition
+
+`LeanAideCore/LeanAideCore/PaperCodes.lean` accepts a translated expression
+when its inferred type is any `Sort`:
+
+```lean
+if univ.isSort then
+  ...
+  return type
+```
+
+The caller later asks `isProp type`; if the answer is false,
+`theoremCodeCore` emits a `noncomputable def` instead of rejecting the theorem
+translation. This is how Lemma 6 became:
+
+```lean
+noncomputable def lemma_6 :
+    {Ω : Type u} → [MeasurableSpace Ω] → Measure Ω → (Ω → ℝ) → Prop := by
+  ...
+  exact True
+```
+
+The log shows that the LLM proposed a definition `IsRademacher` followed by an
+expectation theorem. The sub-line recovery in the theorem-expression
+elaborator retained only the predicate type of the definition. It was therefore
+syntactically type-correct but unrelated to the Lemma 6 claim.
+
+Required change: for every JSON object whose type is `"theorem"`, require
+`isProp type = true` inside `translateToPropStrictAux` and reject all
+type-valued or predicate-valued results. Sub-line recovery must also retain the
+theorem command corresponding to the requested claim, not an arbitrary
+elaborable definition or prefix from a multi-command answer. A non-`Prop`
+result must never be silently changed into a `def` by a theorem handler.
+
+#### 2. Definition renaming is computed and then discarded
+
+In `LeanAideCore/LeanAideCore/PaperCodes.lean`, `defCode.defCmdStx` pattern
+matches the translated definition and constructs a command using the JSON
+`name`, but the reconstructed command is discarded. The code then executes:
+
+```lean
+let cmds := #[cmd]
+`(commandSeq| $cmds*)
+```
+
+where `cmd` is the original LLM command. Consequently the JSON names
+`PseudoLength`, `IsLength`, `IsHomogeneousPseudoLength`, `commutator`, and
+`IsTorsionFreeAbelian` became LLM-selected names instead.
+
+Required change: bind the result of the syntax match, for example
+`let renamedCmd ← match cmd with ...`, and return `#[renamedCmd]`. Either the
+rest of the generated statements must consistently use these canonical JSON
+names, or explicit abbreviations should be emitted. Silent renaming makes later
+translation prompts and source-level references unstable.
+
+#### 3. Lemmas 5, 6, and 12 do not have formal local contexts
+
+The remaining prose assumptions are not enough to create Lean binders:
+
+- Lemma 5 mentions `f`, Rademacher variables, `S2n`, and expectation without a
+  formal sample space or a finite expectation definition.
+- Lemma 6 has the same problem and also needs the distribution/independence
+  hypotheses that make the estimate true.
+- Lemma 12 uses `VQ := A ⊗[ℤ] ℚ` and `normQ` in prose. Rejected candidates use
+  these identifiers before binding them.
+
+The log reports exactly two top-level source-processing failures, for Lemmas 5
+and 12. Lemma 6 is more dangerous: it does not fail loudly, but translates to
+the wrong declaration.
+
+These statements should be supplied to codegen in already formal Lean shape.
+For the probability section, the most robust choice is a finite sample space
+`Fin (2*n) → Bool`, with explicit definitions for the sign, the sum, and the
+uniform expectation. This avoids introducing measure theory merely to express
+a finite average. If the measure-theoretic formulation is kept, bind a
+probability measure, a finite family of measurable Rademacher variables,
+pairwise independence, the definition of `S2n`, and integrability assumptions.
+
+Lemma 12 should have an explicit target of the form:
+
+```lean
+∃ normQ : Seminorm ℚ (A ⊗[ℤ] ℚ),
+  ∀ a : A, normQ (TensorProduct.tmul ℤ a (1 : ℚ)) = p a
+```
+
+with torsion-freeness and all homogeneous pseudo-length axioms present as Lean
+hypotheses, not prose preludes.
+
+#### 4. Diagnostic lookup commands remain in generated code
+
+The three `#check "..."` commands near the top only typecheck string literals;
+they do not check the declarations described by those strings. They print
+lookup diagnostics during compilation and enter the command prelude used by
+later translation.
+
+Required change: record lookup results in logs or comments. Do not emit them as
+commands and do not add them to `cmdPrelude`.
+
+### Proof-generation failures
+
+#### 1. Commands are committed even when elaboration reports errors
+
+`LeanAideCore/LeanAideCore/TranslateM.lean:addCommands` calls
+`runFrontendM ... true` for each command, discards the message log, writes the
+commands, and appends them to `cmdPrelude` regardless of errors. This allowed
+the universe-invalid Proposition 7 and the malformed Lemma 13 to be written and
+used as subsequent context.
+
+Required change: elaborate the complete command sequence in a saved state,
+collect error-severity messages, and commit the environment, output file, and
+prelude only if the whole sequence succeeds. On failure, restore the state and
+record a structured codegen error. The final full declaration must be checked;
+successful statement elaboration with `:= by sorry` does not validate the
+generated proof.
+
+#### 2. Fallback `sorry` is not treated as terminal
+
+`findTacticsI` uses
+
+```lean
+repeat (sorry)
+```
+
+as the default whenever automation fails. This makes failed proof search look
+like a successful tactic sequence. In Lemma 9 it closes the main goal, after
+which additional generated proof steps are appended and Lean reports `No goals
+to be solved`.
+
+Required change: represent proof-search failure as data (`none`/error), not as a
+closing tactic. Insert a single `sorry` only at the outermost declaration after
+generation has stopped for that goal, and never append tactics after it. A
+"best effort" output mode can still emit one explicit hole per unresolved goal,
+but the generator must distinguish that status from a proved goal.
+
+#### 3. Failed proof steps are converted to `skip`
+
+The log contains 169 `Error in getCode `tacticSeq` for source` events; 147 are
+explicitly attached to `assert_statement` nodes. There are also 56 occasions
+where structured steps finish with a goal still open, compared with only 17
+top-level automation closures. In `getCodeTacticsAux`, an exception from a
+proof step is caught and replaced by:
+
+```lean
+`(tacticSeq | skip)
+```
+
+This is the direct source of much of the 165-`skip` output. It loses the
+location and reason for the failed obligation while allowing generation to
+continue into a less coherent local context.
+
+The 169 events are not 169 independent bad translations. Parsing the source
+JSON attached to each event gives:
+
+| source kind | events |
+|---|---:|
+| `assert_statement` | 147 |
+| `construction_proof` | 10 |
+| `assume_statement` | 8 |
+| `theorem` | 4 |
+
+There are only 53 distinct failing source objects. Before Lemma 13 there are 39
+events; Lemma 13 and its recursively expanded construction account for the
+remaining 130. For example, "B is the metric completion of W" is translated 20
+times, while the rational scalar-extension and approximating-sequence claims
+are each retried eight times. This repetition explains why four theorem-level
+failures plus 165 emitted `skip`s correspond to 169 logged source failures.
+
+##### The main candidate-rejection bug is an invalid dummy theorem prelude
+
+Many candidates shown as rejected in the log are valid Lean when checked in a
+clean version of the displayed local context. The failure is already present
+in the text prepended to them. In
+`LeanAideCore/LeanAideCore/PaperCodes.lean`, nested theorem proof generation
+temporarily executes:
+
+```lean
+let dummyCmd ← `(command| theorem $nameIdent : $typeStx := by sorry)
+Translate.addCommand dummyCmd
+```
+
+There is a good reason to expose the enclosing theorem signature to the model:
+nested proof-step translations benefit from seeing the theorem name, complete
+target, and surrounding mathematical context. `cmdPreludeBriefBlob?` turns the
+command prelude into the "Code context" section of the LLM prompt, and the
+comment in `PaperCodes.lean` confirms that this was the dummy's intended role.
+That role is prompt metadata only. It does not justify installing the theorem in
+the frontend checking context, where it both causes the failures below and can
+make a circular reference to the theorem under construction appear valid.
+
+The translated `type` has first passed through `dropLocalContext`, so it may be
+an expression open in the current local free variables. The dummy is therefore
+not necessarily a valid global command by itself. Moreover,
+`TranslateM.withCommandPrelude` emits `cmdPreludeForFrontendBlob?` before
+`variablePreludeForFrontendBlob?`, placing this open dummy before the command
+that declares its variables.
+
+The kernel-submodule failure in Lemma 13 is a concrete example. The frontend
+input is ordered as follows:
+
+```lean
+theorem homogeneous_root_lemma_13_proof_root_kernel_subspace :
+  ∃ (N : Submodule ℚ VQ),
+    (↑N : Set VQ) = {v : VQ | normQ v = 0} := by sorry
+
+variable {VQ : Type u} [AddCommGroup VQ] [Module ℚ VQ]
+  (normQ : Seminorm ℚ VQ)
+
+example : ∀ {VQ : Type u} [AddCommGroup VQ] [Module ℚ VQ]
+  (normQ : Seminorm ℚ VQ),
+  ∃ (N : Submodule ℚ VQ),
+    (↑N : Set VQ) = {v : VQ | normQ v = 0} := by sorry
+```
+
+Lean reports `failed to synthesize ... AddCommMonoid VQ` in the first command,
+where `VQ` is still an auto-implicit of unknown structure. The fully bound
+`example` is not the source of that error and compiles independently. The same
+thing occurs in Lemma 3: the dummy theorem for the claim about `l a` precedes
+the declarations of `l` and `a`, producing `Function expected at l`; the
+fully-bound candidate also compiles independently.
+
+`elabThm4Aux` collects errors from the complete frontend input and associates
+them with the candidate currently being tested. It does not distinguish a
+prelude error from an error whose source range is in the candidate. Therefore
+one invalid dummy theorem causes every LLM alternative, including good ones, to
+be rejected.
+
+Required changes:
+
+1. Do not put the prompt-only dummy theorem into the frontend command prelude.
+   If it must be a command, close its type over every local free variable (for
+   example with `mkForallFVars`) before delaboration. Merely moving the variable
+   prelude before it fixes these displayed cases, but closing or eliminating the
+   dummy is safer for local lets and hypotheses.
+2. Validate the prelude independently before checking candidates. A prelude
+   error must be reported as a generator error, not attached to every candidate.
+   Candidate acceptance should consider only errors whose source positions are
+   in the candidate body, or elaborate the candidate directly in the current
+   environment/local context.
+3. Separate state-only, prompt-only, and elaborating APIs, and name them by
+   their effects. In particular, the current `addCommand` only pushes syntax
+   into `cmdPrelude`; it does not run or elaborate anything, so a name such as
+   `addCommandToPrelude` is required. Use a separate `addPromptContext` (which
+   need not contain a Lean command) for the enclosing theorem, and reserve names
+   such as `runAndCommitCommand(s)` for operations that validate and update the
+   environment. The current `addCommands`, which elaborates, writes, and then
+   appends while discarding errors, should be split into explicit validation and
+   transactional commit operations.
+
+##### Exhaustive line recovery amplifies each false rejection exponentially
+
+If the full candidate fails, `TheoremElabCheck.elabThm4` calls `lineBlocks`.
+`lineBlocks` returns every nonempty subset of the input lines in their original
+order: a candidate with `n` lines produces `2^n - 1` additional checks. The log
+contains `Checking groups: 1023` and `Checking groups: 8191`, corresponding to
+10- and 13-line answers. Since the invalid prelude makes every subset fail,
+this recovery cannot succeed and only multiplies the same unrelated error.
+
+Across the log there are 72,191 parsed elaboration events containing 214,318
+command-error messages, although there are only 9,922 distinct candidate texts
+and 53 distinct failed source objects. The most common raw messages are 104,644
+typeclass failures and 66,574 `Function expected` errors. These numbers mostly
+measure prelude contamination, recursive retries, and subset expansion, not the
+number of distinct mathematical mistranslations.
+
+Required change: replace `lineBlocks` with bounded, syntax-aware recovery. Try
+the full response, extract one fenced Lean declaration/term, and perhaps try a
+small fixed number of suffixes after explanatory prose. Put a strict cap on
+candidate variants. Never run subset recovery until the prelude itself has
+passed validation.
+
+##### Genuine translation failures remain behind the prelude bug
+
+Some candidates really are ill-scoped or mathematically underspecified:
+
+- Local notation introduced only in prose is not available to Lean. A
+  `let_statement` without a `value` merely calls `addPrelude` and emits no Lean
+  `let`. Later candidates consequently use unknown `C`, `C0`, `z`, `a`, `c`,
+  `u`, or `v`, producing `Function expected`, type mismatches, or unknown
+  identifiers. Such notation must be represented by a typed local definition,
+  or expanded before translation.
+- The eight failing `assume_statement`s have JSON such as
+  `{"variable_type":"G","variable_name":"x"}`, while `assumeCode` requires an
+  `assumption` string. This is a schema/handler mismatch, not an LLM failure.
+  Normalize these nodes upstream or teach the handler to create a typed local
+  binder from `variable_name` and `variable_type`.
+- The probability candidates use free `f` and `S`, and write informal finite
+  sums without defining a sample space, sign variables, distribution, or
+  expectation. The input needs an explicit finite probability model before a
+  Lean proposition can be generated reliably.
+- Several completion candidates use quotient coercions and real scalar
+  structure before the needed instances and compatibility laws have been
+  constructed. In particular, structure witnesses intended to become
+  instances must be installed with `letI`, and simultaneous ℚ/ℝ actions require
+  the appropriate scalar-tower compatibility. These are genuine formalization
+  issues, but the current log cannot reliably classify individual candidates
+  until prelude errors are separated from candidate errors.
+
+Finally, retain the structured source error and stop generation for that
+subgoal, or emit a named terminal hole with the original JSON id/claim in a
+comment. `skip` is appropriate only for a genuinely side-effect-only JSON node,
+not as recovery from a failed assertion or theorem translation. Cache-key
+correctness cannot repair this problem: a correct cache will faithfully replay
+the invalid-prelude result.
+
+#### 4. Proposition 7 leaks an unused universe into the theorem value
+
+The proof contains a local assertion over `{Ω : Type v}` while the theorem
+statement mentions only universe `u`. The proof term therefore has level
+parameters `[u,v]`, but the constant type expects only `[u]`.
+
+Required change: reject proof terms whose universe parameters exceed those of
+the declaration type. For this particular proof, remove the underspecified
+probability assertions or bind their sample space at a universe already present
+in the theorem. Full-command elaboration before commit would catch this
+automatically.
+
+#### 5. `constructionProofCode` delaborates an unresolved metavariable instead of its assigned value
+
+In `LeanAide/PaperCodes.lean`, the construction handler does:
+
+```lean
+let existenceType ← translator.translateToPropStrict fullClaim
+let existenceGoal ← mkFreshExprMVar existenceType
+...
+let existenceSyntax ← delabDetailed existenceGoal
+```
+
+`existenceGoal` is the metavariable expression. Delaborating it produces the
+literal `?m.2643`/`?m.2645` syntax seen throughout Lemma 13. Delaborating the
+original `existenceType` would avoid the literal metavariable, but it is not the
+best recovery: that translated type may still contain metavariables that were
+resolved while the proof tactics assigned `existenceGoal`.
+
+The robust helper is `instantiateMVars`, which recursively substitutes assigned
+metavariables with their assigned expressions. Recover the root assignment
+explicitly, instantiate all metavariables in it, and infer its resolved type if
+syntax is needed in the type position:
+
+```lean
+let goalId := existenceGoal.mvarId!
+let some assigned ← getExprMVarAssignment? goalId
+  | throwError "construction proof did not assign its existence goal"
+let assigned ← instantiateMVars assigned
+let assignedType ← instantiateMVars (← inferType assigned)
+let existenceSyntax ← delabDetailed assignedType
+```
+
+Equivalently, `instantiateMVars existenceGoal` resolves the root metavariable
+when it is assigned, but the explicit `getExprMVarAssignment?` form makes an
+unassigned construction fail immediately. If the generated syntax is intended
+for a value position, delaborate `assigned` itself; for the type after
+`have h :`, delaborate `assignedType`. A successfully assigned proof term must
+have a type definitionally equal to the original goal type, while inference
+from the resolved value also incorporates metavariable assignments made during
+proof generation.
+
+The larger design problem is that the handler translates `full_claim`, creates
+an independent goal, proves it, destructures it, and then translates and proves
+`claim` again. For nested construction proofs this replays the same large proof
+tree several times. The log and output show repeated completion, real-scalar,
+and canonical-map blocks, explaining both the eight-hour run and the explosive
+Lemma 13 body.
+
+Required change: operate on the current goal and its actual existential binder.
+Translate the witness once, apply `refine ⟨witness, ?_⟩` (or the corresponding
+multi-witness sequence), and run only the verification needed for the resulting
+goal. Do not independently retranslate `full_claim`, and do not generate a
+second proof of the same verification proposition.
+
+#### 6. Lemma 13 contains false or missing-hypothesis obligations
+
+Even after repairing the syntax, the generated proof is not mathematically
+usable. Representative obligations assert:
+
+```lean
+∀ (r : ℝ), Tendsto (fun n => (q n : ℝ)) atTop (nhds r)
+∀ (q : ℕ → ℚ) (w : ℕ → B), ∃ b, Tendsto (fun n => (q n : ℝ) • w n) atTop (nhds b)
+∀ {L L' : B}, L = L'
+q • w = (q : ℝ) • w
+```
+
+for arbitrary sequences, arbitrary normed spaces, or unrelated scalar actions.
+These are false without convergence, Cauchy, completeness, approximation, and
+scalar-tower hypotheses. Some generated fragments derive `0 = 1` from these
+false premises and then close later goals by contradiction. The proof also
+defines `completionB` using `Classical.choose (lemma_13 normQ)`, a circular use
+of the theorem being defined, and later says `use iota` where no such local
+identifier has been constructed.
+
+Lemma 13 should not be synthesized from the current prose construction. Add a
+hand-proved reusable Lean theorem for the Banach envelope of a seminormed
+`ℚ`-space, then make codegen apply that theorem. Mathlib already supplies the
+same-field completion facts such as `UniformSpace.Completion.toComplₗᵢ`; the
+nontrivial missing part is extending the rational scalar action continuously to
+`ℝ`. That extension needs one coherent library construction, not dozens of
+generated local claims.
+
+#### 7. Duplicate theorem handlers repeat expensive failing work
+
+Both `LeanAideCore/LeanAideCore/PaperCodes.lean` and
+`LeanAide/PaperCodes.lean` register a `"theorem"` codegen handler. The log
+repeatedly reports `found 2 functions for key theorem`; `getCode` tries them
+sequentially, so a hard statement-translation failure such as Lemma 5 or Lemma
+12 is performed twice. The two implementations have also diverged, which makes
+the fallback result depend on registration order.
+
+Required change: keep one authoritative theorem handler, or make the second a
+small, explicitly different fallback that consumes the first handler's
+structured failure without re-running the same LLM translation and frontend
+search.
+
+### Comparison with `CodeGen/homogeneous.lean`
+
+The earlier file fails independently with invalid theorem fallbacks for
+Definitions 2 and 3, a universe error in Lemma 4, and malformed Lemma 13 syntax.
+Its active generated portion contains 96 `sorry` occurrences and 31 `skip`
+tactics. It also emits two `#eval "command skipped..."` placeholders.
+
+The July 20 file is better at the statement/definition layer but worse in proof
+size and still not compilable:
+
+| Area | Earlier file | July 20 live file |
+|---|---|---|
+| Definition 2/3 | Invalid theorems whose declared types end in `→ Prop` | Correct predicate definitions |
+| Definition 4 | No usable generated commutator definition | Correct `commutatorOf` definition |
+| Lemmas 1--4 | Missing essential hypotheses; several statements are false | Essential group/length hypotheses and definitions are present |
+| Lemmas 5--6 | Statements emitted, but omit the distribution assumptions needed to be true | Lemma 5 omitted; Lemma 6 silently replaced by a vacuous predicate-valued definition |
+| Proposition 7 / Lemma 8 | Missing homogeneity hypotheses | Statements corrected; proofs still fail |
+| Lemma 9 | Only unique factorization, without preservation of the length axioms | Stronger and faithful statement; proof has a premature goal-closing fallback |
+| Lemma 10 | Missing all axioms on `p` | Correct hypotheses; one remaining proof hole |
+| Lemmas 11--12 | Both absent/skipped | Lemma 11 emitted; Lemma 12 still omitted |
+| Lemma 13 | Malformed, 67 `sorry` occurrences within its declaration | Still malformed and expanded to 79 `sorry` occurrences plus 130 `skip`s |
+| Theorem 14 / Corollary 15 | Not emitted | Still not emitted in the partial live file |
+
+In short: the cache/context repair fixed the original definition cascade and
+the new translator produces much better theorem statements. The current
+bottleneck is no longer the first predicate definition. It is the lack of a
+strict proposition boundary, unchecked command commits, `sorry` being used as
+control flow, and the construction-proof handler generating metavariables and
+duplicating proof trees.
+
+### Recommended implementation order
+
+1. Remove or close the open dummy theorem used during nested proof generation,
+   validate frontend preludes separately, and never attribute a prelude error
+   to the candidate being checked.
+2. Replace exponential `lineBlocks` recovery with a small bounded,
+   syntax-aware set of candidate extractions.
+3. Make `translateToPropStrict` genuinely `Prop`-strict for theorem JSON and
+   reject Lemma 6-style predicate/type results.
+4. Fix `constructionProofCode` by recursively instantiating the existence
+   goal's assigned value, inferring its resolved type when needed, and,
+   preferably, operating directly on the current existential goal without
+   replaying `full_claim` and `verification`.
+5. Make `addCommands` transactional: no environment update, prelude append, or
+   file write unless the complete generated command elaborates without errors.
+6. Replace `repeat (sorry)` as an internal success value with an explicit proof
+   failure result; emit at most one terminal hole in best-effort output.
+7. Stop converting failed assertion/theorem steps into `skip`, materialize
+   typed locals instead of prose-only `let_statement`s, accept the structured
+   `assume_statement` schema, and consolidate the duplicate theorem handlers.
+8. Preserve JSON definition names by returning the reconstructed command from
+   `defCode`.
+9. Replace lookup `#check` commands with log entries/comments.
+10. Preformalize the finite-probability Lemmas 5--6 and tensor Lemma 12, and add a
+   hand-written reusable Banach-envelope theorem for Lemma 13.
+
+The existing implementation sites for these changes are now marked with
+`TODO(generation-check-homogeneous)` comments. The markers cover:
+
+| concern | marked Lean files |
+|---|---|
+| prompt-only dummy, prelude roles, API naming and transactional commits | `TranslateM.lean`, `Translator.lean`, `Translate.lean`, `PaperCodes.lean` |
+| prelude/candidate error separation and bounded recovery | `TheoremElabCheck.lean`, `Aides/Basic.lean`, `Translate.lean` |
+| strict propositions and theorem-handler consolidation | both `PaperCodes.lean` implementations |
+| assigned construction metavariables and duplicated construction proofs | `LeanAide/PaperCodes.lean` |
+| `skip`, `repeat sorry`, proof status and command accumulation | `CodegenCore.lean`, both `PaperCodes.lean` implementations, `TranslateM.lean` |
+| typed local notation and assumption-schema alignment | `DocumentSchema.lean`, both local-statement handlers |
+| definition renaming/fallback and diagnostic `#check` output | `LeanAideCore/PaperCodes.lean`, `LeanAide/Codegen.lean` |
+
+The probability/tensor formalizations and reusable Banach-envelope result also
+require new domain declarations and upstream structured data, so they have no
+single existing implementation body to mark. Their current entry boundaries
+are marked at the document schema/local-definition handlers and at
+`constructionProofCode`.
+
 ## Update: July 4-5 codegen run from `results/homogeneous.json`
 
 Run under diagnosis:
