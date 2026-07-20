@@ -309,6 +309,17 @@ def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
   discard <|  runFrontendM (← ppCommand cmd).pretty true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
+def writeCommands  (cmds : Array <| TSyntax `command) : TranslateM Unit := do
+  match (← get).outputFile with
+  | none => return
+  | some file => do
+    let contents ← IO.FS.readFile file
+    let mut lines : Array String := #[]
+    for cmd in cmds do
+      let cmdStr := (← ppCommand cmd).pretty
+      lines := lines.push cmdStr
+    IO.FS.writeFile file <| contents ++ (lines.foldr (· ++ "\n" ++ · ) "")
+
 def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
@@ -316,19 +327,8 @@ def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
   let cmds := getCommands cmds
   for cmd in cmds do
     discard <| runFrontendM (← ppCommand cmd).pretty true
+  writeCommands cmds
   modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
-
-def writeCommands  (cmds : TSyntax ``commandSeq) : TranslateM Unit := do
-  match (← get).outputFile with
-  | none => return
-  | some file => do
-    let contents ← IO.FS.readFile file
-    let cmds := getCommands cmds
-    let mut lines : Array String := #[]
-    for cmd in cmds do
-      let cmdStr := (← ppCommand cmd).pretty
-      lines := lines.push cmdStr
-    IO.FS.writeFile file <| contents ++ (lines.foldr (· ++ "\n" ++ · ) "")
 
 def registerDefnEnv (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statementStx
