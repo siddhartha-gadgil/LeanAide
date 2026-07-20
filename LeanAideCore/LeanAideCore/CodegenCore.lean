@@ -305,32 +305,31 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
-    -- TODO(generation-check-homogeneous): `isAssigned` does not mean solved: an
-    -- assignment may contain unresolved child mvars (Lemma 9 had `?m.2190`).
-    -- Prefer the active goals returned by tactic execution. For recovery, use:
-    --   let proof ← instantiateMVars (mkMVar goal)
-    --   let deps ← getMVars proof
-    --   let remaining ← deps.toList.filterM fun m => return !(← m.isAssigned)
-    -- Treat `remaining.isEmpty` as recursively solved, and preserve one or many
-    -- remaining goals explicitly. For a boolean-only audit, use
-    -- `!(← (mkMVar goal).hasUnassignedExprMVar)`.
-    if ← goal.isAssigned then
+    let remaining ←
+      if ← goal.isAssigned then
+        let proof ← instantiateMVars (mkMVar goal)
+        let deps ← getMVars proof
+        deps.toList.filterM fun m => return !(← m.isAssigned)
+      else
+        pure [goal]
+    if remaining.isEmpty then
       return tacs
-    else
-    traceAide `leanaide.codegen.info s!"goal still open after tactics: {← ppExpr <| ← goal.getType}"
-    traceAide `leanaide.codegen.info "Local context:"
-    let lctx ← getLCtx
-    for decl in lctx do
-      traceAide `leanaide.codegen.info s!"{decl.userName} : {← ppExpr <| decl.type}"
-    let autoTacs ←
-      findTacticsI goal
-    traceAide `leanaide.codegen.info s!"auto tactics:"
-    for tac in autoTacs do
-      traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
+    let remainingTacs ← remaining.foldlM (init := #[]) fun accum goal =>
+      goal.withContext do
+        traceAide `leanaide.codegen.info s!"goal still open after tactics: {← ppExpr <| ← goal.getType}"
+        traceAide `leanaide.codegen.info "Local context:"
+        let lctx ← getLCtx
+        for decl in lctx do
+          traceAide `leanaide.codegen.info s!"{decl.userName} : {← ppExpr <| decl.type}"
+        let autoTacs ← findTacticsI goal
+        traceAide `leanaide.codegen.info s!"auto tactics:"
+        for tac in autoTacs do
+          traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
+        return accum ++ autoTacs
     -- TODO(generation-check-homogeneous): Return an explicit unresolved/terminal
     -- status with these fallback tactics. Syntax containing `repeat sorry` must
     -- not be embedded in a nested proof and followed by more parent proof steps.
-    appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
+    appendTacticSeqSeq tacs (← `(tacticSeq| $remainingTacs*))
 
 
 /--
@@ -338,7 +337,7 @@ Given a `CodeGenerator`, an optional goal, and a list of JSON sources, this func
 -/
 def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   (sources: List Json) :
-    TranslateM (TSyntax ``commandSeq) := withoutModifyingState do
+    TranslateM (TSyntax ``commandSeq) := withoutModifyingTranslateAndTermState do
   let mut accum : Array <| TSyntax ``commandSeq := #[]
   for source in sources do
     let code? ←

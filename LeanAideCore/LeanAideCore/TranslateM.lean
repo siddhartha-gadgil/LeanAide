@@ -138,7 +138,7 @@ structure LabelledTheorem where
   label : String
   /-- Statement of the theorem -/
   type : Expr
-  /-- Whether the theorem is proved-/
+  /-- Whether the theorem is proved; need not be a complete proof, just to know if a proof is deferred -/
   isProved : Bool
   /-- source -/
   source: Json
@@ -157,7 +157,7 @@ structure Translate.State where
   cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
-  preludes : Array String := #[]
+  promptContext : Array String := #[]
   varPreludes : Array String := #[]
   outputFile : Option System.FilePath := none
   errorLog : Array ElabErrorData := #[]
@@ -388,13 +388,13 @@ def defsNames : TranslateM <| Array Name := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => do pure dfn.name
 
-def addPrelude (p: String) : TranslateM Unit := do
+def addPromptContext (p: String) : TranslateM Unit := do
   modify fun s =>
-    if s.preludes.contains p then
+    if s.promptContext.contains p then
       s
     else
-      -- logToStdErr `leanaide.translate.info s!"Adding prelude: {p}"
-    {s with preludes := s.preludes.push p}
+      -- logToStdErr `leanaide.translate.info s!"Adding prompt context: {p}"
+    {s with promptContext := s.promptContext.push p}
 
 def addVarPrelude (p: String) : TranslateM Unit := do
   let decl := if p.startsWith "inst" then s!"[{p}]" else
@@ -410,10 +410,10 @@ def addVarPrelude (p: String) : TranslateM Unit := do
       {s with varPreludes := s.varPreludes.push decl}
 
 def clearPreludes : TranslateM Unit := do
-  modify fun s => {s with preludes := #[]}
+  modify fun s => {s with promptContext := #[]}
 
 def preludesBlob : TranslateM <| Array String := do
-  let preludes := (← get).preludes
+  let preludes := (← get).promptContext
   preludes.mapM <| fun p => do pure p
 
 def withPreludes (s: String) : TranslateM String := do
@@ -641,7 +641,7 @@ def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
 structure Translate.SavedState where
   cmdPrelude : Array Syntax.Command
   defs : Array (DefData)
-  preludes : Array String
+  promptContext : Array String
   context : Option String
   recentTranslations: Array ChatPair
   outputFile : Option System.FilePath
@@ -653,12 +653,21 @@ structure Translate.SavedState where
 -- isolation during speculative or recursive tactic generation.
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
-    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
+    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, promptContext := σ.promptContext, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
     return (saved, σ)
   restoreState := fun ss => do
   modify fun s =>
-      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, preludes := ss.preludes, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
+      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, promptContext := ss.promptContext, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
 
+def withoutModifyingTranslateAndTermState
+    (x : TranslateM α) : TranslateM α := do
+  let translateState ← get
+  let termState ← Term.saveState
+  try
+    x
+  finally
+    termState.restore
+    set translateState
 
 structure CodeElabResult where
   declarations : List Name

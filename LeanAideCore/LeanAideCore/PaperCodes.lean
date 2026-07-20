@@ -15,16 +15,10 @@ open Codegen Translate
 
 #logIO leanaide.papercodes.info
 
-
 /--
 Translating to a proposition in Lean, using the `translateToProp?` method of the `Translator`. Various checks are performed to ensure the type is valid and does not contain `sorry` or metavariables. An error is thrown if the translation fails or if the type is not valid.
 -/
 
-
--- TODO(generation-check-homogeneous): Make "Strict" mean that the returned
--- expression itself has type `Prop`, not merely that `inferType` is a `Sort`.
--- Reject predicate/type-valued translations, auto-implicit unbound identifiers,
--- and unresolved algebraic typeclass metavariables before proof generation.
 def Translator.translateToPropStrictAux
     (claim: String)(translator : Translator)
     : TranslateM Expr := do
@@ -40,19 +34,19 @@ def Translator.translateToPropStrictAux
         traceAide `leanaide.papercodes.error s!"codegen: failed to infer type {prop} has sorry or mvar when translating assertion '{claim}'"
       if prop.hasSorry || (← prop.hasUnassignedExprMVar) then
         throwError s!"codegen: failed to infer type {prop} has sorry or mvar when translating assertion '{claim}'"
-      traceAide `leanaide.papercodes.info s!"Obtained type: {← ppExpr prop}"
+      traceAide `leanaide.papercodes.info s!"Obtained prop: {← ppExpr prop}"
       let prop ← dropLocalContext prop
-      traceAide `leanaide.papercodes.info s!"Obtained type in local context: {← ppExpr prop}"
+      traceAide `leanaide.papercodes.info s!"Obtained prop in local context: {← ppExpr prop}"
+      if ← isProp prop then
+        traceAide `leanaide.papercodes.info s!"Obtained prop: {← ppExpr prop}"
+      else
+        throwError s!"codegen: {← ppExpr prop} is not a Prop when translating assertion '{claim}'"
       return prop
   catch _ =>
   let thm ← withPreludes claim
   traceAide `leanaide.papercodes.info s!"Translating to proposition: {claim}, full statement: {thm}"
   let (js, _, _) ← translator.getLeanCodeJson claim
   let output ← getMessageContents js
-  -- TODO(generation-check-homogeneous): Treat each LLM output as an independent
-  -- candidate. Accumulate its parse/elaboration/Prop diagnostics and continue;
-  -- one malformed or unsafe recovery result must not prevent later candidates
-  -- from being checked (valid Lemma 5 candidates 3, 5, and 7 were skipped).
   for out in output do
     let el? ← elabThm4 out
     match el? with
@@ -61,24 +55,19 @@ def Translator.translateToPropStrictAux
     | Except.ok type =>
       let type ← instantiateMVars type
       Term.synthesizeSyntheticMVarsNoPostponing
-      -- TODO(generation-check-homogeneous): Record this candidate as rejected
-      -- and `continue` instead of throwing out of the complete candidate loop.
-      -- In particular, a `sorry` found by line-subset recovery is not a valid
-      -- translation and must not abort checks of later full declarations.
       if type.hasSorry || (← type.hasUnassignedExprMVar) then
-        throwError s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
-      try
-        let univ ←
-          Term.withoutErrToSorry do
-            inferType type
-        if univ.isSort then
-          traceAide `leanaide.papercodes.info s!"Obtained type: {← ppExpr type}"
-          Translate.addRecentTranslation thm out
-          let type ← dropLocalContext type
-          traceAide `leanaide.papercodes.info s!"Obtained type in local context: {← ppExpr type}"
-          return type
-      catch _ =>
+        traceAide `leanaide.papercodes.error
+          s!"Failed to infer type {type} has sorry or mvar when translating assertion '{claim}', full statement {thm}"
         continue
+      else
+        if ← isProp type then
+          traceAide `leanaide.papercodes.info s!"Obtained prop: {← ppExpr type}"
+          let type ← dropLocalContext type
+          traceAide `leanaide.papercodes.info s!"Obtained prop in local context: {← ppExpr type}"
+          return type
+        else
+          traceAide `leanaide.papercodes.error s!"{← ppExpr type} is not a Prop when translating assertion '{claim}', full statement {thm}"
+          continue
   throwError s!"codegen: no valid type found for assertion '{claim}', full statement {thm}; all translations:\n{output.foldl (init := "") (· ++ "\n" ++ ·)}"
 
 /--
@@ -264,7 +253,7 @@ def leanCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKin
     s!"codegen: 'lean' does not work for kind {kind}"
 
 /--
-Checks the value of a declaration and returns a trace.
+Checks the value of a declaration and returns a trace. Not called in the code generation normally; only for debugging.
 -/
 @[codegen "check"]
 def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
@@ -280,9 +269,6 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
         return s!" with value `{valueStr}`"
     let valueStr := valueStr?.getD ""
     let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}{valueStr}"
-    -- TODO(generation-check-homogeneous): A lookup is diagnostic metadata, not
-    -- generated Lean code. Record this text in a log or source comment instead
-    -- of emitting `#check` and allowing it into `cmdPrelude`.
     let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
     return some stx
 | some goal, ``tacticSeq, js => goal.withContext do
@@ -454,14 +440,8 @@ where
     let typeStx ← delabDetailed type
     let proofStx? ← proof?.mapM fun
       pf => withoutModifyingState do
-      -- TODO(generation-check-homogeneous): The enclosing theorem signature is
-      -- useful in the LLM prompt, but must be added through a prompt-only API.
-      -- Do not add this dummy to the frontend/elaboration prelude: its type may
-      -- be open in local free variables, and it also enables circular proofs.
-      -- If a command form is retained anywhere, close it with `mkForallFVars`.
-      let nameIdent := mkIdent name
-      let dummyCmd ← `(command| theorem $nameIdent : $typeStx := by sorry)
-      Translate.addCommand dummyCmd
+      addPrelude s!"Current goal (context only; not an available theorem):
+          {← ppExpr type}"
       -- Finding proof
       let pfGoal ← mkFreshExprMVar type
       let (pfGoal', names') ← extractIntros pfGoal.mvarId! hypSize
@@ -496,9 +476,7 @@ where
       pure pfStx
     traceAide `leanaide.papercodes.info s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
-    -- TODO(generation-check-homogeneous): Set `isProved` only after the complete
-    -- declaration elaborates successfully and its proof is hole-free. Presence
-    -- of a JSON `proof` field does not mean codegen completed the proof.
+    -- `isProved` is only to separate deferred proofs, and not for claims of completeness.
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?, ← isProp type)
@@ -531,10 +509,7 @@ where
     match
       ← translator.translateDefCmdM? statement with
       | .ok cmd =>
-        -- TODO(generation-check-homogeneous): Return the renamed command built
-        -- by this match. The current branch discards it below and returns the
-        -- original LLM command, losing the JSON-requested definition name.
-        match cmd with
+        let renamedCmd ← match cmd with
         | `(command| def $_defName:ident $args:bracketedBinder* : $type := $value) =>
             `(command| def $nameStx $args* : $type := $value)
         | `(command| def $_defName:ident $args:bracketedBinder* := $value) =>
@@ -544,7 +519,7 @@ where
         | `(command| noncomputable def $_defName:ident $args:bracketedBinder* := $value) =>
             `(command| noncomputable def $nameStx $args*:= $value)
         | _ => throwError s!"commandToTerm: unsupported command {cmd}"
-        let cmds := #[cmd]
+        let cmds := #[renamedCmd]
         `(commandSeq| $cmds*)
       | .error errs =>
         -- TODO(generation-check-homogeneous): Remove or sharply restrict this
