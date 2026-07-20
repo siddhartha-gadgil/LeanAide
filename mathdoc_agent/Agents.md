@@ -884,12 +884,37 @@ Expected input payload:
     {
       "path": "/document/body/0/proof/proof_steps/1/claim",
       "claim": "current claim text",
+      "claim_scope": "local_claim_inside_theorem",
+      "requires_closed_lean_repair": true,
+      "closure_risks": ["a source-local definition must become a Lean let binder"],
       "container_type": "assert_statement",
       "container": {"type": "assert_statement", "claim": "current claim text"},
       "parent_type": "proof",
-      "can_replace_assertion_with_steps": true
+      "can_replace_assertion_with_steps": true,
+      "enclosing_theorem": {
+        "path": "/document/body/0",
+        "type": "theorem",
+        "name": "example_theorem",
+        "source_text": "source statement and its local definitions",
+        "hypotheses": [
+          {"type": "assume_statement", "assumption": "generated hypothesis"}
+        ]
+      }
     }
   ],
+  "available_declarations": [
+    {
+      "path": "/document/body/0",
+      "type": "definition",
+      "name": "NamedDefinition",
+      "definition": "the generated definition text"
+    }
+  ],
+  "closure_rules": {
+    "theorem_statement": "Bind or define every source-local object used by the theorem claim.",
+    "local_claim_inside_theorem": "Use actual enclosing binders/local steps, not prose-only names.",
+    "finite_probability": "Use an explicit finite product and normalized sum when the finite uniform experiment is fully specified."
+  },
   "patch_rules": {
     "replace_claim": "Use when the field should remain one proposition.",
     "replace_assertion_with_steps": "Use only for assert_statement containers whose claim should be refined into smaller proof steps."
@@ -902,8 +927,24 @@ Function:
 - Audit every public JSON `claim` field before Lean codegen.
 - Ensure claims are mathematical propositions, not instructions, methods,
   tactic-like text, side-condition labels, or multiple proof steps.
+- Make every theorem claim closed by reconstructing binders, hypotheses, and
+  local definitions from the supplied enclosing theorem context. Source prose
+  is evidence, not a binder. A theorem closure repair is emitted as a complete
+  Lean 4 proposition term, with local definitions introduced by `let`.
+- Treat `requires_closed_lean_repair: true` as mandatory and resolve every
+  supplied `closure_risks` item.
+- Reuse matching preceding names from `available_declarations`; do not invent
+  declaration names.
+- Bind bundled Lean objects directly at their structure type and use their
+  function coercions; do not apply a bundle type as a predicate to a separate
+  function.
+- Formalize fully specified finite uniform experiments as explicit finite
+  product spaces and normalized finite sums; otherwise require the full
+  probability context rather than leaving expectation notation free.
 - Repair display notation and local notation when a scoped identifier is
   available in context.
+- Send claims in bounded batches controlled by
+  `MATHDOC_AGENT_CLAIM_AUDIT_BATCH_SIZE` (default `30`).
 
 Output schema: `ClaimAuditSpec`.
 

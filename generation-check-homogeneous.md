@@ -1375,3 +1375,129 @@ After fixing the Python timeout issue, these checks passed:
 ```
 
 The final pipeline rerun completed successfully without Lean.
+
+## July 20 Generic Claim-Closure Fix and Live Rerun
+
+The recommendation to put `f`, the finite sign space, the random-walk sum, and
+the finite expectation in the formal claim is a change to the generated JSON,
+not a Lemma-5-specific Lean workaround. It is now implemented generically in
+the Python claim-audit stage.
+
+### Generic Python changes
+
+`mathdoc_agent/orchestration/claim_audit.py` now supplies each claim audit with:
+
+- a scope classification (`theorem_statement`, local theorem claim, or
+  standalone claim);
+- the enclosing theorem's source text and structured hypotheses;
+- compact summaries of named declarations available in the document;
+- mandatory `closure_risks` when a theorem uses a structured local definition
+  that is not represented by a Lean `let`, or uses unresolved probability
+  language; and
+- bounded batches controlled by `MATHDOC_AGENT_CLAIM_AUDIT_BATCH_SIZE`
+  (default `30`).
+
+The rule is independent of identifier names and subject matter. Any theorem
+marked `requires_closed_lean_repair` must be replaced by a complete Lean
+proposition term which binds all variables and reproduces structured local
+definitions with their existing names. Fully specified finite uniform
+experiments are represented by a finite product sample space and a normalized
+finite sum. Experiments which are not finite and fully specified must instead
+bind the full probability context.
+
+The auditor also now treats bundled Lean objects as types. Thus a requested
+seminorm is represented as `normQ : Seminorm ℚ VQ`, using its coercion to a
+function, rather than the invalid shape `normQ : VQ → ℝ` followed by
+`Seminorm ℚ VQ normQ`. The same rule applies generically to morphisms, linear
+maps, measures, and other bundled structures.
+
+Two interactions found by the live rerun were fixed:
+
+1. The later informal-notation pass used to replace every `:=` by prose
+   `is defined as`, corrupting valid Lean `let` binders produced by the claim
+   auditor. It now preserves `:=` in syntactically valid Lean `let` bindings
+   while continuing to repair assignment-shaped prose.
+2. The final linter used to put `lean_validation` beside `document` at the JSON
+   root. That makes the root object undispatchable by CodegenCore. Global lint
+   metadata is now nested inside the document object, and duplicate lint issues
+   are removed.
+
+### Real API rerun
+
+The complete Python pipeline was rerun with the real OpenAI agents. The API key
+was inherited from the `OPENAI_API_KEY` environment variable; no fake agent or
+fabricated response was used:
+
+```bash
+./venv/bin/python -m mathdoc_agent.pipeline \
+  results/homogeneous.md \
+  --id homogeneous \
+  -o results/homogeneous.json
+```
+
+One calculation-refinement call and the document-wide dependency rewrite hit
+the configured ten-minute bound; each succeeded on the automatic retry. The
+claim audit then completed in seventeen bounded batches. After discovering the
+`:=` interaction, the regenerated JSON was passed through the corrected live
+claim audit and notation repair once more. The final JSON has a single root key,
+`document`, and no `let ... is defined as` corruption.
+
+The similarity server was unavailable during the initial definition-reuse
+stage but was restarted and queried directly afterward. It found no exact
+Mathlib definition for the homogeneous pseudo-length predicate. For
+torsion-freeness it returned related `IsAddTorsionFree` theorems and
+`AddCommGroup.torsion`, but no exact replacement matching the generated
+definition, so the conservative choice is to retain both generated definitions.
+
+### Result for Lemma 5
+
+The final claim at `/document/body/18/claim` is now closed with respect to its
+local notation:
+
+```lean
+∀ (G : Type*) [Group G] (l : G → ℝ),
+  IsHomogeneousPseudoLength G l →
+  ∀ (x y : G) (n : ℕ),
+    let c : G := x * y * x⁻¹ * y⁻¹
+    let f : ℤ → ℤ → ℝ := fun m k => l (x ^ m * c ^ k)
+    let Omega : Type := Fin (2 * n) → Bool
+    let eps : Omega → Fin (2 * n) → ℤ :=
+      fun omega i => if omega i then 1 else -1
+    let S2n : Omega → ℤ :=
+      fun omega => Finset.univ.sum (fun i => eps omega i)
+    f 0 n ≤ (Fintype.card Omega : ℝ)⁻¹ *
+      Finset.univ.sum
+        (fun omega : Omega => f (S2n omega) (-(S2n omega) / 2))
+```
+
+This is the requested change: `f`, the finite sample space, the sign variables,
+`S2n`, and expectation are part of the proposition itself. Independence and
+the uniform sign distribution are represented by ranging over all functions
+`Fin (2*n) → Bool` with uniform weight, rather than by free measure-theory
+objects or prose hypotheses.
+
+Lemma 12 was repaired by the same mechanism. Its claim now contains
+
+```lean
+let VQ : Type* := TensorProduct ℤ A ℚ
+∃ normQ : Seminorm ℚ VQ,
+  ∀ a : A, normQ (TensorProduct.tmul ℤ a (1 : ℚ)) = p a
+```
+
+### Remaining boundary
+
+Claim closure is fixed at the JSON level, but exact reuse of generated
+definition signatures remains a separate boundary. The claims currently use
+the canonical JSON names `IsHomogeneousPseudoLength` and
+`IsTorsionFreeAbelianGroup`; the older Lean run generated different names such
+as `IsHomogeneousPseudoLengthFunction`. The previously recommended Lean-side
+name-preservation fix is therefore still required. In addition, the additive
+use of homogeneous pseudo-lengths must be made type-compatible with the
+multiplicative group definition, either by a distinct additive predicate or by
+an explicitly stated conversion. These are signature/representation issues,
+not free-local-notation failures.
+
+Per the subsequent instruction, no further codegen run was performed. Final
+verification for this change consists of the live Python-agent rerun, direct
+inspection of the emitted closed claims, the restarted similarity-server
+queries, and the Python regression suite.

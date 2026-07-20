@@ -379,6 +379,41 @@ suitable for a Lean theorem statement or `have` statement after natural-language
 translation. A valid claim may mention fixed variables and hypotheses, but it
 must not contain proof instructions, proof methods, reader tasks, tactic-like
 phrasing, or a sequence of several proof steps.
+Each claim entry includes a `claim_scope` and may include an
+`enclosing_theorem` containing its source text and generated hypotheses. Treat
+that prose as evidence for reconstructing the intended proposition, not as a
+Lean binder. In particular, an assignment or definition mentioned only in
+source prose or an `assume_statement` does not put its left-hand identifier in
+scope.
+
+Every `theorem_statement` must be closed: bind all variables and structures,
+state the required typeclass or predicate hypotheses, and define every local
+abbreviation used in the conclusion. Prefer one self-contained Lean 4
+proposition (without a `theorem` command or proof) when this makes the binders,
+hypotheses, powers, coercions, and local `let` definitions precise. Do not leave
+an identifier free merely because the enclosing source explains it in prose.
+Whenever a theorem statement needs a closure repair, this preference is a
+requirement: the replacement must be a Lean 4 proposition term, not English
+beginning with phrases such as "for every", "if", or "where". Introduce local
+definitions with consecutive Lean `let` binders. An antecedent such as
+`c = ...` or `f(m,k) = ...` does not bind `c` or `f`. Quantify them explicitly
+or, preferably, define them with `let` when the source supplies their values.
+Every entry marked `requires_closed_lean_repair: true` must receive a
+`replace_claim` patch that resolves all of its `closure_risks`; do not decide
+that such an entry is already adequate prose.
+When a closure risk names a structured `let_statement.variable_name`, use that
+exact identifier for the corresponding Lean `let`; do not replace it by a new
+synonym.
+Inspect `available_declarations` and reuse a preceding named definition when it
+matches the source; do not invent a nearby declaration name.
+Use Lean bundled structures as types, not as predicates on separately bound
+functions. For example, when the source asks for a seminorm, homomorphism,
+linear map, measure, or similar bundled object, bind an inhabitant of the
+corresponding structure type and use its coercion to a function. Do not emit
+the invalid shape `∃ f : X → Y, Bundle ... f` when `Bundle ...` is itself the
+type of the desired object.
+For a `local_claim_inside_theorem`, identifiers may come from the enclosing
+closed theorem or preceding structured local steps, but not solely from prose.
 Prefer claims phrased with local identifier names over raw display notation.
 Repair claims that consist only of side conditions already present in context,
 method labels, or type-membership bookkeeping by replacing them with the actual
@@ -417,6 +452,19 @@ When repairing:
 Preserve mathematical meaning and do not invent stronger results. If there is
 not enough mathematical content to form a proposition, leave the entry
 unpatched and add a note explaining the issue.
+
+For probability and expectation claims, use a representation justified by the
+source rather than leaving an unbound expectation operator or random variable.
+If the source completely specifies a finite uniform experiment, encode its
+finite product sample space, the random variable as a function on that space,
+and expectation as a normalized finite sum using Lean finite functions,
+`Fintype.card`, and a sum over the finite universe. Avoid informal set-literal
+types such as `{-1,1}`. This rule applies to arbitrary finite outcome types and
+index sets, not just one named distribution. If the experiment is not finite
+and fully specified, quantify the probability space,
+measure, random variables, distribution, measurability, and integrability
+assumptions that the proposition requires; if those data are unavailable,
+leave an unresolved note instead of inventing them.
 """
 
 INFORMAL_NOTATION_REPAIR_INSTRUCTIONS = """
@@ -450,6 +498,8 @@ Preferred repairs:
 - when the entry itself introduces notation by assignment, such as
   `f(m,k) := ...` or `S_{2n} = ...`, preserve it as a local definition with an
   ASCII name and a clear defining value rather than as a later free symbol;
+- preserve `:=` inside a syntactically valid Lean `let` binder. It is formal
+  syntax, not assignment-shaped prose;
 - keep statements as mathematical propositions, not instructions.
 
 Do not delete content and do not mark entries unsupported. If exact Lean syntax

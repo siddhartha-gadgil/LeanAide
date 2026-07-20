@@ -206,7 +206,11 @@ class StructuredAgent:
 
 
 class ClaimAuditAgent:
+    def __init__(self) -> None:
+        self.payloads = []
+
     def __call__(self, payload):
+        self.payloads.append(payload)
         entries = {entry["claim"]: entry for entry in payload["claim_entries"]}
         patches = []
         if "Choose a positive delta." in entries:
@@ -229,6 +233,27 @@ class ClaimAuditAgent:
                 )
             )
         return ClaimAuditSpec(patches=patches)
+
+
+class ClaimClosureAuditAgent:
+    def __init__(self) -> None:
+        self.payloads = []
+
+    def __call__(self, payload):
+        self.payloads.append(payload)
+        entry = payload["claim_entries"][0]
+        return ClaimAuditSpec(
+            patches=[
+                ClaimPatchSpec(
+                    path=entry["path"],
+                    action="replace_claim",
+                    claim=(
+                        "∀ {α : Type} (operation : α → α) (x : α), "
+                        "let transformed := operation x; transformed = operation x"
+                    ),
+                )
+            ]
+        )
 
 
 class DeducedFromClaimRewriteAgent:
@@ -773,6 +798,114 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             ["x + 0 = x.", "The desired equality holds."],
         )
 
+    async def test_claim_audit_supplies_generic_theorem_context_for_closure(self) -> None:
+        agent = ClaimClosureAuditAgent()
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "name": "operation_identity",
+                        "claim": "transformed equals operation applied to x.",
+                        "hypothesis": [
+                            {
+                                "type": "assume_statement",
+                                "assumption": "alpha is a type.",
+                            },
+                            {
+                                "type": "let_statement",
+                                "variable_name": "transformed",
+                                "value": "operation x",
+                            },
+                        ],
+                        "source": {
+                            "text": (
+                                "Let alpha be a type and operation : alpha -> alpha. "
+                                "Fix x and define transformed := operation x. Then "
+                                "transformed equals operation applied to x."
+                            )
+                        },
+                    }
+                ]
+            }
+        }
+
+        audited = await audit_claims_for_lean(data, agent)
+
+        entry = agent.payloads[0]["claim_entries"][0]
+        self.assertEqual(entry["claim_scope"], "theorem_statement")
+        self.assertTrue(entry["requires_closed_lean_repair"])
+        self.assertTrue(entry["closure_risks"])
+        self.assertEqual(entry["enclosing_theorem"]["name"], "operation_identity")
+        self.assertIn("define transformed", entry["enclosing_theorem"]["source_text"])
+        self.assertEqual(
+            entry["enclosing_theorem"]["hypotheses"][1]["variable_name"],
+            "transformed",
+        )
+        self.assertIn("finite_probability", agent.payloads[0]["closure_rules"])
+        self.assertEqual(
+            agent.payloads[0]["available_declarations"][0]["name"],
+            "operation_identity",
+        )
+        claim = audited["document"]["body"][0]["claim"]
+        self.assertTrue(claim.startswith("∀ {α : Type}"))
+
+    async def test_claim_audit_batches_context_requests(self) -> None:
+        agent = ClaimAuditAgent()
+        data = {
+            "document": {
+                "body": [
+                    {"type": "theorem", "claim": f"P {index}"}
+                    for index in range(3)
+                ]
+            }
+        }
+
+        with patch.dict(
+            "os.environ",
+            {"MATHDOC_AGENT_CLAIM_AUDIT_BATCH_SIZE": "2"},
+            clear=False,
+        ):
+            await audit_claims_for_lean(data, agent)
+        self.assertEqual(len(agent.payloads), 2)
+        self.assertEqual(
+            [len(payload["claim_entries"]) for payload in agent.payloads],
+            [2, 1],
+        )
+
+    async def test_claim_audit_does_not_reflag_existing_lean_let_closure(self) -> None:
+        agent = ClaimAuditAgent()
+        claim = (
+            "∀ (α : Type) (operation : α → α) (x : α), "
+            "let transformed : α := operation x; transformed = operation x"
+        )
+        await audit_claims_for_lean(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": claim,
+                            "hypothesis": [
+                                {
+                                    "type": "let_statement",
+                                    "variable_name": "transformed",
+                                    "value": "operation x",
+                                }
+                            ],
+                            "source": {
+                                "text": "Define transformed := operation x."
+                            },
+                        }
+                    ]
+                }
+            },
+            agent,
+        )
+
+        entry = agent.payloads[0]["claim_entries"][0]
+        self.assertNotIn("requires_closed_lean_repair", entry)
+
     async def test_deduced_from_claim_rewrite_omits_hypotheses_and_inserts_steps(self) -> None:
         data = {
             "document": {
@@ -905,8 +1038,9 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(dependency["verification_status"], "unverified")
         codes = {
             issue["code"]
-            for issue in finalized["lean_validation"]["issues"]
+            for issue in finalized["document"]["lean_validation"]["issues"]
         }
+        self.assertNotIn("lean_validation", finalized)
         self.assertIn("removed_results_used", codes)
         self.assertNotIn("lean_name_without_lean_term", codes)
 
@@ -939,6 +1073,29 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
                 "Let G be a group",
                 "Let l : G -> R be a homogeneous pseudo-length function",
             ],
+        )
+
+    def test_finalize_lean_facing_json_nests_existing_root_validation(self) -> None:
+        issue = {
+            "severity": "warning",
+            "path": "/document",
+            "code": "example_warning",
+            "message": "Example warning.",
+        }
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {"type": "document", "body": []},
+                "lean_validation": {
+                    "status": "needs_review",
+                    "issues": [issue, issue],
+                },
+            }
+        )
+
+        self.assertNotIn("lean_validation", finalized)
+        self.assertEqual(
+            finalized["document"]["lean_validation"]["issues"],
+            [issue],
         )
 
     def test_finalize_lean_facing_json_promotes_source_local_definitions(self) -> None:
@@ -1075,6 +1232,38 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(theorem["claim"], "VQ is A tensor over Z with Q")
         step = theorem["proof"]["proof_steps"][0]
         self.assertEqual(step["claim"], "l(g)=normB(phi applied to g) on GAb")
+
+    async def test_informal_notation_repair_preserves_lean_let_binders(self) -> None:
+        claim = (
+            "∀ (α : Type) (operation : α → α) (x : α), "
+            "let transformed : α := operation x; transformed = operation x"
+        )
+        repaired = await repair_informal_notation_for_lean(
+            {"document": {"body": [{"type": "theorem", "claim": claim}]}},
+            None,
+        )
+
+        self.assertEqual(repaired["document"]["body"][0]["claim"], claim)
+
+    async def test_informal_notation_repair_still_repairs_prose_assignment(self) -> None:
+        repaired = await repair_informal_notation_for_lean(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "assert_statement",
+                            "claim": "transformed := operation x",
+                        }
+                    ]
+                }
+            },
+            None,
+        )
+
+        self.assertEqual(
+            repaired["document"]["body"][0]["claim"],
+            "transformed  is defined as  operation x",
+        )
 
     def test_finalize_lean_facing_json_does_not_quarantine_risky_proof_assertions(self) -> None:
         finalized = finalize_lean_facing_json(
