@@ -230,7 +230,7 @@ record a structured codegen error. The final full declaration must be checked;
 successful statement elaboration with `:= by sorry` does not validate the
 generated proof.
 
-#### 2. Fallback `sorry` is not treated as terminal
+#### 2. Fallback `sorry` and recursive proof generation lose the active goal
 
 `findTacticsI` uses
 
@@ -239,15 +239,107 @@ repeat (sorry)
 ```
 
 as the default whenever automation fails. This makes failed proof search look
-like a successful tactic sequence. In Lemma 9 it closes the main goal, after
-which additional generated proof steps are appended and Lean reports `No goals
-to be solved`.
+like a successful tactic sequence. The emitted Lemma 9 proof demonstrates the
+observable result:
 
-Required change: represent proof-search failure as data (`none`/error), not as a
-closing tactic. Insert a single `sorry` only at the outermost declaration after
-generation has stopped for that goal, and never append tactics after it. A
-"best effort" output mode can still emit one explicit hole per unresolved goal,
-but the generator must distinguish that status from a proved goal.
+```lean
+let ⟨barL, assert_17274311165594130021⟩ :=
+  assert_11951970955198732883
+repeat (sorry)
+have assert_13313675123275672338 : ... := by
+  repeat (sorry)
+```
+
+The first `repeat (sorry)` closes the theorem goal. The following `have` is
+therefore invalid, and Lean reports `No goals to be solved`. A minimal proof
+containing `repeat (sorry)` followed by a `have` reproduces the same diagnostic.
+The July 20 log records this diagnostic seven times, all while generating
+Lemma 9.
+
+The generator-side mechanism is more subtle than deliberately receiving an
+empty goal list and ignoring it. Lemma 9 contains a nested JSON `proof` step,
+followed by six more top-level proof steps. The sequence is:
+
+1. The outer `getCodeTacticsAux` calls `getCode` for the nested `proof` using
+   the current theorem metavariable.
+2. The tactic branch of `proofCode` recursively calls `getCodeTactics` on that
+   same metavariable under `withoutModifyingState`. However, the
+   `MonadBacktrack` instance for `TranslateM` saves only `Translate.State`
+   fields such as preludes and definitions. It does not save the enclosing
+   `TermElabM`/`MetaM` state or metavariable context.
+3. The nested generator executes its component tactics with
+   `runForSingleGoal`. This partially assigns the original parent metavariable
+   to a proof term containing a new unresolved child metavariable. It then
+   appends the fallback `repeat (sorry)` to the returned syntax without running
+   it or returning a terminal/failure status.
+4. The outer generator attempts to replay the returned nested tactic block on
+   the original parent metavariable. That metavariable is already assigned, so
+   `Elab.runTactic` raises `No goals to be solved`. The first logged failure
+   prints:
+
+   ```text
+   Tactics failed on ∃! barL, ... : No goals to be solved
+   Assignment: true; have assert_10162204231442207603 := ...; ?m.2190
+   ```
+
+   The assignment is not a completed proof: the printed `?m.2190` is the real
+   unresolved child goal.
+5. `runForSingleGoal` catches the exception and returns the same assigned parent
+   `mvarId` as if it were a valid remaining goal. `getCodeTacticsAux` consequently
+   processes the six later JSON steps against that assigned metavariable,
+   accounting for the other six `No goals to be solved` events.
+6. At the end, `getCodeTactics` tests only `goal.isAssigned` and returns the
+   accumulated syntax. An assigned metavariable whose value still contains an
+   unassigned metavariable is incorrectly classified as complete. The returned
+   syntax contains the nested terminal `repeat (sorry)` followed by the later
+   top-level tactics, producing the malformed final proof.
+
+Thus the earlier description was correct about the final Lean program but
+imprecise about codegen's internal state: codegen did not knowingly receive
+zero goals and continue. Recursive generation lost the real child goal,
+continued with an assigned parent goal, and emitted syntax in which a terminal
+tactic precedes later steps.
+
+Required changes:
+
+1. Make recursive tactic generation state-safe. Either require `getCode` tactic
+   handlers to be pure with respect to `TermElabM`/`MetaM` state and replay their
+   returned syntax exactly once, or return both syntax and the resulting active
+   goals without replay. `withoutModifyingState` must not suggest that it saves
+   metavariables when it saves only `Translate.State`; add an explicit helper
+   that saves/restores both term-elaboration and meta state.
+2. Change `runForSingleGoal` to return a structured success/failure result. On
+   failure restore both saved states and never return an assigned metavariable
+   as `some remainingGoal`.
+3. Do not use `MVarId.isAssigned` as the definition of proof completion. Track
+   the active goals returned by tactic execution, or recursively instantiate
+   the assigned expression and reject it if it contains unassigned
+   metavariables. The existing `Lean.Expr.hasUnassignedExprMVar` helper already
+   performs the recursive boolean check. When the actual child goals are needed,
+   use:
+
+   ```lean
+   def remainingGoals (goal : MVarId) : MetaM (List MVarId) := do
+     let proof ← instantiateMVars (mkMVar goal)
+     let deps ← getMVars proof
+     deps.toList.filterM fun m => return !(← m.isAssigned)
+   ```
+
+   `instantiateMVars` recursively replaces every assigned metavariable by its
+   assigned value. `getMVars` then collects the metavariables still present, and
+   the final filter retains only genuinely unassigned goals. An empty list means
+   recursively solved; one element is the next goal; multiple elements must be
+   represented as multiple active goals rather than collapsed to one. For a
+   boolean-only check, use
+   `!(← (mkMVar goal).hasUnassignedExprMVar)`. Prefer the goal list returned
+   directly by successful `Elab.runTactic` whenever it is available; the helper
+   is the correct replacement when recovering from or auditing an assigned
+   parent expression.
+4. Represent proof-search failure as data (`none`/error), not as a closing
+   tactic. Insert a single `sorry` only at the outermost declaration after
+   generation has stopped for that goal, and never append tactics after it. A
+   best-effort mode can emit one explicit hole, but must propagate a terminal
+   status through nested proof generation.
 
 #### 3. Failed proof steps are converted to `skip`
 
@@ -543,7 +635,7 @@ size and still not compilable:
 | Lemmas 1--4 | Missing essential hypotheses; several statements are false | Essential group/length hypotheses and definitions are present |
 | Lemmas 5--6 | Statements emitted, but omit the distribution assumptions needed to be true | Lemma 5 omitted; Lemma 6 silently replaced by a vacuous predicate-valued definition |
 | Proposition 7 / Lemma 8 | Missing homogeneity hypotheses | Statements corrected; proofs still fail |
-| Lemma 9 | Only unique factorization, without preservation of the length axioms | Stronger and faithful statement; proof has a premature goal-closing fallback |
+| Lemma 9 | Only unique factorization, without preservation of the length axioms | Stronger and faithful statement; nested proof generation assigns the parent mvar, loses its child goal, and emits a terminal `repeat sorry` before later tactics |
 | Lemma 10 | Missing all axioms on `p` | Correct hypotheses; one remaining proof hole |
 | Lemmas 11--12 | Both absent/skipped | Lemma 11 emitted; Lemma 12 still omitted |
 | Lemma 13 | Malformed, 67 `sorry` occurrences within its declaration | Still malformed and expanded to 79 `sorry` occurrences plus 130 `skip`s |
@@ -553,8 +645,9 @@ In short: the cache/context repair fixed the original definition cascade and
 the new translator produces much better theorem statements. The current
 bottleneck is no longer the first predicate definition. It is the lack of a
 strict proposition boundary, unchecked command commits, `sorry` being used as
-control flow, and the construction-proof handler generating metavariables and
-duplicating proof trees.
+control flow, recursive proof generation confusing assigned parent mvars with
+completed goals, and the construction-proof handler generating metavariables
+and duplicating proof trees.
 
 ### Recommended implementation order
 
@@ -571,15 +664,18 @@ duplicating proof trees.
    replaying `full_claim` and `verification`.
 5. Make `addCommands` transactional: no environment update, prelude append, or
    file write unless the complete generated command elaborates without errors.
-6. Replace `repeat (sorry)` as an internal success value with an explicit proof
+6. Isolate `TermElabM`/`MetaM` state during recursive tactic generation, make
+   `runForSingleGoal` return structured failure instead of an assigned mvar, and
+   track actual remaining child goals rather than testing only `isAssigned`.
+7. Replace `repeat (sorry)` as an internal success value with an explicit proof
    failure result; emit at most one terminal hole in best-effort output.
-7. Stop converting failed assertion/theorem steps into `skip`, materialize
+8. Stop converting failed assertion/theorem steps into `skip`, materialize
    typed locals instead of prose-only `let_statement`s, accept the structured
    `assume_statement` schema, and consolidate the duplicate theorem handlers.
-8. Preserve JSON definition names by returning the reconstructed command from
+9. Preserve JSON definition names by returning the reconstructed command from
    `defCode`.
-9. Replace lookup `#check` commands with log entries/comments.
-10. Preformalize the finite-probability Lemmas 5--6 and tensor Lemma 12, and add a
+10. Replace lookup `#check` commands with log entries/comments.
+11. Preformalize the finite-probability Lemmas 5--6 and tensor Lemma 12, and add a
    hand-written reusable Banach-envelope theorem for Lemma 13.
 
 The existing implementation sites for these changes are now marked with
@@ -591,6 +687,7 @@ The existing implementation sites for these changes are now marked with
 | prelude/candidate error separation and bounded recovery | `TheoremElabCheck.lean`, `Aides/Basic.lean`, `Translate.lean` |
 | strict propositions and theorem-handler consolidation | both `PaperCodes.lean` implementations |
 | assigned construction metavariables and duplicated construction proofs | `LeanAide/PaperCodes.lean` |
+| recursive tactic-state isolation, failed replay and real remaining-goal tracking | `CodegenCore.lean`, `RunTactics.lean`, `TranslateM.lean`, `LeanAideCore/PaperCodes.lean` |
 | `skip`, `repeat sorry`, proof status and command accumulation | `CodegenCore.lean`, both `PaperCodes.lean` implementations, `TranslateM.lean` |
 | typed local notation and assumption-schema alignment | `DocumentSchema.lean`, both local-statement handlers |
 | definition renaming/fallback and diagnostic `#check` output | `LeanAideCore/PaperCodes.lean`, `LeanAide/Codegen.lean` |

@@ -685,6 +685,11 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
+  -- TODO(generation-check-homogeneous): This recursive call must not mutate the
+  -- caller's metavariable before its returned syntax is replayed. The current
+  -- `withoutModifyingState` saves only `Translate.State`, not Term/Meta state.
+  -- Explicitly sandbox the metavariable context, or return the resulting active
+  -- goals together with the syntax and do not replay the syntax in the parent.
   withoutModifyingState do
   getCodeTactics translator goal  content
 | goal?, kind, _ => throwError

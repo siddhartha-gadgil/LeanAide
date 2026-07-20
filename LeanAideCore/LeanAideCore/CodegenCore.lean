@@ -208,6 +208,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   | [] => do
     return (accum, goal)
   | source::sources => do
+    -- TODO(generation-check-homogeneous): Enforce that tactic-mode `getCode` is
+    -- pure with respect to Term/Meta state, or save and restore that state here.
+    -- Recursive `proofCode` currently partially assigns `goal`, after which the
+    -- returned syntax is incorrectly replayed on an already-assigned mvar.
     let code? ← try
         getCode translator (some goal) ``tacticSeq source
       catch e =>
@@ -234,6 +238,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           return (← appendTacticSeqSeq accum code, none)
         else
             -- continue with the next source
+        -- TODO(generation-check-homogeneous): Before replay, require `goal` to
+        -- be unassigned and known to be the current active goal. Prefer an API
+        -- where a handler returns `(syntax, remainingGoals)` so generated code
+        -- is either executed once here or already executed, never both.
         let goal? ← runForSingleGoal goal code
         match goal? with
         | none => do -- tactics closed the goal
@@ -297,6 +305,15 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
+    -- TODO(generation-check-homogeneous): `isAssigned` does not mean solved: an
+    -- assignment may contain unresolved child mvars (Lemma 9 had `?m.2190`).
+    -- Prefer the active goals returned by tactic execution. For recovery, use:
+    --   let proof ← instantiateMVars (mkMVar goal)
+    --   let deps ← getMVars proof
+    --   let remaining ← deps.toList.filterM fun m => return !(← m.isAssigned)
+    -- Treat `remaining.isEmpty` as recursively solved, and preserve one or many
+    -- remaining goals explicitly. For a boolean-only audit, use
+    -- `!(← (mkMVar goal).hasUnassignedExprMVar)`.
     if ← goal.isAssigned then
       return tacs
     else
@@ -310,6 +327,9 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     traceAide `leanaide.codegen.info s!"auto tactics:"
     for tac in autoTacs do
       traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
+    -- TODO(generation-check-homogeneous): Return an explicit unresolved/terminal
+    -- status with these fallback tactics. Syntax containing `repeat sorry` must
+    -- not be embedded in a nested proof and followed by more parent proof steps.
     appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
 
 

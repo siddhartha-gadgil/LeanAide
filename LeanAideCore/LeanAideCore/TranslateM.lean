@@ -646,6 +646,11 @@ structure Translate.SavedState where
   recentTranslations: Array ChatPair
   outputFile : Option System.FilePath
 
+-- TODO(generation-check-homogeneous): This backtracking instance deliberately
+-- saves only `Translate.State`; it does not restore the underlying Term/Meta
+-- state or metavariable context. Rename/use a more explicit prompt-state scope,
+-- and provide a separate helper for callers that require full elaborator-state
+-- isolation during speculative or recursive tactic generation.
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
     let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}

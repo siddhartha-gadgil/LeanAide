@@ -166,6 +166,10 @@ def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : Term
       traceAide `leanaide.interpreter.info s!"{← ppTactic tac}"
       traceAide `leanaide.interpreter.info ""
     traceAide `leanaide.interpreter.info s!"Assignment: {← mvarId.isAssigned}; {← PrettyPrinter.ppExpr <| mkMVar mvarId} "
+    -- TODO(generation-check-homogeneous): Return a structured failure here.
+    -- Restore both the TermElab and explicitly saved Meta states, and never
+    -- return `mvarId` as a remaining goal when it is assigned. The current
+    -- `Option` result conflates tactic failure with one valid remaining goal.
     s₀.restore
     return mvarId
 
