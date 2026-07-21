@@ -130,14 +130,14 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
   | k + 1, Expr.forallE n type _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
     let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
-    addPrelude s!"Fix {n} : {← ppExpr type}"
+    addPromptContext s!"Fix {n} : {← ppExpr type}"
     let (_, goal') ← goal.intro n
     goal'.withContext do
       consumeIntros goal' k (accum ++ [n])
   | k + 1, Expr.letE n type value _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
     let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
-    addPrelude s!"Fix {n} : {← ppExpr type} := {← ppExpr value}"
+    addPromptContext s!"Fix {n} : {← ppExpr type} := {← ppExpr value}"
     let (_, goal') ← goal.intro n
     goal'.withContext do
       consumeIntros goal' k (accum ++ [n])
@@ -353,9 +353,18 @@ Generate code for a theorem, lemma, proposition, corollary, or claim. It process
 
 Should perhaps try to use automation if there is no proof.
 -/
--- TODO(generation-check-homogeneous): Consolidate this registration with the
--- `theoremCode` registration in `LeanAide/PaperCodes.lean`. The theorem schema
--- must require a `Prop`; remove the non-`Prop` `noncomputable def` fallback.
+-- TODO(mathlib-deferred-theorem): Make this the sole ordinary theorem handler.
+-- The Mathlib layer may register one narrowly scoped fallback for a proofless
+-- `commandSeq` theorem backed by `Fact`; it must reject every other case before
+-- doing translation. This core handler should likewise recognize that precise
+-- unsupported case before expensive `thmStxParts` work and return an explicit
+-- recoverable no-match result, allowing the fallback without translating the
+-- theorem twice. All other failures remain real core-handler errors. The shared
+-- theorem schema must require a `Prop`; remove the non-`Prop`
+-- `noncomputable def` fallback. Keep core naming deterministic and do not add
+-- `newName`, whose repeated `resolveGlobalName` loop is too expensive. If exact
+-- declaration collision handling becomes necessary, check the environment and
+-- staged definitions once and use a deterministic hash suffix.
 @[codegen "theorem"]
 def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
@@ -373,6 +382,12 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
     let propIdent ← delabDetailed propExpr
     `(command| abbrev $n : $propIdent:term := $stx)
 | _, `commandSeq, js => do
+  -- TODO(mathlib-deferred-theorem): Check for an absent proof before calling
+  -- `thmStxParts`. Return the dispatcher's explicit recoverable no-match value
+  -- for that one case so `deferredTheoremCode` can handle it without repeating
+  -- claim translation, proof search, naming, or metadata mutation. A generic
+  -- exception is too broad because genuine theorem errors must not select the
+  -- Mathlib fallback.
   let (stx, name, pf?, isProp) ← thmStxParts js
   match pf? with
   | some pf =>
@@ -460,7 +475,7 @@ where
       -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
       -- only generated proof syntax should cross this speculative boundary.
       withoutModifyingState do
-      addPrelude s!"Current goal (context only; not an available theorem):
+      addPromptContext s!"Current goal (context only; not an available theorem):
           {← ppExpr type}"
       -- Finding proof
       let pfGoal ← mkFreshExprMVar type
@@ -734,7 +749,7 @@ def letCodeCore (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (k
     | .error _ =>
       -- If there is no value, we do not need to return a value
       traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjValAs? String "variable_name" |>.toOption.getD ""}"
-      addPrelude statement
+      addPromptContext statement
       return none
     | .ok value =>
       match goal? with
@@ -749,7 +764,7 @@ def letCodeCore (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (k
         commandToTactic
           (← defStx translator js statement value)
       let stxs := #[letStx]
-      addPrelude statement
+      addPromptContext statement
       return some <| ← `(tacticSeq| $stxs*)
   | ``commandSeq, js => do
     let statement := statement js
@@ -757,7 +772,7 @@ def letCodeCore (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (k
     | .error _ =>
       -- If there is no value, we do not need to return a value
       traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjValAs? String "variable_name" |>.toOption.getD ""}"
-      addPrelude statement
+      addPromptContext statement
       return none
     | .ok value =>
       let defStx ←
@@ -770,11 +785,11 @@ def letCodeCore (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (k
         addDefn data
       | none =>
         traceAide `leanaide.papercodes.info s!"codegen: No definition found for 'let_statement' {statement} with value {value}"
-      addPrelude statement
+      addPromptContext statement
       return some <| ← `(commandSeq| $stxs*)
 
   | _, js =>
-      addPrelude <| statement js
+      addPromptContext <| statement js
       return none
   where
     statement (js: Json) : String :=
@@ -859,7 +874,7 @@ def someCode (translator : CodeGenerator := {})(goal : Option (MVarId)) : (kind:
     ("type", "assert_statement"),
     ("claim", .str statement)
   ]
-  addPrelude statement
+  addPromptContext statement
   getCode translator goal kind assJs
 
 
@@ -875,7 +890,7 @@ def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNod
   -- Requiring only an `assumption` string currently turns valid nodes into skip.
   let .ok statement :=
       js.getObjValAs? String "assumption" | throwError "No 'assumption' found in 'assume_statement'"
-  addPrelude <| "Assume that: " ++ statement
+  addPromptContext <| "Assume that: " ++ statement
   addVarPrelude statement
   return none
 
@@ -972,7 +987,7 @@ where typeStx (js: Json) :
   let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError
     s!"codegen: failed to apply deduction theorems for assertion; deduction tactics:\n{deductionHaves}"
   let tacs ← findTacticsI mvarId
-  addPrelude <| "Assume: " ++ claim
+  addPromptContext <| "Assume: " ++ claim
   return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type)
 
 /--
@@ -1493,7 +1508,7 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
   | (conditionType, trueCaseProof, inductionHyps) :: tail => goal.withContext do
     traceAide `leanaide.papercodes.info s!"number of cases (remaining): {tail.length + 1}"
     for hyp in inductionHyps do
-      addPrelude <| s!"Assume (inductively): {hyp}"
+      addPromptContext <| s!"Assume (inductively): {hyp}"
     let conditionStx ← delabDetailed conditionType
     let fmt ← ppTerm {env := ← getEnv} conditionStx
     let hash₀ := hash fmt.pretty
@@ -1655,7 +1670,7 @@ def epsilonDeltaProof(translator : CodeGenerator := {}) : Option MVarId →  (ki
     let deltaStx : TSyntax `term := ⟨deltaStxRaw⟩
     let deltaIdent := mkIdent `delta
     let deltaExpr ← `(tactic| let $deltaIdent := $deltaStx)
-    addPrelude s!"Let delta := {delta}"
+    addPromptContext s!"Let delta := {delta}"
 
     let deltaPosStat := "For all ε > 0, delta > 0"
     let deltaPosExpr ← translator.translateToPropStrict deltaPosStat
