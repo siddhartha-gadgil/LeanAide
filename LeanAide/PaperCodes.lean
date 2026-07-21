@@ -417,6 +417,13 @@ def existenceProof (translator : CodeGenerator) (variableName construction : Str
     let letTactic ← simpleLet letTactic
     let useTacticSeq ← `(tacticSeq| $letTactic; use $varId:ident)
     traceAide `leanaide.papercodes.info s!"Existence proof: created tactic sequence for definition and use:\n{useTacticSeq}"
+    -- TODO(assigned-goal-invariant): Update this caller when
+    -- `runForSingleGoal` gains a structured result. A tactic failure must not be
+    -- interpreted as closure (`none`) or one remaining goal (`some`). Validate
+    -- that `newGoal` is unassigned; `runForSingleGoal` should commit its state on
+    -- this successful live-goal path. The following tactic-mode `getCode`, by
+    -- contrast, returns replayable syntax and must always restore Term/Meta state
+    -- so it cannot leave `newGoal` assigned.
     let newGoal? ← runForSingleGoal goal useTacticSeq
     match newGoal? with
     | some newGoal =>

@@ -649,8 +649,12 @@ structure Translate.SavedState where
 -- TODO(generation-check-homogeneous): This backtracking instance deliberately
 -- saves only `Translate.State`; it does not restore the underlying Term/Meta
 -- state or metavariable context. Rename/use a more explicit prompt-state scope,
--- and provide a separate helper for callers that require full elaborator-state
--- isolation during speculative or recursive tactic generation.
+-- and provide two separate contracts: a handler transaction that restores both
+-- states when a candidate fails and commits only explicitly allowed state on
+-- success, and an always-restore syntax-generation scope for callers that must
+-- replay syntax on the original goal. A successful handler may retain allowed
+-- Translate effects, while live `MVarId` helpers must commit successful
+-- Term/Meta state because their results depend on it.
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
     let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, promptContext := σ.promptContext, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
@@ -659,6 +663,14 @@ instance : MonadBacktrack Translate.SavedState TranslateM where
   modify fun s =>
       {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, promptContext := ss.promptContext, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
 
+-- TODO(handler-backtracking): This is an always-restore scope and is appropriate
+-- for recursive `proofCode` and other computations whose returned syntax/value
+-- is independent of both saved states. Do not use it as the generic handler
+-- retry transaction: it would discard intentional Translate effects from a
+-- successful handler. Add a separate handler transaction that restores both
+-- states on exception and defines its success policy explicitly (normally retain
+-- allowed Translate effects while restoring speculative Term/Meta state for
+-- replayable syntax).
 def withoutModifyingTranslateAndTermState
     (x : TranslateM α) : TranslateM α := do
   let translateState ← get

@@ -158,6 +158,15 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
         traceAide `leanaide.codegen.info s!"{f} for key {key} worked; returned : {code?.isSome}"
         return code?
       catch e =>
+        -- TODO(handler-backtracking): Save all reversible Translate and
+        -- Term/Meta state immediately before each `codeFromFunc`. On failure,
+        -- restore that snapshot before trying the next handler. On success,
+        -- retain explicitly permitted Translate effects, but restore speculative
+        -- Term/Meta assignments whenever the result is syntax to be replayed.
+        -- Do not implement this with an always-restore wrapper around every
+        -- handler: successful `none` handlers may intentionally update Translate
+        -- context. Fatal errors still need separate propagation when they may
+        -- have irreversible environment, file, or other IO effects.
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
         accumErrors := accumErrors.push s!"{f}: {← e.toMessageData.toString}"
         continue -- try next function
@@ -179,6 +188,11 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
         let code? ← codeFromFunc goal? translator f kind source
         return code?
       catch _ =>
+        -- TODO(handler-backtracking): Use the same failure-only rollback as the
+        -- keyed branch: restore the failed candidate's Translate and Term/Meta
+        -- state, then continue. Commit allowed Translate effects only for the
+        -- successful handler, and restore its Term/Meta state if it returns
+        -- replayable syntax. Keep fatal/non-rollbackable errors distinguishable.
         continue -- try next function
     throwError
       s!"codegen: no key or type found in JSON object {source} and no codegen functions returned a result"
@@ -208,20 +222,34 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   | [] => do
     return (accum, goal)
   | source::sources => do
-    -- TODO(generation-check-homogeneous): Enforce that tactic-mode `getCode` is
-    -- pure with respect to Term/Meta state, or save and restore that state here.
-    -- Recursive `proofCode` currently partially assigns `goal`, after which the
-    -- returned syntax is incorrectly replayed on an already-assigned mvar.
+    -- TODO(assigned-goal-invariant): Run tactic-mode `getCode` transactionally.
+    -- Save Translate and Term/Meta state before invoking it. On failure, restore
+    -- both before propagating or trying another candidate. On success, preserve
+    -- intentional Translate effects needed by later JSON sources, but always
+    -- restore Term/Meta state because the returned tactic syntax is replayed
+    -- below. Any Translate value retained across this boundary must be closed
+    -- and independent of restored metavariables. Recursive `proofCode` has
+    -- violated this boundary by assigning `goal` to a term containing child
+    -- metavariables.
     let code? ← try
         getCode translator (some goal) ``tacticSeq source
       catch e =>
         let err ←   e.toMessageData.toString
         traceAide `leanaide.codegen.info s!"Error in getCode `tacticSeq for source {source.pretty}\nError: {err}"
-        -- TODO(generation-check-homogeneous): Preserve this structured error
-        -- and terminate generation for the affected subgoal (or emit one named
-        -- outermost hole with the JSON id/claim). `skip` falsely classifies a
-        -- failed assertion/theorem translation as a successful no-op.
+        -- TODO(handler-backtracking): Reach this catch only after the failed
+        -- handler's Translate and Term/Meta snapshot has been restored. Preserve
+        -- and rethrow fatal or non-rollbackable errors. A recoverable translation
+        -- failure may be handled after rollback, but it should terminate this
+        -- affected subgoal or produce one explicitly named outermost hole with
+        -- the JSON id/claim; converting it to `skip` falsely reports a successful
+        -- no-op and consumes later JSON without a proof of the failed step.
         `(tacticSeq | skip)
+    -- TODO(assigned-goal-invariant): Before inspecting `code?`, assert that
+    -- `goal` is still unassigned. This check must also cover `none` and empty
+    -- syntax results, since a nominally side-effect-only handler can leak a
+    -- partial assignment. If assigned, log the assignment and recursively
+    -- unresolved child metavariables for diagnostics, restore the pre-handler
+    -- state, and throw; do not recover by treating those children as JSON goals.
     match code? with
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
@@ -238,10 +266,12 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           return (← appendTacticSeqSeq accum code, none)
         else
             -- continue with the next source
-        -- TODO(generation-check-homogeneous): Before replay, require `goal` to
-        -- be unassigned and known to be the current active goal. Prefer an API
-        -- where a handler returns `(syntax, remainingGoals)` so generated code
-        -- is either executed once here or already executed, never both.
+        -- TODO(assigned-goal-invariant): Require `goal` to be unassigned and
+        -- known to be the current active goal before replay. Prefer an API where
+        -- a handler returns `(syntax, remainingGoals)` so generated code is
+        -- either executed once here or already executed, never both. Discovery
+        -- of child metavariables by traversing an assigned proof term is not a
+        -- substitute: it loses the tactic engine's active-goal contract.
         let goal? ← runForSingleGoal goal code
         match goal? with
         | none => do -- tactics closed the goal
@@ -250,6 +280,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
           return (← appendTacticSeqSeq accum code, none)
         | some newGoal => do
+          -- TODO(assigned-goal-invariant): Assert that `newGoal` is unassigned
+          -- before recursing. `some` must mean exactly one live active goal;
+          -- assigned metavariables, tactic failures, and multiple active goals
+          -- need distinct structured results and must not enter this branch.
           let newAccum ← appendTacticSeqSeq accum code
           getCodeTacticsAux translator newGoal sources newAccum
 
@@ -289,6 +323,16 @@ Obtain a sequence of tactics to apply to a goal, given a list of JSON sources. T
 def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) := goal.withContext do
+  -- TODO(assigned-goal-invariant): Define this function's public contract as
+  -- transactional syntax generation: it may execute tactics internally, but it
+  -- must always restore the entry Term/Meta state before returning or throwing,
+  -- since its result is syntax that callers replay. Successful Translate-state
+  -- effects may remain when they are part of the generation contract; callers
+  -- such as recursive `proofCode` that want no state effects should add the
+  -- stronger always-restore wrapper themselves. This central guarantee would
+  -- protect every recursive document/section/proof handler; the checks in
+  -- `getCodeTacticsAux` should remain as assertions that identify the first
+  -- handler that violated the boundary.
   match ← findTactics? goal with
   | some autoTacs => do
     -- let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
@@ -305,6 +349,16 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
+    -- TODO(assigned-goal-invariant): Treat an assigned `some goal` as a fatal
+    -- internal error, regardless of whether its instantiated assignment still
+    -- contains metavariables. `getCodeTacticsAux` promises that `some` is one
+    -- live, unassigned active goal; a fully assigned value should have returned
+    -- `none`, while an assigned value with child metavariables indicates leaked
+    -- tactic state. Keep the `instantiateMVars`/`getMVars` traversal only to log
+    -- useful diagnostics, then throw after restoring the transactional state.
+    -- Do not run automation on rediscovered children: they may not preserve the
+    -- tactic engine's goal order, focus, or distinction between user goals and
+    -- implementation metavariables.
     let remaining ←
       if ← goal.isAssigned then
         let proof ← instantiateMVars (mkMVar goal)

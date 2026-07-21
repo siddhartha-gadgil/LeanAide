@@ -225,6 +225,13 @@ def objectBypassCode (translator : CodeGenerator := {})
 Wrapping proofs that are single assertions.
 -/
 def getProof (translator: CodeGenerator)(goal: MVarId) (js: Json) : TranslateM (Option (TSyntax ``tacticSeq)) := do
+  -- TODO(assigned-goal-invariant): Make this helper a transactional syntax
+  -- boundary, or require every caller to provide one. Because it returns syntax
+  -- rather than live `MVarId`s, always restore its entry Term/Meta state on both
+  -- success and failure. Successful Translate effects may be retained only when
+  -- explicitly part of the caller's contract; callers already using
+  -- `withoutModifyingState` intend to restore those as well. Fatal invariant
+  -- errors must not be reclassified as an absent proof or handler mismatch.
   match js.getObjVal? "type" with
   | .ok "assert_statement" => getCodeTactics translator goal [js]
   | _ => getCode translator (some goal) ``tacticSeq js
@@ -308,6 +315,10 @@ def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | some goal, ``tacticSeq, js => goal.withContext do
   let some content := js.getArr?.toOption.orElse
     (fun _ =>js.getObjValAs? (Array Json) "body" |>.toOption) | throwError "'document' must have body or be a JSON array"
+  -- TODO(assigned-goal-invariant): This recursive tactic generator returns
+  -- syntax for the parent to replay, so always restore Term/Meta state on success
+  -- as well as failure. Either isolate it here or rely on a documented
+  -- transactional `getCodeTactics`; never return with `goal` assigned.
   getCodeTactics translator goal  content.toList
 | _, kind, _ => throwError
     s!"codegen: 'document' does not work for kind {kind}"
@@ -328,6 +339,9 @@ def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
   getCodeCommands translator none  content
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "content" | throwError "'section' must have 'content'"
+  -- TODO(assigned-goal-invariant): As for nested documents, isolate recursive
+  -- tactic generation with an always-restore Term/Meta boundary so only syntax
+  -- crosses this handler and `goal` remains unassigned for the parent's replay.
   getCodeTactics translator goal  content
 | _, kind, _ => throwError
     s!"codegen: 'section' does not work for kind {kind}"
@@ -618,6 +632,10 @@ def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
   getCodeCommands translator none  content.toList
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (Array Json) "items" | throwError "logicalStepSequence must have an `items` field that is a JSON array"
+  -- TODO(assigned-goal-invariant): Since this call returns replayable syntax,
+  -- isolate it with an always-restore Term/Meta boundary. If it observes or
+  -- returns an assigned `goal`, log diagnostics and propagate a fatal error
+  -- instead of recovering.
   getCodeTactics translator goal  content.toList
 | goal?, kind, _ => throwError
     s!"codegen: logicalStepSequence does not work for kind {kind}where goal present: {goal?.isSome}"
@@ -683,12 +701,17 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
-  -- TODO(generation-check-homogeneous): This recursive call must not mutate the
-  -- caller's metavariable before its returned syntax is replayed. The current
-  -- `withoutModifyingState` saves only `Translate.State`, not Term/Meta state.
-  -- Replace it with `withoutModifyingTranslateAndTermState`, or return the
-  -- resulting active goals together with the syntax and do not replay the syntax
-  -- in the parent.
+  -- TODO(assigned-goal-invariant): This recursive call must not mutate `goal`
+  -- before its returned syntax is replayed by the parent. The current
+  -- `withoutModifyingState` saves only `Translate.State`, so nested tactic
+  -- generation can assign `goal` to a proof term containing unresolved child
+  -- metavariables. Unlike helpers that return live `MVarId`s, this branch returns
+  -- replayable syntax and already intends to discard Translate changes, so
+  -- replace the wrapper with `withoutModifyingTranslateAndTermState` and let its
+  -- `finally` rollback run after both success and error. Alternatively, redesign
+  -- the API to return the tactic engine's active goals together with syntax that
+  -- will not be replayed. If isolation detects an assigned input/output goal,
+  -- propagate that fatal invariant error; do not convert it to `skip`.
   withoutModifyingState do
   getCodeTactics translator goal  content
 | goal?, kind, _ => throwError
@@ -939,6 +962,13 @@ where typeStx (js: Json) :
   | none => pure ()
   let type ← translator.translateToPropStrict claim
   let mvar ← mkFreshExprMVar type
+  -- TODO(assigned-goal-invariant): Update this destructuring when
+  -- `runForSingleGoal` returns a structured result. Accept only the explicit
+  -- one-active-goal case and verify that `mvarId` is unassigned; propagate
+  -- failure rather than conflating it with closure or recovering from mvars
+  -- found inside an assigned proof term. The helper must commit its state on
+  -- this successful path because `mvarId` belongs to that state; any enclosing
+  -- syntax generator is responsible for a later always-restore boundary.
   let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError
     s!"codegen: failed to apply deduction theorems for assertion; deduction tactics:\n{deductionHaves}"
   let tacs ← findTacticsI mvarId
