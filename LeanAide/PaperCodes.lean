@@ -104,7 +104,10 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
 where
   thmStxParts (js: Json)  :
-    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq) × Bool  := withoutModifyingState do
+    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq) × Bool  :=
+    -- TODO(term-state-isolation): Replace this syntax-producing scope with
+    -- `withoutModifyingTranslateAndTermState` so speculative elaboration cannot leak metavariables.
+    withoutModifyingState do
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
       | Except.error _ => pure ()
@@ -125,7 +128,10 @@ where
       | Except.error _ => pure 0
     traceAide `leanaide.papercodes.info s!"hypothesis size: {hypSize} in proof"
     let proofStx? ← proof?.mapM fun
-      pf => withoutModifyingState do
+      pf =>
+      -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
+      -- only generated proof syntax should cross this speculative boundary.
+      withoutModifyingState do
       let pfGoal ← mkFreshExprMVar type
       let (pfGoal', names') ← extractIntros pfGoal.mvarId! hypSize
       traceAide `leanaide.papercodes.debug s!"Extracted intros, names: {names'}"
@@ -133,6 +139,8 @@ where
       traceAide `leanaide.papercodes.debug s!"Consumed intros, names: {names}"
       let (pfGoal, resTacs) ← resolveIntros pfGoal'' names
       let pfStx ←
+        -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`
+        -- if this inner scope remains after the enclosing proof scope is isolated.
         withoutModifyingState do
         pfGoal.withContext do
         match ←
@@ -265,6 +273,8 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
           | _, _ => ""
         s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trimAscii.toString ++ "."
     defStx (translator: CodeGenerator) (js: Json) (statement: String)  (value: String) : TranslateM Syntax.Command :=
+      -- TODO(term-state-isolation): Replace this syntax-producing speculative scope with
+      -- `withoutModifyingTranslateAndTermState` after checking its translation fallback paths.
       withoutModifyingState do
         let statement' ← withPreludes statement
         let varName ← match js.getObjValAs? String "variable_name" with
@@ -565,6 +575,8 @@ def uniquenessProofCore (translator : CodeGenerator) (existence_js : Json) (proo
   let goalType ← translator.translateToPropStrict uniquenessClaim
   let uniquenessGoalExpr ← mkFreshExprMVar goalType
   let uniquenessGoal := uniquenessGoalExpr.mvarId!
+  -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
+  -- only the generated uniqueness proof syntax should escape this scope.
   let some proofStx ← withoutModifyingState do
     getProof translator uniquenessGoal proof | throwError
     s!"codegen: no tactics found for contrapositive proof {proof}"
