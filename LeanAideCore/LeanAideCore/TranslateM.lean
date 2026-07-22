@@ -321,14 +321,9 @@ def addCommandToPrelude (cmd: Syntax.Command) : TranslateM Unit := do
 /--
 Runs commands and adds them to the prelude if they run correctly.
 -/
--- TODO-UnintendedRollback: callers must not wrap this in
--- `withoutModifyingTranslateAndTermState`, otherwise the environment/prelude
--- updates below are rolled back while `writeCommands` IO still persists.
--- Do not fix this by removing speculative rollback around callers wholesale:
--- generation may leave fresh metavariables or TermElab/Meta state changes. Split
--- speculative syntax generation from this commit step, then call this outside
--- the rollback scope only for commands that should really enter the prelude.
-def runAndCommitCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
+-- Warning: do not call this inside rollback; file writes persist but
+-- `cmdPrelude` updates would be restored away.
+def runAndCommitCommands (cmds: TSyntax ``commandSeq) : TranslateM (Array Syntax.Command) := do
   let cmds := getCommands cmds
   let mut safeCmds := #[]
   for cmd in cmds do
@@ -336,6 +331,7 @@ def runAndCommitCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
     if safe then safeCmds := safeCmds ++ #[cmd]
   writeCommands safeCmds
   modify fun s => {s with cmdPrelude := s.cmdPrelude ++ safeCmds}
+  return safeCmds
 
 def registerDefnEnv (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statementStx

@@ -50,13 +50,6 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
   let elimIdent := mkIdent <| instName ++ "elim".toName
   let _ ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
   let cmds := #[head] -- assumeDef removed for now
-  -- TODO-CommitMismatch: this pre-runs the command before the shared
-  -- `runAndCommitCommands` path, so deferred-theorem command commitment
-  -- should be made transactional in one place.
-  -- The replacement should still keep theorem translation speculative; only the
-  -- accepted command/prelude commit should happen outside the rollback scope.
-  for cmd in cmds do
-    runCommand cmd
   `(commandSeq| $cmds*)
 | goal?, kind, _ => throwError
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
