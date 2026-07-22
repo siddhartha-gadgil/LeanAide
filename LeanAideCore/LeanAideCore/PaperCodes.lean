@@ -803,12 +803,15 @@ Generate code for an `assume_statement`. This is used to add an assumption to th
 @[codegen "assume_statement"]
 def assumeCode (_ : CodeGenerator := {})(_ : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, js => do
-  -- TODO(generation-check-homogeneous): Support the structured schema emitted
-  -- by the pipeline (`variable_name`, `variable_type`, and `arguments`) by
-  -- constructing a typed local binder, or normalize it before this handler.
-  -- Requiring only an `assumption` string currently turns valid nodes into skip.
-  let .ok statement :=
-      js.getObjValAs? String "assumption" | throwError "No 'assumption' found in 'assume_statement'"
+  let statement ←  match
+      js.getObjValAs? String "assumption" with
+      | .ok s => pure s
+      | .error _ =>
+        match js.getObjValAs? String "variable_name", js.getObjValAs? String "variable_type" with
+        | .ok varName, .ok varType =>
+          pure <| s!"{varName} is a {varType}"
+        | _, _ =>
+          throwError "No 'assumption' found in 'assume_statement'"
   addPromptContext <| "Assume that: " ++ statement
   addVarPrelude statement
   return none
