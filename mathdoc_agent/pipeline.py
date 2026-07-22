@@ -31,7 +31,11 @@ from mathdoc_agent.orchestration.informal_notation_repair import (
     repair_informal_notation_for_lean,
 )
 from mathdoc_agent.orchestration.lean_lint import finalize_lean_facing_json
-from mathdoc_agent.orchestration.mathlib_reuse import record_mathlib_definitions
+from mathdoc_agent.orchestration.mathlib_reuse import (
+    enrich_theorem_dependencies,
+    record_mathlib_definitions,
+    reset_leansearch_run_state,
+)
 from mathdoc_agent.orchestration.proof_sanity import (
     audit_proof_steps_for_counterexamples,
     repair_proof_sanity_issues,
@@ -498,6 +502,7 @@ async def generate_math_document_json(
         dict[str, object] | None | object
     ) = _DEFAULT_PROOF_RESOLUTION_AGENTS,
 ) -> str:
+    reset_leansearch_run_state()
     using_default_registries = document_registry is None and proof_registry is None
     resolved_claim_agent = (
         definitions.claim_audit_agent
@@ -587,6 +592,7 @@ async def generate_math_document_json(
         data,
         resolved_informal_notation_agent,
     )
+    data = await asyncio.to_thread(enrich_theorem_dependencies, data)
     data = finalize_lean_facing_json(data)
     return json.dumps(data, indent=indent, ensure_ascii=False)
 

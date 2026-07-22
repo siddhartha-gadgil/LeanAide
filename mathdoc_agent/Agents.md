@@ -1223,6 +1223,10 @@ MATHDOC_AGENT_LOCAL_LEANSEARCH_MODEL
 MATHDOC_AGENT_LEANSEARCH_DEFINITION_CACHE
 MATHDOC_AGENT_LOCAL_DEFINITION_CACHE
 MATHDOC_AGENT_LEANSEARCH_DEFINITION_SEED
+MATHDOC_AGENT_LEANSEARCH_TIMEOUT_SECONDS
+MATHDOC_AGENT_LOCAL_LEANSEARCH_TIMEOUT_SECONDS
+MATHDOC_AGENT_REMOTE_LEANSEARCH
+MATHDOC_AGENT_LEANSEARCH_CIRCUIT_FAILURES
 ```
 
 Expected LLM input object:
@@ -1259,30 +1263,53 @@ filtered again for definition-like kind, compatible name, and compatible type.
 
 ## Non-Agent LeanSearch Enrichment
 
-`run_agent_typed` calls `enrich_deduced_from_theorems` on every typed agent
-output. This is a helper, not a separate LLM agent.
+The pipeline calls `enrich_theorem_dependencies` once, after all proof repair
+passes and immediately before final Lean-facing lint. It runs in a worker thread
+so synchronous HTTP clients do not block the async agent loop.
 
 Function:
 
-- Walk the returned Pydantic model.
+- Walk only the final JSON document.
 - Find objects in `deduced_from_theorem`.
-- Build a LeanSearch query from `lean_name`, `name`, `claim`, and
-  `description`.
-- Query LeanSearch through `mathdoc_agent/mathagents/leansearch.py`.
-- If the top theorem-like result is a theorem or lemma, fill `lean_name`.
-- Cache query results in memory.
+- Resolve references to labels of theorems in the same generated document
+  directly, without any external search.
+- Build a query from `claim`, `name`, or `description`.
+- Prefer a broad search of the local generated-description index, lexically
+  rerank its candidates, and ask the exact-match LLM to select a semantically
+  identical theorem or lemma.
+- Fall back to remote LeanSearch only when local search has no match.
+- Filter out instances, `noConfusion` declarations, and non-theorem results.
+- Record a selected name as `lean_name_candidate` with
+  `verification_status: semantic_match`. It is not promoted to executable
+  `lean_name` without an instantiated `lean_term`.
+- Persist positive and confirmed-negative matches. Remote request failures are
+  not persisted.
+- Open a run-wide remote circuit breaker after the configured number of
+  failures, preventing a remote outage from causing one timeout per dependency.
+- Reset transient failures and the circuit at the start of the next document,
+  so a restarted local or remote service is retried.
 
-Environment variable:
+Environment variables:
 
 ```text
 MATHDOC_AGENT_LEANSEARCH_DEDUCED_THEOREMS
+MATHDOC_AGENT_LOCAL_THEOREM_SEARCH
+MATHDOC_AGENT_REMOTE_LEANSEARCH
+MATHDOC_AGENT_LEANSEARCH_TIMEOUT_SECONDS
+MATHDOC_AGENT_LOCAL_LEANSEARCH_TIMEOUT_SECONDS
+MATHDOC_AGENT_LEANSEARCH_CIRCUIT_FAILURES
+MATHDOC_AGENT_THEOREM_MATCH_CACHE
 ```
 
-This is enabled by default. Set it to `0`, `false`, or `no` to disable theorem
-dependency enrichment.
+Local and remote search are enabled by default. Set the corresponding flag to
+`0`, `false`, or `no` to disable all enrichment, local theorem search, or remote
+fallback respectively. Disabling search enrichment still resolves theorem
+labels declared in the same document because that operation is local and
+deterministic.
 
-The helper should not be used to invent theorem names. Its purpose is to attach
-an exact Lean name only when the search helper returns one.
+The helper must not use the first search result merely because its kind is
+`theorem`. The exact-match decision uses candidate names, types, and docstrings;
+formal use still requires a separately supplied and elaborated `lean_term`.
 
 ## Local Claim Agent Slot
 
