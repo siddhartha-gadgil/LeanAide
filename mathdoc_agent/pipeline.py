@@ -18,14 +18,19 @@ from typing import Any
 from mathdoc_agent.export.json import paper_structure_data
 from mathdoc_agent.mathagents import definitions
 from mathdoc_agent.models.document import MathDocument
-from mathdoc_agent.orchestration.claim_audit import audit_claims_for_lean
+from mathdoc_agent.orchestration.calculation_audit import audit_calculations_for_lean
+from mathdoc_agent.orchestration.claim_audit import (
+    audit_claims_for_lean,
+    rewrite_informal_claims_for_lean,
+)
 from mathdoc_agent.orchestration.deduced_from_claim_rewrite import (
     materialize_remaining_deduced_from_claims,
     rewrite_deduced_from_claims_for_lean,
 )
 from mathdoc_agent.orchestration.document_orchestrator import (
     document_from_text,
-    refine_math_document,
+    refine_attached_proofs,
+    refine_document_structure,
 )
 from mathdoc_agent.orchestration.informal_notation_repair import (
     repair_informal_notation_for_lean,
@@ -40,6 +45,7 @@ from mathdoc_agent.orchestration.proof_sanity import (
     audit_proof_steps_for_counterexamples,
     repair_proof_sanity_issues,
 )
+from mathdoc_agent.orchestration.source_coverage import audit_source_coverage
 from mathdoc_agent.plugins.document_types import default_document_handler_registry
 from mathdoc_agent.plugins.proof_types import default_proof_handler_registry
 from mathdoc_agent.registries.document_handlers import DocumentHandlerRegistry
@@ -52,6 +58,8 @@ _DEFAULT_INFORMAL_NOTATION_AGENT = object()
 _DEFAULT_PROOF_RESOLUTION_AGENTS = object()
 _DEFAULT_PROOF_SANITY_AGENT = object()
 _DEFAULT_PROOF_SANITY_REPAIR_AGENT = object()
+_DEFAULT_SOURCE_COVERAGE_AGENT = object()
+_DEFAULT_CALCULATION_AUDIT_AGENT = object()
 _LEANAIDE_LAKE_NAME = "LeanAide"
 _LEANAIDE_PROCESS_URL = "http://localhost:7654"
 _LEANAIDE_READY_PREFIX = "Server ready"
@@ -471,14 +479,23 @@ async def generate_math_document(
     document_iterations: int = 20,
     proof_iterations: int = 100,
     proof_resolution_agents: dict[str, object] | None = None,
+    source_coverage_agent: Any | None = None,
 ) -> MathDocument:
     document = document_from_text(source_text, id=id, title=title)
-    return await refine_math_document(
+    document = await refine_document_structure(
         document,
         document_registry or default_document_handler_registry(),
+        max_iterations=document_iterations,
+    )
+    document = await audit_source_coverage(
+        document,
+        source_text,
+        source_coverage_agent,
+    )
+    return await refine_attached_proofs(
+        document,
         proof_registry or default_proof_handler_registry(),
-        document_iterations=document_iterations,
-        proof_iterations=proof_iterations,
+        max_iterations_per_proof=proof_iterations,
         proof_resolution_agents=proof_resolution_agents,
     )
 
@@ -498,6 +515,8 @@ async def generate_math_document_json(
     informal_notation_agent: Any | None = _DEFAULT_INFORMAL_NOTATION_AGENT,
     proof_sanity_agent: Any | None = _DEFAULT_PROOF_SANITY_AGENT,
     proof_sanity_repair_agent: Any | None = _DEFAULT_PROOF_SANITY_REPAIR_AGENT,
+    source_coverage_agent: Any | None = _DEFAULT_SOURCE_COVERAGE_AGENT,
+    calculation_audit_agent: Any | None = _DEFAULT_CALCULATION_AUDIT_AGENT,
     proof_resolution_agents: (
         dict[str, object] | None | object
     ) = _DEFAULT_PROOF_RESOLUTION_AGENTS,
@@ -557,6 +576,26 @@ async def generate_math_document_json(
             else proof_resolution_agents
         )
     )
+    resolved_source_coverage_agent = (
+        definitions.source_coverage_audit_agent
+        if source_coverage_agent is _DEFAULT_SOURCE_COVERAGE_AGENT
+        and using_default_registries
+        else (
+            None
+            if source_coverage_agent is _DEFAULT_SOURCE_COVERAGE_AGENT
+            else source_coverage_agent
+        )
+    )
+    resolved_calculation_audit_agent = (
+        definitions.calculation_audit_agent
+        if calculation_audit_agent is _DEFAULT_CALCULATION_AUDIT_AGENT
+        and using_default_registries
+        else (
+            None
+            if calculation_audit_agent is _DEFAULT_CALCULATION_AUDIT_AGENT
+            else calculation_audit_agent
+        )
+    )
     document = await generate_math_document(
         source_text,
         id=id,
@@ -566,6 +605,7 @@ async def generate_math_document_json(
         document_iterations=document_iterations,
         proof_iterations=proof_iterations,
         proof_resolution_agents=resolved_proof_resolution_agents,
+        source_coverage_agent=resolved_source_coverage_agent,
     )
     document = record_mathlib_definitions(document)
     data = paper_structure_data(document)
@@ -574,11 +614,17 @@ async def generate_math_document_json(
         resolved_deduced_from_claim_agent,
     )
     data = await audit_claims_for_lean(data, resolved_claim_agent)
+    data = await rewrite_informal_claims_for_lean(data, resolved_claim_agent)
     data = materialize_remaining_deduced_from_claims(data)
     data = await repair_informal_notation_for_lean(
         data,
         resolved_informal_notation_agent,
     )
+    data = await audit_calculations_for_lean(
+        data,
+        resolved_calculation_audit_agent,
+    )
+    data = await rewrite_informal_claims_for_lean(data, resolved_claim_agent)
     data = await audit_proof_steps_for_counterexamples(
         data,
         resolved_proof_sanity_agent,
@@ -592,6 +638,11 @@ async def generate_math_document_json(
         data,
         resolved_informal_notation_agent,
     )
+    data = await audit_calculations_for_lean(
+        data,
+        resolved_calculation_audit_agent,
+    )
+    data = await rewrite_informal_claims_for_lean(data, resolved_claim_agent)
     data = await asyncio.to_thread(enrich_theorem_dependencies, data)
     data = finalize_lean_facing_json(data)
     return json.dumps(data, indent=indent, ensure_ascii=False)
@@ -612,6 +663,8 @@ def generate_math_document_json_sync(
     informal_notation_agent: Any | None = _DEFAULT_INFORMAL_NOTATION_AGENT,
     proof_sanity_agent: Any | None = _DEFAULT_PROOF_SANITY_AGENT,
     proof_sanity_repair_agent: Any | None = _DEFAULT_PROOF_SANITY_REPAIR_AGENT,
+    source_coverage_agent: Any | None = _DEFAULT_SOURCE_COVERAGE_AGENT,
+    calculation_audit_agent: Any | None = _DEFAULT_CALCULATION_AUDIT_AGENT,
     proof_resolution_agents: (
         dict[str, object] | None | object
     ) = _DEFAULT_PROOF_RESOLUTION_AGENTS,
@@ -631,6 +684,8 @@ def generate_math_document_json_sync(
             informal_notation_agent=informal_notation_agent,
             proof_sanity_agent=proof_sanity_agent,
             proof_sanity_repair_agent=proof_sanity_repair_agent,
+            source_coverage_agent=source_coverage_agent,
+            calculation_audit_agent=calculation_audit_agent,
             proof_resolution_agents=proof_resolution_agents,
         )
     )

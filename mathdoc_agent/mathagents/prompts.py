@@ -38,17 +38,17 @@ assignment only inside the theorem statement. Put it in `data_entries` as an
 assumption/local-context item when available, or phrase it so downstream proof
 refinement can emit a `let_statement` with `variable_name` and `value`.
 If a proof immediately follows a theorem-like statement, attach the proof text
-to thdefinitionsm-like child in `proof_text`. Do not emit the proof as a separate
+to the theorem-like child in `proof_text`. Do not emit the proof as a separate
 paragraph. A text beginning with "Proof." or "Proof:" is never a paragraph.
 For ordinary definition children, fill Lean-codegen metadata through
 `data_entries`: use key `term` for a short ASCII Lean-style identifier or
 declaration name such as `PseudoLength`, `IsLength`, `IsHomogeneousPseudoLength`,
 `commutator`, `commutatorSubgroup`, `abelianization`, or `torsionSubgroup`; use
-key `definiens` for only the mathematical definition, without Markdown headers,
+key `definitions` for only the complete mathematical definition, without Markdown headers,
 bold markers, numbering labels, or explanatory prose. Use key `notation` only
 when the source explicitly defines notation. Never use prose names containing
 spaces, hyphens, parentheses, LaTeX, or display math as the definition `term`.
-If a definition introduces a predicate or property, make the definiens clearly
+If a definition introduces a predicate or property, make `definitions` clearly
 predicate-shaped: state the parameters and the proposition that defines the
 property. Do not rephrase predicate definitions as existence theorems.
 For structure-definition children, set `name`, `is_class`, `isProp`,
@@ -71,6 +71,29 @@ Use `data_entries` only for small string metadata as key/value pairs.
 Prefer labels that are stable source labels such as `Lemma 1`, `Proposition 7`,
 or a short ASCII identifier. Avoid putting full claims or display notation in
 labels.
+"""
+
+SOURCE_COVERAGE_AUDIT_INSTRUCTIONS = """
+Audit a parsed mathematical document against exact source blocks selected by a
+deterministic coverage check. Return patches only for genuinely omitted blocks
+or existing nodes that materially lost mathematical information.
+
+Use `insert_child` for an omitted paragraph, remark, definition, theorem, or
+other source node. Place it with `after_id` and choose a stable ASCII
+`id_suffix`. Use `replace_child` when an existing node is only a lossy summary;
+set `target_id` and return the complete replacement child.
+
+Preserve every explicit hypothesis, quantified variable, field, condition, and
+displayed equation. In particular, a definition listing axioms or properties
+must retain the formulas defining every item, not just their names. Preserve
+non-mathematical introductory and motivational prose as `paragraph` children.
+For ordinary definitions, put the complete defining formulas in a
+`data_entries` item with key `definitions`; raw child text alone is not a
+structured definition and does not satisfy the coverage audit.
+For theorem-like children, keep ambient context in `data_entries`, the
+conclusion in `statement`, and the complete following proof in `proof_text`.
+Do not duplicate content already represented losslessly, and do not invent
+stronger statements. Return only structured patches.
 """
 
 PROOF_CLASSIFIER_INSTRUCTIONS = """
@@ -249,6 +272,28 @@ rewrite_by_lemma, definition_unfolding, normalization, positivity_side_goal,
 monotonicity_step, triangle_inequality_estimate, add_subtract_intermediate,
 casewise_calculation, inductive_step_calculation,
 extensionality_then_pointwise_calculation, calculation_to_contradiction.
+"""
+
+CALCULATION_AUDIT_INSTRUCTIONS = """
+Audit exported structured calculations after notation and claim repair.
+Every calculation must form one continuous chain from its declared `start` to
+its declared `target`, and must end with an explicit assertion of the overall
+relation stated by `claim_label` when that label is present.
+
+A calculation proof may also contain auxiliary equations or an induction
+hypothesis whose endpoints are not part of the main chain. Keep those as
+supporting assertions. If an existing final assertion exactly states the
+overall claim and its proof method explains how the auxiliary estimates are
+combined, treat it as the terminal conclusion rather than appending a duplicate.
+
+Use `string_patches` only to reconcile two notations for an endpoint when the
+proof text makes their equality unambiguous. Never hide a genuine missing
+mathematical step by rewriting an endpoint. Use `conclusion` to append the
+overall proposition proved by transitivity of the preceding steps. The
+conclusion must be a proposition, not prose such as "this proves the result".
+If relations do not compose, an endpoint is genuinely missing, or the source
+does not justify the target, leave that entry unpatched so validation reports
+it. Do not invent calculations.
 """
 
 STRUCTURED_PROOF_INSTRUCTIONS = """

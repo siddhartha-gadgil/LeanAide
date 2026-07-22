@@ -45,20 +45,24 @@ disable the timeout.
 The default JSON generation path in `mathdoc_agent/pipeline.py` is:
 
 1. Parse source text into a `MathDocument` using `document_parser_agent`.
-2. Refine attached proofs using the proof classifier and proof refiners.
-3. Resolve proof kinds that do not have direct Lean codegen handlers.
-4. Record Mathlib definition reuse using local similarity search, an LLM exact
+2. Compare the parsed root children with the original Markdown blocks and use
+   `source_coverage_audit_agent` to restore omissions or lossy summaries.
+3. Refine attached proofs using the proof classifier and proof refiners.
+4. Resolve proof kinds that do not have direct Lean codegen handlers.
+5. Record Mathlib definition reuse using local similarity search, an LLM exact
    match check, and LeanSearch fallback.
-5. Export the document to PaperStructure JSON.
-6. Rewrite `deduced_from_claim` dependencies into explicit Lean-friendly proof
+6. Export the document to PaperStructure JSON.
+7. Rewrite `deduced_from_claim` dependencies into explicit Lean-friendly proof
    steps.
-7. Audit public `claim` fields.
-8. Repair informal local notation.
-9. Audit risky proof-step assertions.
-10. Repair proof-sanity issues.
-11. Re-run residual `deduced_from_claim` materialization and informal notation
-    repair.
-12. Run deterministic Lean-facing JSON finalization.
+8. Audit public `claim` fields, then mandatorily rewrite theorem claims still
+   detected as English prose or as formally unclosed.
+9. Repair informal local notation and audit structured calculation continuity
+   and terminal conclusions.
+10. Audit and repair risky proof-step assertions.
+11. Re-run residual dependency materialization, notation repair, calculation
+    audit, and mandatory theorem-claim rewriting.
+12. Enrich theorem dependencies and run deterministic Lean-facing JSON
+    finalization.
 
 When the caller supplies custom document or proof registries, the pipeline does
 not automatically use the default post-processing agents unless they are also
@@ -206,6 +210,9 @@ Function:
 - Attach following proof prose to theorem-like items through `proof_text`.
 - Extract Lean-facing metadata for definitions and declarations without placing
   local definitions inside theorem statements.
+- For ordinary definitions, use `data_entries` key `term` for the ASCII name
+  and key `definitions` for the complete defining formula. The legacy keys
+  `definition` and `definiens` remain accepted on input.
 
 Output schema: `DocumentRefinementSpec`.
 
@@ -266,6 +273,35 @@ Structured inductive constructor output:
 target when the inductive type is indexed. Constructor argument `binder` is
 optional and may be `default`, `implicit`, or `typeclass`; omitted means
 `default`.
+
+### `source_coverage_audit_agent`
+
+The source-coverage audit runs after document parsing and before attached proof
+refinement. A deterministic token-recall check splits the original Markdown
+into stable blocks and sends only blocks with low coverage, together with the
+three nearest parsed children, to this agent.
+
+Coverage is measured against fields that survive export. Raw source retained
+inside definition, theorem, or section nodes does not count as structured
+coverage; this prevents a section from silently absorbing a missing paragraph
+and prevents a definition's source copy from hiding truncated metadata.
+
+The agent returns `SourceCoverageAuditSpec` patches. `insert_child` restores an
+omitted paragraph or mathematical item at root-child level; `replace_child`
+replaces a lossy parsed child while retaining its node id. Complete formulas,
+hypotheses, defining fields, theorem statements, and attached proof text must be
+preserved. Explicit formulas must not be replaced by a list of property names.
+
+The deterministic candidate threshold and request bound are controlled by:
+
+```text
+MATHDOC_AGENT_SOURCE_COVERAGE_THRESHOLD
+MATHDOC_AGENT_SOURCE_COVERAGE_MAX_BLOCKS
+```
+
+They default to `0.72` and `40`, respectively. Any blocks still below the
+threshold after patching are recorded in the document root notes rather than
+being silently omitted.
 
 ## Proof Classification Agent
 
@@ -548,6 +584,27 @@ Output schema: `CalculationRefinementSpec`.
 
 Allowed `relation` values are `=`, `<=`, `<`, `>=`, `>`, `<->`, `->`, and
 `equiv_mod`.
+
+### `calculation_audit_agent`
+
+This post-export agent receives only structured calculations that fail a
+deterministic check. The check requires the declared start to match the first
+step, adjacent endpoints to match, the last endpoint to match the target,
+relations to compose, and an explicit `calculation_conclusion` assertion equal
+to `claim_label` when present.
+
+The deterministic check selects the main chain from the overall claim's left
+endpoint. Earlier group identities and separate induction-hypothesis bounds may
+remain as auxiliary assertions. An existing exact overall assertion with a
+nonempty combination method is marked as the terminal conclusion, avoiding a
+duplicate conclusion on the second audit pass.
+
+An otherwise valid chain is closed deterministically. For mismatched notation,
+the agent may return a `CalculationAuditSpec` with narrowly scoped endpoint
+string patches and a terminal conclusion. It must leave genuine mathematical
+gaps unpatched. Residual defects are emitted under `lean_validation` with
+specific calculation issue codes. The pipeline runs this audit after each
+notation-repair phase.
 
 ### `specialize_agent`
 
@@ -874,6 +931,8 @@ claim_audit_agent = _agent(
 Used by:
 
 - `audit_claims_for_lean` after `deduced_from_claim` rewrite.
+- `rewrite_informal_claims_for_lean` after the ordinary audit and again after
+  later JSON repair passes.
 
 Expected input payload:
 
@@ -945,6 +1004,16 @@ Function:
   available in context.
 - Send claims in bounded batches controlled by
   `MATHDOC_AGENT_CLAIM_AUDIT_BATCH_SIZE` (default `30`).
+- Treat theorem claims beginning with English quantifier or hypothesis phrases
+  such as “for every”, “there exists”, “given”, or “if” as mandatory rewrite
+  candidates. The dedicated rewrite pass retries at most twice and requires one
+  closed Lean `Prop` term for every candidate.
+- Also require rewriting when a theorem has structured ambient hypotheses but
+  its symbolic claim contains no quantifier or implication; a short expression
+  such as `l(a) ≤ ...` is not closed merely because its source paragraph defines
+  `G`, `l`, and `a`.
+- Preserve a residual failure as an `informal_theorem_claim` entry under
+  `lean_validation`; never silently accept the prose theorem statement.
 
 Output schema: `ClaimAuditSpec`.
 

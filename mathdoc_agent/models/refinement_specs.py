@@ -158,6 +158,26 @@ class DocumentRefinementSpec(BaseModel):
     notes: list[str] = Field(default_factory=list)
 
 
+class SourceCoveragePatchSpec(BaseModel):
+    action: Literal["insert_child", "replace_child"]
+    child: DocumentChildSpec
+    target_id: str | None = Field(
+        default=None,
+        description="Existing document-node id replaced by a replace_child patch.",
+    )
+    after_id: str | None = Field(
+        default=None,
+        description="Existing sibling id after which an inserted child belongs.",
+    )
+    source_block_ids: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
+class SourceCoverageAuditSpec(BaseModel):
+    patches: list[SourceCoveragePatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
 class ClaimPatchSpec(BaseModel):
     path: str = Field(
         description=(
@@ -188,6 +208,32 @@ class ClaimPatchSpec(BaseModel):
 
 class ClaimAuditSpec(BaseModel):
     patches: list[ClaimPatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
+class CalculationConclusionSpec(BaseModel):
+    claim: str
+    proof_method: str
+    start: str | None = None
+    relation: str | None = None
+    target: str | None = None
+    side_conditions: list[str] = Field(default_factory=list)
+
+
+class CalculationStringPatchSpec(BaseModel):
+    path: str = Field(description="JSON pointer to a calculation string field.")
+    replacement: str
+
+
+class CalculationAuditPatchSpec(BaseModel):
+    path: str = Field(description="JSON pointer to the calculation proof object.")
+    conclusion: CalculationConclusionSpec | None = None
+    string_patches: list[CalculationStringPatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
+class CalculationAuditSpec(BaseModel):
+    patches: list[CalculationAuditPatchSpec] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
 
 

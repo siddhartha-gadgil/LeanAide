@@ -215,10 +215,10 @@ print(json_text)
 ## Command Line: Source Files
 
 To generate JSON from a source text or Markdown file with the default live
-API-backed agents. The command includes a final LLM-backed claim audit so every
-exported `claim` field is shaped as a mathematical proposition for the Lean
-`CodegenCore`/`PaperCodes` handlers; pass `--skip-claim-audit` only for
-debugging that final pass.
+API-backed agents. The command audits source-block coverage before proof
+refinement, requires informal theorem statements to be rewritten as closed
+Lean propositions, and checks calculation continuity and terminal conclusions.
+Pass `--skip-claim-audit` only when debugging the claim-repair stages.
 
 ```bash
 export OPENAI_API_KEY="..."

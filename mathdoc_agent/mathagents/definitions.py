@@ -14,6 +14,7 @@ from typing import Any
 from mathdoc_agent.mathagents import prompts
 from mathdoc_agent.models.refinement_specs import (
     CalculationRefinementSpec,
+    CalculationAuditSpec,
     ClaimAuditSpec,
     CasesRefinementSpec,
     DeducedFromClaimRewriteSpec,
@@ -24,6 +25,7 @@ from mathdoc_agent.models.refinement_specs import (
     ProofSanityAuditSpec,
     SimpleProofRefinementSpec,
     SpecializeRefinementSpec,
+    SourceCoverageAuditSpec,
     StructuredProofRefinementSpec,
 )
 
@@ -64,6 +66,11 @@ document_parser_agent = _agent(
     prompts.DOCUMENT_PARSER_INSTRUCTIONS,
     DocumentRefinementSpec,
 )
+source_coverage_audit_agent = _agent(
+    "Source coverage auditor",
+    prompts.SOURCE_COVERAGE_AUDIT_INSTRUCTIONS,
+    SourceCoverageAuditSpec,
+)
 proof_classifier_agent = _agent(
     "Proof classifier",
     prompts.PROOF_CLASSIFIER_INSTRUCTIONS,
@@ -87,6 +94,11 @@ calculation_agent = _agent(
     "Calculation proof refiner",
     prompts.CALCULATION_INSTRUCTIONS,
     CalculationRefinementSpec,
+)
+calculation_audit_agent = _agent(
+    "Calculation closure auditor",
+    prompts.CALCULATION_AUDIT_INSTRUCTIONS,
+    CalculationAuditSpec,
 )
 specialize_agent = _agent(
     "Specialization proof refiner",

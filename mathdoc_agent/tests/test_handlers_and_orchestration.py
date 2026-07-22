@@ -704,6 +704,9 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(exported["type"], "proof")
         self.assertGreaterEqual(len(exported["proof_steps"]), 4)
         self.assertNotEqual(exported["proof_steps"][0].get("claim"), "The whole proof follows from all the preceding reasoning.")
+        self.assertFalse(
+            any(step.get("type") == "theorem" for step in exported["proof_steps"])
+        )
 
     async def test_agent_runner_logs_to_stderr(self) -> None:
         stderr = io.StringIO()

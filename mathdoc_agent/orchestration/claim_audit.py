@@ -19,6 +19,21 @@ from mathdoc_agent.models.refinement_specs import ClaimAuditSpec, ClaimPatchSpec
 
 
 _DEFAULT_BATCH_SIZE = 30
+_DEFAULT_INFORMAL_REWRITE_PASSES = 2
+
+INFORMAL_THEOREM_PREFIXES = (
+    "for all ",
+    "for any ",
+    "for each ",
+    "for every ",
+    "given ",
+    "if ",
+    "let ",
+    "suppose ",
+    "there exists ",
+    "there is ",
+    "whenever ",
+)
 
 
 def _batch_size() -> int:
@@ -184,8 +199,25 @@ def _closure_risks(
         return []
 
     risks: list[str] = []
+    normalized_claim = " ".join(claim.strip().split()).casefold()
+    if normalized_claim.startswith(INFORMAL_THEOREM_PREFIXES):
+        risks.append(
+            "The theorem statement uses English quantifier or hypothesis prose. "
+            "Replace it with one closed Lean 4 Prop term using explicit `∀`, `∃`, "
+            "arrows, typeclass binders, and `let` binders as required."
+        )
     hypotheses = enclosing_theorem.get("hypotheses")
     if isinstance(hypotheses, list):
+        if hypotheses and not re.search(
+            r"(?:∀|∃|→|->|\bforall\b|\bexists\b)",
+            claim,
+            flags=re.IGNORECASE,
+        ):
+            risks.append(
+                "The source theorem has ambient hypotheses, but its generated "
+                "claim contains no explicit quantifier or implication. Reconstruct "
+                "the complete closed theorem proposition from the source context."
+            )
         local_names = [
             item.get("variable_name")
             for item in hypotheses
@@ -232,6 +264,52 @@ def _closure_risks(
             "The claim contains an assignment-like phrase; use a Lean `let` binder."
         )
     return risks
+
+
+def _required_closure_entries(data: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        entry
+        for entry in _claim_entries(data)
+        if entry.get("requires_closed_lean_repair") is True
+    ]
+
+
+def _append_claim_validation(
+    data: dict[str, Any],
+    entries: list[dict[str, Any]],
+) -> dict[str, Any]:
+    document = data.get("document")
+    container = document if isinstance(document, dict) else data
+    existing = container.get("lean_validation")
+    prior = (
+        [
+            issue
+            for issue in existing.get("issues", [])
+            if not (
+                isinstance(issue, dict)
+                and issue.get("code") == "informal_theorem_claim"
+            )
+        ]
+        if isinstance(existing, dict) and isinstance(existing.get("issues"), list)
+        else []
+    )
+    issues = [
+        {
+            "path": entry["path"],
+            "code": "informal_theorem_claim",
+            "message": "; ".join(entry.get("closure_risks", [])),
+        }
+        for entry in entries
+    ]
+    combined = [*prior, *issues]
+    if combined:
+        container["lean_validation"] = {
+            "status": "needs_review",
+            "issues": combined,
+        }
+    else:
+        container.pop("lean_validation", None)
+    return data
 
 
 def _claim_entries(
@@ -437,3 +515,60 @@ async def audit_claims_for_lean(data: dict[str, Any], agent: Any | None) -> dict
         specs.append(spec)
     patches = [patch for spec in specs for patch in spec.patches]
     return apply_claim_patches(data, patches)
+
+
+async def rewrite_informal_claims_for_lean(
+    data: dict[str, Any],
+    agent: Any | None,
+    *,
+    max_passes: int = _DEFAULT_INFORMAL_REWRITE_PASSES,
+) -> dict[str, Any]:
+    """Require closed Lean proposition syntax for theorem claims and retry repairs."""
+    result = deepcopy(data)
+    for _ in range(max(1, max_passes)):
+        entries = _required_closure_entries(result)
+        if not entries or agent is None:
+            break
+        declarations = _available_declarations(result)
+        specs: list[ClaimAuditSpec] = []
+        for start in range(0, len(entries), _batch_size()):
+            batch = entries[start : start + _batch_size()]
+            specs.append(
+                await run_agent_typed(
+                    agent,
+                    {
+                        "task": (
+                            "Rewrite every supplied informal or unclosed theorem claim "
+                            "as one complete Lean 4 Prop term. Every entry is mandatory; "
+                            "do not return it unchanged merely because its prose is "
+                            "mathematically understandable."
+                        ),
+                        "claim_entries": batch,
+                        "available_declarations": declarations,
+                        "closure_rules": {
+                            "mandatory": (
+                                "Return replace_claim for every entry. Quantify every "
+                                "variable, include class and predicate hypotheses, and "
+                                "use Lean `let` binders for local definitions."
+                            ),
+                            "prop_only": (
+                                "The replacement is a term of type Prop, never a theorem "
+                                "command, proof, tactic, or English quantifier sentence."
+                            ),
+                        },
+                        "patch_rules": {
+                            "replace_claim": "Replace the theorem claim with a closed Prop.",
+                            "replace_assertion_with_steps": (
+                                "Not permitted for theorem statements in this pass."
+                            ),
+                        },
+                    },
+                    ClaimAuditSpec,
+                )
+            )
+        patches = [patch for spec in specs for patch in spec.patches]
+        updated = apply_claim_patches(result, patches)
+        if updated == result:
+            break
+        result = updated
+    return _append_claim_validation(result, _required_closure_entries(result))
