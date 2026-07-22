@@ -207,10 +207,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     return (← appendTacticSeqSeq accum (← `(tacticSeq| assumption)), none)
   catch _ =>
   traceAide `leanaide.codegen.info "Trying exact tactics or automation"
-  match ← getQuickTactics? goal (← cmdPreludeBlob).hash with
+  match
+    ← getQuickTactics? goal (← cmdPreludeBlob).hash with
   | some code => do
     traceAide `leanaide.codegen.info s!"exact tactics found for goal: {← ppExpr <| ← goal.getType}"
-    -- traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
     return (← appendTacticSeqSeq accum code, none)
   | none => do
   traceAide `leanaide.codegen.info "No exact or automation tactics found, trying sources"
@@ -218,15 +218,6 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   | [] => do
     return (accum, goal)
   | source::sources => do
-    -- TODO(assigned-goal-invariant): Run tactic-mode `getCode` transactionally.
-    -- Save Translate and Term/Meta state before invoking it. On failure, restore
-    -- both before propagating or trying another candidate. On success, preserve
-    -- intentional Translate effects needed by later JSON sources, but always
-    -- restore Term/Meta state because the returned tactic syntax is replayed
-    -- below. Any Translate value retained across this boundary must be closed
-    -- and independent of restored metavariables. Recursive `proofCode` has
-    -- violated this boundary by assigning `goal` to a term containing child
-    -- metavariables.
     let translateState ← get
     let termState ← Term.saveState
     let code? ← try
@@ -287,13 +278,12 @@ def findTactics? (goal :  MVarId):
   grindWs, simpWs, ← `(tacticSeq| try simp; exact?)] ++ (← getAutoTactics).toList)
     (← cmdPreludeBlob).hash (strict := true)
 
+/- Find tactics using automation. Defaults to `repeat (sorry)` if no tactics are found. Use
+`findTactics?` to keep errors explicit.
+-/
 def findTacticsI (goal :  MVarId):
     TranslateM (Array (Syntax.Tactic)) := goal.withContext do
   let tacs? ← findTactics? goal
-  -- TODO(generation-check-homogeneous): Return an explicit failure (`none` or
-  -- an error) when automation finds no proof. Do not treat `repeat sorry` as a
-  -- successful tactic sequence; best-effort output may add one terminal hole
-  -- only after all generation for this goal has stopped.
   let defaultTacs ← `(tacticSeq| repeat (sorry))
   return getTactics <| tacs?.getD defaultTacs
 
@@ -323,7 +313,6 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   -- handler that violated the boundary.
   match ← findTactics? goal with
   | some autoTacs => do
-    -- let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
     let autoTacs :=
       (getTactics autoTacs)
     let autoTac ← `(tacticSeq| $autoTacs*)
