@@ -227,27 +227,22 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     -- and independent of restored metavariables. Recursive `proofCode` has
     -- violated this boundary by assigning `goal` to a term containing child
     -- metavariables.
-    let code? ←
-      withoutModifyingTranslateAndTermState do
-      try
-        getCode translator (some goal) ``tacticSeq source
+    let translateState ← get
+    let termState ← Term.saveState
+    let code? ← try
+        let code? ← getCode translator (some goal) ``tacticSeq source
+        termState.restore
+        pure code?
       catch e =>
         let err ←   e.toMessageData.toString
         traceAide `leanaide.codegen.info s!"Error in getCode `tacticSeq for source {source.pretty}\nError: {err}"
-        -- TODO(handler-backtracking): Reach this catch only after the failed
-        -- handler's Translate and Term/Meta snapshot has been restored. Preserve
-        -- and rethrow fatal or non-rollbackable errors. A recoverable translation
-        -- failure may be handled after rollback, but it should terminate this
-        -- affected subgoal or produce one explicitly named outermost hole with
-        -- the JSON id/claim; converting it to `skip` falsely reports a successful
-        -- no-op and consumes later JSON without a proof of the failed step.
-        `(tacticSeq | skip)
-    -- TODO(assigned-goal-invariant): Before inspecting `code?`, assert that
-    -- `goal` is still unassigned. This check must also cover `none` and empty
-    -- syntax results, since a nominally side-effect-only handler can leak a
-    -- partial assignment. If assigned, log the assignment and recursively
-    -- unresolved child metavariables for diagnostics, restore the pre-handler
-    -- state, and throw; do not recover by treating those children as JSON goals.
+        termState.restore
+        set translateState
+        throwError s!"Error in getCode `tacticSeq` for source {source.pretty}\nError: {err}"
+    if ← goal.isAssigned then
+      traceAide `leanaide.codegen.info s!"goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after getCode for source {source.pretty}"
+      throwError
+        s!"codegen: goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after getCode for source {source.pretty}, but should be unassigned"
     match code? with
     | none => do -- pure side effect, no code generated
       getCodeTacticsAux translator goal sources accum
@@ -264,12 +259,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           return (← appendTacticSeqSeq accum code, none)
         else
             -- continue with the next source
-        -- TODO(assigned-goal-invariant): Require `goal` to be unassigned and
-        -- known to be the current active goal before replay. Prefer an API where
-        -- a handler returns `(syntax, remainingGoals)` so generated code is
-        -- either executed once here or already executed, never both. Discovery
-        -- of child metavariables by traversing an assigned proof term is not a
-        -- substitute: it loses the tactic engine's active-goal contract.
+        -- runForSingleGoal checks that the goal is unassigned
         let goal? ← runForSingleGoal goal code
         match goal? with
         | none => do -- tactics closed the goal
@@ -278,10 +268,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
           return (← appendTacticSeqSeq accum code, none)
         | some newGoal => do
-          -- TODO(assigned-goal-invariant): Assert that `newGoal` is unassigned
-          -- before recursing. `some` must mean exactly one live active goal;
-          -- assigned metavariables, tactic failures, and multiple active goals
-          -- need distinct structured results and must not enter this branch.
+          if ← newGoal.isAssigned then
+            traceAide `leanaide.codegen.info s!"goal {← ppExpr <| ← newGoal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar newGoal)} after tactics, but should be unassigned"
+            throwError
+              s!"codegen: goal {← ppExpr <| ← newGoal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar newGoal)} after tactics, but should be unassigned"
           let newAccum ← appendTacticSeqSeq accum code
           getCodeTacticsAux translator newGoal sources newAccum
 
@@ -347,16 +337,9 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
-    -- TODO(assigned-goal-invariant): Treat an assigned `some goal` as a fatal
-    -- internal error, regardless of whether its instantiated assignment still
-    -- contains metavariables. `getCodeTacticsAux` promises that `some` is one
-    -- live, unassigned active goal; a fully assigned value should have returned
-    -- `none`, while an assigned value with child metavariables indicates leaked
-    -- tactic state. Keep the `instantiateMVars`/`getMVars` traversal only to log
-    -- useful diagnostics, then throw after restoring the transactional state.
-    -- Do not run automation on rediscovered children: they may not preserve the
-    -- tactic engine's goal order, focus, or distinction between user goals and
-    -- implementation metavariables.
+    if ← goal.isAssigned then
+      throwError
+        s!"codegen: goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after tactics, but should be unassigned"
     let remaining ←
       if ← goal.isAssigned then
         let proof ← instantiateMVars (mkMVar goal)

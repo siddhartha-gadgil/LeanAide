@@ -310,11 +310,11 @@ def documentCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: 
 | some goal, ``tacticSeq, js => goal.withContext do
   let some content := js.getArr?.toOption.orElse
     (fun _ =>js.getObjValAs? (Array Json) "body" |>.toOption) | throwError "'document' must have body or be a JSON array"
-  -- TODO(assigned-goal-invariant): This recursive tactic generator returns
-  -- syntax for the parent to replay, so always restore Term/Meta state on success
-  -- as well as failure. Either isolate it here or rely on a documented
-  -- transactional `getCodeTactics`; never return with `goal` assigned.
-  getCodeTactics translator goal  content.toList
+  let s ← Term.saveState
+  let result ←
+    getCodeTactics translator goal  content.toList
+  s.restore
+  return result
 | _, kind, _ => throwError
     s!"codegen: 'document' does not work for kind {kind}"
 
@@ -334,10 +334,11 @@ def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
   getCodeCommands translator none  content
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "content" | throwError "'section' must have 'content'"
-  -- TODO(assigned-goal-invariant): As for nested documents, isolate recursive
-  -- tactic generation with an always-restore Term/Meta boundary so only syntax
-  -- crosses this handler and `goal` remains unassigned for the parent's replay.
-  getCodeTactics translator goal  content
+  let s ← Term.saveState
+  let result ←
+    getCodeTactics translator goal  content
+  s.restore
+  return result
 | _, kind, _ => throwError
     s!"codegen: 'section' does not work for kind {kind}"
 
@@ -348,89 +349,50 @@ Generate code for a theorem, lemma, proposition, corollary, or claim. It process
 
 Should perhaps try to use automation if there is no proof.
 -/
--- TODO(mathlib-deferred-theorem): Make this the sole ordinary theorem handler.
--- The Mathlib layer may register one narrowly scoped fallback for a proofless
--- `commandSeq` theorem backed by `Fact`; it must reject every other case before
--- doing translation. This core handler should likewise recognize that precise
--- unsupported case before expensive `thmStxParts` work and return an explicit
--- recoverable no-match result, allowing the fallback without translating the
--- theorem twice. All other failures remain real core-handler errors. The shared
--- theorem schema must require a `Prop`; remove the non-`Prop`
--- `noncomputable def` fallback. Keep core naming deterministic and do not add
--- `newName`, whose repeated `resolveGlobalName` loop is too expensive. If exact
--- declaration collision handling becomes necessary, check the environment and
--- staged definitions once and use a deterministic hash suffix.
 @[codegen "theorem"]
 def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  let (stx, name, pf?, isProp) ← thmStxParts js
-  match pf? with
-  | some pf =>
+  let (stx, name, pf, isProp) ← thmStxParts js
     let n := mkIdent name
     if isProp then
       `(command| theorem $n : $stx := by $pf)
     else
       `(command| noncomputable def $n : $stx := by $pf)
-  | none =>
-    let n := mkIdent (name ++ `prop)
-    let propExpr := mkSort Level.zero
-    let propIdent ← delabDetailed propExpr
-    `(command| abbrev $n : $propIdent:term := $stx)
 | _, `commandSeq, js => do
-  -- TODO(mathlib-deferred-theorem): Check for an absent proof before calling
-  -- `thmStxParts`. Return the dispatcher's explicit recoverable no-match value
-  -- for that one case so `deferredTheoremCode` can handle it without repeating
-  -- claim translation, proof search, naming, or metadata mutation. A generic
-  -- exception is too broad because genuine theorem errors must not select the
-  -- Mathlib fallback.
-  let (stx, name, pf?, isProp) ← thmStxParts js
-  match pf? with
-  | some pf =>
-    let n := mkIdent name
-    let defn : DefData := {
-      name := n.getId,
-      type := stx,
-      value := ← `(by $pf),
-      isProp := isProp,
-      isNoncomputable := true,
-      doc? := none
-    }
-    addDefn defn
-    traceAide `leanaide.papercodes.info s!"Added theorem definition: {defn.name}"
-    if isProp then
-      `(commandSeq| theorem $n : $stx := by $pf)
-    else
-      `(commandSeq| noncomputable def $n : $stx := by $pf)
-  | none =>
-    throwError s!"codegen: 'theorem' without proof is not supported in command sequences; found theorem {name} with statement {stx}"
+  let (stx, name, pf, isProp) ← thmStxParts js
+  let n := mkIdent name
+  let defn : DefData := {
+    name := n.getId,
+    type := stx,
+    value := ← `(by $pf),
+    isProp := isProp,
+    isNoncomputable := true,
+    doc? := none
+  }
+  addDefn defn
+  traceAide `leanaide.papercodes.info s!"Added theorem definition: {defn.name}"
+  if isProp then
+    `(commandSeq| theorem $n : $stx := by $pf)
+  else
+    `(commandSeq| noncomputable def $n : $stx := by $pf)
 | some goal, ``tacticSeq, js => goal.withContext do
-  let (stx, name, pf?, _) ← thmStxParts js
-  match pf? with
-  | some pf =>
-    let n := mkIdent name
-    `(tacticSeq| have $n : $stx := by $pf)
-  | none =>
-    let n := mkIdent (name ++ `prop)
-    let propExpr := mkSort Level.zero
-    let propIdent ← delabDetailed propExpr
-    `(tacticSeq| have $n : $propIdent := $stx)
+  let (stx, name, pf, _) ← thmStxParts js
+  let n := mkIdent name
+  `(tacticSeq| have $n : $stx := by $pf)
 | some _, `tactic, js => do
-  let (stx, name, pf?, _) ← thmStxParts js
-  match pf? with
-  | some pf =>
-    let n := mkIdent name
-    `(tactic| have $n : $stx := by $pf)
-  | none =>
-    let n := mkIdent (name ++ `prop)
-    let propExpr := mkSort Level.zero
-    let propIdent ← delabDetailed propExpr
-    `(tactic| let $n : $propIdent := $stx)
+  let (stx, name, pf, _) ← thmStxParts js
+  let n := mkIdent name
+  `(tactic| have $n : $stx := by $pf)
 | goal?, kind, _ => throwError
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
 where
   thmStxParts (js: Json)  :
-    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq) × Bool  :=
+    TranslateM <| Syntax.Term × Name × (TSyntax ``tacticSeq) × Bool  :=
     withoutModifyingTranslateAndTermState do
+    let proof? :=
+      js.getObjVal? "proof" |>.toOption
+    let .some pf := proof? | throwError
+      s!"codegen: no 'proof' found in 'theorem'; for deferred proofs a different handler is used."
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
       | Except.error _ => pure ()
@@ -439,8 +401,6 @@ where
     traceAide `leanaide.papercodes.info s!"Translating claim: {claim}"
     let type ← translator.translateToPropStrict claim
     traceAide `leanaide.papercodes.info s!"Obtained type from translation: {← ppExpr type}"
-    let proof? :=
-      js.getObjVal? "proof" |>.toOption
     let hypSize ←
       match js.getObjValAs? (Array Json)  "hypothesis" with
       | Except.ok h =>
@@ -463,8 +423,7 @@ where
         name
     traceAide `leanaide.papercodes.info s!"Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
-    let proofStx? ← proof?.mapM fun
-      pf =>
+    let proofStx ←
       withoutModifyingTranslateAndTermState do
       addPromptContext s!"Current goal (context only; not an available theorem):
           {← ppExpr type}"
@@ -500,12 +459,12 @@ where
       | none => throwError
         s!"codegen: no proof translation found for {pf}"
       pure pfStx
-    traceAide `leanaide.papercodes.info s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
+    traceAide `leanaide.papercodes.info s!"Obtained or skipped proof"
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
     -- `isProved` is only to separate deferred proofs, and not for claims of completeness.
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
-    return (typeStx, name, proofStx?, ← isProp type)
+    return (typeStx, name, proofStx, ← isProp type)
 
 /--
 Generate code for a definition. It processes the `definition` field to generate the appropriate Lean code.
@@ -548,11 +507,6 @@ where
         let cmds := #[renamedCmd]
         `(commandSeq| $cmds*)
       | .error errs =>
-        -- TODO(generation-check-homogeneous): Remove or sharply restrict this
-        -- definition-to-existential-theorem fallback. Predicate, structure,
-        -- type-valued, and abbreviation definitions must remain definitions;
-        -- use an existence theorem only for an explicitly existential source
-        -- whose translated target has type `Prop`.
         try
           let claim := s!"There exists {name} such that:\n{statement}"
           let type ←
@@ -577,7 +531,7 @@ where
             `(command| theorem $name : $typeStx := by $proofStx)
           let resolvedCmds ←
             cmdResolveExistsHave typeStx
-          if resolvedCmds.size > 1 then
+          if resolvedCmds.size > 1 then -- we check that the generated definition is indeed existential, otherwise we throw an error.
             mkCommandSeq <| #[head] ++ resolvedCmds
           else
             throwError s!"codegen: no definition translation found for {statement}; outputs: {errs.map (·.text)}\nDid not fall back to existential definition because {← ppExpr type} did not produce multiple resolved commands"
@@ -634,11 +588,10 @@ def logicalStepCode (translator : CodeGenerator := {}) : Option MVarId →  (kin
   getCodeCommands translator none  content.toList
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (Array Json) "items" | throwError "logicalStepSequence must have an `items` field that is a JSON array"
-  -- TODO(assigned-goal-invariant): Since this call returns replayable syntax,
-  -- isolate it with an always-restore Term/Meta boundary. If it observes or
-  -- returns an assigned `goal`, log diagnostics and propagate a fatal error
-  -- instead of recovering.
-  getCodeTactics translator goal  content.toList
+  let s ← Term.saveState
+  let stx ← getCodeTactics translator goal  content.toList
+  s.restore
+  return stx
 | goal?, kind, _ => throwError
     s!"codegen: logicalStepSequence does not work for kind {kind}where goal present: {goal?.isSome}"
 
@@ -699,19 +652,8 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
-  -- TODO(assigned-goal-invariant): This recursive call must not mutate `goal`
-  -- before its returned syntax is replayed by the parent. The current
-  -- `withoutModifyingState` saves only `Translate.State`, so nested tactic
-  -- generation can assign `goal` to a proof term containing unresolved child
-  -- metavariables. Unlike helpers that return live `MVarId`s, this branch returns
-  -- replayable syntax and already intends to discard Translate changes, so
-  -- replace the wrapper with `withoutModifyingTranslateAndTermState` and let its
-  -- `finally` rollback run after both success and error. Alternatively, redesign
-  -- the API to return the tactic engine's active goals together with syntax that
-  -- will not be replayed. If isolation detects an assigned input/output goal,
-  -- propagate that fatal invariant error; do not convert it to `skip`.
-  withoutModifyingState do
-  getCodeTactics translator goal  content
+  withoutModifyingTranslateAndTermState do
+    getCodeTactics translator goal  content
 | goal?, kind, _ => throwError
     s!"codegen: proof does not work for kind {kind}where goal present: {goal?.isSome}"
 
@@ -721,10 +663,6 @@ If goal is a `there exists` statement and binderName matches variable_name, it r
 -/
 @[codegen "let_statement"]
 def letCodeCore (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
-  -- TODO(generation-check-homogeneous): A notation-introducing `let_statement`
-  -- must materialize a typed Lean local definition. Do not silently keep a
-  -- missing `value` as prose only; repair/reject the node or derive a checked
-  -- value before later claims are allowed to use its `variable_name`.
   match s, js with
   | ``tacticSeq, js => do
     let statement := statement js
@@ -732,7 +670,7 @@ def letCodeCore (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (k
     | .error _ =>
       -- If there is no value, we do not need to return a value
       traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjValAs? String "variable_name" |>.toOption.getD ""}"
-      addPromptContext statement
+      addPromptContext statement -- in case the let statement is not properly structured, we add the statement to the prompt context with the hope that LLMs will correctly interpret it.
       return none
     | .ok value =>
       match goal? with
@@ -955,13 +893,6 @@ where typeStx (js: Json) :
   | none => pure ()
   let type ← translator.translateToPropStrict claim
   let mvar ← mkFreshExprMVar type
-  -- TODO(assigned-goal-invariant): Update this destructuring when
-  -- `runForSingleGoal` returns a structured result. Accept only the explicit
-  -- one-active-goal case and verify that `mvarId` is unassigned; propagate
-  -- failure rather than conflating it with closure or recovering from mvars
-  -- found inside an assigned proof term. The helper must commit its state on
-  -- this successful path because `mvarId` belongs to that state; any enclosing
-  -- syntax generator is responsible for a later always-restore boundary.
   let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError
     s!"codegen: failed to apply deduction theorems for assertion; deduction tactics:\n{deductionHaves}"
   let tacs ← findTacticsI mvarId
@@ -1749,9 +1680,6 @@ def withParamsLocalDecl {α} (translator : CodeGenerator := {}) (parameters : Li
       withParamsLocalDecl translator rest k (l++[expr])
 
 def withTypeLocalDecl {α} (translator : CodeGenerator := {}) (name : String) (isProp : Bool) (parameters : List (String × String × Option String)) (k : Expr → TranslateM α) : TranslateM α :=
-  -- TODO(term-state-isolation): This generic scope may return values that reference
-  -- metavariables created within it. Do not use `withoutModifyingTranslateAndTermState`
-  -- until the result boundary guarantees independence from the restored Meta state.
   withoutModifyingState <| withParamsLocalDecl translator parameters fun l => do
     let lastType := if isProp then mkSort levelZero else mkSort levelOne
     let fullType ← mkForallFVars l.toArray lastType
@@ -2043,21 +1971,16 @@ Implementation notes:
   specified.
 -/
 
+-- This is already safe as it uses monadic helpers.
 def getFullType (translator : CodeGenerator := {}) (isProp : Bool) (parameters : List (String × String × Option String)) : TranslateM Expr :=
-  -- TODO(term-state-isolation): A full rollback may invalidate metavariables in the
-  -- returned `Expr`. Instantiate and validate the expression before changing scopes.
   withoutModifyingState <| withParamsLocalDecl translator parameters fun l => do
     let lastType := if isProp then mkSort levelZero else mkSort levelOne
-    let fullType ← mkForallFVars l.toArray lastType
-    return fullType
+    mkForallFVars l.toArray lastType
 
 def inductiveCommand (translator : CodeGenerator := {}) (name: String) (parametersRaw : Array (String × String × Option String))
   (indicesRaw : Array (String × String × Option String)) (constructorsRaw : Array (String × Array (String × String × Option String) × Array String)) (isProp : Bool) :
-    TranslateM (TSyntax `commandSeq) := do
+    TranslateM (TSyntax `commandSeq) := withoutModifyingTranslateAndTermState do
   let inductiveIdent := mkIdent name.toName
-  -- TODO(term-state-isolation): This scope returns an `Expr`; do not replace it with
-  -- `withoutModifyingTranslateAndTermState` until that expression is fully instantiated
-  -- and known not to depend on metavariables from the restored state.
   let typeExprWithoutParams ← withoutModifyingState <| withParamsLocalDecl translator parametersRaw.toList fun _ => getFullType translator isProp indicesRaw.toList
   let typeStxWithoutParams ← delabDetailed typeExprWithoutParams
   let fullTypeExpr ← withTypeLocalDecl translator name isProp (parametersRaw.toList ++ indicesRaw.toList) fun expr => return expr
