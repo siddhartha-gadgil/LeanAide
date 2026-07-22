@@ -261,12 +261,6 @@ def cmdPreludeBlob : TranslateM String := do
 
 def commandNeededForFrontendPrelude (cmd : Syntax.Command) : TranslateM Bool := do
   match ← DefData.ofSyntax? cmd with
-  -- TODO: This duplicate-declaration filter can be useful only because
-  -- `runFrontendM` starts from the current environment. It is unsafe with the
-  -- current frontend cache, whose key depends on the input string/toolchain but
-  -- not on the current generated environment. Either include a generated-env
-  -- fingerprint in the cache key, or run frontend checks from a fixed base
-  -- environment with the full generated textual prelude.
   | some dfn => return (← getEnv).find? dfn.name |>.isNone
   | none => return true
 
@@ -284,11 +278,6 @@ def variablePreludeForFrontendBlob? : TranslateM <| Option String := do
   | some cmd => return some (← PrettyPrinter.ppCommand cmd).pretty
   | none => return none
 
--- TODO(generation-check-homogeneous): Keep prompt-only declarations separate
--- from the frontend prelude. Validate the command prelude on its own before
--- appending `body`, and do not attribute prelude diagnostics to `body`. Any
--- declaration open in local free variables must be closed before it can enter
--- this global-command prelude; changing the order alone is not a complete fix.
 def withCommandPrelude (body : String) : TranslateM String := do
   let preludes := #[
     ← cmdPreludeForFrontendBlob?,
@@ -310,12 +299,10 @@ def cmdPreludeBriefBlob? : TranslateM <| Option String := do
   let cmds := cmds.map (·.pretty)
   return some <| cmds.foldl (· ++ "\n" ++ · ) "import Mathlib\n"
 
--- TODO(generation-check-homogeneous): Make this operation transactional. Check
--- error-severity messages and update the environment/prelude only on success;
--- do not discard the `runFrontendM` result.
 def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
-  discard <|  runFrontendM (← ppCommand cmd).pretty true
-  modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
+  let safe ←   runFrontendSafeM (← ppCommand cmd).pretty
+  if safe then
+    modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
 def writeCommands  (cmds : Array <| TSyntax `command) : TranslateM Unit := do
   match (← get).outputFile with
@@ -328,25 +315,17 @@ def writeCommands  (cmds : Array <| TSyntax `command) : TranslateM Unit := do
       lines := lines.push cmdStr
     IO.FS.writeFile file <| contents ++ (lines.foldr (· ++ "\n" ++ · ) "")
 
--- TODO(generation-check-homogeneous): Rename this state-only operation to
--- `addCommandToPrelude` (and its plural analogue accordingly). The current name
--- incorrectly suggests that the command is elaborated or run. Prompt-only
--- context needs a separate API and must not be added here.
-def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
+def addCommandToPrelude (cmd: Syntax.Command) : TranslateM Unit := do
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
--- TODO(generation-check-homogeneous): Split this into clearly named validation
--- and commit operations (for example `runAndCommitCommands`). Elaborate the
--- complete sequence in saved state, collect errors, and perform the environment
--- update, output write, and prelude append atomically only after success. This
--- full-declaration check must also reject proof terms with unexpected universe
--- parameters and tactics appended after a goal-closing fallback.
-def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
+def runAndCommitCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
   let cmds := getCommands cmds
+  let mut safeCmds := #[]
   for cmd in cmds do
-    discard <| runFrontendM (← ppCommand cmd).pretty true
+    let safe ←  runFrontendSafeM (← ppCommand cmd).pretty
+    if safe then safeCmds := safeCmds ++ #[cmd]
   writeCommands cmds
-  modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
+  modify fun s => {s with cmdPrelude := s.cmdPrelude ++ safeCmds}
 
 def registerDefnEnv (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statementStx
@@ -646,15 +625,6 @@ structure Translate.SavedState where
   recentTranslations: Array ChatPair
   outputFile : Option System.FilePath
 
--- TODO(generation-check-homogeneous): This backtracking instance deliberately
--- saves only `Translate.State`; it does not restore the underlying Term/Meta
--- state or metavariable context. Rename/use a more explicit prompt-state scope,
--- and provide two separate contracts: a handler transaction that restores both
--- states when a candidate fails and commits only explicitly allowed state on
--- success, and an always-restore syntax-generation scope for callers that must
--- replay syntax on the original goal. A successful handler may retain allowed
--- Translate effects, while live `MVarId` helpers must commit successful
--- Term/Meta state because their results depend on it.
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
     let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, promptContext := σ.promptContext, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
@@ -663,14 +633,6 @@ instance : MonadBacktrack Translate.SavedState TranslateM where
   modify fun s =>
       {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, promptContext := ss.promptContext, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
 
--- TODO(handler-backtracking): This is an always-restore scope and is appropriate
--- for recursive `proofCode` and other computations whose returned syntax/value
--- is independent of both saved states. Do not use it as the generic handler
--- retry transaction: it would discard intentional Translate effects from a
--- successful handler. Add a separate handler transaction that restores both
--- states on exception and defines its success policy explicitly (normally retain
--- allowed Translate effects while restoring speculative Term/Meta state for
--- replayable syntax).
 def withoutModifyingTranslateAndTermState
     (x : TranslateM α) : TranslateM α := do
   let translateState ← get

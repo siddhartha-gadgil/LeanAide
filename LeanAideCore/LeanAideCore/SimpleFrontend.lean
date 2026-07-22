@@ -39,6 +39,21 @@ def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment 
   if modifyEnv then setEnv env
   return (env, msgs)
 
+def runFrontendSafeM (input: String) : MetaM Bool := do
+  traceAide `leanaide.frontend.info s!"Running frontend on input:\n{input}"
+  let (env, msgs) ← simpleRunFrontend input (← getEnv)
+  traceAide `leanaide.frontend.info s!"Frontend finished with {msgs.toList.length} messages"
+  let safe := msgs.toList.all (fun msg => msg.severity != MessageSeverity.error)
+  traceAide `leanaide.frontend.info s!"Frontend safe: {safe}"
+  for msg in msgs.toList do
+    traceAide `leanaide.frontend.debug s!"{← msg.toString}"
+  if safe then setEnv env
+  else
+    traceAide `leanAide.frontend.info s!"Error when running frontend:\n{input}\nMessages:"
+    for msg in msgs.toList do
+      traceAide `leanaide.frontend.info s!"{← msg.toString}"
+  return safe
+
 -- variable [LeanAideBaseDir]
 
 def runFrontEndForMessages (input: String) (envHash? : Option UInt64) : MetaM MessageLog := do

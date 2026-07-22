@@ -413,7 +413,7 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
       -- here. Only successfully elaborated user declarations should be written
       -- or added to the later prompt/frontend prelude; diagnostics and failed
       -- placeholders must remain structured errors outside `cmdPrelude`.
-      Translate.addCommands code
+      runAndCommitCommands code
   if accum.isEmpty then
     let empty : Array <| TSyntax `command := #[]
     `(commandSeq| $empty*)
