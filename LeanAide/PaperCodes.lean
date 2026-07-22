@@ -24,55 +24,13 @@ Generate code for a theorem, lemma, proposition, corollary, or claim. It process
 
 Should perhaps try to use automation if there is no proof.
 -/
--- TODO(mathlib-deferred-theorem): Rename this handler to
--- `deferredTheoremCode` and restrict it to the single Mathlib-dependent case:
--- a `commandSeq` theorem with no proof, represented using `Fact`. Reject every
--- other goal/kind/schema shape before translating the claim so the core handler
--- remains the sole implementation for ordinary theorems and proof generation.
--- Extract/reuse an unregistered core helper for the common checked claim, final
--- name, label, and theorem metadata instead of retaining this duplicated handler.
--- Do not use `newName`: it repeatedly calls `resolveGlobalName` and is too slow
--- for this path. If collision handling is required, check the exact environment
--- name and staged definitions once, then append a deterministic source hash.
--- Keep this registered under the `"theorem"` key only as the optional Mathlib
--- fallback after `theoremCodeCore` reports that precise unsupported case.
 @[codegen "theorem"]
 def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `command, js => do
-  let (stx, name, pf?, isProp) ← thmStxParts js
-  match pf? with
-  | some pf =>
-    let n := mkIdent name
-    if isProp then
-      `(command| theorem $n : $stx := by $pf)
-    else
-      `(command| noncomputable def $n : $stx := by $pf)
-  | none =>
-    let n := mkIdent (name ++ `prop)
-    let propExpr := mkSort Level.zero
-    let propIdent ← delabDetailed propExpr
-    `(command| abbrev $n : $propIdent:term := $stx)
 | _, `commandSeq, js => do
-  let (stx, name, pf?, isProp) ← thmStxParts js
-  match pf? with
-  | some pf =>
-    let n := mkIdent name
-    let defn : DefData := {
-      name := n.getId,
-      type := stx,
-      value := ← `(by $pf),
-      isProp := isProp,
-      isNoncomputable := true,
-      doc? := none
-    }
-    addDefn defn
-    -- traceAide `leanaide.papercodes.info s!"Added theorem definition: {defn.name}"
-    if isProp then
-      `(commandSeq| theorem $n : $stx := by $pf)
-    else
-      `(commandSeq| noncomputable def $n : $stx := by $pf)
-  | none =>
-    -- TODO(mathlib-deferred-theorem): This should become the entire body of the
+  if js.getObjVal? "proof" |>.toOption.isSome then
+    throwError s!"codegen: 'theorem' with proof is not supported by the deferred theorem handler"
+  let (stx, name) ← thmStxParts js
+    -- TODO-Partial(mathlib-deferred-theorem): This should become the entire body of the
     -- renamed Mathlib fallback. Build and elaborate a real deferred theorem
     -- interface: emit the proposition definition and a checked theorem/witness
     -- whose proof is obtained from `[Fact proposition]`. The current code merely
@@ -80,50 +38,27 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     -- proof can actually be used. Commit both commands and theorem metadata only
     -- after the complete sequence elaborates successfully; do not expose a
     -- partially registered deferred theorem on failure.
-    let propName := mkIdent (name ++ `prop)
-    let propExpr := mkSort Level.zero
-    let propIdent ← delabDetailed propExpr
-    let head ← `(command| def $propName : $propIdent:term := $stx)
-    let fctIdent := mkIdent ``Fact
-    let instName := "assume_" ++ name.toString |>.toName
-    let instIdent := mkIdent instName
-    let witIdent := mkIdent <| "deferred".toName ++ name
-    let elimIdent := mkIdent <| instName ++ "elim".toName
-    let _ ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
-    let cmds := #[head] -- assumeDef removed for now
-    for cmd in cmds do
-      runCommand cmd
-    `(commandSeq| $cmds*)
-| some goal, ``tacticSeq, js => goal.withContext do
-  let (stx, name, pf?, _) ← thmStxParts js
-  match pf? with
-  | some pf =>
-    let n := mkIdent name
-    `(tacticSeq| have $n : $stx := by $pf)
-  | none =>
-    let n := mkIdent (name ++ `prop)
-    let propExpr := mkSort Level.zero
-    let propIdent ← delabDetailed propExpr
-    `(tacticSeq| have $n : $propIdent := $stx)
-| some _, `tactic, js => do
-  let (stx, name, pf?, _) ← thmStxParts js
-  match pf? with
-  | some pf =>
-    let n := mkIdent name
-    `(tactic| have $n : $stx := by $pf)
-  | none =>
-    let n := mkIdent (name ++ `prop)
-    let propExpr := mkSort Level.zero
-    let propIdent ← delabDetailed propExpr
-    `(tactic| let $n : $propIdent := $stx)
+    -- Update: runs only for deferred proofs, but does not check or output here.
+  let propName := mkIdent (name ++ `prop)
+  let propExpr := mkSort Level.zero
+  let propIdent ← delabDetailed propExpr
+  let head ← `(command| def $propName : $propIdent:term := $stx)
+  let fctIdent := mkIdent ``Fact
+  let instName := "assume_" ++ name.toString |>.toName
+  let instIdent := mkIdent instName
+  let witIdent := mkIdent <| "deferred".toName ++ name
+  let elimIdent := mkIdent <| instName ++ "elim".toName
+  let _ ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
+  let cmds := #[head] -- assumeDef removed for now
+  for cmd in cmds do
+    runCommand cmd
+  `(commandSeq| $cmds*)
 | goal?, kind, _ => throwError
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
 where
   thmStxParts (js: Json)  :
-    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq) × Bool  :=
-    -- TODO(term-state-isolation): Replace this syntax-producing scope with
-    -- `withoutModifyingTranslateAndTermState` so speculative elaboration cannot leak metavariables.
-    withoutModifyingState do
+    TranslateM <| Syntax.Term × Name  :=
+    withoutModifyingTranslateAndTermState do
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
       | Except.error _ => pure ()
@@ -143,53 +78,8 @@ where
         pure h.size
       | Except.error _ => pure 0
     traceAide `leanaide.papercodes.info s!"hypothesis size: {hypSize} in proof"
-    let proofStx? ← proof?.mapM fun
-      pf =>
-      -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-      -- only generated proof syntax should cross this speculative boundary.
-      withoutModifyingState do
-      let pfGoal ← mkFreshExprMVar type
-      let (pfGoal', names') ← extractIntros pfGoal.mvarId! hypSize
-      traceAide `leanaide.papercodes.debug s!"Extracted intros, names: {names'}"
-      let (pfGoal'', names) ← consumeIntros pfGoal' 10 names'
-      traceAide `leanaide.papercodes.debug s!"Consumed intros, names: {names}"
-      let (pfGoal, resTacs) ← resolveIntros pfGoal'' names
-      let pfStx ←
-        -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`
-        -- if this inner scope remains after the enclosing proof scope is isolated.
-        withoutModifyingState do
-        pfGoal.withContext do
-        match ←
-        getCode translator pfGoal ``tacticSeq pf with
-      | some pfStx =>
-        let pfStx ←  if names.isEmpty then
-            pure pfStx
-          else
-            let namesStx : List <| TSyntax `term ←
-              names.mapM fun n =>
-                if n.isInaccessibleUserName || n.isInternal then
-                  `(_)
-                else do
-                  traceAide `leanaide.papercodes.info s!"Adding intro for {n}, not inaccessible"
-                  let n' := Lean.mkIdent n
-                  `($n':ident)
-            let namesStx := namesStx.toArray
-            let introTac ←
-              `(tacticSeq| intro $namesStx*; $resTacs*)
-            appendTacticSeqSeq introTac pfStx
-        pure pfStx
-      | none => throwError
-        s!"codegen: no proof translation found for {pf}"
-      pure pfStx
-    traceAide `leanaide.papercodes.info s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
     let thm ← withPreludes claim
     let name := (js.getObjValAs? Name "name").toOption.getD <| ← translator.server.theoremName thm
-    -- TODO(mathlib-deferred-theorem): Remove this `newName` call when narrowing
-    -- the handler. Its repeated `resolveGlobalName` loop is unnecessarily slow
-    -- and performs broad name resolution rather than the exact declaration-name
-    -- collision check needed here. Reuse the finalized core naming helper, or do
-    -- one exact environment/staged-definition check and add a deterministic hash.
-    let name ← newName name
     let name :=
       if name.toString = "[anonymous]" then
 
@@ -201,12 +91,10 @@ where
     traceAide `leanaide.papercodes.info s!"codegen: Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
-    -- TODO(generation-check-homogeneous): Set `isProved` only after the complete
-    -- declaration elaborates successfully and its proof is hole-free. Presence
-    -- of a JSON `proof` field does not mean codegen completed the proof.
+    -- `IsProved
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
-    return (typeStx, name, proofStx?, ← isProp type)
+    return (typeStx, name)
 
 /--
 Generate code for a `let_statement`. If the let statement has a value, it generates a command or tactic that defines the variable with the given value. If there is no value, it simply adds a prelude statement.
@@ -214,10 +102,6 @@ If goal is a `there exists` statement and binderName matches variable_name, it r
 -/
 @[codegen "let_statement"]
 def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
-  -- TODO(generation-check-homogeneous): A notation-introducing `let_statement`
-  -- must materialize a typed Lean local definition. Do not silently keep a
-  -- missing `value` as prose only; repair/reject the node or derive a checked
-  -- value before later claims are allowed to use its `variable_name`.
   match s, js with
   | ``tacticSeq, js => do
     let statement := statement js
@@ -225,8 +109,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
     | .error _ =>
       -- If there is no value, we do not need to return a value
       traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjValAs? String "variable_name" |>.toOption.getD ""}"
-      addPromptContext statement
-      return none
+      throwError s!"codegen: 'let_statement' with no value is not supported in tacticSeq"
     | .ok value =>
       match goal? with
       | some goal =>
@@ -294,9 +177,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
           | _, _ => ""
         s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trimAscii.toString ++ "."
     defStx (translator: CodeGenerator) (js: Json) (statement: String)  (value: String) : TranslateM Syntax.Command :=
-      -- TODO(term-state-isolation): Replace this syntax-producing speculative scope with
-      -- `withoutModifyingTranslateAndTermState` after checking its translation fallback paths.
-      withoutModifyingState do
+      withoutModifyingTranslateAndTermState do
         let statement' ← withPreludes statement
         let varName ← match js.getObjValAs? String "variable_name" with
         | .ok "<anonymous>" => pure "_"
@@ -603,9 +484,7 @@ def uniquenessProofCore (translator : CodeGenerator) (existence_js : Json) (proo
   let goalType ← translator.translateToPropStrict uniquenessClaim
   let uniquenessGoalExpr ← mkFreshExprMVar goalType
   let uniquenessGoal := uniquenessGoalExpr.mvarId!
-  -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-  -- only the generated uniqueness proof syntax should escape this scope.
-  let some proofStx ← withoutModifyingState do
+  let some proofStx ← withoutModifyingTranslateAndTermState do
     getProof translator uniquenessGoal proof | throwError
     s!"codegen: no tactics found for contrapositive proof {proof}"
   let stx ← delabDetailed goalType

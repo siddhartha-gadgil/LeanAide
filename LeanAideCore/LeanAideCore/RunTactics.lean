@@ -135,15 +135,8 @@ def simpWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions
 open Parser.Tactic
 def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : TermElabM <| Option MVarId :=
     mvarId.withContext do
-  -- let tacticCode ← `(tacticSeq| skip)
-  -- TODO(assigned-goal-invariant): Reject an assigned `mvarId` before saving
-  -- state or invoking `Elab.runTactic`. An assigned input is not an active goal;
-  -- saving at that point merely makes the leaked assignment part of the state
-  -- restored after failure. After the precondition check, save the complete
-  -- Term/Meta state here. Restore it only on execution failure; successful
-  -- closure or a returned active goal must commit the tactic state because the
-  -- returned `MVarId` belongs to it. A surrounding syntax generator such as
-  -- `getCodeTactics` is responsible for its own outer always-restore boundary.
+  if ← mvarId.isAssigned then
+    throwError s!"runForSingleGoal: input goal is already assigned; cannot run tactics on an assigned goal"
   let s₀ ← saveState
   let s₀' : Meta.SavedState ←  Meta.saveState
   try
@@ -154,18 +147,12 @@ def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : Term
          (s:= ← get)
     match mvars with
     | [] =>
-      -- TODO(assigned-goal-invariant): Treat this as successful closure and
-      -- commit `s`. Do not restore the helper's entry state here; doing so would
-      -- erase the proof assignment that makes the empty active-goal list valid.
       traceAide `leanaide.interpreter.info s!"Tactics returned no goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
       set s
       return none
     | [mvar] =>
-      -- TODO(assigned-goal-invariant): Validate that `mvar` is unassigned before
-      -- returning it. The success contract should state that this is exactly one
-      -- active goal returned by tactic execution, rather than an arbitrary mvar
-      -- reachable from the original goal's assigned proof term. Commit `s` on
-      -- this successful path so the returned goal remains valid.
+      if ← mvarId.isAssigned then
+        throwError s!"runForSingleGoal: single generated goal is already assigned; cannot run tactics on an assigned goal"
       set s
       return mvar
     | _ =>
@@ -182,29 +169,16 @@ def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : Term
       traceAide `leanaide.interpreter.info s!"{← ppTactic tac}"
       traceAide `leanaide.interpreter.info ""
     traceAide `leanaide.interpreter.info s!"Assignment: {← mvarId.isAssigned}; {← PrettyPrinter.ppExpr <| mkMVar mvarId} "
-    -- TODO(assigned-goal-invariant): This is the failure-only rollback path:
-    -- restore the complete pre-execution Term/Meta state, then return or throw a
-    -- structured failure. Never return `mvarId` as though failure had produced
-    -- one remaining goal. The current `Option` result conflates tactic failure
-    -- with valid closure (`none`) or one valid live goal (`some`). The replacement
-    -- must distinguish at least closed, one-or-many active goals, and failed
-    -- execution, while preserving the original exception.
     s₀.restore
-    return mvarId
+    throwError s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
 
 def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
     (n: Nat)(allowClosure: Bool := false):TermElabM <| List MVarId :=
     mvarId.withContext do
+  if ← mvarId.isAssigned then
+    throwError s!"runAndGetMVars: input goal is already assigned; cannot run tactics on an assigned goal"
+  let s₀ ← saveState
   let tacticCode ← `(tacticSeq| $tacs*)
-  -- let tacticCode ← `(tacticSeq| skip)
-  -- TODO(assigned-goal-invariant): Apply the same active-goal contract as
-  -- `runForSingleGoal`: reject an assigned input, save the complete Term/Meta
-  -- state, and verify every returned mvar is unassigned. On any exception or
-  -- wrong goal count, restore the saved state before rethrowing. On success,
-  -- commit the tactic state because the returned `MVarId`s depend on it; an outer
-  -- syntax-producing caller must establish any required always-restore boundary.
-  -- Leaving a partial split installed after failure creates the same corruption
-  -- even though this result already represents multiple goals explicitly.
   try
     let ctx ← read
     let msgs' ← Core.getMessageLog
@@ -224,32 +198,32 @@ def runAndGetMVars (mvarId : MVarId) (tacs : Array Syntax.Tactic)
       traceAide `leanaide.interpreter.info s!"Assignment: {← mvarId.isAssigned}; {← PrettyPrinter.ppExpr <| mkMVar mvarId} "
       for tac in tacs do
         traceAide `leanaide.interpreter.info s!"Tactic: {← ppTactic tac}"
+      s₀.restore
       throwError
         s!"Tactics returned no goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}, but allowClosure is true"
     unless mvars.length == n do
       traceAide `leanaide.interpreter.info s!"Tactics returned wrong number of goals on {← mvarId.getType}: {mvars.length} instead of {n}"
       for tac in tacs do
         traceAide `leanaide.interpreter.info s!"Tactic: {← ppTactic tac}"
+      s₀.restore
       throwError
         s!"Tactics returned wrong number of goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {mvars.length} instead of {n}"
-    -- TODO(assigned-goal-invariant): Before committing `s`, check that all
-    -- `mvars` are live unassigned goals returned by this tactic execution. Do
-    -- not reconstruct replacements by traversing `mvarId`'s assignment. Commit
-    -- `s` only after these checks because the returned goals belong to that state.
-    set s
+    if ← mvars.anyM fun mvar => mvar.isAssigned then
+      traceAide `leanaide.interpreter.info s!"Tactics returned assigned goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
+      for tac in tacs do
+        traceAide `leanaide.interpreter.info s!"Tactic: {← ppTactic tac}"
+      s₀.restore
+      throwError
+        s!"Tactics returned assigned goals on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
+      set s
     -- traceAide `leanaide.interpreter.info s!"Tactics succeeded on {← PrettyPrinter.ppExpr <| ← mvarId.getType}"
     return mvars
   catch e =>
-    -- TODO(assigned-goal-invariant): This is the failure-only rollback path.
-    -- Restore the state saved before tactic execution here, then preserve the
-    -- structured cause when rethrowing so callers can distinguish a fatal state
-    -- invariant from an expected tactic mismatch. Do not use an always-restore
-    -- wrapper for this helper: its successful result contains live goals from
-    -- the committed tactic state.
     traceAide `leanaide.interpreter.info s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString}"
     traceAide `leanaide.interpreter.info s!"Tactic code: {← ppCategory ``tacticSeq tacticCode}"
     for tac in tacs do
       traceAide `leanaide.interpreter.info s!"Tactic: {← ppTactic tac}"
+    s₀.restore
     throwError
       s!"Tactics failed on {← PrettyPrinter.ppExpr <| ← mvarId.getType}: {← e.toMessageData.toString} when expecting {n} goals."
 

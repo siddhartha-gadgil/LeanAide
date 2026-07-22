@@ -109,10 +109,6 @@ def translateMessages (s: String)(promptPairs: Array (String × Json))
     else
         let defsBlob := dfns.foldr (fun acc df => acc ++ "\n\n" ++ df) ""
         s!"Your goal is to translate from natural language to Lean. The following are some definitions that may be relevant:\n\n{defsBlob}"
-  -- TODO(generation-check-homogeneous): Add a distinct prompt-only context
-  -- channel. The enclosing theorem signature is useful information for the
-  -- model, but inserting a dummy theorem into `cmdPrelude` also exposes it to
-  -- frontend checks and permits circular references.
   let cmdPrelude? ← cmdPreludeBriefBlob?
   let localContext? ← availableVariablesBlob?
   let cmdPrelude ←

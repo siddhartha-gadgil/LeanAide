@@ -224,17 +224,12 @@ def objectBypassCode (translator : CodeGenerator := {})
 /--
 Wrapping proofs that are single assertions.
 -/
-def getProof (translator: CodeGenerator)(goal: MVarId) (js: Json) : TranslateM (Option (TSyntax ``tacticSeq)) := do
-  -- TODO(assigned-goal-invariant): Make this helper a transactional syntax
-  -- boundary, or require every caller to provide one. Because it returns syntax
-  -- rather than live `MVarId`s, always restore its entry Term/Meta state on both
-  -- success and failure. Successful Translate effects may be retained only when
-  -- explicitly part of the caller's contract; callers already using
-  -- `withoutModifyingState` intend to restore those as well. Fatal invariant
-  -- errors must not be reclassified as an absent proof or handler mismatch.
-  match js.getObjVal? "type" with
-  | .ok "assert_statement" => getCodeTactics translator goal [js]
-  | _ => getCode translator (some goal) ``tacticSeq js
+def getProof (translator: CodeGenerator)(goal: MVarId) (js: Json) :
+  TranslateM (Option (TSyntax ``tacticSeq)) :=
+   withoutModifyingTranslateAndTermState do
+    match js.getObjVal? "type" with
+    | .ok "assert_statement" => getCodeTactics translator goal [js]
+    | _ => getCode translator (some goal) ``tacticSeq js
 
 /--
 Generic parser for Lean code. We write an object with a single key value of the form:
@@ -435,9 +430,7 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
 where
   thmStxParts (js: Json)  :
     TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq) × Bool  :=
-    -- TODO(term-state-isolation): Replace this syntax-producing scope with
-    -- `withoutModifyingTranslateAndTermState` so speculative elaboration cannot leak metavariables.
-    withoutModifyingState do
+    withoutModifyingTranslateAndTermState do
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
       | Except.error _ => pure ()
@@ -472,9 +465,7 @@ where
     let typeStx ← delabDetailed type
     let proofStx? ← proof?.mapM fun
       pf =>
-      -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-      -- only generated proof syntax should cross this speculative boundary.
-      withoutModifyingState do
+      withoutModifyingTranslateAndTermState do
       addPromptContext s!"Current goal (context only; not an available theorem):
           {← ppExpr type}"
       -- Finding proof
@@ -485,9 +476,7 @@ where
       traceAide `leanaide.papercodes.debug s!"Consumed intros, names: {names}"
       let (pfGoal, resTacs) ← resolveIntros pfGoal'' names
       let pfStx ←
-        -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`
-        -- if this inner scope remains after the enclosing proof scope is isolated.
-        withoutModifyingState do
+        withoutModifyingTranslateAndTermState do
         pfGoal.withContext do
         match ←
         getProof translator pfGoal pf with
@@ -535,9 +524,7 @@ def defCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Synta
 where
   defCmdStx (js: Json) :
     TranslateM <| TSyntax ``commandSeq :=
-    -- TODO(term-state-isolation): Replace this syntax-producing speculative scope with
-    -- `withoutModifyingTranslateAndTermState` after confirming no elaborator value escapes.
-    withoutModifyingState do
+    withoutModifyingTranslateAndTermState do
     let .ok statement :=
       js.getObjValAs? String "definition" | throwError
         s!"codegen: no 'definition' found in 'definition'"
@@ -1157,12 +1144,9 @@ def biequivalenceCode (translator : CodeGenerator := {}) : Option MVarId →  (k
   let tac ← `(tactic|constructor)
   let [ifGoal, onlyIfGoal] ←
     runAndGetMVars goal #[tac] 2 | throwError "codegen: in 'biequivalenceCode' `constructor` failed to get two goals; goal: {← ppExpr <| ← goal.getType}"
-  -- TODO(term-state-isolation): Replace these proof-search scopes with
-  -- `withoutModifyingTranslateAndTermState`; also audit the preceding goal split,
-  -- which mutates `goal` outside either scope.
-  let some ifProofStx ← withoutModifyingState do getProof translator ifGoal ifProof | throwError
+  let some ifProofStx ← withoutModifyingTranslateAndTermState do getProof translator ifGoal ifProof | throwError
     s!"codegen: no translation found for if_proof {ifProof}"
-  let some onlyIfProofStx ← withoutModifyingState do getProof translator onlyIfGoal onlyIfProof | throwError
+  let some onlyIfProofStx ← withoutModifyingTranslateAndTermState do getProof translator onlyIfGoal onlyIfProof | throwError
     s!"codegen: no translation found for only_if_proof {onlyIfProof}"
   let tacs := #[tac, ← `(tactic| · $ifProofStx), ← `(tactic| · $onlyIfProofStx)]
   `(tacticSeq| $tacs*)
@@ -1199,16 +1183,14 @@ def conditionCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (
     let [goal] ← runAndGetMVars thenGoal resolution 1 | throwError
       s!"codegen: have tactics resolving exact failed to get one goal, goal: {← ppExpr <| ← thenGoal.getType}"
     pure goal
-  -- TODO(term-state-isolation): Replace these proof-search scopes with
-  -- `withoutModifyingTranslateAndTermState`; separately audit the goal splits above.
-  let some trueCaseProofStx ← withoutModifyingState do getProof translator thenGoal trueCaseProof | throwError
+  let some trueCaseProofStx ← withoutModifyingTranslateAndTermState do getProof translator thenGoal trueCaseProof | throwError
     s!"codegen: no translation found for true_case_proof {trueCaseProof}"
   let trueCaseProofStx ← if resolution.isEmpty then
     pure trueCaseProofStx
   else
     appendTacticSeqSeq
       (← `(tacticSeq| $resolution*)) trueCaseProofStx
-  let some falseCaseProofStx ← withoutModifyingState do getProof translator elseGoal falseCaseProof | throwError
+  let some falseCaseProofStx ← withoutModifyingTranslateAndTermState do getProof translator elseGoal falseCaseProof | throwError
     s!"codegen: no translation found for false_case_proof {falseCaseProof}"
   let fmt ← ppTerm {env := ← getEnv} conditionStx
   let hash := hash fmt.pretty
@@ -1249,9 +1231,7 @@ def multiConditionCasesAux (translator : CodeGenerator := {}) (goal: MVarId) (ca
       let [goal] ← runAndGetMVars thenGoal resolution 1 | throwError
         s!"codegen: have tactics resolving exact failed to get one goal, goal: {← ppExpr <| ← thenGoal.getType}"
       pure goal
-    -- TODO(term-state-isolation): Replace this proof-search scope with
-    -- `withoutModifyingTranslateAndTermState`; separately audit the preceding goal split.
-    let some trueCaseProofStx ← withoutModifyingState do getProof translator thenGoal trueCaseProof | throwError
+    let some trueCaseProofStx ← withoutModifyingTranslateAndTermState do getProof translator thenGoal trueCaseProof | throwError
       s!"codegen: no translation found for true_case_proof {trueCaseProof}"
     traceAide `leanaide.papercodes.info s!"true case proof tactics: {← PrettyPrinter.ppTerm <| ←  `(by $trueCaseProofStx)}"
     let trueCaseProofStx ← if resolution.isEmpty then
@@ -1301,9 +1281,7 @@ def multiConditionCasesCode (translator : CodeGenerator := {}) : Option MVarId �
         let exhaustGoalExpr ← mkFreshExprMVar
           exhaustGoalType
         let exhaustGoal := exhaustGoalExpr.mvarId!
-        -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-        -- only the generated exhaustiveness proof syntax should escape.
-        let some pfStx ← withoutModifyingState do getProof translator exhaustGoal e | throwError
+        let some pfStx ← withoutModifyingTranslateAndTermState do getProof translator exhaustGoal e | throwError
           s!"codegen: no translation found for exhaustiveness {e}"
         `(tactic| have $exhaustId : $exhaustGoalStx := by $pfStx)
   traceAide `leanaide.papercodes.info s!"number of cases (after exhaustiveness): {cases.length}"
@@ -1345,15 +1323,13 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
     -- the returned syntax will be replayed by the final induction tactic. Audit
     -- the preceding induction goal split separately because it occurs outside this scope.
-    withoutModifyingState do
+    withoutModifyingTranslateAndTermState do
     baseGoal.withContext do
     getProof translator baseGoal baseCaseProof | throwError
     s!"codegen: no translation found for base_case_proof {baseCaseProof}"
   traceAide `leanaide.papercodes.info s!"codegen: base case proof tactics: {← PrettyPrinter.ppTerm <| ←  `(by $baseCaseProofStx)}"
   let some inductionStepProofStx ←
-    -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-    -- the returned syntax will be replayed by the final induction tactic.
-    withoutModifyingState do
+    withoutModifyingTranslateAndTermState do
     stepGoal.withContext do
     getProof translator stepGoal inductionStepProof | throwError
     s!"codegen: no translation found for induction_step_proof {inductionStepProof}"
@@ -1382,9 +1358,7 @@ def contradictCode (translator : CodeGenerator := {}) : Option MVarId →  (kind
     s!"codegen: contradiction_statement failed to get goal, goalType: {← ppExpr <| goalType}"
   let .ok proof := js.getObjValAs? Json "proof" | throwError
     s!"codegen: no 'proof' found in 'contradiction_statement'"
-  -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-  -- proof search should not assign the temporary contradiction goal before replay.
-  let some tacs ← withoutModifyingState do getProof translator goal proof | throwError
+  let some tacs ← withoutModifyingTranslateAndTermState do getProof translator goal proof | throwError
     s!"codegen: no tactics found for proof {proof}"
   let fullTacs ←  appendTacticSeqSeq (← `(tacticSeq| intro $contraId:term)) tacs
   let stx ← delabDetailed goalType
@@ -1449,9 +1423,7 @@ def contrapositiveProofCode (translator : CodeGenerator := {}) :
       let contraGoal := contraGoalExpr.mvarId!
       let [proofGoal] ← runAndGetMVars contraGoal #[← `(tactic| intro $contraId:term)] 1 | throwError
         s!"codegen: contrapositive_proof failed to introduce assumption; contrapositive type: {← ppExpr contraType}"
-      -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-      -- also audit the preceding tactic execution that creates `proofGoal`.
-      let some proofStx ← withoutModifyingState do
+      let some proofStx ← withoutModifyingTranslateAndTermState do
         getProof translator proofGoal proof | throwError
         s!"codegen: no tactics found for contrapositive proof {proof}"
       let fullProof ← appendTacticSeqSeq (← `(tacticSeq| intro $contraId:term)) proofStx
@@ -1467,9 +1439,7 @@ def contrapositiveProofCode (translator : CodeGenerator := {}) :
         intro $contraId:term)
       let [proofGoal] ← runAndGetMVars goal #[← `(tactic| apply Classical.byContradiction), ← `(tactic| intro $contraId:term)] 1 | throwError
         s!"codegen: contrapositive_proof failed to introduce contrapositive assumption; goal: {← ppExpr <| ← goal.getType}"
-      -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-      -- also audit the preceding tactics, which mutate the caller's goal.
-      let some proofStx ← withoutModifyingState do
+      let some proofStx ← withoutModifyingTranslateAndTermState do
         getProof translator proofGoal proof | throwError
         s!"codegen: no tactics found for contrapositive proof {proof}"
       appendTacticSeqSeq contraTacs proofStx
@@ -1526,9 +1496,7 @@ def generalInductionAux (translator : CodeGenerator := {}) (goal: MVarId) (cases
       let [goal] ← runAndGetMVars thenGoal resolution 1 | throwError
         s!"codegen: have tactics resolving exact failed to get one goal, goal: {← ppExpr <| ← thenGoal.getType}"
       pure goal
-    -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-    -- separately audit the goal split and resolution tactics executed above.
-    let some trueCaseProofStx ← withoutModifyingState do getProof translator thenGoal trueCaseProof | throwError
+    let some trueCaseProofStx ← withoutModifyingTranslateAndTermState do getProof translator thenGoal trueCaseProof | throwError
       s!"codegen: no translation found for true_case_proof {trueCaseProof}"
     let trueCaseProofStx ← if resolution.isEmpty then
       pure trueCaseProofStx
@@ -1608,9 +1576,7 @@ def reductionProofCode(translator : CodeGenerator := {}) : Option MVarId →  (k
     let reductionStep ← mkArrow reducedProp claim
     let reductionStepExpr ← mkFreshExprMVar reductionStep
     let reductionGoal := reductionStepExpr.mvarId!
-    -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-    -- only proof syntax for the temporary reduction goal should escape.
-    let some tacs ← withoutModifyingState do getProof translator reductionGoal proofOfReduction | throwError
+    let some tacs ← withoutModifyingTranslateAndTermState do getProof translator reductionGoal proofOfReduction | throwError
     s!"codegen: no tactics found for proof {proofOfReduction}"
     let reduction ← delabDetailed reductionStep
     let hash₀ := hash ((← ppTerm {env := ← getEnv} reduction).pretty)
@@ -1620,9 +1586,7 @@ def reductionProofCode(translator : CodeGenerator := {}) : Option MVarId →  (k
     -- proving the reduced statement
     let reducedPropExpr ← mkFreshExprMVar reducedProp
     let reducedPropGoal := reducedPropExpr.mvarId!
-    -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-    -- only proof syntax for the temporary reduced goal should escape.
-    let some reducedProof ← withoutModifyingState do getProof translator reducedPropGoal proof | throwError
+    let some reducedProof ← withoutModifyingTranslateAndTermState do getProof translator reducedPropGoal proof | throwError
     s!"codegen: no tactics found for proof {proof}"
     let reduced ← delabDetailed reducedProp
     let hash₁ := hash ((← ppTerm {env := ← getEnv} reduced).pretty)
