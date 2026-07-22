@@ -152,23 +152,19 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
     let mut accumErrors : Array String := #[]
     for f in fs do
       traceAide `leanaide.codegen.info s!"trying {f} for key {key}"
+      let translateState ← get
+      let termState ← Term.saveState
       try
         -- logInfo m!"codegen: trying {f} for key {key}"
         let code? ← codeFromFunc goal? translator f kind source
         traceAide `leanaide.codegen.info s!"{f} for key {key} worked; returned : {code?.isSome}"
+        termState.restore
         return code?
       catch e =>
-        -- TODO(handler-backtracking): Save all reversible Translate and
-        -- Term/Meta state immediately before each `codeFromFunc`. On failure,
-        -- restore that snapshot before trying the next handler. On success,
-        -- retain explicitly permitted Translate effects, but restore speculative
-        -- Term/Meta assignments whenever the result is syntax to be replayed.
-        -- Do not implement this with an always-restore wrapper around every
-        -- handler: successful `none` handlers may intentionally update Translate
-        -- context. Fatal errors still need separate propagation when they may
-        -- have irreversible environment, file, or other IO effects.
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
         accumErrors := accumErrors.push s!"{f}: {← e.toMessageData.toString}"
+        termState.restore
+        set translateState
         continue -- try next function
     let allErrors := accumErrors.toList.foldl (init := "") (fun acc e => acc ++ "\n" ++ e)
     throwError
@@ -184,15 +180,15 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
       throwError
         s!"codegen: no key or type found in JSON object {source}, and no codegen functions registered"
     for f in fs.reverse do
+      let translateState ← get
+      let termState ← Term.saveState
       try
         let code? ← codeFromFunc goal? translator f kind source
+        termState.restore
         return code?
       catch _ =>
-        -- TODO(handler-backtracking): Use the same failure-only rollback as the
-        -- keyed branch: restore the failed candidate's Translate and Term/Meta
-        -- state, then continue. Commit allowed Translate effects only for the
-        -- successful handler, and restore its Term/Meta state if it returns
-        -- replayable syntax. Keep fatal/non-rollbackable errors distinguishable.
+        termState.restore
+        set translateState
         continue -- try next function
     throwError
       s!"codegen: no key or type found in JSON object {source} and no codegen functions returned a result"
@@ -231,7 +227,9 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     -- and independent of restored metavariables. Recursive `proofCode` has
     -- violated this boundary by assigning `goal` to a term containing child
     -- metavariables.
-    let code? ← try
+    let code? ←
+      withoutModifyingTranslateAndTermState do
+      try
         getCode translator (some goal) ``tacticSeq source
       catch e =>
         let err ←   e.toMessageData.toString
@@ -409,10 +407,6 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
       continue
     | some code => do
       accum := accum.push code
-      -- TODO(generation-check-homogeneous): Call a transactional command commit
-      -- here. Only successfully elaborated user declarations should be written
-      -- or added to the later prompt/frontend prelude; diagnostics and failed
-      -- placeholders must remain structured errors outside `cmdPrelude`.
       runAndCommitCommands code
   if accum.isEmpty then
     let empty : Array <| TSyntax `command := #[]

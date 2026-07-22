@@ -318,13 +318,16 @@ def writeCommands  (cmds : Array <| TSyntax `command) : TranslateM Unit := do
 def addCommandToPrelude (cmd: Syntax.Command) : TranslateM Unit := do
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
+/--
+Runs commands and adds them to the prelude if they run correctly.
+-/
 def runAndCommitCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
   let cmds := getCommands cmds
   let mut safeCmds := #[]
   for cmd in cmds do
     let safe ←  runFrontendSafeM (← ppCommand cmd).pretty
     if safe then safeCmds := safeCmds ++ #[cmd]
-  writeCommands cmds
+  writeCommands safeCmds
   modify fun s => {s with cmdPrelude := s.cmdPrelude ++ safeCmds}
 
 def registerDefnEnv (dfn: DefData) : TranslateM Unit := do

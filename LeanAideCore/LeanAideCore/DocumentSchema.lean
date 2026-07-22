@@ -349,7 +349,7 @@ def docSchema : Json :=
  "A mathematical statement whose proof is a straightforward consequence of given and known results following some method.",
  "additionalProperties": false}
 
--- TODO(generation-check-homogeneous): Reconcile this schema with producers that
+-- TODO-Codex(generation-check-homogeneous): Reconcile this schema with producers that
 -- emit typed assumptions as `variable_name`/`variable_type`/`arguments`.
 -- Normalize those nodes to `assumption`, or represent variable introduction as
 -- a typed `let_statement`; the Lean handler and schema must agree exactly.
@@ -560,7 +560,7 @@ def docSchema : Json :=
  "A proof by induction, with a base case and an induction step. For strong induction or structural induction, USE INSTEAD 'general_induction_proof'.",
  "additionalProperties": false}
 
--- TODO(generation-check-homogeneous): Strengthen validation for local notation.
+-- TODO-Codex(generation-check-homogeneous): Strengthen validation for local notation.
 -- If a named object is used by later claims, require an explicit formal type and
 -- value (or an existence/assertion node) rather than allowing prose-only state.
 -- Probability spaces, random variables, finite sums, quotient representatives,

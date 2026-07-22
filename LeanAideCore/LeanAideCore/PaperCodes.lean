@@ -648,9 +648,7 @@ Generate code for a proof environment, either a sequence of tactics or a command
 @[codegen "proof"]
 def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js =>
-  -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-  -- this branch returns syntax while its proof search mutates temporary goals.
-  withoutModifyingState do
+  withoutModifyingTranslateAndTermState do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
   let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
     s!"codegen: no 'claim_label' found in standalone 'proof'"
@@ -676,9 +674,7 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   let (goal, resTacs) ← resolveIntros goal'' names
   traceAide `leanaide.papercodes.info s!"Consumed intros: {names}"
   let pfStx ←
-    -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`
-    -- if this nested scope is retained after isolating the whole branch.
-    withoutModifyingState do
+    withoutModifyingTranslateAndTermState do
     goal.withContext do
     getCodeTactics translator goal content
   let pfStx ←  if names.isEmpty then
@@ -801,9 +797,7 @@ def letCodeCore (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (k
           | _, _ => ""
         s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trimAscii.toString ++ "."
     defStx (translator: CodeGenerator) (js: Json) (statement: String)  (value: String) : TranslateM Syntax.Command :=
-      -- TODO(term-state-isolation): Replace this syntax-producing speculative scope with
-      -- `withoutModifyingTranslateAndTermState` after checking its translation fallback paths.
-      withoutModifyingState do
+      withoutModifyingTranslateAndTermState do
         let statement' ← withPreludes statement
         let varName ← match js.getObjValAs? String "variable_name" with
         | .ok "<anonymous>" => pure "_"
@@ -919,10 +913,7 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
 | _, kind, _ => throwError
     s!"codegen: test does not work for kind {kind}"
 where typeStx (js: Json) :
-    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) × Bool :=
-      -- TODO(term-state-isolation): Replace this syntax-producing speculative scope with
-      -- `withoutModifyingTranslateAndTermState`; its temporary goal assignments must not escape.
-      withoutModifyingState do
+    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) × Bool :=      withoutModifyingTranslateAndTermState do
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in 'assertion_statement'"
   let deducedFrom? := js.getObjValAs? (Array Json) "deduced_from_theorem" |>.toOption
@@ -1084,10 +1075,7 @@ def patternCasesCode (translator : CodeGenerator := {}) : Option MVarId →  (ki
   let newGoals ←
     runAndGetMVars goal #[tac] proofData.size
   let proofStxs ← proofData.zip newGoals.toArray |>.mapM fun (proof, newGoal) => do
-    -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-    -- proof search should return syntax without assigning `newGoal` before replay.
-    -- Also audit the preceding pattern-match tactic, which mutates `goal` outside this scope.
-    let some proofStx ← withoutModifyingState do
+    let some proofStx ← withoutModifyingTranslateAndTermState do
       newGoal.withContext do
       getProof translator newGoal proof |
       throwError s!"codegen: no translation found for {proof}"
@@ -1320,9 +1308,6 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let .ok inductionStepProof := js.getObjValAs? Json "induction_step_proof" | throwError
     s!"codegen: no false_case_proof found in {js}"
   let some baseCaseProofStx ←
-    -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
-    -- the returned syntax will be replayed by the final induction tactic. Audit
-    -- the preceding induction goal split separately because it occurs outside this scope.
     withoutModifyingTranslateAndTermState do
     baseGoal.withContext do
     getProof translator baseGoal baseCaseProof | throwError

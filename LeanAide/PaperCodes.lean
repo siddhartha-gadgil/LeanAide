@@ -319,18 +319,14 @@ def existenceProof (translator : CodeGenerator) (variableName construction : Str
     let letTactic ← simpleLet letTactic
     let useTacticSeq ← `(tacticSeq| $letTactic; use $varId:ident)
     traceAide `leanaide.papercodes.info s!"Existence proof: created tactic sequence for definition and use:\n{useTacticSeq}"
-    -- TODO(assigned-goal-invariant): Update this caller when
-    -- `runForSingleGoal` gains a structured result. A tactic failure must not be
-    -- interpreted as closure (`none`) or one remaining goal (`some`). Validate
-    -- that `newGoal` is unassigned; `runForSingleGoal` should commit its state on
-    -- this successful live-goal path. The following tactic-mode `getCode`, by
-    -- contrast, returns replayable syntax and must always restore Term/Meta state
-    -- so it cannot leave `newGoal` assigned.
+    -- runForSingleGoal fails if we do not get either a single valid goal or no goal at all.
     let newGoal? ← runForSingleGoal goal useTacticSeq
     match newGoal? with
     | some newGoal =>
       traceAide `leanaide.papercodes.info s!"Existence proof: after applying 'use', new goal is {← Term.ppGoal newGoal}"
-      let proofTactics ← getCode translator newGoal ``tacticSeq proof
+      let proofTactics ←
+        withoutModifyingTranslateAndTermState do
+        getCode translator newGoal ``tacticSeq proof
       traceAide `leanaide.papercodes.info s!"Existence proof: obtained tactics for proof: {proofTactics.isSome}"
       match proofTactics with
       | some proofTactics =>
@@ -434,11 +430,7 @@ def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVa
     let existenceGoal ← mkFreshExprMVar existenceType
     let existenceProofTacs ←
         existenceProof translator variableName construction verification existenceGoal.mvarId!
-    -- TODO(generation-check-homogeneous): Never delaborate the mvar expression.
-    -- Read its assignment with `getExprMVarAssignment?`, recursively resolve it
-    -- using `instantiateMVars`, infer/instantiate the assigned value's type, and
-    -- delaborate that type (or the assigned value when a value is required).
-    let existenceSyntax ← delabDetailed existenceGoal
+    let existenceSyntax ← delabDetailed existenceType
     let hash := fullClaim.hash
     let existsId := mkIdent (s!"assert_exists_{hash}").toName
     let haveStx ←
