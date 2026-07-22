@@ -29,7 +29,12 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
 | _, `commandSeq, js => do
   if js.getObjVal? "proof" |>.toOption.isSome then
     throwError s!"codegen: 'theorem' with proof is not supported by the deferred theorem handler"
-  let (stx, name) ← thmStxParts js
+  let (stx, name, labelledTheorem) ← thmStxParts js
+  -- TODO-DeferredTheoremCommit: when deferred theorems are enabled, register
+  -- this metadata only after the generated command is accepted by
+  -- `runAndCommitCommands`; otherwise stale labels can point to unavailable
+  -- declarations.
+  Translate.addTheorem labelledTheorem
     -- TODO-Partial(mathlib-deferred-theorem): This should become the entire body of the
     -- renamed Mathlib fallback. Build and elaborate a real deferred theorem
     -- interface: emit the proposition definition and a checked theorem/witness
@@ -55,7 +60,7 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
 where
   thmStxParts (js: Json)  :
-    TranslateM <| Syntax.Term × Name  :=
+    TranslateM <| Syntax.Term × Name × LabelledTheorem  :=
     withoutModifyingTranslateAndTermState do
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
@@ -90,15 +95,9 @@ where
     let typeStx ← delabDetailed type
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
     -- `IsProved
-    -- TODO-UnintendedRollback: `thmStxParts` runs inside
-    -- `withoutModifyingTranslateAndTermState`, so this deferred theorem
-    -- registration is rolled back before later proof generation can find it.
-    -- Do not fix by removing the wrapper from `thmStxParts`: hypothesis and
-    -- claim translation may mutate TermElab/Meta state. Return the metadata and
-    -- register it after speculative elaboration has been restored.
-    Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
+    let labeledTheorem : LabelledTheorem := {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
-    return (typeStx, name)
+    return (typeStx, name, labeledTheorem)
 
 /--
 Generate code for a `let_statement`. If the let statement has a value, it generates a command or tactic that defines the variable with the given value. If there is no value, it simply adds a prelude statement.

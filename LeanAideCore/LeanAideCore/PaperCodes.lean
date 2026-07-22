@@ -352,14 +352,20 @@ Should perhaps try to use automation if there is no proof.
 @[codegen "theorem"]
 def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  let (stx, name, pf, isProp) ← thmStxParts js
-    let n := mkIdent name
-    if isProp then
-      `(command| theorem $n : $stx := by $pf)
-    else
-      `(command| noncomputable def $n : $stx := by $pf)
+  let (stx, name, pf, isProp, labelled) ← thmStxParts js
+  -- TODO-DeferredTheoremCommit: register theorem metadata at command-commit
+  -- time, after the generated declaration is accepted by `runAndCommitCommands`.
+  Translate.addTheorem labelled
+  let n := mkIdent name
+  if isProp then
+    `(command| theorem $n : $stx := by $pf)
+  else
+    `(command| noncomputable def $n : $stx := by $pf)
 | _, `commandSeq, js => do
-  let (stx, name, pf, isProp) ← thmStxParts js
+  let (stx, name, pf, isProp, labelled) ← thmStxParts js
+  -- TODO-DeferredTheoremCommit: register theorem metadata at command-commit
+  -- time, after the generated declaration is accepted by `runAndCommitCommands`.
+  Translate.addTheorem labelled
   let n := mkIdent name
   let defn : DefData := {
     name := n.getId,
@@ -387,7 +393,7 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
 where
   thmStxParts (js: Json)  :
-    TranslateM <| Syntax.Term × Name × (TSyntax ``tacticSeq) × Bool  :=
+    TranslateM <| Syntax.Term × Name × (TSyntax ``tacticSeq) × Bool × LabelledTheorem  :=
     withoutModifyingTranslateAndTermState do
     let proof? :=
       js.getObjVal? "proof" |>.toOption
@@ -462,16 +468,9 @@ where
     traceAide `leanaide.papercodes.info s!"Obtained or skipped proof"
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
     -- `isProved` is only to separate deferred proofs, and not for claims of completeness.
-    -- TODO-UnintendedRollback: `thmStxParts` runs inside
-    -- `withoutModifyingTranslateAndTermState`, so this theorem-label
-    -- registration is rolled back before later `findTheorem?` calls can see it.
-    -- Do not fix by dropping the wrapper around `thmStxParts`: claim/proof
-    -- translation creates temporary goals and prompt context. Instead return the
-    -- theorem metadata from the speculative block and register it in the caller
-    -- after the block has restored TermElab/Meta state.
-    Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
+    let labelled : LabelledTheorem := {name := name, label := label, isProved := proof?.isSome, source:= js, type := type}
     logInfo m!"All theorems : {← allLabels}"
-    return (typeStx, name, proofStx, ← isProp type)
+    return (typeStx, name, proofStx, ← isProp type, labelled)
 
 /--
 Generate code for a definition. It processes the `definition` field to generate the appropriate Lean code.
@@ -607,63 +606,61 @@ Generate code for a proof environment, either a sequence of tactics or a command
 -/
 @[codegen "proof"]
 def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
-| _, `commandSeq, js =>
-  withoutModifyingTranslateAndTermState do
-  let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
-  let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
-    s!"codegen: no 'claim_label' found in standalone 'proof'"
-  let some labelledTheorem ← findTheorem? claimLabel | throwError
-    s!"codegen: no theorem found with label {claimLabel}; all labels {← allLabels}"
-  let goalType := labelledTheorem.type
-  let goalExpr ← mkFreshExprMVar goalType
-  let goal := goalExpr.mvarId!
-  traceAide `leanaide.papercodes.info s!"number of proof steps: {content.length}"
-  let hypSize ←
-    match labelledTheorem.source.getObjValAs? (Array Json)  "hypothesis" with
-      | Except.ok h =>
-        traceAide `leanaide.papercodes.info s!"hypothesis: {h} in proof"
-        contextRun translator none ``tacticSeq (.arr h)
-        traceAide `leanaide.papercodes.info s!"Ran hypothesis context"
-        traceAide `leanaide.papercodes.info s!"Preludes added:\n {(← withPreludes "")}"
-        pure h.size
-      | Except.error _ => pure 0
-  traceAide `leanaide.papercodes.info s!"hypothesis size: {hypSize} in proof"
-  let (goal', names') ← extractIntros goal hypSize
-  traceAide `leanaide.papercodes.info s!"Extracted intros: {names'}"
-  let (goal'', names) ← consumeIntros goal' 10 names'
-  let (goal, resTacs) ← resolveIntros goal'' names
-  traceAide `leanaide.papercodes.info s!"Consumed intros: {names}"
-  let pfStx ←
+| _, `commandSeq, js => do
+  let (stx, label) ←
     withoutModifyingTranslateAndTermState do
-    goal.withContext do
-    getCodeTactics translator goal content
-  let pfStx ←  if names.isEmpty then
-      pure pfStx
-    else
-      let namesStx : List <| TSyntax `term ←
-        names.mapM fun n =>
-          if n.isInaccessibleUserName || n.isInternal then
-            `(_)
-          else do
-            traceAide `leanaide.papercodes.info s!"Adding intro for {n}, not inaccessible"
-            let n' := mkIdent n
-            `($n':ident)
-      let namesStx := namesStx.toArray
-      let introTac ←
-        `(tacticSeq| intro $namesStx*; $resTacs*)
-      appendTacticSeqSeq introTac pfStx
-  traceAide `leanaide.papercodes.info s!"Proof steps: {← PrettyPrinter.ppCategory ``tacticSeq pfStx}"
-  let n := mkIdent labelledTheorem.name
-  let typeStx ← delabDetailed goalType
-  -- TODO-UnintendedRollback: this update is inside
-  -- `withoutModifyingTranslateAndTermState`, so the proved/deferred status is
-  -- restored after command generation.
-  -- Do not fix by running the whole proof generation outside rollback: it
-  -- creates and assigns temporary metavariables. Return the generated theorem
-  -- command plus the label from the speculative block, then call `updateToProved`
-  -- after the block restores TermElab/Meta state.
-  updateToProved labelledTheorem.label
-  `(commandSeq| theorem $n : $typeStx := by $pfStx)
+    let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
+    let .ok claimLabel := js.getObjValAs? String "claim_label" | throwError
+      s!"codegen: no 'claim_label' found in standalone 'proof'"
+    let some labelledTheorem ← findTheorem? claimLabel | throwError
+      s!"codegen: no theorem found with label {claimLabel}; all labels {← allLabels}"
+    let goalType := labelledTheorem.type
+    let goalExpr ← mkFreshExprMVar goalType
+    let goal := goalExpr.mvarId!
+    traceAide `leanaide.papercodes.info s!"number of proof steps: {content.length}"
+    let hypSize ←
+      match labelledTheorem.source.getObjValAs? (Array Json)  "hypothesis" with
+        | Except.ok h =>
+          traceAide `leanaide.papercodes.info s!"hypothesis: {h} in proof"
+          contextRun translator none ``tacticSeq (.arr h)
+          traceAide `leanaide.papercodes.info s!"Ran hypothesis context"
+          traceAide `leanaide.papercodes.info s!"Preludes added:\n {(← withPreludes "")}"
+          pure h.size
+        | Except.error _ => pure 0
+    traceAide `leanaide.papercodes.info s!"hypothesis size: {hypSize} in proof"
+    let (goal', names') ← extractIntros goal hypSize
+    traceAide `leanaide.papercodes.info s!"Extracted intros: {names'}"
+    let (goal'', names) ← consumeIntros goal' 10 names'
+    let (goal, resTacs) ← resolveIntros goal'' names
+    traceAide `leanaide.papercodes.info s!"Consumed intros: {names}"
+    let pfStx ←
+      withoutModifyingTranslateAndTermState do
+      goal.withContext do
+      getCodeTactics translator goal content
+    let pfStx ←  if names.isEmpty then
+        pure pfStx
+      else
+        let namesStx : List <| TSyntax `term ←
+          names.mapM fun n =>
+            if n.isInaccessibleUserName || n.isInternal then
+              `(_)
+            else do
+              traceAide `leanaide.papercodes.info s!"Adding intro for {n}, not inaccessible"
+              let n' := mkIdent n
+              `($n':ident)
+        let namesStx := namesStx.toArray
+        let introTac ←
+          `(tacticSeq| intro $namesStx*; $resTacs*)
+        appendTacticSeqSeq introTac pfStx
+    traceAide `leanaide.papercodes.info s!"Proof steps: {← PrettyPrinter.ppCategory ``tacticSeq pfStx}"
+    let n := mkIdent labelledTheorem.name
+    let typeStx ← delabDetailed goalType
+    pure (← `(commandSeq| theorem $n : $typeStx := by $pfStx), labelledTheorem.label)
+  -- TODO-DeferredTheoremCommit: once deferred theorem/proof bookkeeping is
+  -- active, move this proved-status update to the command-commit phase so a
+  -- rejected proof command cannot mark the theorem as proved.
+  updateToProved label
+  return some stx
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
   withoutModifyingTranslateAndTermState do
