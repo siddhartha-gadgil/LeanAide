@@ -390,7 +390,20 @@ def paperStructure :=
     },
     "let_statement": {
       "type": "object",
-      "description": "A statement introducing a new variable with given value, type and/or property.",
+      "description": "A statement introducing a new local object. It must either give an explicit defining `value`, or give both a `variable_type` and formal `properties`; prose-only local notation should be represented by `assume_statement`, `some_statement`, or `assert_statement` instead.",
+      "anyOf": [
+        {
+          "required": [
+            "value"
+          ]
+        },
+        {
+          "required": [
+            "variable_type",
+            "properties"
+          ]
+        }
+      ],
       "properties": {
         "type": {
           "type": "string",
@@ -403,15 +416,15 @@ def paperStructure :=
         },
         "value": {
           "type": "string",
-          "description": "(OPTIONAL) The value of the variable being defined. This MUST BE an explicit value. If the value is the obtained from an existence statement, use `assert_statement` instead."
+          "description": "(OPTIONAL) The explicit value of the variable being defined. Use this for named local notation that later claims depend on. If the value is obtained from an existence statement, use `some_statement` or `assert_statement` instead."
         },
         "variable_type": {
           "type": "string",
-          "description": "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."
+          "description": "The type of the variable, such as `real number`, `function from S to T`, `element of G` etc. Required when no explicit `value` is given."
         },
         "properties": {
           "type": "string",
-          "description": "(OPTIONAL) Specific properties of the variable beyond the type"
+          "description": "(OPTIONAL) Specific formal properties of the variable beyond the type; required together with `variable_type` when no explicit `value` is given."
         },
         "statement": {
           "type": "string",
@@ -458,7 +471,20 @@ def paperStructure :=
     },
     "assume_statement": {
       "type": "object",
-      "description": "A mathematical assumption being made. Use 'let_statement' or 'some_statement' if introducing variables or 'assert_statement' to introduce a variable in terms of a property.",
+      "description": "A mathematical assumption being made. Use either `assumption` for a proposition being assumed or `variable_name` with `variable_type` for an arbitrary fixed variable. Use 'let_statement' only for definitions with explicit data, and 'some_statement' or 'assert_statement' for existentially obtained objects.",
+      "anyOf": [
+        {
+          "required": [
+            "assumption"
+          ]
+        },
+        {
+          "required": [
+            "variable_name",
+            "variable_type"
+          ]
+        }
+      ],
       "properties": {
         "type": {
           "type": "string",
@@ -468,6 +494,29 @@ def paperStructure :=
         "assumption": {
           "type": "string",
           "description": "The assumption text."
+        },
+        "variable_name": {
+          "type": "string",
+          "description": "(OPTIONAL) Name of the arbitrary variable being fixed by this assumption."
+        },
+        "variable_type": {
+          "type": "string",
+          "description": "(OPTIONAL) Type or domain of the arbitrary variable being fixed."
+        },
+        "properties": {
+          "type": "string",
+          "description": "(OPTIONAL) Additional properties assumed of the variable beyond its type."
+        },
+        "arguments": {
+          "type": "array",
+          "description": "(OPTIONAL) Local values or hypotheses used in forming this assumption.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "statement": {
+          "type": "string",
+          "description": "(OPTIONAL) The full source statement made."
         },
         "label": {
           "type": "string",
@@ -489,8 +538,7 @@ def paperStructure :=
         }
       },
       "required": [
-        "type",
-        "assumption"
+        "type"
       ],
       "additionalProperties": false
     },

@@ -349,17 +349,37 @@ def docSchema : Json :=
  "A mathematical statement whose proof is a straightforward consequence of given and known results following some method.",
  "additionalProperties": false}
 
--- TODO-Codex(generation-check-homogeneous): Reconcile this schema with producers that
--- emit typed assumptions as `variable_name`/`variable_type`/`arguments`.
--- Normalize those nodes to `assumption`, or represent variable introduction as
--- a typed `let_statement`; the Lean handler and schema must agree exactly.
 #schema_element "assume_statement" := json% {"type": "object",
- "required": ["type", "assumption"],
+ "required": ["type"],
+ "anyOf": [
+  {"required": ["assumption"]},
+  {"required": ["variable_name", "variable_type"]}
+ ],
  "properties":
  {"type":
   {"type": "string",
    "description": "The type of this logical step.",
    "const": "assume_statement"},
+  "variable_name":
+  {"type": "string",
+   "description":
+   "(OPTIONAL) Name of the arbitrary variable being fixed by this assumption."},
+  "variable_type":
+  {"type": "string",
+   "description":
+   "(OPTIONAL) Type or domain of the arbitrary variable being fixed."},
+  "properties":
+  {"type": "string",
+   "description":
+   "(OPTIONAL) Additional properties assumed of the variable beyond its type."},
+  "arguments":
+  {"type": "array",
+   "items": {"type": "string"},
+   "description":
+   "(OPTIONAL) Local values or hypotheses used in forming this assumption."},
+  "statement":
+  {"type": "string",
+   "description": "(OPTIONAL) The full source statement made."},
   "label":
   {"type": "string",
    "description": "(OPTIONAL) The label of the assumption, if any."},
@@ -374,7 +394,7 @@ def docSchema : Json :=
    "(OPTIONAL) Citations supporting or related to the assumption."},
   "assumption": {"type": "string", "description": "The assumption text."}},
  "description":
- "A mathematical assumption being made. Use 'let_statement' or 'some_statement' if introducing variables or 'assert_statement' to introduce a variable in terms of a property.",
+ "A mathematical assumption being made. Use either `assumption` for a proposition being assumed or `variable_name` with `variable_type` for an arbitrary fixed variable. Use 'let_statement' only for definitions with explicit data, and 'some_statement' or 'assert_statement' for existentially obtained objects.",
  "additionalProperties": false}
 
 #schema_element "bi-implication_cases_proof" := json% {"type": "object",
@@ -560,21 +580,17 @@ def docSchema : Json :=
  "A proof by induction, with a base case and an induction step. For strong induction or structural induction, USE INSTEAD 'general_induction_proof'.",
  "additionalProperties": false}
 
--- TODO-Codex(generation-check-homogeneous): Strengthen validation for local notation.
--- If a named object is used by later claims, require an explicit formal type and
--- value (or an existence/assertion node) rather than allowing prose-only state.
--- Probability spaces, random variables, finite sums, quotient representatives,
--- and similar aggregate notation must be formalized before theorem translation.
--- For Lemma 5-style independent signs, prefer the explicit finite product space
--- `Fin (2*n) → Bool`, a checked integer sum, and a uniform finite average in the
--- formal claim instead of prose names such as `f`, `S2n`, and "expectation".
 #schema_element "let_statement" := json% {"type": "object",
  "required": ["type", "variable_name"],
+ "anyOf": [
+  {"required": ["value"]},
+  {"required": ["variable_type", "properties"]}
+ ],
  "properties":
  {"variable_type":
   {"type": "string",
    "description":
-   "(OPTIONAL) The type of the variable, such as `real number`, `function from S to T`, `element of G` etc."},
+   "The type of the variable, such as `real number`, `function from S to T`, `element of G` etc. Required when no explicit `value` is given."},
   "variable_name":
   {"type": "string",
    "description":
@@ -582,7 +598,7 @@ def docSchema : Json :=
   "value":
   {"type": "string",
    "description":
-   "(OPTIONAL) The value of the variable being defined. This MUST BE an explicit value. If the value is the obtained from an existence statement, use `assert_statement` instead."},
+   "(OPTIONAL) The explicit value of the variable being defined. Use this for named local notation that later claims depend on. If the value is obtained from an existence statement, use `some_statement` or `assert_statement` instead."},
   "type":
   {"type": "string",
    "description": "The type of this logical step.",
@@ -591,9 +607,9 @@ def docSchema : Json :=
   "properties":
   {"type": "string",
    "description":
-   "(OPTIONAL) Specific properties of the variable beyond the type"}},
+   "(OPTIONAL) Specific formal properties of the variable beyond the type; required together with `variable_type` when no explicit `value` is given."}},
  "description":
- "A statement introducing a new variable with given value, type and/or property.",
+ "A statement introducing a new local object. It must either give an explicit defining `value`, or give both a `variable_type` and formal `properties`; prose-only local notation should be represented by `assume_statement`, `some_statement`, or `assert_statement` instead.",
  "additionalProperties": false}
 
 #schema_element "multi-condition_cases_proof" := json% {"type": "object",
