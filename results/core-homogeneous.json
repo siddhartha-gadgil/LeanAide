@@ -12,12 +12,6 @@
         "status": "resolved"
       },
       {
-        "type": "paragraph",
-        "text": "This note is written as a source document for formalization. All groups are written multiplicatively unless an abelian group is explicitly written additively.",
-        "id": "core-homogeneous.root.intro",
-        "status": "resolved"
-      },
-      {
         "type": "section",
         "label": "core-homogeneous.root.basic-definitions",
         "level": 1,
@@ -30,54 +24,54 @@
         "type": "definition",
         "label": "Definition 1",
         "header": "Definition",
-        "definition": "**Definition 1 (Pseudo-length function).**\nLet G be a group with identity element e. A function l from G to Real is a pseudo-length function on G if the following four conditions hold.\n\n1. Nonnegativity: for every g in G, 0 <= l applied to g.\n2. Identity: l applied to e = 0.\n3. Symmetry: for every g in G, l applied to inverse of g = l applied to g.\n4. Triangle inequality: for every g and h in G, l applied to product g h <= l applied to g + l applied to h.",
+        "definition": "Let G be a group with identity element e. A function l : G -> R is a pseudo-length function on G if the following four conditions hold: nonnegativity, identity, symmetry, and triangle inequality.",
         "name": "PseudoLength",
         "source": {
-          "text": "**Definition 1 (Pseudo-length function).**\nLet $G$ be a group with identity element $e$. A function\n$l : G \\to \\mathbb{R}$ is a *pseudo-length function* on $G$ if the following\nfour conditions hold.\n\n1. **Nonnegativity:** for every $g \\in G$, $0 \\leq l(g)$.\n2. **Identity:** $l(e) = 0$.\n3. **Symmetry:** for every $g \\in G$, $l(g^{-1}) = l(g)$.\n4. **Triangle inequality:** for every $g,h \\in G$, $l(gh) \\leq l(g) + l(h)$.",
-          "id": "core-homogeneous.root.definition-1",
+          "text": "Let G be a group with identity element e. A function l : G -> R is a pseudo-length function on G if the following four conditions hold: nonnegativity, identity, symmetry, and triangle inequality.",
+          "id": "core-homogeneous.root.def-1",
           "label": "Definition 1"
         },
-        "id": "core-homogeneous.root.definition-1",
+        "id": "core-homogeneous.root.def-1",
         "status": "resolved"
       },
       {
         "type": "paragraph",
         "text": "The nonnegativity condition is included explicitly so that the codomain can be the usual real numbers in a formalization. Equivalently, one may take the codomain to be the set of nonnegative real numbers and omit the separate nonnegativity axiom.",
-        "id": "core-homogeneous.root.def1-remark",
+        "id": "core-homogeneous.root.remark-after-def-1",
         "status": "resolved"
       },
       {
         "type": "definition",
         "label": "Definition 2",
         "header": "Definition",
-        "definition": "**Definition 2 (Length function).**\nLet G be a group with identity element e. A pseudo-length function l from G to Real is a length function if, for every g in G, g != e implies 0 < l applied to g.",
+        "definition": "Let G be a group with identity element e. A pseudo-length function l : G -> R is a length function if, for every g in G, g != e implies 0 < l(g).",
         "name": "IsLength",
         "source": {
-          "text": "**Definition 2 (Length function).**\nLet $G$ be a group with identity element $e$. A pseudo-length function\n$l : G \\to \\mathbb{R}$ is a *length function* if, for every $g \\in G$,\n$g \\neq e$ implies $0 < l(g)$.",
-          "id": "core-homogeneous.root.definition-2",
+          "text": "Let G be a group with identity element e. A pseudo-length function l : G -> R is a length function if, for every g in G, g != e implies 0 < l(g).",
+          "id": "core-homogeneous.root.def-2",
           "label": "Definition 2"
         },
-        "id": "core-homogeneous.root.definition-2",
+        "id": "core-homogeneous.root.def-2",
         "status": "resolved"
       },
       {
         "type": "definition",
         "label": "Definition 3",
         "header": "Definition",
-        "definition": "**Definition 3 (Homogeneous pseudo-length function).**\nLet G be a group. A pseudo-length function l from G to Real is homogeneous if, for every g in G and every integer n, one has l applied to g raised to the integer power n = absolute value of n multiplied by l applied to g.",
+        "definition": "Let G be a group. A pseudo-length function l : G -> R is homogeneous if, for every g in G and every integer n in Z, l(g^n) = |n| l(g).",
         "name": "IsHomogeneousPseudoLength",
         "source": {
-          "text": "**Definition 3 (Homogeneous pseudo-length function).**\nLet $G$ be a group. A pseudo-length function $l : G \\to \\mathbb{R}$ is\n*homogeneous* if, for every $g \\in G$ and every integer $n \\in \\mathbb{Z}$,\none has\n$$\nl(g^n) = |n|\\,l(g).\n$$",
-          "id": "core-homogeneous.root.definition-3",
+          "text": "Let G be a group. A pseudo-length function l : G -> R is homogeneous if, for every g in G and every integer n in Z, l(g^n) = |n| l(g).",
+          "id": "core-homogeneous.root.def-3",
           "label": "Definition 3"
         },
-        "id": "core-homogeneous.root.definition-3",
+        "id": "core-homogeneous.root.def-3",
         "status": "resolved"
       },
       {
         "type": "paragraph",
-        "text": "In particular, for every $g \\in G$, homogeneity gives $l(g^2)=2l(g)$.",
-        "id": "core-homogeneous.root.def3-remark",
+        "text": "In particular, for every g in G, homogeneity gives l(g^2)=2l(g).",
+        "id": "core-homogeneous.root.remark-after-def-3",
         "status": "resolved"
       },
       {
@@ -96,14 +90,14 @@
         "type": "definition",
         "label": "Definition 8",
         "header": "Definition",
-        "definition": "**Definition 8 (Torsion-free abelian group).**\nAn abelian group $A$ is *torsion-free* if $T(A)=\\{0\\}$.",
-        "name": "IsTorsionFree",
+        "definition": "An abelian group A is torsion-free if T(A)={0}.",
+        "name": "IsTorsionFreeAbelianGroup",
         "source": {
-          "text": "**Definition 8 (Torsion-free abelian group).**\nAn abelian group $A$ is *torsion-free* if $T(A)=\\{0\\}$.",
-          "id": "core-homogeneous.root.definition-8",
+          "text": "An abelian group A is torsion-free if T(A)={0}.",
+          "id": "core-homogeneous.root.def-8",
           "label": "Definition 8"
         },
-        "id": "core-homogeneous.root.definition-8",
+        "id": "core-homogeneous.root.def-8",
         "status": "resolved"
       },
       {
@@ -120,7 +114,7 @@
         "label": "Lemma 1",
         "header": "Lemma",
         "name": "lemma_1",
-        "claim": "∀ (G : Type*) [Group G] (l : G → ℝ), IsHomogeneousPseudoLength G l → ∀ x y : G, l (y * x * y⁻¹) = l x",
+        "claim": "For every x,y in G, l(yxy^{-1}) = l(x).",
         "hypothesis": [
           {
             "type": "assume_statement",
@@ -132,523 +126,233 @@
           },
           {
             "type": "assume_statement",
-            "assumption": "Let l : G \\to \\mathbb{R} be a homogeneous pseudo-length function"
+            "assumption": "Let G be a group"
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "Let l : G -> R be a homogeneous pseudo-length function"
           }
         ],
         "proof": {
           "type": "proof",
           "proof_steps": [
             {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step1",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step1",
-              "claim": "∀ x y : G, x ∈ Set.univ ∧ y ∈ Set.univ",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assume_statement",
-                    "arguments": [],
-                    "variable_name": "x",
-                    "variable_type": "G"
-                  },
-                  {
-                    "type": "assume_statement",
-                    "arguments": [],
-                    "variable_name": "y",
-                    "variable_type": "G"
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step1",
-              "status": "resolved",
-              "text": "Fix $x,y \\in G$.",
-              "hypothesis": [
-                {
-                  "type": "assume_statement",
-                  "assumption": "Fix x,y \\in G"
-                }
-              ]
+              "type": "assume_statement",
+              "arguments": [],
+              "variable_name": "x",
+              "variable_type": "G"
             },
             {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step2",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step2",
-              "claim": "l (y * x * y⁻¹) ≤ l x",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(y * x * y⁻¹) ≤ l(x)",
-                    "proof_method": "This is the first inequality to be proved as an intermediate step toward showing equality.",
-                    "source_claim": "We first prove $l(yxy^{-1}) \\leq l(x)$.",
-                    "arguments": []
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step2",
-              "status": "resolved",
-              "text": "We first prove $l(yxy^{-1}) \\leq l(x)$."
+              "type": "assume_statement",
+              "arguments": [],
+              "variable_name": "y",
+              "variable_type": "G"
             },
             {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step3",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step3",
-              "claim": "0 < n",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assume_statement",
-                    "arguments": [],
-                    "variable_name": "n",
-                    "variable_type": "positive integer",
-                    "properties": "n > 0",
-                    "statement": "Let n be a positive integer."
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step3",
-              "status": "resolved",
-              "text": "Let $n$ be a positive integer.",
-              "hypothesis": [
-                {
-                  "type": "assume_statement",
-                  "assumption": "Let n be a positive integer"
-                }
-              ]
-            },
-            {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step4",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step4",
-              "claim": "n * l (y * x * y⁻¹) = l ((y * x * y⁻¹) ^ n)",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "claim": "n * l(y * x * y^{-1}) = l((y * x * y^{-1})^n)",
-                    "proof_method": "By homogeneity of l applied to y * x * y^{-1}, followed by symmetry of equality.",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "If l is homogeneous, then for every group element g and natural number n, l(g^n) = n l(g).",
-                        "name": "Homogeneity of l",
-                        "description": "Instantiated at g = yxy^{-1}; then equality is rewritten symmetrically."
-                      }
-                    ]
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step4",
-              "status": "resolved",
-              "text": "By homogeneity, $$ n\\,l(yxy^{-1}) = l((yxy^{-1})^n)."
-            },
-            {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step5",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step5",
-              "claim": "n * l (y * x * y⁻¹) = l (y * x ^ n * y⁻¹)",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "claim": "(y * x * y⁻¹)^n = y * x^n * y⁻¹",
-                    "proof_method": "By the group identity for powers of a conjugate.",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "For group elements a and b and a natural number n, (a b a⁻¹)^n = a b^n a⁻¹.",
-                        "name": "Conjugation power identity",
-                        "description": "Applied with a = y and b = x."
-                      }
-                    ]
-                  },
-                  {
-                    "type": "assert_statement",
-                    "claim": "n * l(y * x * y⁻¹) = l(y * x^n * y⁻¹)",
-                    "proof_method": "Use homogeneity to rewrite l((y * x * y⁻¹)^n) as n * l(y * x * y⁻¹), then rewrite by the conjugation power identity.",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "If l is homogeneous, then l(g^n) = n * l(g) for every group element g and natural number n.",
-                        "name": "Homogeneity of l",
-                        "description": "Applied to g = y * x * y⁻¹."
-                      },
-                      {
-                        "claim": "If a = b, then l(a) = l(b).",
-                        "name": "Congruence of l under equality",
-                        "description": "Applied to the equality (y * x * y⁻¹)^n = y * x^n * y⁻¹."
-                      }
-                    ]
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step5",
-              "status": "resolved",
-              "text": "$$ The group identity $(yxy^{-1})^n = yx^n y^{-1}$ gives $$ n\\,l(yxy^{-1}) = l(yx^n y^{-1})."
-            },
-            {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step6",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step6",
-              "claim": "l (y * x ^ n * y⁻¹) ≤ l y + l (x ^ n) + l y⁻¹",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(y x^n y^{-1}) ≤ l(y) + l(x^n) + l(y^{-1})",
-                    "proof_method": "By the triangle inequality applied to the three-factor product y * x^n * y^{-1}.",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "For a pseudo-length function l on a group, l(ab) ≤ l(a) + l(b) for all group elements a,b.",
-                        "name": "Triangle inequality",
-                        "description": "Applied twice, first to y and x^n y^{-1}, then to x^n and y^{-1}."
-                      }
-                    ]
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step6",
-              "status": "resolved",
-              "text": "$$ By the triangle inequality, $$ l(yx^n y^{-1}) \\leq l(y) + l(x^n) + l(y^{-1})."
-            },
-            {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step7",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step7",
-              "claim": "l y⁻¹ = l y",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(y⁻¹) = l(y)",
-                    "proof_method": "By symmetry of the pseudo-length function l, applied to y.",
-                    "source_claim": "By symmetry, l(y^{-1})=l(y).",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "For every group element g, l(g⁻¹) = l(g).",
-                        "name": "symmetry of l",
-                        "description": "Applied with g = y."
-                      }
-                    ]
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step7",
-              "status": "resolved",
-              "text": "$$ By symmetry, $l(y^{-1})=l(y)$."
-            },
-            {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step8",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step8",
-              "claim": "l (x ^ n) = n * l x",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(x^n) = n * l(x)",
-                    "proof_method": "By homogeneity of l, applied to x and n.",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "For a homogeneous pseudo-length function l on a group, for every group element x and natural number n, l(x^n) = n · l(x).",
-                        "name": "Homogeneity",
-                        "description": "Applied to the element x and exponent n."
-                      }
-                    ]
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step8",
-              "status": "resolved",
-              "text": "By homogeneity, $l(x^n)=n\\,l(x)$."
-            },
-            {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step9",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step9",
-              "claim": "n * l (y * x * y⁻¹) ≤ 2 * l y + n * l x",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "claim": "n * l(y * x * y⁻¹) ≤ 2 * l(y) + n * l(x)",
-                    "proof_method": "Follows from the preceding estimates in the proof, but those estimates are not included in the provided context.",
-                    "arguments": []
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step9",
-              "status": "resolved",
-              "text": "Hence $$ n\\,l(yxy^{-1}) \\leq 2l(y)+n\\,l(x)."
-            },
-            {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step10",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step10",
-              "claim": "l (y * x * y⁻¹) ≤ l x + 2 * l y / n",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(y x y⁻¹) ≤ l(x) + 2 * l(y) / n",
-                    "proof_method": "Divide the preceding inequality by the positive real number n; since n > 0, the inequality direction is preserved, and the right side simplifies to l(x) + 2 * l(y) / n.",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "If a ≤ b and c is a positive real number, then a / c ≤ b / c.",
-                        "name": "division by a positive number preserves inequalities",
-                        "description": "Applied with c = n to the preceding inequality."
-                      }
-                    ]
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step10",
-              "status": "resolved",
-              "text": "$$ Dividing by the positive real number $n$ gives $$ l(yxy^{-1}) \\leq l(x)+\\frac{2l(y)}{n}."
-            },
-            {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step11",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step11",
-              "claim": "l (y * x * y⁻¹) ≤ l x",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "name": "for_every_positive_integer_n_l_yxy_1",
-                    "claim": "l (y * x * y⁻¹) ≤ l x + 2 * l y / n",
-                    "proof_method": "Named local obligation from unresolved claim dependency.",
-                    "source": {
-                      "text": "For every positive integer n, l(yxy^{-1}) ≤ l(x) + 2*l(y)/n",
-                      "kind": "deduced_from_claim"
-                    }
-                  },
-                  {
-                    "type": "assert_statement",
-                    "name": "n_2_l_y_n_tends_to_0_as",
-                    "claim": "2*l(y)/n tends to 0 as n tends to infinity",
-                    "proof_method": "Named local obligation from unresolved claim dependency.",
-                    "source": {
-                      "text": "2*l(y)/n tends to 0 as n tends to infinity",
-                      "kind": "deduced_from_claim"
-                    }
-                  },
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(yxy^{-1}) ≤ l(x)",
-                    "proof_method": "Since l(yxy^{-1}) ≤ l(x) + 2*l(y)/n for every positive integer n and 2*l(y)/n tends to 0, pass to the limit n → ∞.",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "If a real number a is bounded above by b + ε_n for every positive integer n and ε_n tends to 0, then a ≤ b.",
-                        "name": "limit comparison/order closure for inequalities",
-                        "description": "Applied with a = l(yxy^{-1}), b = l(x), and ε_n = 2*l(y)/n."
-                      }
-                    ]
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step11",
-              "status": "resolved",
-              "text": "$$ Since this inequality holds for every positive integer $n$, and $2l(y)/n$ tends to $0$, it follows that $$ l(yxy^{-1}) \\leq l(x)."
+              "type": "assume_statement",
+              "arguments": [],
+              "assumption": "n is a positive integer",
+              "variable_name": "n",
+              "variable_type": "Nat",
+              "properties": "0 < n"
             },
             {
               "type": "assert_statement",
-              "claim": "l(y x y⁻¹) ≤ l(x)",
-              "id": "core-homogeneous.root.lemma-1.proof.root.step12",
-              "status": "resolved",
-              "text": "$$"
+              "claim": "n * l(y*x*y⁻¹) = l((y*x*y⁻¹)^n)",
+              "proof_method": "By homogeneity applied to y*x*y⁻¹ and n.",
+              "arguments": [],
+              "deduced_from_theorem": [
+                {
+                  "claim": "For a homogeneous pseudo-length function l on a group, l(g^n) = n * l(g) for every group element g and positive integer n.",
+                  "name": "homogeneity",
+                  "description": "Applied to g = yxy^{-1}."
+                }
+              ]
             },
             {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step13",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step13",
-              "claim": "let z : G := y * x * y⁻¹; l x ≤ l z",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "let_statement",
-                    "arguments": [],
-                    "variable_name": "z",
-                    "value": "y * x * y⁻¹"
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step13",
-              "status": "resolved",
-              "text": "For the reverse inequality, define $z := yxy^{-1}$."
+              "type": "assert_statement",
+              "claim": "(y*x*y⁻¹)^n = y*x^n*y⁻¹",
+              "proof_method": "By the group identity for powers of conjugates.",
+              "arguments": [],
+              "deduced_from_theorem": [
+                {
+                  "claim": "In a group, (y*x*y⁻¹)^n = y*x^n*y⁻¹ for every positive integer n.",
+                  "name": "conjugate power identity",
+                  "description": "Group identity for powers of a conjugate."
+                }
+              ]
             },
             {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step14",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step14",
-              "claim": "let z : G := y * x * y⁻¹; x = y⁻¹ * z * y",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "claim": "x = y⁻¹ * z * y",
-                    "proof_method": "Algebraic rearrangement from the preceding definition or relation involving z; the specific prior equality is not present in the provided local context.",
-                    "source_claim": "Then $x=y^{-1}zy$.",
-                    "arguments": []
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step14",
-              "status": "resolved",
-              "text": "Then $x=y^{-1}zy$."
+              "type": "assert_statement",
+              "claim": "n * l(y*x*y⁻¹) = l(y*x^n*y⁻¹)",
+              "proof_method": "Rewrite the homogeneity equality using the conjugate power identity.",
+              "arguments": []
             },
             {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step15",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step15",
-              "claim": "let z : G := y * x * y⁻¹; l(x) ≤ l(z)",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "name": "h_conj_le_z_yinv",
-                    "claim": "l(y⁻¹ z y) ≤ l(z)",
-                    "proof_method": "Specialized: For all group elements u and v, l(v u v^{-1}) ≤ l(u).",
-                    "lean_term": "hConjLe z (y⁻¹)",
-                    "source_claim": "For all group elements u and v, l(v u v^{-1}) ≤ l(u).",
-                    "arguments": [
-                      "z",
-                      "y⁻¹"
-                    ]
-                  },
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(y⁻¹ z y) ≤ l(z)",
-                    "proof_method": "Apply the inequality already proved with u = z and v = y⁻¹, noting that (y⁻¹)⁻¹ = y.",
-                    "arguments": []
-                  },
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(x) = l(y⁻¹ z y)",
-                    "proof_method": "Rewrite z as y x y⁻¹ and simplify by associativity and inverse cancellation.",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "In a group, y⁻¹ * (y * x * y⁻¹) * y = x.",
-                        "name": "group inverse cancellation",
-                        "description": "Used to simplify the conjugate y⁻¹ z y when z = y x y⁻¹."
-                      }
-                    ]
-                  },
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(z) = l(y x y⁻¹)",
-                    "proof_method": "Rewrite using the definition of z.",
-                    "arguments": []
-                  },
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(x) ≤ l(y * x * y⁻¹)",
-                    "proof_method": "Combine the specialized inequality with the two rewrites.",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "If a = b, b ≤ c, and c = d, then a ≤ d.",
-                        "name": "substitution in inequalities",
-                        "description": "Combines the rewritten equalities with the specialized inequality."
-                      }
-                    ]
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step15",
-              "status": "resolved",
-              "text": "Applying the inequality already proved with $z$ in place of $x$ and $y^{-1}$ in place of $y$ gives $$ l(x)=l(y^{-1}zy) \\leq l(z)=l(yxy^{-1})."
+              "type": "assert_statement",
+              "claim": "l(y*x^n*y⁻¹) ≤ l(y) + l(x^n) + l(y⁻¹)",
+              "proof_method": "By the triangle inequality, applied to y, x^n, and y⁻¹.",
+              "arguments": [],
+              "deduced_from_theorem": [
+                {
+                  "claim": "For a pseudo-length function l, l(a*b) ≤ l(a) + l(b) for all group elements a,b.",
+                  "name": "triangle inequality",
+                  "description": "Applied twice to the product y*x^n*y⁻¹."
+                }
+              ]
             },
             {
-              "type": "theorem",
-              "label": "core-homogeneous.root.lemma-1.proof.root.step16",
-              "header": "Claim",
-              "name": "core_homogeneous_root_lemma_1_proof_root_step16",
-              "claim": "l(y * x * y⁻¹) = l(x)",
-              "proof": {
-                "type": "proof",
-                "proof_steps": [
-                  {
-                    "type": "assert_statement",
-                    "name": "l_y_x_y_l_x",
-                    "claim": "l(y x y⁻¹) ≤ l(x)",
-                    "proof_method": "Named local obligation from unresolved claim dependency.",
-                    "source": {
-                      "text": "l(y x y⁻¹) ≤ l(x)",
-                      "kind": "deduced_from_claim"
-                    }
-                  },
-                  {
-                    "type": "assert_statement",
-                    "name": "l_x_l_y_x_y",
-                    "claim": "l(x) ≤ l(y x y⁻¹)",
-                    "proof_method": "Named local obligation from unresolved claim dependency.",
-                    "source": {
-                      "text": "l(x) ≤ l(y x y⁻¹)",
-                      "kind": "deduced_from_claim"
-                    }
-                  },
-                  {
-                    "type": "assert_statement",
-                    "claim": "l(y x y⁻¹) = l(x)",
-                    "proof_method": "By antisymmetry of the order, the two inequalities imply equality.",
-                    "source_claim": "The two inequalities imply l(yxy^{-1})=l(x).",
-                    "arguments": [],
-                    "deduced_from_theorem": [
-                      {
-                        "claim": "If a ≤ b and b ≤ a, then a = b.",
-                        "name": "antisymmetry of ≤",
-                        "description": "Applied to the two previously established inequalities between l(y x y⁻¹) and l(x)."
-                      }
-                    ]
-                  }
-                ]
-              },
-              "id": "core-homogeneous.root.lemma-1.proof.root.step16",
-              "status": "resolved",
-              "text": "$$ The two inequalities imply $l(yxy^{-1})=l(x)$."
+              "type": "assert_statement",
+              "claim": "l(y⁻¹) = l(y)",
+              "proof_method": "By symmetry applied to y.",
+              "arguments": [],
+              "deduced_from_theorem": [
+                {
+                  "claim": "For a pseudo-length function l, l(g⁻¹) = l(g) for every group element g.",
+                  "name": "symmetry",
+                  "description": "Applied to y."
+                }
+              ]
+            },
+            {
+              "type": "assert_statement",
+              "claim": "l(x^n) = n * l(x)",
+              "proof_method": "By homogeneity applied to x and n.",
+              "arguments": [],
+              "deduced_from_theorem": [
+                {
+                  "claim": "For a homogeneous pseudo-length function l on a group, l(g^n) = n * l(g) for every group element g and positive integer n.",
+                  "name": "homogeneity",
+                  "description": "Applied to x."
+                }
+              ]
+            },
+            {
+              "type": "assert_statement",
+              "claim": "n * l(y*x*y⁻¹) ≤ 2*l(y) + n*l(x)",
+              "proof_method": "Combine the equality with the triangle inequality, then rewrite using symmetry and homogeneity.",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "claim": "l(y*x*y⁻¹) ≤ l(x) + 2*l(y)/n",
+              "proof_method": "Divide the previous inequality by the positive real number n.",
+              "arguments": [],
+              "deduced_from_theorem": [
+                {
+                  "claim": "If 0 < n and n*a ≤ b + n*c, then a ≤ c + b/n over the real numbers.",
+                  "name": "division by a positive real number",
+                  "description": "Applied with a = l(y*x*y⁻¹), b = 2*l(y), and c = l(x)."
+                }
+              ]
+            },
+            {
+              "type": "assert_statement",
+              "name": "for_every_positive_integer_n_l_y_x",
+              "claim": "l(y*x*y⁻¹) ≤ l(x) + 2*l(y)/n",
+              "proof_method": "Named local obligation from unresolved claim dependency.",
+              "source": {
+                "text": "For every positive integer n, l(y*x*y⁻¹) ≤ l(x) + 2*l(y)/n",
+                "kind": "deduced_from_claim"
+              }
+            },
+            {
+              "type": "assert_statement",
+              "name": "first_inequality",
+              "claim": "l(y*x*y⁻¹) ≤ l(x)",
+              "proof_method": "Since the preceding inequality holds for every positive integer n and 2*l(y)/n tends to 0, take the limit as n tends to infinity.",
+              "arguments": [],
+              "deduced_from_theorem": [
+                {
+                  "claim": "If a ≤ b + c/n for every positive integer n and c/n tends to 0, then a ≤ b.",
+                  "name": "Archimedean limiting argument",
+                  "description": "Uses that 2*l(y)/n tends to 0 as n tends to infinity."
+                }
+              ]
+            },
+            {
+              "type": "let_statement",
+              "arguments": [],
+              "variable_name": "z",
+              "variable_type": "G",
+              "value": "y*x*y⁻¹"
+            },
+            {
+              "type": "assert_statement",
+              "name": "z_y_x_y",
+              "claim": "z = y*x*y⁻¹",
+              "proof_method": "Named local obligation from unresolved claim dependency.",
+              "source": {
+                "text": "z = y*x*y⁻¹",
+                "kind": "deduced_from_claim"
+              }
+            },
+            {
+              "type": "assert_statement",
+              "claim": "x = y⁻¹*z*y",
+              "proof_method": "By the definition z := y*x*y⁻¹ and group simplification.",
+              "arguments": [],
+              "deduced_from_theorem": [
+                {
+                  "claim": "In a group, if z = y*x*y⁻¹, then x = y⁻¹*z*y.",
+                  "name": "solving a conjugation identity",
+                  "description": "Group rearrangement of the definition of z."
+                }
+              ]
+            },
+            {
+              "type": "assert_statement",
+              "name": "for_all_group_elements_u_v_l_v",
+              "claim": "l(y * x * y⁻¹) ≤ l(x)",
+              "proof_method": "Named local obligation from unresolved claim dependency.",
+              "source": {
+                "text": "For all group elements u v, l(v*u*v⁻¹) ≤ l(u)",
+                "kind": "deduced_from_claim"
+              }
+            },
+            {
+              "type": "assert_statement",
+              "name": "reverse_inequality",
+              "claim": "l(x) ≤ l(z)",
+              "proof_method": "Apply the already proved inequality with z in place of x and y⁻¹ in place of y, then rewrite y⁻¹*z*(y⁻¹)⁻¹ as x.",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "name": "z_y_x_y",
+              "claim": "z = y*x*y⁻¹",
+              "proof_method": "Named local obligation from unresolved claim dependency.",
+              "source": {
+                "text": "z = y*x*y⁻¹",
+                "kind": "deduced_from_claim"
+              }
+            },
+            {
+              "type": "assert_statement",
+              "claim": "l(x) ≤ l(y*x*y⁻¹)",
+              "proof_method": "Rewrite reverse_inequality using the definition of z.",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "claim": "l(y*x*y⁻¹) = l(x)",
+              "proof_method": "The two inequalities imply equality by antisymmetry.",
+              "arguments": [],
+              "deduced_from_theorem": [
+                {
+                  "claim": "If a ≤ b and b ≤ a, then a = b.",
+                  "name": "antisymmetry of ≤",
+                  "description": "Applied to the two inequalities between l(y*x*y⁻¹) and l(x)."
+                }
+              ]
             }
           ],
           "id": "core-homogeneous.root.lemma-1.proof.root",
           "status": "resolved",
-          "text": "Fix $x,y \\in G$.  We first prove $l(yxy^{-1}) \\leq l(x)$.\n\nLet $n$ be a positive integer.  By homogeneity,\n$$\nn\\,l(yxy^{-1}) = l((yxy^{-1})^n).\n$$\nThe group identity $(yxy^{-1})^n = yx^n y^{-1}$ gives\n$$\nn\\,l(yxy^{-1}) = l(yx^n y^{-1}).\n$$\nBy the triangle inequality,\n$$\nl(yx^n y^{-1}) \\leq l(y) + l(x^n) + l(y^{-1}).\n$$\nBy symmetry, $l(y^{-1})=l(y)$.  By homogeneity, $l(x^n)=n\\,l(x)$.  Hence\n$$\nn\\,l(yxy^{-1}) \\leq 2l(y)+n\\,l(x).\n$$\nDividing by the positive real number $n$ gives\n$$\nl(yxy^{-1}) \\leq l(x)+\\frac{2l(y)}{n}.\n$$\nSince this inequality holds for every positive integer $n$, and\n$2l(y)/n$ tends to $0$, it follows that\n$$\nl(yxy^{-1}) \\leq l(x).\n$$\n\nFor the reverse inequality, define $z := yxy^{-1}$.  Then\n$x=y^{-1}zy$.  Applying the inequality already proved with $z$ in place of\n$x$ and $y^{-1}$ in place of $y$ gives\n$$\nl(x)=l(y^{-1}zy) \\leq l(z)=l(yxy^{-1}).\n$$\nThe two inequalities imply $l(yxy^{-1})=l(x)$."
+          "text": "Fix x,y in G. We first prove l(yxy^{-1}) <= l(x). Let n be a positive integer. By homogeneity, n l(yxy^{-1}) = l((yxy^{-1})^n). The group identity (yxy^{-1})^n = yx^n y^{-1} gives n l(yxy^{-1}) = l(yx^n y^{-1}). By the triangle inequality, l(yx^n y^{-1}) <= l(y) + l(x^n) + l(y^{-1}). By symmetry, l(y^{-1})=l(y). By homogeneity, l(x^n)=n l(x). Hence n l(yxy^{-1}) <= 2l(y)+n l(x). Dividing by the positive real number n gives l(yxy^{-1}) <= l(x)+2l(y)/n. Since this inequality holds for every positive integer n, and 2l(y)/n tends to 0, it follows that l(yxy^{-1}) <= l(x). For the reverse inequality, define z := yxy^{-1}. Then x=y^{-1}zy. Applying the inequality already proved with z in place of x and y^{-1} in place of y gives l(x)=l(y^{-1}zy) <= l(z)=l(yxy^{-1}). The two inequalities imply l(yxy^{-1})=l(x)."
         },
         "source": {
-          "text": "**Lemma 1 (Conjugation invariance).**\nLet $G$ be a group. Let $l : G \\to \\mathbb{R}$ be a homogeneous\npseudo-length function. Then for every $x,y \\in G$,\n$$\nl(yxy^{-1}) = l(x).\n$$",
+          "text": "Let G be a group. Let l : G -> R be a homogeneous pseudo-length function. Then for every x,y in G, l(yxy^{-1}) = l(x).",
           "id": "core-homogeneous.root.lemma-1",
           "label": "Lemma 1"
         },
@@ -660,7 +364,7 @@
         "label": "Lemma 2",
         "header": "Lemma",
         "name": "lemma_2",
-        "claim": "∀ (G : Type*) [Group G] (l : G → ℝ), IsHomogeneousPseudoLength G l → ∀ (w y z s t : G), let C : ℕ → G := fun n => (w * y)^n * s⁻¹ * t * (z * w⁻¹)^n; ∀ n : ℕ, l (C n) ≤ l s⁻¹ + l t + (n : ℝ) * (l y + l z)",
+        "claim": "∀ (G : Type*) [Group G] (l : G → ℝ), IsHomogeneousPseudoLength G l → ∀ (w y z s t : G) (n : ℕ), let C : ℕ → G := fun n => (w * y) ^ n * s⁻¹ * t * (z * w⁻¹) ^ n; l (C n) ≤ l (s⁻¹) + l t + n * (l y + l z)",
         "hypothesis": [
           {
             "type": "assume_statement",
@@ -676,11 +380,15 @@
           },
           {
             "type": "assume_statement",
-            "assumption": "Let l : G \\to \\mathbb{R} be a homogeneous pseudo-length function"
+            "assumption": "Let G be a group"
           },
           {
             "type": "assume_statement",
-            "assumption": "Let w,y,z,s,t \\in G"
+            "assumption": "Let l : G -> R be a homogeneous pseudo-length function"
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "Let w,y,z,s,t in G"
           }
         ],
         "proof": {
@@ -691,105 +399,87 @@
             "claim_label": "l(C_0) <= l(s^{-1}) + l(t) + 0(l(y) + l(z))",
             "calculation_kind": "triangle_inequality_estimate",
             "start": "l(C_0)",
-            "target": "l(s^{-1}) + l(t)",
+            "target": "l(s^{-1}) + l(t) + 0(l(y) + l(z))",
             "goal_relation": "mixed",
             "proof_steps": [
               {
                 "type": "assert_statement",
                 "name": "c_0_s_1_t",
-                "claim": "C applied to 0 = s⁻¹ * t",
+                "claim": "C 0 = s⁻¹ * t",
                 "proof_method": "Named local obligation from unresolved claim dependency.",
                 "source": {
-                  "text": "C_0 = s^{-1} t",
+                  "text": "C_0 = s^{-1}t",
                   "kind": "deduced_from_claim"
                 }
               },
               {
                 "type": "assert_statement",
-                "claim": "l applied to C applied to 0 = l applied to (s⁻¹ * t)",
-                "proof_method": "By the definition of C at n=0.",
-                "from": "l applied to C applied to 0",
+                "claim": "l (C 0) = l (s⁻¹ * t)",
+                "proof_method": "By the definition of C at n = 0.",
+                "from": "l applied to C0",
                 "relation": "=",
-                "to": "l(s^{-1} t)"
+                "to": "l(s^{-1}t)"
               },
               {
                 "type": "assert_statement",
-                "claim": "l(s^{-1} t) <= l(s^{-1}) + l(t)",
+                "claim": "l(s^{-1}t) <= l(s^{-1}) + l(t)",
                 "proof_method": "By the triangle inequality.",
-                "from": "l(s^{-1} t)",
+                "from": "l(s^{-1}t)",
                 "relation": "<=",
                 "to": "l(s^{-1}) + l(t)",
                 "deduced_from_theorem": [
                   {
-                    "claim": "For all group elements a,b, l(a b) <= l(a) + l(b).",
+                    "claim": "For a length function l on a group, l(xy) <= l(x) + l(y) for all group elements x,y.",
                     "name": "triangle inequality",
-                    "description": "Applied to a = s^{-1} and b = t."
+                    "description": "Applied to x = s^{-1} and y = t.",
+                    "lean_name_candidate": "GroupSeminorm.mul_le'",
+                    "verification_status": "semantic_match"
                   }
                 ]
+              },
+              {
+                "type": "assert_statement",
+                "claim": "l(s^{-1}) + l(t) = l(s^{-1}) + l(t) + 0(l(y) + l(z))",
+                "proof_method": "Since 0(l(y)+l(z)) = 0.",
+                "from": "l(s^{-1}) + l(t)",
+                "relation": "=",
+                "to": "l(s^{-1}) + l(t) + 0(l(y) + l(z))"
               }
             ],
             "id": "core-homogeneous.root.lemma-2.proof.root.base-n-0",
             "status": "resolved",
-            "text": "For $n=0$, the definition gives $C_0=s^{-1}t$. By the triangle inequality,\n$$\nl(C_0)=l(s^{-1}t) \\leq l(s^{-1})+l(t).\n$$\nThis is the desired inequality for $n=0$."
+            "text": "For n=0, the definition gives C_0=s^{-1}t. By the triangle inequality, l(C_0)=l(s^{-1}t) <= l(s^{-1})+l(t). This is the desired inequality for n=0."
           },
           "induction_step_proof": {
             "type": "proof",
             "claim_label": "l(C_{n+1}) <= l(s^{-1}) + l(t) + (n+1)(l(y) + l(z))",
-            "calculation_kind": "mixed_relation_chain",
-            "start": "C_{n+1}",
+            "calculation_kind": "inequality_chain",
+            "start": "l(C_{n+1})",
             "target": "l(s^{-1}) + l(t) + (n+1)(l(y)+l(z))",
             "goal_relation": "mixed",
             "proof_steps": [
               {
                 "type": "assert_statement",
-                "claim": "C (n + 1) = w * y * C n * z * w⁻¹",
-                "proof_method": "side condition for C_{n+1} = w y C_n z w^{-1}"
+                "name": "c_n_1_w_yc_nz_w_1",
+                "claim": "CnPlusOne = w * (y * Cn * z) * w inverse",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                  "text": "C_{n+1}=w(yC_nz)w^{-1}",
+                  "kind": "deduced_from_claim"
+                }
               },
               {
                 "type": "assert_statement",
-                "claim": "C applied to n + 1 = w * y * (C applied to n) * z * w⁻¹",
-                "proof_method": "By the recursive form of the definition of C.",
-                "from": "C applied to n + 1",
+                "claim": "l applied to CnPlusOne = l applied to (y * Cn * z)",
+                "proof_method": "From the recursive form C_{n+1}=w(yC_nz)w^{-1} and Lemma 1.",
+                "from": "l applied to CnPlusOne",
                 "relation": "=",
-                "to": "w * y * (C applied to n) * z * w⁻¹",
-                "side_conditions": [
-                  "n is a natural number"
-                ]
-              },
-              {
-                "type": "assert_statement",
-                "claim": "w * y * (C applied to n) * z * w⁻¹ = w * (y * (C applied to n) * z) * w⁻¹",
-                "proof_method": "Regrouping by associativity of the group operation.",
-                "from": "w * y * (C applied to n) * z * w⁻¹",
-                "relation": "=",
-                "to": "w * (y * (C applied to n) * z) * w⁻¹"
-              },
-              {
-                "type": "assert_statement",
-                "claim": "l (w * (y * C n * z) * w⁻¹) = l (y * C n * z)",
-                "proof_method": "side condition for l(C_{n+1}) = l(y C_n z)"
-              },
-              {
-                "type": "assert_statement",
-                "claim": "l (w * (y * C n * z) * w⁻¹) = l (y * C n * z)",
-                "proof_method": "side condition for l(C_{n+1}) = l(y C_n z)"
-              },
-              {
-                "type": "assert_statement",
-                "claim": "l applied to C applied to n + 1 = l applied to (y * (C applied to n) * z)",
-                "proof_method": "By Lemma 1 applied to the element y C_n z and conjugating element w.",
-                "from": "l applied to C applied to n + 1",
-                "relation": "=",
-                "to": "l applied to (y * (C applied to n) * z)",
-                "side_conditions": [
-                  "y C_n z ∈ G",
-                  "w ∈ G"
-                ],
+                "to": "l applied to (y * Cn * z)",
                 "deduced_from_theorem": [
                   {
-                    "claim": "For every x,y in G, l(y x y^{-1}) = l(x).",
+                    "claim": "For every x,y in G, l(yxy^{-1}) = l(x).",
                     "name": "Lemma 1",
-                    "description": "Applied with x = y C_n z and conjugating element w.",
+                    "description": "Applied with x = yC_nz and conjugating element y = w.",
                     "lean_name_candidate": "lemma_1",
                     "verification_status": "local_declaration_match"
                   }
@@ -797,88 +487,70 @@
               },
               {
                 "type": "assert_statement",
-                "claim": "l applied to (y * (C applied to n) * z) <= l applied to y + l applied to (C applied to n) + l applied to z",
-                "proof_method": "side condition for l(y C_n z) <= l(y) + l(C_n) + l(z)"
-              },
-              {
-                "type": "assert_statement",
-                "claim": "l applied to (y * (C applied to n) * z) <= l applied to y + l applied to (C applied to n) + l applied to z",
-                "proof_method": "side condition for l(y C_n z) <= l(y) + l(C_n) + l(z)"
-              },
-              {
-                "type": "assert_statement",
-                "claim": "l applied to (y * (C applied to n) * z) <= l applied to y + l applied to (C applied to n) + l applied to z",
-                "proof_method": "side condition for l(y C_n z) <= l(y) + l(C_n) + l(z)"
-              },
-              {
-                "type": "assert_statement",
-                "claim": "l applied to (y * (C applied to n) * z) <= l applied to y + l applied to (C applied to n) + l applied to z",
+                "claim": "l applied to (y * Cn * z) <= l applied to y + l applied to Cn + l applied to z",
                 "proof_method": "By two applications of the triangle inequality.",
-                "from": "l applied to (y * (C applied to n) * z)",
+                "from": "l applied to (y * Cn * z)",
                 "relation": "<=",
-                "to": "l applied to y + l applied to (C applied to n) + l applied to z",
-                "side_conditions": [
-                  "y ∈ G",
-                  "C_n ∈ G",
-                  "z ∈ G"
-                ],
+                "to": "l applied to y + l applied to Cn + l applied to z",
                 "deduced_from_theorem": [
                   {
-                    "claim": "For all group elements a and b, l(ab) <= l(a) + l(b).",
-                    "name": "triangle inequality for l",
-                    "description": "Applied twice, first to y and C_n z, then to C_n and z."
+                    "claim": "For all group elements a,b, l(ab) <= l(a)+l(b).",
+                    "name": "triangle inequality",
+                    "description": "Applied first to y and C_n z, then to C_n and z."
                   }
                 ]
               },
               {
                 "type": "assert_statement",
-                "claim": "l applied to (C applied to n) <= l applied to s⁻¹ + l applied to t + n * (l applied to y + l applied to z)",
-                "proof_method": "side condition for l(C_n) <= l(s^{-1}) + l(t) + n(l(y) + l(z))"
+                "name": "l_c_n_l_s_1_l_t",
+                "claim": "l applied to Cn <= l applied to s inverse + l applied to t + n * (l applied to y + l applied to z)",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                  "text": "l(C_n) <= l(s^{-1}) + l(t) + n(l(y)+l(z))",
+                  "kind": "deduced_from_claim"
+                }
               },
               {
                 "type": "assert_statement",
-                "claim": "l applied to (C applied to n) <= l applied to s⁻¹ + l applied to t + n * (l applied to y + l applied to z)",
+                "claim": "l applied to y + l applied to Cn + l applied to z <= l applied to y + (l applied to s inverse + l applied to t + n * (l applied to y + l applied to z)) + l applied to z",
                 "proof_method": "By the induction hypothesis.",
-                "from": "l applied to (C applied to n)",
+                "from": "l applied to y + l applied to Cn + l applied to z",
                 "relation": "<=",
-                "to": "l(s^{-1}) + l(t) + n(l(y) + l(z))",
-                "side_conditions": [
-                  "n is a natural number"
-                ]
+                "to": "l(y)+(l(s^{-1}) + l(t) + n(l(y)+l(z)))+l(z)"
               },
               {
                 "type": "assert_statement",
-                "claim": "l applied to C applied to n + 1 <= l applied to s⁻¹ + l applied to t + (n + 1) * (l applied to y + l applied to z)",
-                "proof_method": "side condition for l(C_{n+1}) <= l(s^{-1}) + l(t) + (n+1)(l(y)+l(z))"
+                "claim": "l(y) + (l(s^{-1}) + l(t) + n * (l(y) + l(z))) + l(z) = l(s^{-1}) + l(t) + (n * (l(y) + l(z)) + (l(y) + l(z)))",
+                "proof_method": "side condition for l(y)+(l(s^{-1}) + l(t) + n(l(y)+l(z)))+l(z) = l(s^{-1}) + l(t) + (n+1)(l(y)+l(z))"
               },
               {
                 "type": "assert_statement",
-                "claim": "l(y) + (l(s⁻¹) + l(t) + n * (l(y) + l(z))) + l(z) = l(s⁻¹) + l(t) + (n + 1) * (l(y) + l(z))",
-                "proof_method": "side condition for l(C_{n+1}) <= l(s^{-1}) + l(t) + (n+1)(l(y)+l(z))"
+                "claim": "n(l(y)+l(z))+(l(y)+l(z))=(n+1)(l(y)+l(z)).",
+                "proof_method": "side condition for l(y)+(l(s^{-1}) + l(t) + n(l(y)+l(z)))+l(z) = l(s^{-1}) + l(t) + (n+1)(l(y)+l(z))"
               },
               {
                 "type": "assert_statement",
-                "claim": "l applied to C applied to n + 1 <= l applied to s⁻¹ + l applied to t + (n + 1) * (l applied to y + l applied to z)",
-                "proof_method": "Combining the equality, the triangle-inequality estimate, and the induction hypothesis, followed by arithmetic simplification.",
-                "from": "l applied to C applied to n + 1",
-                "relation": "<=",
+                "claim": "l(y)+(l(s^{-1}) + l(t) + n(l(y)+l(z)))+l(z) = l(s^{-1}) + l(t) + (n+1)(l(y)+l(z))",
+                "proof_method": "Algebraic rearrangement and collecting terms.",
+                "from": "l(y)+(l(s^{-1}) + l(t) + n(l(y)+l(z)))+l(z)",
+                "relation": "=",
                 "to": "l(s^{-1}) + l(t) + (n+1)(l(y)+l(z))",
                 "side_conditions": [
-                  "l takes nonnegative real values or values in an ordered additive structure where addition is monotone",
-                  "arithmetic identity: l(y) + (l(s^{-1}) + l(t) + n(l(y)+l(z))) + l(z) = l(s^{-1}) + l(t) + (n+1)(l(y)+l(z))"
+                  "Addition is associative and commutative in the codomain of l.",
+                  "n(l(y)+l(z))+(l(y)+l(z))=(n+1)(l(y)+l(z))."
                 ]
               }
             ],
             "id": "core-homogeneous.root.lemma-2.proof.root.step-n-to-n-plus-1",
             "status": "resolved",
-            "text": "Assume the inequality holds for a natural number $n$. The definition gives\n$$\nC_{n+1}=wy C_n z w^{-1}=w(y C_n z)w^{-1}.\n$$\nBy Lemma 1, applied to the element $yC_nz$ and the conjugating element $w$,\n$$\nl(C_{n+1})=l(yC_nz).\n$$\nBy two applications of the triangle inequality,\n$$\nl(yC_nz) \\leq l(y)+l(C_n)+l(z).\n$$\nBy the induction hypothesis,\n$$\nl(C_n) \\leq l(s^{-1})+l(t)+n(l(y)+l(z)).\n$$\nCombining the last two inequalities gives\n$$\nl(C_{n+1})\n\\leq l(s^{-1})+l(t)+(n+1)(l(y)+l(z)).\n$$\nThis proves the induction step."
+            "text": "Assume the inequality holds for a natural number n. The definition gives C_{n+1}=wy C_n z w^{-1}. Equivalently, C_{n+1}=w(y C_n z)w^{-1}. By Lemma 1, applied to the element yC_nz and the conjugating element w, l(C_{n+1})=l(yC_nz). By two applications of the triangle inequality, l(yC_nz) <= l(y)+l(C_n)+l(z). By the induction hypothesis, l(C_n) <= l(s^{-1})+l(t)+n(l(y)+l(z)). Combining the last two inequalities gives l(C_{n+1}) <= l(s^{-1})+l(t)+(n+1)(l(y)+l(z)). This proves the induction step."
           },
           "id": "core-homogeneous.root.lemma-2.proof.root",
           "status": "resolved",
-          "text": "We prove the claim by induction on $n$.\n\nFor $n=0$, the definition gives $C_0=s^{-1}t$.  By the triangle inequality,\n$$\nl(C_0)=l(s^{-1}t) \\leq l(s^{-1})+l(t).\n$$\nThis is the desired inequality for $n=0$.\n\nAssume the inequality holds for a natural number $n$.  The definition gives\n$$\nC_{n+1}=wy C_n z w^{-1}.\n$$\nEquivalently,\n$$\nC_{n+1}=w(y C_n z)w^{-1}.\n$$\nBy Lemma 1, applied to the element $yC_nz$ and the conjugating element $w$,\n$$\nl(C_{n+1})=l(yC_nz).\n$$\nBy two applications of the triangle inequality,\n$$\nl(yC_nz) \\leq l(y)+l(C_n)+l(z).\n$$\nBy the induction hypothesis,\n$$\nl(C_n) \\leq l(s^{-1})+l(t)+n(l(y)+l(z)).\n$$\nCombining the last two inequalities gives\n$$\nl(C_{n+1})\n\\leq l(s^{-1})+l(t)+(n+1)(l(y)+l(z)).\n$$\nThis proves the induction step.\n\nTherefore the inequality holds for every natural number $n$."
+          "text": "We prove the claim by induction on n. For n=0, the definition gives C_0=s^{-1}t. By the triangle inequality, l(C_0)=l(s^{-1}t) <= l(s^{-1})+l(t). This is the desired inequality for n=0. Assume the inequality holds for a natural number n. The definition gives C_{n+1}=wy C_n z w^{-1}. Equivalently, C_{n+1}=w(y C_n z)w^{-1}. By Lemma 1, applied to the element yC_nz and the conjugating element w, l(C_{n+1})=l(yC_nz). By two applications of the triangle inequality, l(yC_nz) <= l(y)+l(C_n)+l(z). By the induction hypothesis, l(C_n) <= l(s^{-1})+l(t)+n(l(y)+l(z)). Combining the last two inequalities gives l(C_{n+1}) <= l(s^{-1})+l(t)+(n+1)(l(y)+l(z)). This proves the induction step. Therefore the inequality holds for every natural number n."
         },
         "source": {
-          "text": "**Lemma 2 (Conjugation-invariant triangle iteration).**\nLet $G$ be a group. Let $l : G \\to \\mathbb{R}$ be a homogeneous\npseudo-length function. Let $w,y,z,s,t \\in G$.  For every natural number\n$n$, define\n$$\nC_n := (wy)^n s^{-1}t(zw^{-1})^n.\n$$\nThen\n$$\nl(C_n) \\leq l(s^{-1})+l(t)+n(l(y)+l(z)).\n$$",
+          "text": "Let G be a group. Let l : G -> R be a homogeneous pseudo-length function. Let w,y,z,s,t in G. For every natural number n, define C_n := (wy)^n s^{-1}t(zw^{-1})^n. Then l(C_n) <= l(s^{-1})+l(t)+n(l(y)+l(z)).",
           "id": "core-homogeneous.root.lemma-2",
           "label": "Lemma 2"
         },
@@ -890,7 +562,7 @@
         "label": "Lemma 3",
         "header": "Lemma",
         "name": "lemma_3",
-        "claim": "∀ (G : Type*) [Group G] (l : G → ℝ), IsHomogeneousPseudoLength G l → ∀ (a w y z s t : G), a = s * (w * y) * s⁻¹ → a = t * (z * w⁻¹) * t⁻¹ → l a <= (l y + l z) / 2",
+        "claim": "∀ (G : Type*) [Group G] (l : G → ℝ), IsHomogeneousPseudoLength G l → ∀ (a w y z s t : G), a = s * (w * y) * s⁻¹ → a = t * (z * w⁻¹) * t⁻¹ → l a ≤ (l y + l z) / 2",
         "hypothesis": [
           {
             "type": "assume_statement",
@@ -906,23 +578,27 @@
           },
           {
             "type": "assume_statement",
-            "assumption": "a = s (w y) s^{-1}."
+            "assumption": "a=s(wy)s^{-1}."
           },
           {
             "type": "assume_statement",
-            "assumption": "a = t (z w^{-1}) t^{-1}."
+            "assumption": "a=t(zw^{-1})t^{-1}."
           },
           {
             "type": "assume_statement",
-            "assumption": "Let l : G \\to \\mathbb{R} be a homogeneous pseudo-length function"
+            "assumption": "Let G be a group"
           },
           {
             "type": "assume_statement",
-            "assumption": "Let a,w,y,z,s,t \\in G"
+            "assumption": "Let l : G -> R be a homogeneous pseudo-length function"
           },
           {
             "type": "assume_statement",
-            "assumption": "Assume and Then"
+            "assumption": "Let a,w,y,z,s,t in G"
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "Assume a=s(wy)s^{-1} and a=t(zw^{-1})t^{-1}"
           }
         ],
         "proof": {
@@ -933,65 +609,32 @@
               "arguments": [],
               "assumption": "n is a positive integer",
               "variable_name": "n",
-              "variable_type": "positive integer"
-            },
-            {
-              "type": "proof",
-              "proof_steps": [
-                {
-                  "type": "assert_statement",
-                  "claim": "a = s * (w * y) * s⁻¹",
-                  "proof_method": "First conjugacy hypothesis.",
-                  "arguments": []
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "a = t * (z * w⁻¹) * t⁻¹",
-                  "proof_method": "Second conjugacy hypothesis.",
-                  "arguments": []
-                }
-              ]
+              "variable_type": "positive integer",
+              "properties": "n > 0"
             },
             {
               "type": "assert_statement",
-              "claim": "a^n = s (w y)^n s^{-1}",
+              "claim": "a^n = s (wy)^n s⁻¹",
               "proof_method": "From the first conjugacy hypothesis and the standard identity for powers of conjugates.",
               "arguments": [],
               "deduced_from_theorem": [
                 {
-                  "claim": "For any group elements g and x and natural number n, (g x g^{-1})^n = g x^n g^{-1}.",
+                  "claim": "For any group elements g and x and natural number n, (g x g⁻¹)^n = g x^n g⁻¹.",
                   "name": "power of a conjugate",
-                  "description": "Applied to the two conjugacy expressions for a."
-                }
-              ]
-            },
-            {
-              "type": "proof",
-              "proof_steps": [
-                {
-                  "type": "assert_statement",
-                  "claim": "a = s * (w * y) * s⁻¹",
-                  "proof_method": "First conjugacy hypothesis.",
-                  "arguments": []
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "a = t * (z * w⁻¹) * t⁻¹",
-                  "proof_method": "Second conjugacy hypothesis.",
-                  "arguments": []
+                  "description": "Applied to the conjugate expression a = s(wy)s⁻¹."
                 }
               ]
             },
             {
               "type": "assert_statement",
-              "claim": "a^n = t (z w^{-1})^n t^{-1}",
+              "claim": "a^n = t (zw⁻¹)^n t⁻¹",
               "proof_method": "From the second conjugacy hypothesis and the standard identity for powers of conjugates.",
               "arguments": [],
               "deduced_from_theorem": [
                 {
-                  "claim": "For any group elements g and x and natural number n, (g x g^{-1})^n = g x^n g^{-1}.",
+                  "claim": "For any group elements g and x and natural number n, (g x g⁻¹)^n = g x^n g⁻¹.",
                   "name": "power of a conjugate",
-                  "description": "Applied to the second conjugacy expression for a."
+                  "description": "Applied to the conjugate expression a = t(zw⁻¹)t⁻¹."
                 }
               ]
             },
@@ -1000,163 +643,166 @@
               "proof_steps": [
                 {
                   "type": "assert_statement",
-                  "claim": "a^(2 * n) = a^n * a^n",
-                  "proof_method": "Power law in a group.",
-                  "arguments": []
+                  "claim": "a^(2*n) = a^n * a^n",
+                  "proof_method": "By the power law for a common base.",
+                  "arguments": [],
+                  "deduced_from_theorem": [
+                    {
+                      "claim": "For any group element a and natural number n, a ^ (2 * n) = a ^ n * a ^ n.",
+                      "name": "power multiplication law"
+                    }
+                  ]
                 },
                 {
                   "type": "assert_statement",
                   "name": "a_n_s_w_y_n_s",
-                  "claim": "a^n = s * (w * y)^n * s⁻¹",
+                  "claim": "a^n = s * (w*y)^n * s⁻¹",
                   "proof_method": "Named local obligation from unresolved claim dependency.",
                   "source": {
-                    "text": "a^n = s * (w * y)^n * s⁻¹",
+                    "text": "a^n = s * (w*y)^n * s⁻¹",
                     "kind": "deduced_from_claim"
                   }
                 },
                 {
                   "type": "assert_statement",
                   "name": "a_n_t_z_w_n_t",
-                  "claim": "a^n = t * (z * w⁻¹)^n * t⁻¹",
+                  "claim": "a^n = t * (z*w⁻¹)^n * t⁻¹",
                   "proof_method": "Named local obligation from unresolved claim dependency.",
                   "source": {
-                    "text": "a^n = t * (z * w⁻¹)^n * t⁻¹",
+                    "text": "a^n = t * (z*w⁻¹)^n * t⁻¹",
                     "kind": "deduced_from_claim"
                   }
                 },
                 {
                   "type": "assert_statement",
-                  "claim": "a^n * a^n = s * (w * y)^n * s⁻¹ * (t * (z * w⁻¹)^n * t⁻¹)",
-                  "proof_method": "Substitution using the two formulas for a^n.",
+                  "claim": "a^n * a^n = s * (w*y)^n * s⁻¹ * (t * (z*w⁻¹)^n * t⁻¹)",
+                  "proof_method": "Substitute the two displayed expressions for a^n.",
                   "arguments": []
                 },
                 {
                   "type": "assert_statement",
-                  "claim": "a^(2 * n) = s * (w * y)^n * s⁻¹ * (t * (z * w⁻¹)^n * t⁻¹)",
-                  "proof_method": "Transitivity of equality.",
+                  "name": "a_2_n_a_n_a_n",
+                  "claim": "a^(2*n) = a^n * a^n",
+                  "proof_method": "Named local obligation from unresolved claim dependency.",
+                  "source": {
+                    "text": "a^(2*n) = a^n * a^n",
+                    "kind": "deduced_from_claim"
+                  }
+                },
+                {
+                  "type": "assert_statement",
+                  "name": "a_n_a_n_s_w_y_n",
+                  "claim": "a^n * a^n = s * (w*y)^n * s⁻¹ * (t * (z*w⁻¹)^n * t⁻¹)",
+                  "proof_method": "Named local obligation from unresolved claim dependency.",
+                  "source": {
+                    "text": "a^n * a^n = s * (w*y)^n * s⁻¹ * (t * (z*w⁻¹)^n * t⁻¹)",
+                    "kind": "deduced_from_claim"
+                  }
+                },
+                {
+                  "type": "assert_statement",
+                  "claim": "a^(2*n) = s * (w*y)^n * s⁻¹ * (t * (z*w⁻¹)^n * t⁻¹)",
+                  "proof_method": "By transitivity of equality.",
                   "arguments": []
                 }
               ]
             },
             {
               "type": "assert_statement",
-              "claim": "2 n * l(a) = l(a^{2 n})",
-              "proof_method": "By homogeneity of l.",
-              "arguments": [],
-              "deduced_from_theorem": [
-                {
-                  "claim": "For a homogeneous pseudo-length function l, l(x^m) = m l(x) for every positive integer m.",
-                  "name": "homogeneity",
-                  "description": "Applied to x = a and m = 2n."
-                }
-              ]
+              "claim": "2*n * l(a) = l(a^(2*n))",
+              "proof_method": "By homogeneity of l applied to a and the positive integer 2*n.",
+              "arguments": []
             },
             {
               "type": "assert_statement",
-              "claim": "l(a^{2 n}) <= l(s) + l((w y)^n s^{-1} t (z w^{-1})^n) + l(t^{-1})",
-              "proof_method": "Use the displayed expression for a^{2n} and apply the triangle inequality to the three factors.",
-              "arguments": [],
-              "deduced_from_theorem": [
-                {
-                  "claim": "For every pseudo-length function l and all group elements x y z, l(x * y * z) ≤ l(x) + l(y) + l(z).",
-                  "name": "triangle inequality",
-                  "description": "Applied to the product s · ((w y)^n s^{-1} t (z w^{-1})^n) · t^{-1}."
-                }
-              ]
+              "name": "l_satisfies_the_triangle_inequality",
+              "claim": "From the local hypothesis h : IsHomogeneousPseudoLength G l, for all x y : G, l(x * y) ≤ l(x) + l(y)",
+              "proof_method": "Named local obligation from unresolved claim dependency.",
+              "source": {
+                "text": "l satisfies the triangle inequality",
+                "kind": "deduced_from_claim"
+              }
             },
             {
               "type": "assert_statement",
-              "claim": "l((w y)^n s^{-1} t (z w^{-1})^n) <= l(s^{-1}) + l(t) + n * (l(y) + l(z))",
-              "proof_method": "By Lemma 2.",
+              "claim": "l(a^(2*n)) <= l(s) + l((wy)^n s⁻¹ t (zw⁻¹)^n) + l(t⁻¹)",
+              "proof_method": "Rewrite a^(2*n) using the displayed product and apply the triangle inequality to split off the initial factor s and final factor t⁻¹, preserving the middle product order.",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "claim": "l((wy)^n s⁻¹ t (zw⁻¹)^n) <= l(s⁻¹) + l(t) + n*(l(y)+l(z))",
+              "proof_method": "By Lemma 2 applied to n.",
               "arguments": [],
               "deduced_from_theorem": [
                 {
-                  "claim": "Let C : Nat → G be defined by C n = (w * y)^n * s⁻¹ * t * (z * w⁻¹)^n. For every natural number n, l(C n) <= l(s⁻¹) + l(t) + n * (l(y) + l(z)).",
+                  "claim": "For C n = (wy)^n s⁻¹ t (zw⁻¹)^n, one has l(C n) <= l(s⁻¹) + l(t) + n(l(y)+l(z)) for every natural number n.",
                   "name": "Lemma 2",
-                  "description": "Applied at the fixed positive integer n.",
+                  "description": "Applied to the middle product with the fixed positive integer n.",
                   "lean_name_candidate": "lemma_2",
                   "verification_status": "local_declaration_match"
                 }
               ]
             },
             {
-              "type": "proof",
-              "proof_steps": [
-                {
-                  "type": "assert_statement",
-                  "claim": "l(s⁻¹) = l(s)",
-                  "proof_method": "By symmetry of l.",
-                  "arguments": [],
-                  "deduced_from_theorem": [
-                    {
-                      "claim": "For a pseudo-length function l and every group element x, l(x⁻¹) = l(x).",
-                      "name": "Symmetry of a pseudo-length function",
-                      "description": "Applied to s."
-                    }
-                  ]
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "l(t⁻¹) = l(t)",
-                  "proof_method": "By symmetry of l.",
-                  "arguments": [],
-                  "deduced_from_theorem": [
-                    {
-                      "claim": "For a pseudo-length function l and every group element x, l(x⁻¹) = l(x).",
-                      "name": "Symmetry of a pseudo-length function",
-                      "description": "Applied to t."
-                    }
-                  ]
-                }
-              ]
-            },
-            {
               "type": "assert_statement",
-              "claim": "2 n * l(a) <= 2 * l(s) + 2 * l(t) + n * (l(y) + l(z))",
-              "proof_method": "Combine the homogeneity equality, the triangle-inequality bound, the Lemma 2 bound, and the symmetry equalities.",
+              "claim": "l(s⁻¹) = l(s)",
+              "proof_method": "By symmetry of l.",
               "arguments": []
             },
             {
               "type": "assert_statement",
-              "claim": "l(a) <= (l(y) + l(z)) / 2 + (l(s) + l(t)) / n",
-              "proof_method": "Divide the previous inequality by 2n and rearrange terms.",
+              "claim": "l(t⁻¹) = l(t)",
+              "proof_method": "By symmetry of l.",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "claim": "2*n * l(a) <= 2*l(s) + 2*l(t) + n*(l(y)+l(z))",
+              "proof_method": "Combine the homogeneity equality, the triangle-inequality estimate, the Lemma 2 estimate, and the symmetry equalities, then simplify.",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "claim": "l(a) <= (l(y)+l(z))/2 + (l(s)+l(t))/n",
+              "proof_method": "Divide the inequality by the positive quantity 2*n and simplify.",
               "arguments": []
             },
             {
               "type": "assert_statement",
               "name": "for_every_positive_integer_n_l_a_l",
-              "claim": "l(a) <= (l(y) + l(z)) / 2 + (l(s) + l(t)) / n",
+              "claim": "l(a) <= (l(y)+l(z))/2 + (l(s)+l(t))/n",
               "proof_method": "Named local obligation from unresolved claim dependency.",
               "source": {
-                "text": "For every positive integer n, l(a) <= (l(y) + l(z)) / 2 + (l(s) + l(t)) / n",
+                "text": "For every positive integer n, l(a) <= (l(y)+l(z))/2 + (l(s)+l(t))/n",
                 "kind": "deduced_from_claim"
               }
             },
             {
               "type": "assert_statement",
-              "claim": "l(a) <= (l(y) + l(z)) / 2",
-              "proof_method": "Since the inequality holds for every positive integer n and (l(s)+l(t))/n tends to 0, pass to the limit.",
+              "claim": "l(a) <= (l(y)+l(z))/2",
+              "proof_method": "Since the preceding inequality holds for every positive integer n and (l(s)+l(t))/n tends to 0, pass to the limit.",
               "arguments": [],
               "deduced_from_theorem": [
                 {
-                  "claim": "If X <= A + B/n for every positive integer n and B/n tends to 0, then X <= A.",
-                  "name": "Archimedean limit argument",
-                  "description": "Applied with X = l(a), A = (l(y)+l(z))/2, and B = l(s)+l(t)."
+                  "claim": "If a real number X satisfies X <= Y + c/n for every positive integer n and c/n tends to 0, then X <= Y.",
+                  "name": "limit comparison over positive integers",
+                  "description": "Used with X = l(a), Y = (l(y)+l(z))/2, and c = l(s)+l(t)."
                 },
                 {
-                  "claim": "For any fixed real number B, B/n tends to 0 as n tends to infinity through positive integers.",
-                  "name": "vanishing reciprocal term",
-                  "description": "Used for B = l(s)+l(t)."
+                  "claim": "For any fixed real constant c, c/n tends to 0 as n tends to infinity through positive integers.",
+                  "name": "constant divided by n tends to zero",
+                  "description": "Used for c = l(s)+l(t)."
                 }
               ]
             }
           ],
           "id": "core-homogeneous.root.lemma-3.proof.root",
           "status": "resolved",
-          "text": "Let $n$ be a positive integer.  From the two hypotheses and the standard\nidentity for powers of conjugates, we have\n$$\na^n=s(wy)^n s^{-1}\n$$\nand\n$$\na^n=t(zw^{-1})^n t^{-1}.\n$$\nHence\n$$\na^{2n}=a^n a^n\n      =s(wy)^n s^{-1}t(zw^{-1})^n t^{-1}.\n$$\nBy homogeneity,\n$$\n2n\\,l(a)=l(a^{2n}).\n$$\nUsing the displayed expression for $a^{2n}$ and the triangle inequality,\n$$\nl(a^{2n})\n\\leq l(s)+l((wy)^n s^{-1}t(zw^{-1})^n)+l(t^{-1}).\n$$\nBy Lemma 2,\n$$\nl((wy)^n s^{-1}t(zw^{-1})^n)\n\\leq l(s^{-1})+l(t)+n(l(y)+l(z)).\n$$\nBy symmetry, $l(s^{-1})=l(s)$ and $l(t^{-1})=l(t)$.  Therefore\n$$\n2n\\,l(a) \\leq 2l(s)+2l(t)+n(l(y)+l(z)).\n$$\nDividing by $2n$ gives\n$$\nl(a) \\leq \\frac{l(y)+l(z)}{2}+\\frac{l(s)+l(t)}{n}.\n$$\nSince this inequality holds for every positive integer $n$, and\n$(l(s)+l(t))/n$ tends to $0$, we obtain\n$$\nl(a) \\leq \\frac{l(y)+l(z)}{2}.\n$$"
+          "text": "Let n be a positive integer. From the two hypotheses and the standard identity for powers of conjugates, we have a^n=s(wy)^n s^{-1} and a^n=t(zw^{-1})^n t^{-1}. Hence a^{2n}=a^n a^n =s(wy)^n s^{-1}t(zw^{-1})^n t^{-1}. By homogeneity, 2n l(a)=l(a^{2n}). Using the displayed expression for a^{2n} and the triangle inequality, l(a^{2n}) <= l(s)+l((wy)^n s^{-1}t(zw^{-1})^n)+l(t^{-1}). By Lemma 2, l((wy)^n s^{-1}t(zw^{-1})^n) <= l(s^{-1})+l(t)+n(l(y)+l(z)). By symmetry, l(s^{-1})=l(s) and l(t^{-1})=l(t). Therefore 2n l(a) <= 2l(s)+2l(t)+n(l(y)+l(z)). Dividing by 2n gives l(a) <= (l(y)+l(z))/2+(l(s)+l(t))/n. Since this inequality holds for every positive integer n, and (l(s)+l(t))/n tends to 0, we obtain l(a) <= (l(y)+l(z))/2."
         },
         "source": {
-          "text": "**Lemma 3 (Splitting lemma).**\nLet $G$ be a group. Let $l : G \\to \\mathbb{R}$ be a homogeneous\npseudo-length function. Let $a,w,y,z,s,t \\in G$. Assume\n$$\na=s(wy)s^{-1}\n$$\nand\n$$\na=t(zw^{-1})t^{-1}.\n$$\nThen\n$$\nl(a) \\leq \\frac{l(y)+l(z)}{2}.\n$$",
+          "text": "Let G be a group. Let l : G -> R be a homogeneous pseudo-length function. Let a,w,y,z,s,t in G. Assume a=s(wy)s^{-1} and a=t(zw^{-1})t^{-1}. Then l(a) <= (l(y)+l(z))/2.",
           "id": "core-homogeneous.root.lemma-3",
           "label": "Lemma 3"
         },
@@ -1173,17 +819,11 @@
         "status": "resolved"
       },
       {
-        "type": "paragraph",
-        "text": "The next lemma is the combinatorial input used to prove that homogeneous pseudo-length functions vanish on commutators. It is stated as a separate lemma because its proof is a finite calculation in the group laws followed by Lemma 3.",
-        "id": "core-homogeneous.root.lemma4-intro",
-        "status": "resolved"
-      },
-      {
         "type": "theorem",
         "label": "Lemma 4",
         "header": "Lemma",
         "name": "lemma_4",
-        "claim": "∀ (G : Type*) [Group G] (l : G → ℝ), IsHomogeneousPseudoLength G l → ∀ (x y : G), let c : G := x * y * x⁻¹ * y⁻¹; let f : ℤ × ℤ → ℝ := fun p => l (x ^ p.1 * c ^ p.2); ∀ (m k : ℤ), f (m, k) ≤ (f (m - 1, k) + f (m + 1, k - 1)) / 2",
+        "claim": "∀ (G : Type*) [Group G] (l : G → ℝ), IsHomogeneousPseudoLength G l → ∀ (x y : G), let c : G := x * y * x⁻¹ * y⁻¹; let f : ℤ → ℤ → ℝ := fun m k => l (x ^ m * c ^ k); ∀ (m k : ℤ), f m k ≤ (f (m - 1) k + f (m + 1) (k - 1)) / 2",
         "hypothesis": [
           {
             "type": "assume_statement",
@@ -1199,11 +839,15 @@
           },
           {
             "type": "assume_statement",
-            "assumption": "Let l : G \\to \\mathbb{R} be a homogeneous pseudo-length function"
+            "assumption": "Let G be a group"
           },
           {
             "type": "assume_statement",
-            "assumption": "Fix x,y \\in G and set c:=[x,y]"
+            "assumption": "Let l : G -> R be a homogeneous pseudo-length function"
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "Fix x,y in G and set c:=[x,y]"
           }
         ],
         "proof": {
@@ -1212,14 +856,14 @@
             {
               "type": "assume_statement",
               "arguments": [],
-              "assumption": "m,k are arbitrary integers"
+              "assumption": "m and k are arbitrary integers"
             },
             {
               "type": "let_statement",
               "arguments": [],
               "variable_name": "a",
               "variable_type": "G",
-              "value": "x^m * c^k"
+              "value": "x^m c^k"
             },
             {
               "type": "let_statement",
@@ -1233,310 +877,145 @@
               "arguments": [],
               "variable_name": "u",
               "variable_type": "G",
-              "value": "x^(m-1) * c^k"
+              "value": "x^(m-1) c^k"
             },
             {
               "type": "let_statement",
               "arguments": [],
               "variable_name": "v",
               "variable_type": "G",
-              "value": "y^(-1) * x^m * c^(k-1) * x * y"
+              "value": "y^{-1} x^m c^(k-1) x y"
             },
             {
-              "type": "proof",
-              "proof_steps": [
-                {
-                  "type": "assert_statement",
-                  "claim": "w * u = x * (x^(m-1) * c^k)",
-                  "proof_method": "By the definitions of w and u.",
-                  "arguments": []
-                },
-                {
-                  "type": "assert_statement",
-                  "name": "w_u_x_x_m_1_c_k",
-                  "claim": "w * u = x * (x^(m-1) * c^k)",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "w * u = x * (x^(m-1) * c^k)",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "x * (x^(m-1) * c^k) = x^m * c^k",
-                  "proof_method": "By associativity and exponent arithmetic.",
-                  "arguments": []
-                },
-                {
-                  "type": "assert_statement",
-                  "name": "x_x_m_1_c_k_x_m",
-                  "claim": "x * (x^(m-1) * c^k) = x^m * c^k",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "x * (x^(m-1) * c^k) = x^m * c^k",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "x^m * c^k = a",
-                  "proof_method": "By the definition of a.",
-                  "arguments": []
-                }
-              ]
+              "type": "assert_statement",
+              "claim": "w * u = a",
+              "proof_method": "By the definitions of w, u, and a, and the power law x * x^(m-1) = x^m.",
+              "source_claim": "Then wu=x(x^{m-1}c^k)=x^m c^k=a.",
+              "arguments": []
             },
             {
               "type": "assert_statement",
               "claim": "a is conjugate to w * u",
-              "proof_method": "Equality implies conjugacy, since a = w * u.",
+              "proof_method": "Since a = w * u, equality gives conjugacy with conjugating element e.",
+              "source_claim": "Thus a is conjugate to wu, because a=wu.",
               "arguments": []
             },
             {
               "type": "assert_statement",
-              "name": "w_x",
-              "claim": "w = x",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
-              "source": {
-                "text": "w = x",
-                "kind": "deduced_from_claim"
-              }
-            },
-            {
-              "type": "assert_statement",
-              "claim": "v * w^(-1) = y^(-1) * x^m * c^(k-1) * x * y * x^(-1)",
-              "proof_method": "Substitute w = x into the definition of v * w^(-1).",
+              "claim": "v * w^(-1) = y^(-1) x^m c^(k-1) x y x^(-1)",
+              "proof_method": "By substituting w = x into v * w^(-1).",
+              "source_claim": "Since w=x, vw^{-1}=y^{-1}x^m c^{k-1}xyx^{-1}.",
               "arguments": []
             },
             {
               "type": "assert_statement",
-              "name": "c_x_y_x_1_y_1",
-              "claim": "c = x * y * x^(-1) * y^(-1)",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
-              "source": {
-                "text": "c = x * y * x^(-1) * y^(-1)",
-                "kind": "deduced_from_claim"
-              }
-            },
-            {
-              "type": "assert_statement",
-              "claim": "x * y * x^(-1) = c * y",
-              "proof_method": "Rearrange the commutator identity c = x*y*x^(-1)*y^(-1) by multiplying on the right by y.",
+              "claim": "x y x^(-1) = c y",
+              "proof_method": "Using the commutator identity c = x y x^(-1) y^(-1), multiply on the right by y.",
+              "source_claim": "Using the commutator identity c=xyx^{-1}y^{-1}, we have xyx^{-1}=cy.",
               "arguments": []
             },
             {
-              "type": "proof",
-              "proof_steps": [
-                {
-                  "type": "assert_statement",
-                  "name": "v_w_1_y_1_x_m_c",
-                  "claim": "v * w^(-1) = y^(-1) * x^m * c^(k-1) * x * y * x^(-1)",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "v * w^(-1) = y^(-1) * x^m * c^(k-1) * x * y * x^(-1)",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "name": "x_y_x_1_c_y",
-                  "claim": "x * y * x^(-1) = c * y",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "x * y * x^(-1) = c * y",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "v * w^(-1) = y^(-1) * x^m * c^(k-1) * c * y",
-                  "proof_method": "Rewrite x*y*x^(-1) as c*y.",
-                  "arguments": []
-                },
-                {
-                  "type": "assert_statement",
-                  "name": "v_w_1_y_1_x_m_c",
-                  "claim": "v * w^(-1) = y^(-1) * x^m * c^(k-1) * c * y",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "v * w^(-1) = y^(-1) * x^m * c^(k-1) * c * y",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "y^(-1) * x^m * c^(k-1) * c * y = y^(-1) * x^m * c^k * y",
-                  "proof_method": "Combine c^(k-1)*c = c^k.",
-                  "arguments": []
-                },
-                {
-                  "type": "assert_statement",
-                  "name": "y_1_x_m_c_k_1_c",
-                  "claim": "y^(-1) * x^m * c^(k-1) * c * y = y^(-1) * x^m * c^k * y",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "y^(-1) * x^m * c^(k-1) * c * y = y^(-1) * x^m * c^k * y",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "y^(-1) * x^m * c^k * y = y^(-1) * a * y",
-                  "proof_method": "Use the definition of a.",
-                  "arguments": []
-                }
-              ]
+              "type": "assert_statement",
+              "claim": "v * w⁻¹ = y⁻¹ * a * y",
+              "proof_method": "Rewrite x y x^(-1) as c y, combine c^(k-1) c = c^k, and use the definition of a.",
+              "source_claim": "Therefore vw^{-1}=y^{-1}x^m c^{k-1}cy=y^{-1}x^m c^k y=y^{-1}ay.",
+              "arguments": []
             },
             {
               "type": "assert_statement",
               "claim": "a = y * (v * w^(-1)) * y^(-1)",
-              "proof_method": "Rearrange the equality v*w^(-1) = y^(-1)*a*y by conjugating with y.",
+              "proof_method": "Rearrange the equality v * w^(-1) = y^(-1) a y by conjugating with y.",
+              "source_claim": "Hence a=y(vw^{-1})y^{-1}.",
               "arguments": []
             },
             {
               "type": "assert_statement",
               "claim": "a is conjugate to v * w^(-1)",
-              "proof_method": "By the displayed conjugacy equation.",
+              "proof_method": "The displayed equality gives conjugacy with conjugating element y.",
+              "source_claim": "so a is conjugate to vw^{-1}.",
               "arguments": []
             },
             {
               "type": "assert_statement",
               "claim": "l(a) <= (l(u) + l(v)) / 2",
-              "proof_method": "Apply Lemma 3 with s=e, t=y, y=u, and z=v, using the established conjugacy hypotheses.",
+              "proof_method": "Apply Lemma 3 with s = e, t = y, y = u, and z = v, using the two conjugacy statements just proved.",
+              "source_claim": "Lemma 3, applied with s=e, t=y, y=u, and z=v, gives l(a)<= (l(u)+l(v))/2.",
               "arguments": [],
               "deduced_from_theorem": [
                 {
-                  "claim": "Under the hypotheses of Lemma 3, l(a) <= (l(y) + l(z)) / 2.",
+                  "claim": "Under the hypotheses of Lemma 3, l(a) <= (l(y)+l(z))/2.",
                   "name": "Lemma 3",
-                  "description": "Applied with s=e, t=y, y=u, and z=v.",
+                  "description": "Applied with s = e, t = y, y = u, and z = v.",
                   "lean_name_candidate": "lemma_3",
                   "verification_status": "local_declaration_match"
                 }
               ]
             },
             {
-              "type": "proof",
-              "proof_steps": [
+              "type": "assert_statement",
+              "claim": "l u = f (m - 1) k",
+              "proof_method": "By the definition of u and the definition of f.",
+              "source_claim": "By the definition of u, l(u)=l(x^{m-1}c^k)=f(m-1,k).",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "claim": "y * v * y^(-1) = x^m c^(k-1) x",
+              "proof_method": "Expand v = y^(-1) x^m c^(k-1) x y and cancel y * y^(-1) and y * y^(-1) at the ends.",
+              "source_claim": "because yvy^{-1}=x^m c^{k-1}x",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "claim": "x * (x^m c^(k-1) x) * x^(-1) = x^(m+1) c^(k-1)",
+              "proof_method": "Use associativity, cancellations, and the power law x * x^m = x^(m+1).",
+              "source_claim": "and x(x^m c^{k-1}x)x^{-1}=x^{m+1}c^{k-1}.",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "claim": "v is conjugate to x^(m+1) c^(k-1)",
+              "proof_method": "The first equality conjugates v to x^m c^(k-1) x by y, and the second conjugates that element to x^(m+1) c^(k-1) by x.",
+              "source_claim": "The element v is conjugate to x^{m+1}c^{k-1} because ...",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "claim": "l(v) = l(x^(m+1) c^(k-1))",
+              "proof_method": "Apply Lemma 1 to the conjugacy between v and x^(m+1) c^(k-1).",
+              "source_claim": "By Lemma 1, conjugate elements have the same length.",
+              "arguments": [],
+              "deduced_from_theorem": [
                 {
-                  "type": "assert_statement",
-                  "claim": "l(u) = l(x^(m-1) * c^k)",
-                  "proof_method": "By the definition of u.",
-                  "arguments": []
-                },
-                {
-                  "type": "assert_statement",
-                  "name": "l_u_l_x_m_1_c_k",
-                  "claim": "l(u) = l(x^(m-1) * c^k)",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "l(u) = l(x^(m-1) * c^k)",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "l applied to (x^(m - 1) * c^k) = f applied to m - 1 and k",
-                  "proof_method": "By the definition of f.",
-                  "arguments": []
+                  "claim": "For every x and y in G, l(y x y^(-1)) = l(x).",
+                  "name": "Lemma 1",
+                  "description": "Conjugate elements have the same length.",
+                  "lean_name_candidate": "lemma_1",
+                  "verification_status": "local_declaration_match"
                 }
               ]
             },
             {
               "type": "assert_statement",
-              "claim": "y * v * y^(-1) = x^m * c^(k-1) * x",
-              "proof_method": "Expand the definition of v and cancel y*y^(-1) and y^(-1)*y.",
+              "claim": "l v = f (m + 1) (k - 1)",
+              "proof_method": "Use the previous equality and the definition of f.",
+              "source_claim": "Therefore l(v)=l(x^{m+1}c^{k-1})=f(m+1,k-1).",
               "arguments": []
             },
             {
               "type": "assert_statement",
-              "claim": "x * (x^m * c^(k-1) * x) * x^(-1) = x^(m+1) * c^(k-1)",
-              "proof_method": "By associativity, cancellation of x*x^(-1), and exponent arithmetic.",
-              "arguments": []
-            },
-            {
-              "type": "assert_statement",
-              "claim": "v is conjugate to x^(m+1) * c^(k-1)",
-              "proof_method": "First conjugate v by y, then conjugate the result by x, giving x^(m+1)*c^(k-1).",
-              "arguments": []
-            },
-            {
-              "type": "proof",
-              "proof_steps": [
-                {
-                  "type": "assert_statement",
-                  "name": "v_is_conjugate_to_x_m_1_c",
-                  "claim": "v is conjugate to x^(m+1) * c^(k-1)",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "v is conjugate to x^(m+1) * c^(k-1)",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "l(v) = l(x^(m+1) * c^(k-1))",
-                  "proof_method": "Apply Lemma 1 to the conjugacy between v and x^(m+1)*c^(k-1).",
-                  "arguments": [],
-                  "deduced_from_theorem": [
-                    {
-                      "claim": "For every x,y in G, l(y*x*y^(-1)) = l(x).",
-                      "name": "Lemma 1",
-                      "description": "Conjugacy invariance of a homogeneous pseudo-length function.",
-                      "lean_name_candidate": "lemma_1",
-                      "verification_status": "local_declaration_match"
-                    }
-                  ]
-                },
-                {
-                  "type": "assert_statement",
-                  "name": "l_v_l_x_m_1_c_k",
-                  "claim": "l(v) = l(x^(m+1) * c^(k-1))",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "l(v) = l(x^(m+1) * c^(k-1))",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "l applied to (x^(m + 1) * c^(k - 1)) = f applied to m + 1 and k - 1",
-                  "proof_method": "By the definition of f.",
-                  "arguments": []
-                }
-              ]
-            },
-            {
-              "type": "assert_statement",
-              "name": "a_x_m_c_k",
-              "claim": "a = x^m * c^k",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
-              "source": {
-                "text": "a = x^m * c^k",
-                "kind": "deduced_from_claim"
-              }
-            },
-            {
-              "type": "assert_statement",
-              "name": "f_m_k_l_x_m_c_k",
-              "claim": "f applied to m and k = l applied to (x^m * c^k)",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
-              "source": {
-                "text": "f(m,k) = l(x^m * c^k)",
-                "kind": "deduced_from_claim"
-              }
-            },
-            {
-              "type": "assert_statement",
-              "claim": "f applied to m and k <= ((f applied to m - 1 and k) + (f applied to m + 1 and k - 1)) / 2",
-              "proof_method": "Substitute the formulas for l(a), l(u), and l(v) into the inequality from Lemma 3, using the definition of f.",
+              "claim": "f applied to m and k <= (f applied to (m - 1) and k + f applied to (m + 1) and (k - 1)) / 2",
+              "proof_method": "Substitute the formulas for l(a), l(u), and l(v) into the inequality from Lemma 3, using the definition of f for l(a).",
+              "source_claim": "Substituting the formulas for l(u) and l(v) into the inequality from Lemma 3 gives f(m,k)<= (f(m-1,k)+f(m+1,k-1))/2.",
               "arguments": []
             }
           ],
           "id": "core-homogeneous.root.lemma-4.proof.root",
           "status": "resolved",
-          "text": "Fix $m,k \\in \\mathbb{Z}$.  Define\n$$\na:=x^m c^k,\n$$\n$$\nw:=x,\n$$\n$$\nu:=x^{m-1}c^k,\n$$\nand\n$$\nv:=y^{-1}x^m c^{k-1}xy.\n$$\nThen\n$$\nwu=x(x^{m-1}c^k)=x^m c^k=a.\n$$\nThus $a$ is conjugate to $wu$, because $a=wu$.\n\nWe next prove that $a$ is conjugate to $vw^{-1}$.  Since $w=x$,\n$$\nvw^{-1}=y^{-1}x^m c^{k-1}xyx^{-1}.\n$$\nUsing the commutator identity\n$$\nc=xyx^{-1}y^{-1},\n$$\nwe have\n$$\nxyx^{-1}=cy.\n$$\nTherefore\n$$\nvw^{-1}\n=y^{-1}x^m c^{k-1}cy\n=y^{-1}x^m c^k y\n=y^{-1}ay.\n$$\nHence $a=y(vw^{-1})y^{-1}$, so $a$ is conjugate to $vw^{-1}$.\n\nLemma 3, applied with $s=e$, $t=y$, $y=u$, and $z=v$, gives\n$$\nl(a)\\leq \\frac{l(u)+l(v)}{2}.\n$$\nBy the definition of $u$,\n$$\nl(u)=l(x^{m-1}c^k)=f(m-1,k).\n$$\nIt remains to identify $l(v)$.  The element $v$ is conjugate to\n$x^{m+1}c^{k-1}$ because\n$$\nyvy^{-1}=x^m c^{k-1}x\n$$\nand\n$$\nx(x^m c^{k-1}x)x^{-1}=x^{m+1}c^{k-1}.\n$$\nBy Lemma 1, conjugate elements have the same length.  Therefore\n$$\nl(v)=l(x^{m+1}c^{k-1})=f(m+1,k-1).\n$$\nSubstituting the formulas for $l(u)$ and $l(v)$ into the inequality from\nLemma 3 gives\n$$\nf(m,k)\\leq \\frac{f(m-1,k)+f(m+1,k-1)}{2}.\n$$"
+          "text": "Fix m,k in Z. Define a:=x^m c^k, w:=x, u:=x^{m-1}c^k, and v:=y^{-1}x^m c^{k-1}xy. Then wu=x(x^{m-1}c^k)=x^m c^k=a. Thus a is conjugate to wu, because a=wu. We next prove that a is conjugate to vw^{-1}. Since w=x, vw^{-1}=y^{-1}x^m c^{k-1}xyx^{-1}. Using the commutator identity c=xyx^{-1}y^{-1}, we have xyx^{-1}=cy. Therefore vw^{-1}=y^{-1}x^m c^{k-1}cy=y^{-1}x^m c^k y=y^{-1}ay. Hence a=y(vw^{-1})y^{-1}, so a is conjugate to vw^{-1}. Lemma 3, applied with s=e, t=y, y=u, and z=v, gives l(a)<= (l(u)+l(v))/2. By the definition of u, l(u)=l(x^{m-1}c^k)=f(m-1,k). It remains to identify l(v). The element v is conjugate to x^{m+1}c^{k-1} because yvy^{-1}=x^m c^{k-1}x and x(x^m c^{k-1}x)x^{-1}=x^{m+1}c^{k-1}. By Lemma 1, conjugate elements have the same length. Therefore l(v)=l(x^{m+1}c^{k-1})=f(m+1,k-1). Substituting the formulas for l(u) and l(v) into the inequality from Lemma 3 gives f(m,k)<= (f(m-1,k)+f(m+1,k-1))/2."
         },
         "source": {
-          "text": "**Lemma 4 (Commutator recurrence).**\nLet $G$ be a group. Let $l : G \\to \\mathbb{R}$ be a homogeneous\npseudo-length function. Fix $x,y \\in G$ and set $c:=[x,y]$.  Define\n$f : \\mathbb{Z}\\times\\mathbb{Z}\\to\\mathbb{R}$ by\n$$\nf(m,k):=l(x^m c^k).\n$$\nThen for every $m,k \\in \\mathbb{Z}$,\n$$\nf(m,k)\\leq \\frac{f(m-1,k)+f(m+1,k-1)}{2}.\n$$",
+          "text": "Let G be a group. Let l : G -> R be a homogeneous pseudo-length function. Fix x,y in G and set c:=[x,y]. Define f : Z x Z -> R by f(m,k):=l(x^m c^k). Then for every m,k in Z, f(m,k) <= (f(m-1,k)+f(m+1,k-1))/2.",
           "id": "core-homogeneous.root.lemma-4",
           "label": "Lemma 4"
         },
