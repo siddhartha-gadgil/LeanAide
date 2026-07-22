@@ -345,6 +345,13 @@ Given a `CodeGenerator`, an optional goal, and a list of JSON sources, this func
 def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``commandSeq) := withoutModifyingTranslateAndTermState do
+  -- TODO-UnintendedRollback: this wrapper rolls back the state changes made by
+  -- `runAndCommitCommands`, including `cmdPrelude` and environment updates,
+  -- while live-output writes survive as IO effects.
+  -- Do not simply delete the wrapper: `getCode` is still allowed to do
+  -- speculative elaboration and proof search that must not leak TermElab/Meta
+  -- state. Use a two-phase path: generate/check syntax in a saved state, restore
+  -- speculative state, then commit the verified commands and prelude outside it.
   let mut accum : Array <| TSyntax ``commandSeq := #[]
   for source in sources do
     let code? ←
@@ -361,6 +368,11 @@ def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
     | none => do -- error with obtaining commands
       continue
     | some code => do
+      -- TODO-CommitMismatch: `runAndCommitCommands` filters to safe commands,
+      -- but `accum` keeps the original sequence. Returned `document_code` can
+      -- therefore disagree with the live file and committed prelude.
+      -- The two-phase fix should return the exact commands accepted by the
+      -- commit phase, not the unfiltered speculative command sequence.
       accum := accum.push code
       runAndCommitCommands code
   if accum.isEmpty then

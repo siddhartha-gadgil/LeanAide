@@ -462,6 +462,13 @@ where
     traceAide `leanaide.papercodes.info s!"Obtained or skipped proof"
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
     -- `isProved` is only to separate deferred proofs, and not for claims of completeness.
+    -- TODO-UnintendedRollback: `thmStxParts` runs inside
+    -- `withoutModifyingTranslateAndTermState`, so this theorem-label
+    -- registration is rolled back before later `findTheorem?` calls can see it.
+    -- Do not fix by dropping the wrapper around `thmStxParts`: claim/proof
+    -- translation creates temporary goals and prompt context. Instead return the
+    -- theorem metadata from the speculative block and register it in the caller
+    -- after the block has restored TermElab/Meta state.
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx, ← isProp type)
@@ -648,6 +655,13 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
   traceAide `leanaide.papercodes.info s!"Proof steps: {← PrettyPrinter.ppCategory ``tacticSeq pfStx}"
   let n := mkIdent labelledTheorem.name
   let typeStx ← delabDetailed goalType
+  -- TODO-UnintendedRollback: this update is inside
+  -- `withoutModifyingTranslateAndTermState`, so the proved/deferred status is
+  -- restored after command generation.
+  -- Do not fix by running the whole proof generation outside rollback: it
+  -- creates and assigns temporary metavariables. Return the generated theorem
+  -- command plus the label from the speculative block, then call `updateToProved`
+  -- after the block restores TermElab/Meta state.
   updateToProved labelledTheorem.label
   `(commandSeq| theorem $n : $typeStx := by $pfStx)
 | some goal, ``tacticSeq, js => goal.withContext do

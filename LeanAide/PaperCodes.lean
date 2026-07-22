@@ -50,6 +50,11 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
   let elimIdent := mkIdent <| instName ++ "elim".toName
   let _ ← `(command| def $witIdent [$instIdent : $fctIdent $propName] : $propName := $elimIdent)
   let cmds := #[head] -- assumeDef removed for now
+  -- TODO-CommitMismatch: this pre-runs the command before the shared
+  -- `runAndCommitCommands` path, so deferred-theorem command commitment
+  -- should be made transactional in one place.
+  -- The replacement should still keep theorem translation speculative; only the
+  -- accepted command/prelude commit should happen outside the rollback scope.
   for cmd in cmds do
     runCommand cmd
   `(commandSeq| $cmds*)
@@ -92,6 +97,12 @@ where
     let typeStx ← delabDetailed type
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
     -- `IsProved
+    -- TODO-UnintendedRollback: `thmStxParts` runs inside
+    -- `withoutModifyingTranslateAndTermState`, so this deferred theorem
+    -- registration is rolled back before later proof generation can find it.
+    -- Do not fix by removing the wrapper from `thmStxParts`: hypothesis and
+    -- claim translation may mutate TermElab/Meta state. Return the metadata and
+    -- register it after speculative elaboration has been restored.
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name)
