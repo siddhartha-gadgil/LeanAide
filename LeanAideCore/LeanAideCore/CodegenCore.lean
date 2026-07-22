@@ -207,8 +207,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     return (← appendTacticSeqSeq accum (← `(tacticSeq| assumption)), none)
   catch _ =>
   traceAide `leanaide.codegen.info "Trying exact tactics or automation"
+
   match
-    ← getQuickTactics? goal (← cmdPreludeBlob).hash with
+    ← withoutModifyingTranslateAndTermState do
+      getQuickTactics? goal (← cmdPreludeBlob).hash with
   | some code => do
     traceAide `leanaide.codegen.info s!"exact tactics found for goal: {← ppExpr <| ← goal.getType}"
     return (← appendTacticSeqSeq accum code, none)
@@ -268,6 +270,7 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
 
 def findTactics? (goal :  MVarId):
     TranslateM (Option (TSyntax ``tacticSeq)) := goal.withContext do
+  withoutModifyingTranslateAndTermState do
   traceAide `leanaide.codegen.info "Trying automation tactics"
   let localNames  ← Translate.defsNames
   traceAide `leanaide.codegen.info s!"previous definitions/theorems names: {localNames}"
@@ -301,16 +304,6 @@ Obtain a sequence of tactics to apply to a goal, given a list of JSON sources. T
 def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) := goal.withContext do
-  -- TODO(assigned-goal-invariant): Define this function's public contract as
-  -- transactional syntax generation: it may execute tactics internally, but it
-  -- must always restore the entry Term/Meta state before returning or throwing,
-  -- since its result is syntax that callers replay. Successful Translate-state
-  -- effects may remain when they are part of the generation contract; callers
-  -- such as recursive `proofCode` that want no state effects should add the
-  -- stronger always-restore wrapper themselves. This central guarantee would
-  -- protect every recursive document/section/proof handler; the checks in
-  -- `getCodeTacticsAux` should remain as assertions that identify the first
-  -- handler that violated the boundary.
   match ← findTactics? goal with
   | some autoTacs => do
     let autoTacs :=
@@ -329,31 +322,21 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
     if ← goal.isAssigned then
       throwError
         s!"codegen: goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after tactics, but should be unassigned"
-    let remaining ←
-      if ← goal.isAssigned then
-        let proof ← instantiateMVars (mkMVar goal)
-        let deps ← getMVars proof
-        deps.toList.filterM fun m => return !(← m.isAssigned)
-      else
-        pure [goal]
-    if remaining.isEmpty then
+    traceAide `leanaide.codegen.info s!"goal still open after tactics: {← ppExpr <| ← goal.getType}"
+    traceAide `leanaide.codegen.info "Local context:"
+    let lctx ← getLCtx
+    for decl in lctx do
+      traceAide `leanaide.codegen.info s!"{decl.userName} : {← ppExpr <| decl.type}"
+    match ← findTactics? goal with
+    | some autoTacs => do
+      traceAide `leanaide.codegen.info s!"auto tactics:"
+      let autoTacs := getTactics autoTacs
+      for tac in autoTacs do
+        traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
+      appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
+    | none => do
+      traceAide `leanaide.codegen.info s!"no auto tactics found for goal: {← ppExpr <| ← goal.getType}"
       return tacs
-    let remainingTacs ← remaining.foldlM (init := #[]) fun accum goal =>
-      goal.withContext do
-        traceAide `leanaide.codegen.info s!"goal still open after tactics: {← ppExpr <| ← goal.getType}"
-        traceAide `leanaide.codegen.info "Local context:"
-        let lctx ← getLCtx
-        for decl in lctx do
-          traceAide `leanaide.codegen.info s!"{decl.userName} : {← ppExpr <| decl.type}"
-        let autoTacs ← findTacticsI goal
-        traceAide `leanaide.codegen.info s!"auto tactics:"
-        for tac in autoTacs do
-          traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
-        return accum ++ autoTacs
-    -- TODO(generation-check-homogeneous): Return an explicit unresolved/terminal
-    -- status with these fallback tactics. Syntax containing `repeat sorry` must
-    -- not be embedded in a nested proof and followed by more parent proof steps.
-    appendTacticSeqSeq tacs (← `(tacticSeq| $remainingTacs*))
 
 
 /--

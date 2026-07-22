@@ -354,7 +354,8 @@ def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tact
 
 
 def getQuickTactics? (goal: MVarId) (envHash? : Option UInt64) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  let tactics? ← runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?), ← `(tacticSeq| grind?)] envHash? (strict := true)
+  let tactics? ←
+    runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?), ← `(tacticSeq| grind?)] envHash? (strict := true)
   match tactics? with
   | none => return none
   | some tacs =>
