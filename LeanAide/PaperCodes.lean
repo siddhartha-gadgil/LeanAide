@@ -453,8 +453,6 @@ def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVa
     let .ok verification := js.getObjVal? "verification" | throwError s!"codegen: no 'verification' found in 'construction_proof'"
     let .ok fullClaim := js.getObjValAs? String "full_claim" | throwError
       s!"codegen: no 'full_claim' found in 'construction_proof'"
-    let .ok claim := js.getObjValAs? String "claim" | throwError
-      s!"codegen: no 'claim' found in 'construction_proof'"
     let existenceProofTacs ←
         existenceProof translator variableName construction verification goal
     let hash := fullClaim.hash
