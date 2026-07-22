@@ -407,11 +407,45 @@ supplies an already available `witness`, while `construction_proof` supplies a
 first-class `construction` or definition for the object.
 -/
 
+#check Exists
+
+def matchExistsM? (e : Expr) : MetaM (Option (Expr × Expr)) := do
+  let l ← mkFreshLevelMVar
+  let α ← mkFreshExprMVar (mkSort l)
+  let fnType ← mkArrow α (mkSort Level.zero)
+  let p ← mkFreshExprMVar fnType
+  let e' ← mkAppM ``Exists #[p]
+  if ← isDefEq e e' then
+    let p ← instantiateMVars p
+    let α ← instantiateMVars α
+    return (p, α)
+  else
+    logInfo m!"Could not unify {← ppExpr e} and {← ppExpr e'}"
+    return none
+
+elab "#exists_match" t:term : command =>
+  Command.liftTermElabM <| do
+    let e ← elabTerm t none
+    match ← matchExistsM? e with
+    | some (p, α) =>
+      logInfo m!"#exists_match: {e} matches Exists with predicate {p} and type {α}"
+      withLocalDeclD `x α fun x => do
+        let pApp ← mkAppM' p #[x]
+        logInfo m!"#exists_match: instantiated predicate {pApp}; i.e. {← Core.betaReduce pApp}"
+    | none =>
+      logInfo m!"#exists_match: {e} does not match Exists"
+
+-- #exists_match (∃ n: Nat, n = 1)
+
+
 @[codegen "construction_proof"]
 def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVarId) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
   | ``tacticSeq, js => do
     let some goal := goal? | throwError s!"codegen: 'construction_proof' requires a goal, but none found"
     goal.withContext do
+    let target ← goal.getType
+    let some (p, α) ← matchExistsM? target | throwError s!"codegen: 'construction_proof' requires a goal of the form ∃ x, P x, but got {← ppExpr target}"
+    let existenceSyntax ← delabDetailed target
     let .ok variableName := js.getObjValAs? String "variable_name" | throwError
       s!"codegen: no 'variable_name' found in 'construction_proof'"
     let .ok construction := js.getObjValAs? String "construction" | throwError
@@ -421,16 +455,8 @@ def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVa
       s!"codegen: no 'full_claim' found in 'construction_proof'"
     let .ok claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no 'claim' found in 'construction_proof'"
-    -- TODO(generation-check-homogeneous): Operate on `goal` and its actual
-    -- existential binders instead of retranslating/proving `full_claim` and
-    -- `claim` independently. Refine the witness once and discharge only the
-    -- resulting verification goal; complex constructions should invoke a
-    -- reusable library theorem rather than recursively replaying the proof tree.
-    let existenceType ← translator.translateToPropStrict fullClaim
-    let existenceGoal ← mkFreshExprMVar existenceType
     let existenceProofTacs ←
-        existenceProof translator variableName construction verification existenceGoal.mvarId!
-    let existenceSyntax ← delabDetailed existenceType
+        existenceProof translator variableName construction verification goal
     let hash := fullClaim.hash
     let existsId := mkIdent (s!"assert_exists_{hash}").toName
     let haveStx ←
@@ -440,11 +466,17 @@ def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVa
     let splitStx ←
         `(tacticSeq| let ⟨$varId:ident, $propId:ident⟩ := $existsId)
     let verificationId := mkIdent (s!"verification_{hash}").toName
-    let verificationType ← translator.translateToPropStrict claim
-    let verificationGoal ← mkFreshExprMVar verificationType
-    let .some verificationTacs ←
-      getProof translator verificationGoal.mvarId! verification | throwError s!"codegen: no proof translation found for verification part of 'construction_proof'"
-    let claimStx ← delabDetailed verificationType
+    let (verificationTacs?, claimStx) ←
+      withLocalDeclD verificationId.getId α fun x => do
+        let verificationType ← mkAppM' p #[x]
+        let verificationType ← Core.betaReduce verificationType
+        let claimStx ← delabDetailed verificationType
+        let verificationGoal ← mkFreshExprMVar verificationType
+        pure (← getProof translator verificationGoal.mvarId! verification, claimStx)
+    let verificationTacs ←  match verificationTacs? with
+    | some tacs => pure tacs
+    | none =>
+          throwError s!"codegen: no proof translation found for verification part of 'construction_proof'"
     let verificationStx ← `(tacticSeq| have $verificationId : $claimStx := by $verificationTacs)
     appendTacticSeqSeq haveStx <| ← appendTacticSeqSeq splitStx verificationStx
   | s, _ => throwError s!"codegen: 'construction_proof' only works for tactic sequences with goal, got kind {s}"
