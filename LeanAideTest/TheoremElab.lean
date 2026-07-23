@@ -6,7 +6,7 @@ import LeanAideCore.TheoremElabCheck
 
 set_option linter.unusedVariables false
 
-universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u₁ u₂ u₃
+universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9  u_11 u₁ u₂ u₃
 
 open Lean Meta Elab Term
 namespace LeanAide
