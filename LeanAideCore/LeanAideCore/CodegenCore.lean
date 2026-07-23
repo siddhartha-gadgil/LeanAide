@@ -220,57 +220,54 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   | [] => do
     return (accum, goal)
   | source::sources => do
-    let translateState ← get
-    let termState ← Term.saveState
-    let code? ← try
-        let code? ← getCode translator (some goal) ``tacticSeq source
-        termState.restore
-        pure code?
-      catch e =>
-        let err ←   e.toMessageData.toString
-        traceAide `leanaide.codegen.info s!"Error in getCode `tacticSeq for source {source.pretty}\nError: {err}"
-        termState.restore
-        set translateState
-        -- TODO-ProofStepFailureContinue: return a tagged failure from this
-        -- `let code?` catch, then match outside it and recurse with the unchanged
-        -- `goal`, remaining `sources`, and `accum`.  (Recursing directly here has
-        -- the wrong return type.)  Do not abort the enclosing theorem.
-        throwError s!"Error in getCode `tacticSeq` for source {source.pretty}\nError: {err}"
     if ← goal.isAssigned then
       traceAide `leanaide.codegen.info s!"goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after getCode for source {source.pretty}"
       throwError
         s!"codegen: goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after getCode for source {source.pretty}, but should be unassigned"
-    match code? with
-    | none => do -- pure side effect, no code generated
-      getCodeTacticsAux translator goal sources accum
-    | some code => do
-      if (getTactics code).isEmpty then
-        -- no tactics generated, but side effect
+    let translateState ← get
+    let termState ← Term.saveState
+    let result ← try
+        let code? ← getCode translator (some goal) ``tacticSeq source
+        termState.restore
+        pure (Except.ok code?)
+      catch e =>
+        termState.restore
+        set translateState
+        pure (Except.error (← e.toMessageData.toString))
+    match result with
+    | .error _ => getCodeTacticsAux translator goal sources accum
+    | .ok code? =>
+      match code? with
+      | none => do -- pure side effect, no code generated
         getCodeTacticsAux translator goal sources accum
-      else
-        if ← endsWithDone code then
-          -- the tactics are "done", so we can return the accumulated tactics
-          traceAide `leanaide.codegen.info s!"goal still open after tactics, but tactics end with 'done' so no further tactics generated."
-          traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
-          traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-          return (← appendTacticSeqSeq accum code, none)
+      | some code => do
+        if (getTactics code).isEmpty then
+          -- no tactics generated, but side effect
+          getCodeTacticsAux translator goal sources accum
         else
-            -- continue with the next source
-        -- runForSingleGoal checks that the goal is unassigned
-        let goal? ← runForSingleGoal goal code
-        match goal? with
-        | none => do -- tactics closed the goal
-          traceAide `leanaide.codegen.info s!"goal closed by tactics"
-          traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
-          traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-          return (← appendTacticSeqSeq accum code, none)
-        | some newGoal => do
-          if ← newGoal.isAssigned then
-            traceAide `leanaide.codegen.info s!"goal {← ppExpr <| ← newGoal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar newGoal)} after tactics, but should be unassigned"
-            throwError
-              s!"codegen: goal {← ppExpr <| ← newGoal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar newGoal)} after tactics, but should be unassigned"
-          let newAccum ← appendTacticSeqSeq accum code
-          getCodeTacticsAux translator newGoal sources newAccum
+          if ← endsWithDone code then
+            -- the tactics are "done", so we can return the accumulated tactics
+            traceAide `leanaide.codegen.info s!"goal still open after tactics, but tactics end with 'done' so no further tactics generated."
+            traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
+            traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+            return (← appendTacticSeqSeq accum code, none)
+          else
+              -- continue with the next source
+          -- runForSingleGoal checks that the goal is unassigned
+          let goal? ← runForSingleGoal goal code
+          match goal? with
+          | none => do -- tactics closed the goal
+            traceAide `leanaide.codegen.info s!"goal closed by tactics"
+            traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
+            traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+            return (← appendTacticSeqSeq accum code, none)
+          | some newGoal => do
+            if ← newGoal.isAssigned then
+              traceAide `leanaide.codegen.info s!"goal {← ppExpr <| ← newGoal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar newGoal)} after tactics, but should be unassigned"
+              throwError
+                s!"codegen: goal {← ppExpr <| ← newGoal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar newGoal)} after tactics, but should be unassigned"
+            let newAccum ← appendTacticSeqSeq accum code
+            getCodeTacticsAux translator newGoal sources newAccum
 
 def findTactics? (goal :  MVarId):
     TranslateM (Option (TSyntax ``tacticSeq)) := goal.withContext do
@@ -340,11 +337,8 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
       appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
     | none => do
       traceAide `leanaide.codegen.info s!"no auto tactics found for goal: {← ppExpr <| ← goal.getType}"
-      -- TODO-ProofExhaustionFallback: once every JSON proof step has been
-      -- attempted, append `repeat (sorry)` for the still-open goal(s), so a
-      -- failed intermediate step does not cause the whole theorem to vanish:
-      -- `appendTacticSeqSeq tacs (← `(tacticSeq| repeat (sorry)))`.
-      return tacs
+      appendTacticSeqSeq tacs (← `(tacticSeq| repeat (sorry)))
+
 
 
 /--
