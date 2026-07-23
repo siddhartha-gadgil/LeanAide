@@ -1,5 +1,335 @@
 # Generation check for `results/homogeneous.md`
 
+## Update: July 23 `core-homogeneous.json` codegen run
+
+### Run and headline result
+
+I ran
+
+```bash
+lake exe codegen results/core-homogeneous.json
+```
+
+after allowing Lake to rebuild the current `codegen` executable and its
+dependencies. The run used the configured real OpenAI backend and the restarted
+local similarity server. It completed with exit status 0 and wrote both
+authorized artifacts:
+
+- `CodeGen/Live/core-homogeneous.lean`;
+- `CodeGen/core-homogeneous.lean`.
+
+The detailed trace is `.logs/2026-07-23.log` (14,672 lines). Process success is
+not semantic success in this run. The input has four top-level definitions and
+five top-level theorems, while the final file has only three declarations:
+
+| semantic source kind | in JSON | emitted | omitted |
+|---|---:|---:|---:|
+| definitions | 4 | 3 | 1 |
+| theorems | 5 | 0 | 5 |
+| total declarations | 9 | 3 | 6 |
+
+The surviving declarations are `PseudoLength`, `IsLength`, and
+`IsHomogeneousPseudoLength`. Definition 8 (`IsTorsionFree`), the derived
+homogeneity-square claim, and Lemmas 1--4 are absent. The four lookup nodes were
+also emitted, but only as `#check` commands on string literals; they are not
+declarations and do not validate the named constants.
+
+The final elaboration report says `Sorries: none`, but this is vacuous evidence
+about proof completion: every theorem was omitted before final elaboration. The
+clean 44-line final file is therefore a safely filtered but severely incomplete
+artifact.
+
+### What worked
+
+1. **The latest code was built and used.** Lake rebuilt the current dependency
+   graph and `codegen` executable before starting generation.
+2. **The first three definitions translate and elaborate.** Their requested
+   JSON names are now preserved, unlike the older run's substitutions such as
+   `IsPseudoLengthFunction`.
+3. **The strict-`Prop` boundary is working for theorem claims.** All five theorem
+   claims were translated to propositions. In particular, the translator
+   repaired the stale JSON spelling `IsHomogeneousPseudoLength G l` to the
+   actual one-argument application `IsHomogeneousPseudoLength l`.
+4. **Top-level command commits are safer.** The universe-invalid claim command
+   was not written to either generated file. This avoids the malformed,
+   `skip`-heavy output of the older run, although the rejection is currently
+   hidden by an incorrect overall success result.
+5. **Prompt-only assumptions behaved as intended.** The log contains 58 events
+   of the form
+
+   ```text
+   LeanAide.assumeCode for key assume_statement worked; returned : false
+   ```
+
+   These are not failures. `getCode` explicitly uses `none` for a successful
+   side-effect-only handler. The assumptions were added to subsequent prompt
+   context, and later prompts show the expected `G`, group instance, `l`, and
+   local variables. There is no actual `assume_statement` error in this run.
+   Failure accounting must distinguish `returned : false` from a thrown error
+   or an explicitly required command that was not emitted.
+6. **The similarity server was used without a timeout.** There are no `timeout`,
+   `timed out`, or `leansearch` timeout messages in the fresh log. There are 17
+   similarity-query events. The repeated message about failing to synthesize
+   `LeanAide.LeanAideUrl` is followed by a successful fallback to the local
+   server; it is configuration noise, not evidence that retrieval failed.
+
+### Primary failure: generated universe `u_11` is not declared
+
+Every translated theorem claim has a type beginning like
+
+```lean
+∀ (G : Type u_11) [inst : Group G] ...
+```
+
+For example, the homogeneity-square statement was translated correctly to
+
+```lean
+∀ (G : Type u_11) [inst : Group G] (l : G → ℝ),
+  IsHomogeneousPseudoLength l →
+  ∀ (g : G), l (g ^ (2 : ℤ)) = (2 : ℝ) * l g
+```
+
+but its fallback claim command was rejected as
+
+```lean
+def core_homogeneous_root_homogeneity_square.prop : Prop :=
+  ∀ (G : Type u_11) [inst : Group G] ...
+```
+
+with
+
+```text
+error: unknown universe level `u_11`
+```
+
+The same error appears in otherwise plausible assertion candidates for Lemmas
+1--3. There are 88 occurrences of this diagnostic in the log.
+
+This is a deterministic internal mismatch, not an LLM translation error:
+
+- `LeanAideCore/LeanAideCore/TheoremElab.lean:13` includes `u_11` in
+  `levelNames`, so theorem elaboration is allowed to produce an expression with
+  that named universe.
+- `LeanAideCore/LeanAideCore/ConfigExts.lean:17` declares only through `u_10` in
+  the generated top code.
+- the default frontend prelude in
+  `LeanAideCore/LeanAideCore/SimpleFrontend.lean:14` also declares only through
+  `u_10`.
+- `delabDetailed` then faithfully prints the expression's `u_11`, and the
+  command checker sees an undeclared level.
+
+Merely adding `u_11` in one string would fix this instance but leave the three
+lists able to drift again. The robust change is to have theorem elaboration,
+frontend checking, and emitted top code share one universe policy. Either
+normalize generated level parameters to a known declared set, or collect the
+level parameters from accepted expressions and emit the corresponding
+`universe` command. At minimum, `levelNames`, `topCodeData`, and the default
+`simpleRunFrontend` prelude must be generated from one source of truth.
+
+This bug also wasted proof calls. The system continued asking the model for
+alternatives even though each candidate was being checked in a context that
+could not parse its universe. Validate universe closure and the complete
+candidate prelude once before launching proof search.
+
+### Per-item result
+
+| item | statement translation | proof/code result |
+|---|---|---|
+| Definitions 1--3 | Successful, with requested names | Emitted and elaborated |
+| homogeneity-square | Correct proposition, including corrected application of `IsHomogeneousPseudoLength` | Generated `.prop` command rejected solely because `u_11` was undeclared, then silently omitted |
+| Definition 8 | Mathematical content recognized | All eight candidates were theorem commands, not a definition of `IsTorsionFree`; definition handler rejected them and the existential fallback also failed |
+| Lemma 1 | Correct conjugation-invariance proposition | First substantive assertion candidates were rejected because they contained `u_11`; theorem omitted |
+| Lemma 2 | Correctly includes the finite definition of `C` in the claim | Base-case assertion candidates were rejected because they contained `u_11`; theorem omitted |
+| Lemma 3 | Correctly includes both conjugacy witnesses as hypotheses | Power-identity assertion candidates were rejected because they contained `u_11`; theorem omitted |
+| Lemma 4 | Correctly includes `c` and `f` as claim-local definitions | Proof reached the first structured local definition, then rejected a valid local `let` as “expected command”; theorem omitted |
+
+Thus the log does not establish that the mathematical proofs of Lemmas 1--4
+failed. Lemmas 1--3 were stopped by the universe/checking defect before useful
+proof completion could be assessed. Lemma 4 was stopped by a local-syntax
+translation defect. No fresh `skip` or “no goals to be solved” issue appears in
+this run.
+
+### Definition 8 is phrased as a theorem, not a definition
+
+The source node is labelled `definition`, named `IsTorsionFree`, and says:
+
+```text
+For an abelian group A, A is torsion-free iff T(A) = {0}.
+```
+
+All eight model candidates instead had the form
+
+```lean
+theorem AddCommGroup.isAddTorsionFree_iff_torsion_eq_bot :
+  ∀ (A : Type u_1) [AddCommGroup A],
+    IsAddTorsionFree A ↔ AddCommGroup.torsion A = ⊥ := by sorry
+```
+
+These are reasonable translations of the English sentence as an equivalence
+theorem, but they cannot satisfy `defCode`, which correctly requires a `def` or
+`noncomputable def` command and must preserve the requested name. The expensive
+“There exists IsTorsionFree such that ...” fallback then attempted to prove the
+equivalence and still could not recover a definition.
+
+The generic upstream fix is to audit definition nodes for definitional shape.
+A predicate-definition item with a requested name should be rewritten into an
+explicit introduction, for example:
+
+```text
+Define IsTorsionFree (A) for an abelian group A to mean
+AddCommGroup.torsion A = ⊥.
+```
+
+This should produce something like
+
+```lean
+def IsTorsionFree (A : Type u) [AddCommGroup A] : Prop :=
+  AddCommGroup.torsion A = ⊥
+```
+
+If the intended content is instead the equivalence with Mathlib's existing
+`IsAddTorsionFree`, the node should be classified as a theorem. This must be a
+generic definition-intent audit, not a special case for torsion. On the Lean
+side, `defCode` should report a command-kind mismatch immediately and should
+not start existential proof search when every candidate is a theorem command.
+
+### Lemma 4: local `let` is sent through a command translator
+
+The relevant JSON step is already well structured:
+
+```json
+{
+  "type": "let_statement",
+  "variable_type": "G",
+  "variable_name": "a",
+  "value": "x^m c^k"
+}
+```
+
+The model returned the locally valid syntax
+
+```lean
+let a : G := x ^ m * c ^ k
+```
+
+but `letCodeCore` calls `defStx`, which invokes `translateDefCmdM?` and parses
+the result in the `command` category. The result was therefore rejected with
+`expected command`. The implicated paths are
+`LeanAideCore/LeanAideCore/PaperCodes.lean:676` and
+`LeanAide/PaperCodes.lean:107`, especially the calls through `defStx` at lines
+695--698 and 129--132 respectively.
+
+For a tactic-sequence `let_statement`, translate the value as a term in the
+current goal context and construct the local `let`/`have` syntax directly.
+Command translation is appropriate only for document-level definitions. This
+also avoids asking an LLM to reproduce the already structured variable name and
+type.
+
+### Silent omission is incorrectly reported as success
+
+`getCodeCommands` in `LeanAideCore/LeanAideCore/CodegenCore.lean:345` catches a
+source exception and continues, treats `none` as an unconditional continue,
+and pushes even an empty result from `runAndCommitCommands`. In the
+homogeneity-square case, `runAndCommitCommands` in
+`LeanAideCore/LeanAideCore/TranslateM.lean:326` returns an empty array after the
+only command fails frontend checking, but no required-source failure is
+recorded. `leanFromStructuredJsonTask` consequently returns `"success"`, and
+`codegen.lean:140` accepts that result because the three surviving declarations
+elaborate.
+
+Codegen needs structured per-source accounting with at least these outcomes:
+
+- prompt/context-only success (for example `assume_statement` returning
+  `none`);
+- emitted and committed command;
+- deliberately non-code document node;
+- rejected/failed required semantic item.
+
+The final status must be `partial` or `error` when a theorem or definition
+produces no committed declaration. `codegen.lean` should compare required
+semantic source IDs/names with committed declarations before writing an exit-0
+final result. Best-effort live output can still be written, but it must not turn
+six omissions into success.
+
+### Diagnostic `#check` nodes still check only strings
+
+`checkCode` in `LeanAideCore/LeanAideCore/PaperCodes.lean:261` looks up each
+declaration and renders a description into a string literal, then emits
+`#check "..."`. Lean therefore proves only that the literal has type `String`.
+The four resulting “elaboration logs” are not declaration checks and should not
+be counted as generated mathematical code. Put lookup information in a comment
+or structured report field; if executable checking is wanted, emit
+`#check commutatorElement`, not
+`#check "commutatorElement has type ..."`.
+
+### Similarity-server status
+
+The restarted server removed the earlier operational blocker: no retrieval
+timeout occurred. The fresh log nevertheless prints the missing
+`LeanAide.LeanAideUrl` fallback message 51 times for 17 similarity queries.
+Configure one local URL instance at startup, or make “use local server” an
+explicit mode, so each query does not first fail dependency synthesis and emit
+three noisy messages. This is a performance/diagnostic cleanup, not the cause
+of the theorem omissions.
+
+### Comparison with the earlier `CodeGen/homogeneous.lean`
+
+The earlier full generated file is 1,675 lines and contains 15 declaration
+headers, 108 textual `sorry` occurrences, and 31 `skip`s. Its early core portion
+emits more declarations, but several are wrong: Definitions 2 and 3 became
+theorems returning `Prop` with trivial `True` bodies; the Lemma 2 statement
+accepts an arbitrary `C` instead of defining it; Lemma 3 drops essential
+conjugacy hypotheses; and Lemma 4 is stated for an arbitrary `f`.
+
+The fresh core JSON and statement translations are materially better:
+
+- requested names and the first three definitions are preserved;
+- `C`, the conjugacy hypotheses, and `c`/`f` now occur directly in the formal
+  claims;
+- rejected commands are not written, so there are no fresh `skip`s or
+  `sorry`s.
+
+The tradeoff is that the new final file hides nearly all substantive work. It
+is cleaner than the earlier file but much less complete: three valid
+definitions and zero theorems are not a successful generation of the nine
+semantic items in the core input.
+
+### Focused TODOs from this run
+
+No Lean source was modified during this run, as requested. The following are
+the focused implementation targets to add when Lean changes are next allowed:
+
+1. **P0 — universe closure:** unify `TheoremElab.levelNames`,
+   `ConfigExts.topCodeData`, and `SimpleFrontend.simpleRunFrontend` under one
+   universe policy; add a regression using `Type*` that currently yields
+   `u_11`.
+2. **P0 — required-source coverage:** make `getCodeCommands` and
+   `runAndCommitCommands` return structured outcomes, and make
+   `leanFromStructuredJsonTask`/`codegen.lean` fail or report partial success
+   when any theorem or definition has no committed declaration. Explicitly
+   exempt prompt-only `assume_statement` nodes.
+3. **P0 — preflight before proof calls:** validate the complete frontend
+   prelude and universe declarations once before requesting proof candidates;
+   do not spend further API calls on a deterministic context error.
+4. **P1 — local-let translation:** in both `letCode` handlers, translate
+   `value` as a term and build local syntax directly for `tacticSeq`; reserve
+   `translateDefCmdM?` for `commandSeq`.
+5. **P1 — definition-intent audit:** add a generic Python quality pass that
+   ensures a node classified as `definition` introduces its requested name and
+   has a definitional right-hand side; reclassify equivalence propositions as
+   theorems. Add Definition 8 as a regression fixture.
+6. **P1 — definition fallback:** when all returned candidates are theorem
+   commands, report a definition/theorem kind mismatch instead of launching the
+   existential-definition proof fallback.
+7. **P2 — real checks:** replace string-literal `#check` commands with
+   structured diagnostics or executable checks of the actual identifiers.
+8. **P2 — local similarity configuration:** install an explicit local
+   `LeanAideUrl`/mode once, avoiding repeated synthesis-failure fallback logs.
+9. **P3 — codomain semantics:** decide whether the three length predicates are
+   intended only over `ℝ`. If they are genuinely generic in `R`, replace the
+   unrelated `[Zero R] [Add R] [LE R] ...` assumptions with the minimal
+   law-bearing ordered additive structure needed by the definitions.
+
 ## Update: July 20 partial live codegen run
 
 ### Scope and outcome
