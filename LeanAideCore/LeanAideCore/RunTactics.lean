@@ -151,7 +151,7 @@ def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : Term
       set s
       return none
     | [mvar] =>
-      if ← mvarId.isAssigned then
+      if ← mvar.isAssigned then
         throwError s!"runForSingleGoal: single generated goal is already assigned; cannot run tactics on an assigned goal"
       set s
       return mvar

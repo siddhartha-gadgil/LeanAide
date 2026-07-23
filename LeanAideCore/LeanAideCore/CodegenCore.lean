@@ -231,6 +231,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         traceAide `leanaide.codegen.info s!"Error in getCode `tacticSeq for source {source.pretty}\nError: {err}"
         termState.restore
         set translateState
+        -- TODO-ProofStepFailureContinue: return a tagged failure from this
+        -- `let code?` catch, then match outside it and recurse with the unchanged
+        -- `goal`, remaining `sources`, and `accum`.  (Recursing directly here has
+        -- the wrong return type.)  Do not abort the enclosing theorem.
         throwError s!"Error in getCode `tacticSeq` for source {source.pretty}\nError: {err}"
     if ← goal.isAssigned then
       traceAide `leanaide.codegen.info s!"goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after getCode for source {source.pretty}"
@@ -336,6 +340,10 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
       appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
     | none => do
       traceAide `leanaide.codegen.info s!"no auto tactics found for goal: {← ppExpr <| ← goal.getType}"
+      -- TODO-ProofExhaustionFallback: once every JSON proof step has been
+      -- attempted, append `repeat (sorry)` for the still-open goal(s), so a
+      -- failed intermediate step does not cause the whole theorem to vanish:
+      -- `appendTacticSeqSeq tacs (← `(tacticSeq| repeat (sorry)))`.
       return tacs
 
 

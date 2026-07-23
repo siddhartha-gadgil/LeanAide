@@ -1,5 +1,343 @@
 # Generation check for `results/homogeneous.md`
 
+## Update: July 23 corrected-goal and direct-validation rerun
+
+### Completed run and confirmed behavior
+
+The rebuilt executable contains both fixes under test:
+
+1. `runForSingleGoal` now checks `mvar.isAssigned`, where `mvar` is the
+   continuation goal returned by the tactic, instead of checking the expectedly
+   assigned input goal `mvarId`.
+2. The tactic branch of `let_statement` first calls
+   `checkTacticsFromString` on the direct local tactic `let <name> ... :=
+   <value>` in the actual goal context, accepts it only when it returns exactly
+   one continuation goal, and falls back to `defStx` otherwise.
+
+`lake build codegen` succeeded.  The fresh real-API run of
+`lake exe codegen results/core-homogeneous.json` ran from 10:17:30 to 11:26:17
+(lines 37,269--141,808 of `.logs/2026-07-23.log`) and exited 0.  It made 71 LLM
+queries: 15 were served from the chat cache and 56 received fresh responses.
+There was no API, LeanSearch, or similarity-server timeout in this run.
+
+Both authorized artifacts were written and pass independent `lake env lean`
+checks:
+
+| Artifact | Lines | Declarations generated |
+|---|---:|---|
+| `CodeGen/Live/core-homogeneous.lean` | 374 | 4 definitions; Lemmas 1, 3, and 4 |
+| `CodeGen/core-homogeneous.lean` | 644 | the same declarations plus final diagnostics |
+
+The source has four definitions and four lemmas, so definition coverage is
+complete but theorem coverage is only 3/4.  The live file has no `skip`, but it
+has 11 occurrences of `repeat (sorry)`: one in Lemma 1, seven in Lemma 3, and
+three in Lemma 4.  Thus the artifacts elaborate, but proof completion remains
+poor.  The final diagnostic's later phrase `Sorries after purge: none` refers
+to its diagnostic purge, not to the emitted declarations; the declarations
+still contain those 11 sorries.
+
+The corrected-goal fix is confirmed dynamically.  There is no occurrence of
+`single generated goal is already assigned` or `no goals to be solved` in the
+fresh trace, and generation advances through many continuation goals.  The
+direct local-`let` validation is also confirmed: Lemma 4 emits the local
+definitions of `a`, `w`, `u`, and `v`, including terms depending on the
+earlier local `c`, and later prompts retain all four.  This is the case which
+the old command-prelude validation rejected with `Unknown identifier c`.
+
+### Lemma 2: a failed proof node currently drops the theorem
+
+Lemma 2 reached its induction step, but at 10:34:03 translation of the local
+assertion
+
+```lean
+C (n + 1) = w * (y * C n * z) * w⁻¹
+```
+
+failed with `no valid function found for key assert_statement`.  The enclosing
+proof was then abandoned, so `lemma_2` is absent from
+`CodeGen/Live/core-homogeneous.lean`; codegen continued with Lemma 3.  This is
+not delayed output or buffering.
+
+The required recovery has two distinct levels:
+
+1. A failed intermediate JSON proof node must not abort the theorem.  In
+   `getCodeTacticsAux` at
+   `LeanAideCore/LeanAideCore/CodegenCore.lean:225-238`, the exception handler
+   already restores `Term.State` and `Translate.State`, but then rethrows.
+   The catch is currently inside `let code? ← ...`, so it cannot directly
+   return the recursive function's pair.  Make this `try` return a tagged
+   success/failure result (or move the catch around the whole per-source
+   branch), then handle the failure arm with
+   `getCodeTacticsAux translator goal sources accum`: keep the same unassigned
+   goal and accumulated tactics, drop only the failed `source`, and try the
+   remaining JSON nodes.  In schematic form:
+
+   ```lean
+   let result ← try
+     let code? ← getCode translator (some goal) ``tacticSeq source
+     termState.restore
+     pure (.ok code?)
+   catch e =>
+     termState.restore
+     set translateState
+     pure (.error (← e.toMessageData.toString))
+   match result with
+   | .error _ => getCodeTacticsAux translator goal sources accum
+   | .ok code? => -- existing handling of `code?`
+   ```
+2. If all remaining JSON nodes and final automation leave the goal open,
+   `getCodeTactics` at
+   `LeanAideCore/LeanAideCore/CodegenCore.lean:334-346` must append the terminal
+   `repeat (sorry)` fallback to the accumulated tactics.  At present its
+   `findTactics? = none` branch returns `tacs` unchanged; the resulting theorem
+   command has an open goal and is discarded by the command-level handler.
+
+This refines the earlier recommendation about `findTacticsI`: failed
+per-assertion proof search should remain an explicit failure rather than
+silently manufacturing a successful assertion, but the *outer proof
+sequence*, after every structured source has been tried, should deliberately
+close whatever remains with `repeat (sorry)`.  That preserves the translated
+theorem and all later usable steps while making the incomplete proof explicit.
+Regression tests should cover failure of the first, middle, and last proof
+node, verify that later nodes are attempted, and verify that only the terminal
+exhaustion path emits `sorry`.
+
+Focused TODO comments marking both control-flow changes are now in
+`CodegenCore.lean` as `TODO-ProofStepFailureContinue` and
+`TODO-ProofExhaustionFallback`.
+
+### Deeper issues exposed after the two fixes
+
+1. **Local assertion translation is not sufficiently claim-specific.**  A
+   requested local equality such as `w * u = a` is translated into a theorem
+   universally quantifying the group, pseudo-length, points, exponents, and
+   all local definitions.  More seriously, while translating Lemma 4's local
+   claim `c = x*y*x⁻¹*y⁻¹`, the full-statement fallback accepted the
+   *entire final recurrence theorem*.  This created
+   `assert_16329814440308656878` with `repeat (sorry)` and allowed `grind` to
+   close the theorem early.  The later JSON proof nodes were therefore never
+   attempted.  `translateToPropStrict` must have a local-assertion mode which
+   either disables the broad `server.fullStatement` fallback or validates
+   that its result is a faithful reformulation of the requested claim, rather
+   than merely any elaborating proposition from the surrounding prompt.
+2. **Internal assertion proof search still manufactures success.**
+   `findTacticsI` uses `repeat (sorry)` when `findTactics?` returns `none`.
+   This explains all 11 sorry-backed local assertions.  Keep an assertion
+   failure explicit so that the outer recovery can move to the next JSON node;
+   use `repeat (sorry)` only once, at terminal proof exhaustion.
+3. **Proof values bloat later prompts.**  Assigned proof-valued local
+   declarations are rendered as `let name : Prop := <large kernel term>` by
+   `localDeclContextLine?`.  Later Lemma 3 prompts reach roughly 17k--19.5k
+   input tokens.  For a local declaration whose type is a proposition, render
+   only its name and type; retain assigned values for data definitions such as
+   `c`, `f`, `a`, `w`, `u`, and `v`, where the value is semantically needed.
+4. **Existing local hypotheses are underused.**  For example, the assertion
+   that `l` is a homogeneous pseudo-length should reuse the hypothesis already
+   in the local context instead of translating and proving a new generalized
+   theorem.  Before invoking the LLM, check whether the requested assertion
+   directly elaborates in the goal context or matches an existing local
+   hypothesis.
+5. **Duplicate proof nodes are regenerated.**  The exact `w * u = a` claim
+   appears twice and receives the same hash-based name.  Lean permits the
+   resulting local shadowing, but it wastes translation and proof work.  The
+   source audit should remove exact duplicate proof nodes, and codegen should
+   avoid re-emitting an identical local proposition already in context.
+6. **One universe-serialization defect remains.**  The trace has one
+   `unknown universe level` occurrence for the already identified RHS-only
+   `u_12` case.  Auto-implicit declaration headers do not bind a universe that
+   first appears inside a serialized proposition value; the level-preserving
+   serialization recommendation below remains necessary.
+
+### Focused changes from the completed run
+
+1. **P0 -- retain the theorem after a proof-step error:** change the catch in
+   `getCodeTacticsAux` to return a failure marker after the existing state
+   restoration, then recurse on `sources` with the original `goal` and
+   `accum` from the result match.  A direct recursive call inside the current
+   `let code?` catch has the wrong return type.
+2. **P0 -- terminal proof fallback:** in the final `findTactics? = none`
+   branch of `getCodeTactics`, use
+   `appendTacticSeqSeq tacs (← \`(tacticSeq| repeat (sorry)))`.  Do not place
+   this fallback inside assertion proof search.
+3. **P0 -- assertion relevance:** give `translateToPropStrict` a constrained
+   local-assertion path; do not accept an enclosing theorem as the translation
+   of a small local claim.
+4. **P0 -- explicit assertion failure:** replace `findTacticsI` at assertion
+   call sites by an option/error path so the outer proof sequence can recover.
+5. **P1 -- concise proof context:** change `localDeclContextLine?` to omit the
+   assigned value when the declaration type is `Prop`, while preserving values
+   for non-proof local lets.
+6. **P1 -- coverage accounting:** record attempted and failed JSON proof-node
+   identifiers.  A theorem may close legitimately before all proof nodes, but
+   early closure caused by a mistranslated assertion must be reported rather
+   than silently counted as success.
+
+## Update: July 23 auto-implicit and `let`/`def` quick-fix rerun
+
+### Changes checked
+
+The two quick fixes under test are present in the rebuilt executable:
+
+1. `elabFrontTheoremExprWithCommandPreludeM` now checks temporary theorem
+   declarations with `autoImplicit true`.
+2. `translateDefCmdM?` rewrites a candidate beginning with `let ` to begin
+   with `def ` before parsing it as a command.
+
+A search found two other production theorem wrappers which still explicitly
+disabled auto-implicits, `elabFrontTheoremExprMStrict` and
+`elabFrontTheoremExprM` in `LeanAideCore/LeanAideCore/SimpleFrontend.lean`.
+Both now use `autoImplicit true`. The remaining `autoImplicit false`
+occurrences are standalone old examples and `LeanAideTest` inputs, not codegen
+wrappers, so they were not changed. `lake build codegen` succeeded after all
+three wrapper changes.
+
+I then ran:
+
+```bash
+lake exe codegen results/core-homogeneous.json
+```
+
+The run lasted from 09:11:51 to 09:13:53, exited 0, and wrote both authorized
+output files. Its trace is the part of `.logs/2026-07-23.log` beginning at line
+28,402 and ending at line 37,268. There were 20 OpenAI query attempts: 18 were
+served by the existing response cache and two were cache misses. There was no
+timeout. Both generated files pass independent `lake env lean` checks.
+
+The artifacts are byte-for-byte unchanged from the preceding quick-fix run:
+four definitions and no theorems. Thus process success still masks incomplete
+source coverage.
+
+### The auto-implicit fix works, but only at declaration headers
+
+The temporary wrapper now accepts `Type*`, generalizes it to `u_12`, and
+successfully returns the translated proposition. More importantly, the
+assertion candidates for Lemmas 1--3 containing `Type u_12` now elaborate and
+enter proof generation. The fresh trace has only one `unknown universe level`
+error, compared with 89 in the preceding run.
+
+The one remaining failure is the already identified RHS-only case:
+
+```lean
+def core_homogeneous_root_homogeneity_square.prop : Prop :=
+  ∀ (G : Type u_12), ...
+```
+
+Because `u_12` first occurs in the value rather than the declaration header,
+`autoImplicit` does not bind it. The proper level-parameter preservation and
+dynamic universe-prelude fix is therefore still required for serialized
+propositions and final code.
+
+### Newly exposed blocker: `runForSingleGoal` checks the wrong goal
+
+All four lemmas now reach their first structured tactic. Each tactic makes
+ordinary progress and returns one continuation goal. For example, Lemma 1
+runs a tactic of the form:
+
+```lean
+have h : l (y * x * y⁻¹) ≤ l x := by ...
+```
+
+Lean assigns the original goal to a proof term containing the new continuation
+metavariable and returns that new metavariable. This is normal tactic behavior.
+However, the one-goal branch in
+`LeanAideCore/LeanAideCore/RunTactics.lean:153-157` currently says:
+
+```lean
+| [mvar] =>
+  if ← mvarId.isAssigned then
+    throwError "single generated goal is already assigned ..."
+```
+
+Here `mvarId` is the original goal, which is expected to be assigned after a
+successful non-closing tactic. The check must inspect the returned goal:
+
+```lean
+if ← mvar.isAssigned then ...
+```
+
+and then commit the returned tactic state and return `mvar`. The input check at
+line 138 is valid, and the empty-list branch already represents a tactic which
+closed the goal. The fresh log contains four independent failures at this
+point, repeated by higher-level error reporting to give 12 textual occurrences
+of `single generated goal is already assigned`.
+
+This refines the older state-leak diagnosis below for the current code.
+`withoutModifyingTranslateAndTermState` now saves both `Translate.State` and
+`Term.SavedState`; Lean's `Term.SavedState` includes `Meta.SavedState`, so an
+additional Meta field is not needed there. `runForSingleGoal` also saves its
+term state and restores it in the exception path. The immediate current
+failure is the old-goal/new-goal identity mistake, not a failure to save Meta
+state.
+
+There is a second issue in the same example. `assertionCode` obtains its proof
+tactics through `findTacticsI`, whose no-result default is still:
+
+```lean
+repeat (sorry)
+```
+
+Consequently, changing `mvarId` to `mvar` would allow generation to proceed,
+but initially with sorry-filled local assertions. Required proof search must
+return an explicit failure when `findTactics?` returns `none`; `sorry` should
+not be an internal success value.
+
+### What the `let` to `def` rewrite did
+
+Lemma 4 exercised the rewrite. The model returned the appropriate local
+candidate
+
+```lean
+let a : G := x ^ m * c ^ k
+```
+
+and `translateDefCmdM?` rewrote it to:
+
+```lean
+def a : G := x ^ m * c ^ k
+```
+
+This removed the command-parser mismatch, but semantic validation still
+rejected the command. The prompt's local context contained the claim-local
+definitions of `c` and `f`, while the frontend validation prelude reconstructed
+only `G`, its instance, `l`, `x`, `y`, `m`, and `k`. The cached frontend error
+is exactly `Unknown identifier c`.
+
+After all eight rewritten candidates were rejected, `defStx`'s structured
+fallback and `commandToTactic` nevertheless produced the correct local tactic:
+
+```lean
+let a : G := x ^ m * c ^ k
+```
+
+That tactic executed and returned its continuation goal, then hit the same
+incorrect `mvarId.isAssigned` check. Therefore the rewrite is useful as a
+top-level command normalization, but is not the generic solution for local
+`let_statement` nodes. Local definitions should translate/validate the
+structured `value` as a term in the actual goal context and construct a local
+`let` tactic directly. If command-based validation is retained, its prelude
+must preserve local let-declarations such as `c` and `f`.
+
+### Focused TODOs from this run
+
+1. **P0 -- returned-goal check:** in `runForSingleGoal`, test the returned
+   `mvar`, not the assigned input `mvarId`; add regression tests for a tactic
+   that returns one continuation (`have`/`let`) and a tactic that closes the
+   goal.
+2. **P0 -- explicit proof-search failure:** replace `findTacticsI`'s
+   `repeat (sorry)` default with an explicit no-proof result and propagate it
+   through assertion and nested-proof generation.
+3. **P0 -- universe closure:** retain generalized level parameters and emit a
+   dynamic universe prelude for proposition values and final serialization;
+   header auto-implicits alone cannot fix the `.prop : Prop := ...` form.
+4. **P1 -- local definitions:** bypass the top-level definition translator for
+   tactic-sequence `let_statement` nodes, or preserve local let-declarations in
+   the validation context. Keep the `let` to `def` rewrite scoped to actual
+   command translation.
+5. **P0 -- required-source coverage:** an exit-0 file with four of nine
+   required declarations must be reported as partial/failure, while
+   prompt-only `assume_statement` nodes remain exempt.
+
+
 ## Update: July 23 quick-fix rerun
 
 ### Changes made and run result

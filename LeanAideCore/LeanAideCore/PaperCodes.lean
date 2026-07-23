@@ -79,6 +79,10 @@ def Translator.translateToPropStrict
     try
       Translator.translateToPropStrictAux claim translator
     catch e =>
+      -- TODO-LocalAssertionRelevance: local proof assertions need a constrained
+      -- fallback here.  Do not accept an enclosing/full theorem as the
+      -- translation of a small local claim merely because it elaborates; either
+      -- disable `fullStatement` in that mode or validate claim equivalence.
       let fullClaim ← translator.server.fullStatement claim
       try
         Translator.translateToPropStrictAux fullClaim translator
@@ -686,6 +690,19 @@ def letCodeCore (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (k
     | .ok value =>
       match goal? with
       | some goal =>
+        let variableName := js.getObjValAs? String "variable_name" |>.toOption.getD "_"
+        let typeString := match js.getObjValAs? String "variable_type" with
+        | .ok t => " : " ++ t
+        | .error _ => ""
+        let tacticString := s!"let {variableName}{typeString} := {value}"
+        let (n, stx?) ← checkTacticsFromString goal tacticString
+        match stx?, n with
+        | some stx, 1 =>
+          traceAide `leanaide.papercodes.info s!"codegen: 'let_statement' with value {value} translated to tactic:\n{← PrettyPrinter.ppCategory ``tacticSeq stx}"
+          addPromptContext statement
+          return some ⟨stx⟩
+        | _, _ =>
+          pure ()
         match (← goal.getType).app2? ``Exists with
         | some (_, .lam _ _ _ _) =>
             traceAide `leanaide.papercodes.info s!"goal is a there exists statement, not in leanaide-core"
@@ -909,6 +926,10 @@ where typeStx (js: Json) :
   let mvar ← mkFreshExprMVar type
   let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError
     s!"codegen: failed to apply deduction theorems for assertion; deduction tactics:\n{deductionHaves}"
+  -- TODO-AssertionProofFailure: do not use `findTacticsI`'s sorry default for
+  -- an intermediate assertion.  Propagate `findTactics? = none` as failure so
+  -- `getCodeTacticsAux` can continue with the remaining JSON proof nodes; only
+  -- terminal exhaustion of the outer theorem should add `repeat (sorry)`.
   let tacs ← findTacticsI mvarId
   addPromptContext <| "Assume: " ++ claim
   return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type)

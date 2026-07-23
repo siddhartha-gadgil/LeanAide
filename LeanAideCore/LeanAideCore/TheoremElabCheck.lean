@@ -28,7 +28,7 @@ def elabFrontTheoremExprWithCommandPreludeM (type : String) :
   let n := `my_shiny_new_theorem
   let input ←
     withCommandPrelude
-      s!"set_option autoImplicit false in\nnoncomputable def {n} : {type} := by sorry"
+      s!"set_option autoImplicit true in\nnoncomputable def {n} : {type} := by sorry"
   let (env, logs) ← runFrontendM input
   let errors := logs.toList.filter (·.severity == MessageSeverity.error)
   let errorStrings ← errors.mapM (·.data.toString)

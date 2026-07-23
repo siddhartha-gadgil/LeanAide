@@ -429,6 +429,10 @@ def localDeclContextLine? (decl : LocalDecl) : TranslateM (Option String) := do
       return some <| binderInfoContextString binderInfo userName.toString typeStr
   | .ldecl _ _ userName type value .. =>
       let typeStr := (← PrettyPrinter.ppExpr type).pretty
+      -- TODO-PromptProofValueElision: when `type` is a proposition, render only
+      -- the local name and type.  Printing an assigned proof's kernel value
+      -- makes later prompts enormous.  Preserve `value` for non-proof local
+      -- lets (`c`, `f`, `a`, ...), since later expressions depend on them.
       let valueStr := (← PrettyPrinter.ppExpr value).pretty
       return some s!"let {userName} : {typeStr} := {valueStr}"
 

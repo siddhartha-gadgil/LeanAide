@@ -491,6 +491,7 @@ def translateDefCmdM? (s: String) (translator : Translator)
     let s := extractLean s
     -- let s := s.replace "\n" " "
     let s := if s.startsWith "definition " then s.replace "definition " "def " else s
+    let s := if s.startsWith "let " then "def " ++ s.drop 4 else s
     let cmd? := runParserCategory (← getEnv) `command s
     match cmd? with
     | Except.error e =>

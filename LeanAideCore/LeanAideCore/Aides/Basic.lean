@@ -446,6 +446,35 @@ def checkTacticSafe (mvarId: MVarId)(tacticCode: Syntax):
     logWarning e.toMessageData
     return false
 
+def checkTacticSafe' (mvarId: MVarId)(tacticCode: Syntax):
+    TermElabM (Bool × Nat) := withoutModifyingState do
+  let ctx ← readThe Term.Context
+  let s ← getThe Term.State
+  let mctx ← readThe Meta.Context
+  let s' ← getThe Meta.State
+  let state ← saveState
+  let res ← Core.tryCatchRuntimeEx (do
+      let res ← runTacticToCore mvarId tacticCode ctx s mctx s'
+      pure <| Except.ok res
+      ) (fun e => pure <| Except.error e)
+  match res with
+  | Except.ok ((mvarIds, s), ms) => do
+    set ms
+    set s
+    return (true, mvarIds.length)
+  | Except.error e =>
+    state.restore
+    logWarning e.toMessageData
+    return (false, 1)
+
+def checkTacticsFromString (mvarId: MVarId)(tacticCode: String):
+    TermElabM (Nat × Option Syntax) := do
+  match runParserCategory (← getEnv) `tacticSeq tacticCode with
+  | .ok stx =>
+    let (chk, n) ← checkTacticSafe' mvarId stx
+    if chk then return (n, some stx) else return (n, none)
+  | _ => return (1, none)
+
 -- from batteries
 def List.scanl' (f : α → β → α) (a : α) : List β → List α
   | [] => [a]
