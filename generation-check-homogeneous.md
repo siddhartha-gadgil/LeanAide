@@ -1,5 +1,232 @@
 # Generation check for `results/homogeneous.md`
 
+## Update: July 23 quick-fix rerun
+
+### Changes made and run result
+
+For this diagnostic rerun I changed only `results/core-homogeneous.json`:
+
+1. Definition 8 was rewritten from an equivalence-shaped sentence to an
+   explicit introduction of the requested name:
+
+   ```text
+   Define IsTorsionFree (A) for an abelian group A to mean
+   AddCommGroup.torsion A = ⊥.
+   ```
+
+2. Each of the five `let_statement` nodes now has an explicit `statement`
+   field beginning with `Define`: the `z` in Lemma 1 and the `a`, `w`, `u`,
+   and `v` in Lemma 4. The structured `value` fields were left unchanged.
+
+I then ran the rebuilt current executable with real API calls:
+
+```bash
+lake exe codegen results/core-homogeneous.json
+```
+
+The run lasted from 07:54:37 to 08:09:58, exited 0, and wrote both
+`CodeGen/Live/core-homogeneous.lean` and
+`CodeGen/core-homogeneous.lean`. The fresh trace is the portion of
+`.logs/2026-07-23.log` beginning at line 14,673; the file now has 28,401
+lines. There were 16 model responses in the fresh trace and no timeout. Both
+generated files also pass an independent `lake env lean` check.
+
+That successful process status still overstates the semantic result:
+
+| semantic source kind | in JSON | emitted before rerun | emitted now |
+|---|---:|---:|---:|
+| definitions | 4 | 3 | 4 |
+| theorems | 5 | 0 | 0 |
+| total declarations | 9 | 3 | 4 |
+
+The only new mathematical declaration is `IsTorsionFree`. The final file has
+no theorem, `sorry`, or `skip`; this is because all five theorems were omitted,
+not because their proofs were completed. The four string-literal `#check`
+commands remain diagnostics rather than declarations.
+
+### Definition 8 workaround succeeded
+
+The explicit definitional wording fixed the command-kind ambiguity. All eight
+fresh candidates were actual definitions, for example:
+
+```lean
+def IsTorsionFree (A : Type _) [AddCommGroup A] : Prop :=
+  AddCommGroup.torsion A = ⊥
+```
+
+The first valid candidate elaborated, `defCode` reported success, and the
+definition appears in both output files. This supports the generic upstream
+recommendation already made below: definition nodes should be audited and
+rewritten to introduce their requested name explicitly. It was not a
+torsion-specific Lean repair.
+
+### Why `Type*` became the new universe `u_12`
+
+The `u_11` quick fix did not merely miss one more name. It exposed why a fixed
+list cannot solve this problem.
+
+The theorem claims contain syntax such as:
+
+```lean
+∀ (G : Type*) [Group G], ...
+```
+
+`Type*` (equivalently, in this respect, `Type _`) asks Lean to create a fresh
+universe metavariable; it does not select an existing declared universe.
+`elabFrontTheoremExprWithCommandPreludeM` in
+`LeanAideCore/LeanAideCore/TheoremElabCheck.lean:26` embeds the candidate in a
+temporary declaration:
+
+```lean
+noncomputable def my_shiny_new_theorem : <candidate> := by sorry
+```
+
+When elaborating a declaration, Lean calls `Term.levelMVarToParam` to
+generalize an unresolved universe metavariable. That function deliberately
+chooses the first unused name of the form `u_i` relative to the current level
+names. The artificial frontend prelude now declares `u_1` through `u_11`, so
+the fresh parameter is correctly named `u_12`. Adding `u_12` would make the
+next placeholder become `u_13`.
+
+The information is then lost at
+`LeanAideCore/LeanAideCore/TheoremElabCheck.lean:39`, which returns only
+`seek.type`. The temporary declaration's `seek.levelParams` are not retained.
+Delaboration prints the parameter as `u_12`, and later frontend checks reparse
+that text using a prelude declaring only through `u_11`; they consequently
+report `unknown universe level 'u_12'`. The fresh log has 89 occurrences of
+that diagnostic. It rejects the homogeneity-square command and the otherwise
+plausible first assertion candidates in Lemmas 1--3.
+
+The proper fix is to preserve universe closure as part of the elaboration
+result. For example, return an `ElaboratedType` containing the `Expr` and its
+level parameters (using `seek.levelParams`, or collecting parameters from the
+expression). Whenever that expression is delaborated and reparsed, prepend a
+dynamically generated `universe ...` command for exactly those parameters; do
+the same in final emitted top code. Alpha-normalizing the retained parameter
+names is reasonable, but their sharing and level expressions must be
+preserved. Unifying the three existing fixed lists is still useful to prevent
+configuration drift, but is not by itself a fix for `Type*`.
+
+As a smaller interim change, register every returned `seek.levelParams` name
+in the command prelude and emitted top data before rechecking the delaborated
+expression. This will fix the immediate unknown-name failure, although the set
+will grow as further `Type*` declarations are generalized.
+
+There is also a narrower built-in fix for declaration headers. Lean's
+`autoImplicit` option covers named universe levels as well as term variables,
+and its default is `true`; importing Mathlib does not turn it off. This was
+verified against the repository's Lean 4.28 toolchain. LeanAide explicitly
+overrides the default with `set_option autoImplicit false in` in
+`TheoremElabCheck.lean:31` and in the analogous helpers at
+`SimpleFrontend.lean:171` and `SimpleFrontend.lean:185`. Removing those
+overrides, or changing them to `true`, lets a header such as
+
+```lean
+noncomputable def candidate :
+    ∀ (G : Type u_12), P G := by sorry
+```
+
+auto-bind `u_12`. This should remove the repeated candidate-checking failures
+where the level occurs in the temporary declaration header.
+
+It is not a complete replacement for universe closure. Auto-implicit universe
+binding applies to declaration headers, not to a universe first mentioned only
+in a definition value. The generated homogeneity-square command has exactly
+the latter shape:
+
+```lean
+def core_homogeneous_root_homogeneity_square.prop : Prop :=
+  ∀ (G : Type u_12), ...
+```
+
+and still needs an explicit/dynamic universe declaration, explicit declaration
+level parameters, or a representation that puts the proposition in the
+declaration's type. Therefore re-enable `autoImplicit` for the temporary
+frontend wrappers as the immediate fix, while retaining level parameters for
+RHS-only serialization and final output.
+
+### Changing `let` to `Define` did not fix local definitions
+
+Lemma 4 reached the first patched step and sent the model both
+
+```text
+Define a to be x^m * c^k.
+Define ONLY the term a with value x^m c^k.
+```
+
+All eight candidates nevertheless returned the locally appropriate syntax:
+
+```lean
+let a : G := x ^ m * c ^ k
+```
+
+They were all rejected with `expected command`. This is an interface mismatch,
+not a failure to understand the mathematical definition:
+
+- the tactic-sequence branch of `letCodeCore` at
+  `LeanAideCore/LeanAideCore/PaperCodes.lean:678` calls `defStx` and then
+  `commandToTactic`;
+- `defStx` calls `translateDefCmdM?`, which parses every candidate in Lean's
+  top-level `command` category;
+- a local `let` is a tactic/term construct, not a top-level command, so the
+  parser rejects it before `commandToTactic` can run.
+
+The corresponding fallback handler in `LeanAide/PaperCodes.lean` has the same
+shape. Since the first `a` step failed, the run did not reach the patched `w`,
+`u`, or `v` steps. Lemma 1 did not reach its patched `z` step because its first
+assertion had already failed on `u_12`. Thus only `a` was directly tested, but
+all five nodes share the same structural defect.
+
+The robust fix is to split local and top-level definition handling. In a
+`tacticSeq`, use the structured `variable_name` and optional `variable_type`,
+translate only `value` as a term in the current goal context, and construct a
+local `let` tactic directly. Alternatively, accept and validate candidates in
+the `tactic` category. Keep `translateDefCmdM?` plus `commandToTactic` only for
+top-level `commandSeq` definitions. A prompt demanding the literal token
+`def` would be a brittle workaround: the model's `let` is exactly the syntax
+appropriate to the context.
+
+### Other behavior confirmed by the deeper run
+
+- `assume_statement` again produced 58 `returned : false` events. These are
+  successful prompt-only updates, not omissions.
+- The restarted similarity service did not time out. The fallback
+  `LeanAideUrl` synthesis message remains noisy but was not causal.
+- Each of Lemmas 1--4 ran a broad whole-goal automation sweep before its
+  supplied structured proof steps. The entry point is
+  `getCodeTactics` at `LeanAideCore/LeanAideCore/CodegenCore.lean:307`, which
+  calls the full `findTactics?` suite before inspecting `sources`. In this run
+  those four sweeps were expensive and found no proof. When structured steps
+  exist, first try only cheap deterministic closure (`assumption`, exact,
+  tightly bounded simplification), process the steps, and reserve broad
+  `hammer`/LLM automation for the remaining goal.
+- Codegen again returned success after omitting every required theorem. The
+  source-coverage failure described below remains a P0 issue.
+
+### Focused TODOs from this rerun
+
+No Lean source was changed in this quick-fix experiment. The next Lean changes
+should be:
+
+1. **P0 -- restore header universe auto-implicits and carry parameters:** remove
+   the three local `autoImplicit false` overrides used by temporary frontend
+   declarations. Also return theorem expressions with their level parameters
+   and add an exact dynamic universe prelude for RHS-only serialization and
+   final output. Regress both a header-level `u_12` and a `Type*` proposition
+   stored as the value of a `def : Prop`.
+2. **P0 -- required-source coverage:** make exit status/final reporting fail or
+   say `partial` for any theorem or definition without a committed declaration,
+   while exempting prompt-only assumptions.
+3. **P1 -- direct local-let path:** construct/validate a local tactic from the
+   structured node and translate only its value as a term; do not require a
+   top-level command as an intermediate representation.
+4. **P1 -- proof-search ordering:** do not run the broad automation suite ahead
+   of nonempty structured proof steps; retain a cheap closure check and defer
+   expensive fallback automation.
+5. **P1 -- retain the generic definition-intent audit:** the Definition 8
+   experiment is now a passing regression for explicit definitional wording.
+
+
 ## Update: July 23 `core-homogeneous.json` codegen run
 
 ### Run and headline result

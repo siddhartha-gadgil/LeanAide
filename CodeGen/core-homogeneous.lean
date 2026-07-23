@@ -1,5 +1,5 @@
 import Mathlib
-universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u₁ u₂ u₃
+universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u_11 u₁ u₂ u₃
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
 open scoped Nat
@@ -21,13 +21,15 @@ open scoped Nat
     "Abelianization has type (G : Type u) → [Group G] → Type u with value `fun (G : Type u) [Group G] ↦ G ⧸ commutator G`"
   #check
     "AddCommGroup.torsion has type (G : Type u_1) → [inst : AddCommGroup G] → AddSubgroup G with value `fun (G : Type u_1) [inst : AddCommGroup G] ↦\n  let __src : AddSubmonoid G := AddCommMonoid.addTorsion G;\n  { toAddSubmonoid := __src, neg_mem' := @AddCommGroup.torsion._proof_1 G inst }`"
+  def IsTorsionFree (A : Type _) [AddCommGroup A] : Prop :=
+    AddCommGroup.torsion A = ⊥
 
 
 /-!
 ## Elaboration results 
 
 
-Declarations (3): PseudoLength, IsLength, IsHomogeneousPseudoLength
+Declarations (4): PseudoLength, IsLength, IsHomogeneousPseudoLength, IsTorsionFree
 
 Elaboration logs (4):
 1. "commutatorElement has type {G : Type u_1} → [Group G] → Bracket G G with value `fun {G : Type u_1} [Group G] ↦ { bracket := fun (g₁ g₂ : G) ↦ g₁ * g₂ * g₁⁻¹ * g₂⁻¹ }`" : String

@@ -113,7 +113,7 @@
         "type": "definition",
         "label": "Definition 8",
         "header": "Definition",
-        "definition": "For an abelian group A, A is torsion-free iff T(A) = {0}.",
+        "definition": "Define IsTorsionFree (A) for an abelian group A to mean AddCommGroup.torsion A = ⊥.",
         "name": "IsTorsionFree",
         "source": {
           "text": "An abelian group A is torsion-free if T(A)={0}.",
@@ -354,6 +354,7 @@
               "arguments": [],
               "variable_name": "z",
               "variable_type": "G",
+              "statement": "Define z to be y * x * y⁻¹.",
               "value": "y * x * y⁻¹"
             },
             {
@@ -955,6 +956,7 @@
               "arguments": [],
               "variable_name": "a",
               "variable_type": "G",
+              "statement": "Define a to be x^m * c^k.",
               "value": "x^m c^k"
             },
             {
@@ -962,6 +964,7 @@
               "arguments": [],
               "variable_name": "w",
               "variable_type": "G",
+              "statement": "Define w to be x.",
               "value": "x"
             },
             {
@@ -969,6 +972,7 @@
               "arguments": [],
               "variable_name": "u",
               "variable_type": "G",
+              "statement": "Define u to be x^(m - 1) * c^k.",
               "value": "x^(m-1) c^k"
             },
             {
@@ -976,6 +980,7 @@
               "arguments": [],
               "variable_name": "v",
               "variable_type": "G",
+              "statement": "Define v to be inverse y * x^m * c^(k - 1) * x * y.",
               "value": "y^{-1} x^m c^(k-1) x y"
             },
             {

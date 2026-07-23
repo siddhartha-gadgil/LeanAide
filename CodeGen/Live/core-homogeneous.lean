@@ -1,5 +1,5 @@
 import Mathlib
-universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u₁ u₂ u₃
+universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u_11 u₁ u₂ u₃
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
 open scoped Nat
@@ -17,3 +17,5 @@ def IsHomogeneousPseudoLength {G R : Type _} [Group G] [Zero R] [Add R] [LE R] [
   "Abelianization has type (G : Type u) → [Group G] → Type u with value `fun (G : Type u) [Group G] ↦ G ⧸ commutator G`"
 #check
   "AddCommGroup.torsion has type (G : Type u_1) → [inst : AddCommGroup G] → AddSubgroup G with value `fun (G : Type u_1) [inst : AddCommGroup G] ↦\n  let __src : AddSubmonoid G := AddCommMonoid.addTorsion G;\n  { toAddSubmonoid := __src, neg_mem' := @AddCommGroup.torsion._proof_1 G inst }`"
+def IsTorsionFree (A : Type _) [AddCommGroup A] : Prop :=
+  AddCommGroup.torsion A = ⊥
