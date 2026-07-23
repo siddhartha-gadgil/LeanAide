@@ -949,11 +949,9 @@ where typeStx (js: Json) :
   let mvar ← mkFreshExprMVar type
   let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError
     s!"codegen: failed to apply deduction theorems for assertion; deduction tactics:\n{deductionHaves}"
-  -- TODO-AssertionProofFailure: do not use `findTacticsI`'s sorry default for
-  -- an intermediate assertion.  Propagate `findTactics? = none` as failure so
-  -- `getCodeTacticsAux` can continue with the remaining JSON proof nodes; only
-  -- terminal exhaustion of the outer theorem should add `repeat (sorry)`.
-  let tacs ← findTacticsI mvarId
+  let .some tacs ← findTactics? mvarId | throwError
+    s!"codegen: failed to find tactics for assertion {claim} with type {← ppExpr type}"
+  let tacs := getTactics tacs
   addPromptContext <| "Assume: " ++ claim
   return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type)
 
