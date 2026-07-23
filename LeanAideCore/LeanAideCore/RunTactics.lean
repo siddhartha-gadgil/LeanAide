@@ -457,7 +457,14 @@ partial def extractInstanceIntros (goal: MVarId) (accum: List Name := []) :
   match ← goal.getType with
   | Expr.forallE n type _ BinderInfo.instImplicit => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := introUserName? n |>.getD s!"{n.components[0]!}_{hash}".toName
+    let n :=
+      match introUserName? n with
+      | some publicName => publicName
+      | none =>
+        if n.isInternal then
+          s!"{n.components[0]!}_{hash}".toName
+        else
+          n
     let (_, goal') ← goal.intro n
     extractInstanceIntros goal'  (accum ++ [n])
   | _ => do
@@ -471,13 +478,27 @@ partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := [
     extractInstanceIntros goal accum
   | k + 1, Expr.forallE n type _ bi => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := introUserName? n |>.getD s!"{n.components[0]!}_{hash}".toName
+    let n :=
+      match introUserName? n with
+      | some publicName => publicName
+      | none =>
+        if n.isInternal then
+          s!"{n.components[0]!}_{hash}".toName
+        else
+          n
     let (_, goal') ← goal.intro n
     let k' := if bi.isInstImplicit then k + 1 else k
     extractIntros goal' k' (accum ++ [n])
   | k + 1, Expr.letE n type _ _ _ => do
     let hash := (← PrettyPrinter.ppExpr type).pretty.hash
-    let n := if n.isInternal then s!"{n.components[0]!}_{hash}".toName else n
+    let n :=
+      match introUserName? n with
+      | some publicName => publicName
+      | none =>
+        if n.isInternal then
+          s!"{n.components[0]!}_{hash}".toName
+        else
+          n
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
   | _, _ => do

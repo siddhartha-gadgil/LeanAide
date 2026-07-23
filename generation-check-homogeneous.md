@@ -153,7 +153,7 @@ Focused TODO comments marking both control-flow changes are now in
    first appears inside a serialized proposition value; the level-preserving
    serialization recommendation below remains necessary.
 
-### Why `dropLocalContext` leaves the assertions generalized
+### Why `dropLocalContext` left the assertions generalized
 
 The dominant observed mismatch is the generated name of the typeclass
 instance, not its type or the order of the ordinary variables.  The active
@@ -171,12 +171,9 @@ whereas an explicitly generalized LLM candidate normally begins
 
 `dropLocalContext` successfully matches and instantiates `G`.  At the next
 binder it asks `findFromUserName?` for `inst`, which cannot find the hashed
-local name.  Its fallback `findLocalDecl?` searches by type only when the
-binder type is a proposition.  `Group G` is a typeclass in `Type`, not a
-`Prop`, so the definitionally identical local instance is not considered.
-`dropLocalContext` then returns the whole remaining expression at the first
-miss, and therefore never attempts `l`, the homogeneity hypothesis, `x`, `y`,
-or the later local definitions.
+local name.  It therefore returns the whole remaining expression and never
+attempts `l`, the homogeneity hypothesis, `x`, `y`, or the later local
+definitions.
 
 The fresh log gives a direct controlled comparison:
 
@@ -187,11 +184,29 @@ The fresh log gives a direct controlled comparison:
    lost only its `G` binder.  Its result still began
    `∀ [inst : Group G] (l : G → ℝ), ...`.
 
-Thus the current local context is present and usable; the matching policy is
-what fails.  The order sensitivity is secondary but real: because the
-algorithm stops at the first unmatched binder, any genuinely new or reordered
-binder prevents simplification of all later binders.  Two other matching
-rules should be corrected during the same refactor:
+Thus the current local context is present and usable.  The mismatch was
+introduced earlier, while the goal binders were being introduced: a public
+binder such as `inst` carried macro scopes and was replaced by a generated
+`inst_<hash>` name.  The translation prompt and a subsequently generalized
+candidate could consequently use different names for the same binder.
+
+The direct fix is to retain usable public binder names.  The implemented
+`introUserName?` erases macro scopes and returns the public name, while
+inaccessible, anonymous, or genuinely internal names retain the previous
+fallback (hash an internal name; otherwise leave it unchanged).  Its callers
+use an explicit `match`, so the unsafe hash expression is not evaluated for
+public or anonymous names.  This policy is now used for forall, instance, and
+let binders in both `extractIntros`/`extractInstanceIntros` and
+`consumeIntros`.  `lake build LeanAideCore` succeeds with these changes.
+
+With the public name `inst` preserved in the local context and prompt, the
+candidate should use `inst` too, and the existing exact-name specialization
+works.  The observed failure therefore does not require `synthInstance?`,
+type-only matching of ordinary variables, consumed-declaration tracking, or
+recursive reconstruction after a mismatch.
+
+Two independent `dropLocalContext` issues remain, but they are not part of
+the name-mismatch fix:
 
 - The `.sort _, .sort _ => true` shortcut treats every pair of sorts as a
   match, even when their universe levels are not definitionally equal.  Use
@@ -199,30 +214,6 @@ rules should be corrected during the same refactor:
 - For an `.ldecl`, the code substitutes the declaration's expanded value.
   It should normally substitute `mkFVar fVarId`, retaining local names such as
   `c`, `f`, `a`, `w`, `u`, and `v` and avoiding expression expansion.
-
-A robust binder matcher should receive the candidate's `BinderInfo` and use
-the following order:
-
-1. Accept an exact user-name match only after a guarded definitional-equality
-   check of the types.  A same-name type mismatch must fall through rather
-   than terminating all matching.
-2. For `.instImplicit`, use `synthInstance? binderType` in the current goal
-   context.  This resolves the local `Group G` instance independently of its
-   generated user name.
-3. For proposition binders, retain the existing definitionally-equal local
-   hypothesis search.
-4. For ordinary non-proposition binders, allow a type-only fallback only when
-   it has a unique eligible local match.  Otherwise variables such as `x` and
-   `y`, both of type `G`, could be interchanged silently.
-
-For full robustness, preserve an unmatched binder with `withLocalDecl`,
-recursively simplify its body, and rebuild it with `mkForallFVars`, rather than
-returning the untouched tail.  Matching must be restricted to a snapshot of
-the original local context so that these temporary preserved binders are not
-mistaken for declarations that should themselves be dropped.  Track consumed
-ordinary local declarations as well.  After the instance-name fix, the common
-assertion shape should reduce from the whole generalized theorem prefix to
-only genuinely new binders such as `∀ (n : ℕ), ...`.
 
 ### Correct scope for the local full-statement fallback
 
@@ -260,8 +251,9 @@ In local-assertion mode:
    proposition, preserve its identifiers, and not add hypotheses, binders, or
    a conclusion from an enclosing theorem.  Translate that rewritten claim
    under the same isolated local-assertion scope.
-4. Specialize each elaborated candidate with the corrected
-   `dropLocalContext` before accepting it.
+4. Specialize each elaborated candidate with `dropLocalContext` before
+   accepting it; stable public intro names allow its existing name-based
+   specialization to find the corresponding local declarations.
 5. Require a relevance check against the *original short claim*.  The existing
    `checkTranslationM`/round-trip equivalence machinery can describe the Lean
    candidate and compare it with the source.  For this fallback path, a failed
@@ -278,14 +270,14 @@ informal prose; it prevents that repair path from seeing the answer it is
 supposed to translate and makes semantic relevance, rather than mere Lean
 elaboration, the acceptance condition.
 
-Regression tests should include: an instance binder whose generated name
-differs from the local name; two ordinary variables with the same type which
-must not be swapped; a new binder which must be retained while later local
-binders are specialized; matching local lets without unfolding their values;
-and the Lemma 4 `c = x*y*x⁻¹*y⁻¹` input with the full recurrence present as
-the current goal.  The last test must reject the recurrence as a translation
-of the commutator equality while still allowing a deliberately terminal
-assertion equal to the goal when its round-trip relevance check succeeds.
+Regression tests should include: a public macro-scoped instance binder which
+must remain `inst`; inaccessible, anonymous, and genuinely internal binders
+which must take the safe fallback; matching local lets without unfolding their
+values; and the Lemma 4 `c = x*y*x⁻¹*y⁻¹` input with the full recurrence
+present as the current goal.  The last test must reject the recurrence as a
+translation of the commutator equality while still allowing a deliberately
+terminal assertion equal to the goal when its round-trip relevance check
+succeeds.
 
 ### Focused changes from the completed run
 
@@ -300,9 +292,9 @@ assertion equal to the goal when its round-trip relevance check succeeds.
    this fallback inside assertion proof search.
 3. **P0 -- assertion prompt scope and relevance:** give
    `translateToPropStrict` a constrained local-assertion mode, exclude the
-   current goal from its translation prompt, specialize against the corrected
-   local-context matcher, and require round-trip equivalence to the original
-   short claim.
+   current goal from its translation prompt, specialize against the stable
+   public local names, and require round-trip equivalence to the original short
+   claim.
 4. **P0 -- explicit assertion failure:** replace `findTacticsI` at assertion
    call sites by an option/error path so the outer proof sequence can recover.
 5. **P1 -- concise proof context:** change `localDeclContextLine?` to omit the
@@ -312,10 +304,11 @@ assertion equal to the goal when its round-trip relevance check succeeds.
    identifiers.  A theorem may close legitimately before all proof nodes, but
    early closure caused by a mistranslated assertion must be reported rather
    than silently counted as success.
-7. **P0 -- typeclass-aware local specialization:** in `findLocalDecl?` and
-   `dropLocalContext`, match instance-implicit binders with `synthInstance?`,
-   remove the unconditional sort match, retain local-let fvars, and do not let
-   the first name mismatch prevent later specialization.
+7. **Implemented -- stable public intro names:** `introUserName?` now preserves
+   public names after erasing macro scopes, and every forall/instance/let intro
+   call site uses its safe explicit fallback.  This removes the observed
+   `inst`/`inst_<hash>` mismatch without a typeclass-aware binder matcher.  The
+   sort-equality and local-let-fvar corrections remain separate focused TODOs.
 
 ## Update: July 23 auto-implicit and `let`/`def` quick-fix rerun
 
