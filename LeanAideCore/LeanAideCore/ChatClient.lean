@@ -675,6 +675,10 @@ def theoremName (server: ChatServer)
 
 def fullStatement (server: ChatServer)
   (statement: String): MetaM String := do
+    -- TODO-ClaimRewriteOnly: for a local-assertion caller, explicitly require
+    -- preservation of local identifiers and prohibit adding surrounding
+    -- hypotheses, binders, or a different conclusion.  The rewritten text must
+    -- subsequently be translated under isolated local-assertion prompt scope.
     let query := s!"Rewrite the following in typical mathematical English using LaTeX if necessary:\n{statement}\nGive ONLY the English statement."
     let statementsArr ←  server.mathCompletions query 1
     return statementsArr[0]? |>.getD statement

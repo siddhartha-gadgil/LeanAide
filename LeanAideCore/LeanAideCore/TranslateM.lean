@@ -157,6 +157,11 @@ structure Translate.State where
   cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
+  -- TODO-ScopedPromptContext: distinguish assumptions/definitions from current
+  -- goals and other target-like entries (using roles or an equivalent scoped
+  -- API).  Local-assertion translation must be able to retain prompt-only
+  -- assumptions while excluding the theorem goal; string-prefix filtering is
+  -- too brittle.  Reuse this field rather than adding a second context store.
   promptContext : Array String := #[]
   varPreludes : Array String := #[]
   outputFile : Option System.FilePath := none

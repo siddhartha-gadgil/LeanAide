@@ -112,14 +112,19 @@ Focused TODO comments marking both control-flow changes are now in
    requested local equality such as `w * u = a` is translated into a theorem
    universally quantifying the group, pseudo-length, points, exponents, and
    all local definitions.  More seriously, while translating Lemma 4's local
-   claim `c = x*y*x⁻¹*y⁻¹`, the full-statement fallback accepted the
-   *entire final recurrence theorem*.  This created
+   claim `c = x*y*x⁻¹*y⁻¹`, the LLM translation fallback inside
+   `translateToPropStrictAux` accepted the *entire final recurrence theorem*.
+   This created
    `assert_16329814440308656878` with `repeat (sorry)` and allowed `grind` to
    close the theorem early.  The later JSON proof nodes were therefore never
-   attempted.  `translateToPropStrict` must have a local-assertion mode which
-   either disables the broad `server.fullStatement` fallback or validates
-   that its result is a faithful reformulation of the requested claim, rather
-   than merely any elaborating proposition from the surrounding prompt.
+   attempted.  Despite the log label `full statement`, this particular failure
+   occurred *before* the outer `server.fullStatement` call: `withPreludes`
+   placed the enclosing goal and accumulated prose immediately before the
+   short source claim in the translation request.  `translateToPropStrict`
+   needs a local-assertion mode which isolates the source claim from the
+   current goal and validates that the result is a faithful reformulation,
+   rather than accepting any elaborating proposition from the surrounding
+   prompt.
 2. **Internal assertion proof search still manufactures success.**
    `findTacticsI` uses `repeat (sorry)` when `findTactics?` returns `none`.
    This explains all 11 sorry-backed local assertions.  Keep an assertion
@@ -148,6 +153,140 @@ Focused TODO comments marking both control-flow changes are now in
    first appears inside a serialized proposition value; the level-preserving
    serialization recommendation below remains necessary.
 
+### Why `dropLocalContext` leaves the assertions generalized
+
+The dominant observed mismatch is the generated name of the typeclass
+instance, not its type or the order of the ordinary variables.  The active
+context contains
+
+```lean
+[inst_14157295161945824867 : Group G]
+```
+
+whereas an explicitly generalized LLM candidate normally begins
+
+```lean
+∀ (G : Type u_12) [inst : Group G] (l : G → ℝ), ...
+```
+
+`dropLocalContext` successfully matches and instantiates `G`.  At the next
+binder it asks `findFromUserName?` for `inst`, which cannot find the hashed
+local name.  Its fallback `findLocalDecl?` searches by type only when the
+binder type is a proposition.  `Group G` is a typeclass in `Type`, not a
+`Prop`, so the definitionally identical local instance is not considered.
+`dropLocalContext` then returns the whole remaining expression at the first
+miss, and therefore never attempts `l`, the homogeneity hypothesis, `x`, `y`,
+or the later local definitions.
+
+The fresh log gives a direct controlled comparison:
+
+1. At 10:17:41 a candidate whose automatically generalized instance retained
+   the exact local name `inst_14157295161945824867` was reduced all the way to
+   `l (y * x * y⁻¹) ≤ l x`.
+2. At 10:18:20 a candidate with the identical type but the binder name `inst`
+   lost only its `G` binder.  Its result still began
+   `∀ [inst : Group G] (l : G → ℝ), ...`.
+
+Thus the current local context is present and usable; the matching policy is
+what fails.  The order sensitivity is secondary but real: because the
+algorithm stops at the first unmatched binder, any genuinely new or reordered
+binder prevents simplification of all later binders.  Two other matching
+rules should be corrected during the same refactor:
+
+- The `.sort _, .sort _ => true` shortcut treats every pair of sorts as a
+  match, even when their universe levels are not definitionally equal.  Use
+  guarded definitional equality instead.
+- For an `.ldecl`, the code substitutes the declaration's expanded value.
+  It should normally substitute `mkFVar fVarId`, retaining local names such as
+  `c`, `f`, `a`, `w`, `u`, and `v` and avoiding expression expansion.
+
+A robust binder matcher should receive the candidate's `BinderInfo` and use
+the following order:
+
+1. Accept an exact user-name match only after a guarded definitional-equality
+   check of the types.  A same-name type mismatch must fall through rather
+   than terminating all matching.
+2. For `.instImplicit`, use `synthInstance? binderType` in the current goal
+   context.  This resolves the local `Group G` instance independently of its
+   generated user name.
+3. For proposition binders, retain the existing definitionally-equal local
+   hypothesis search.
+4. For ordinary non-proposition binders, allow a type-only fallback only when
+   it has a unique eligible local match.  Otherwise variables such as `x` and
+   `y`, both of type `G`, could be interchanged silently.
+
+For full robustness, preserve an unmatched binder with `withLocalDecl`,
+recursively simplify its body, and rebuild it with `mkForallFVars`, rather than
+returning the untouched tail.  Matching must be restricted to a snapshot of
+the original local context so that these temporary preserved binders are not
+mistaken for declarations that should themselves be dropped.  Track consumed
+ordinary local declarations as well.  After the instance-name fix, the common
+assertion shape should reduce from the whole generalized theorem prefix to
+only genuinely new binders such as `∀ (n : ℕ), ...`.
+
+### Correct scope for the local full-statement fallback
+
+There are two different fallbacks in the current code, and the log currently
+conflates them:
+
+1. `translateToPropStrictAux` computes `withPreludes claim` for its diagnostic
+   log, then calls `translator.getLeanCodeJson claim`; `getLeanCodeJson`
+   independently uses `withPreludes` to construct the actual request.  For a
+   proof assertion, `promptContext` contains the enclosing `Current goal`,
+   preceding assumptions, definitions, and earlier claims.
+   This was the path which turned `c = x y x⁻¹ y⁻¹` into the final
+   recurrence theorem.  The local variable named `thm` and log phrase `full
+   statement` at this point are misleading: this is a prompt-augmented claim,
+   not the result of `ChatServer.fullStatement`.
+2. Only if that whole auxiliary attempt throws does `translateToPropStrict`
+   call `server.fullStatement claim` and translate the rewritten English a
+   second time.  The bad Lemma 4 candidate elaborated, so this outer fallback
+   was never reached.
+
+The fix should introduce an explicit translation scope, for example
+`PropTranslationMode.declaration` and
+`PropTranslationMode.localAssertion goal`.  `assertionCode` must pass the
+second mode; declaration translation can retain the existing broad context.
+In local-assertion mode:
+
+1. Keep the current direct parse/elaboration attempt in the real local
+   context.
+2. Run LLM translation with a scoped prompt context that excludes the current
+   theorem goal and other target-like entries.  Continue to provide the formal
+   local declarations through `availableVariablesBlob`, plus only genuinely
+   prompt-only assumptions which are not represented in Lean.  Context entries
+   should be tagged by role rather than filtered using string prefixes.
+3. If `server.fullStatement` is needed, instruct it to rewrite only the given
+   proposition, preserve its identifiers, and not add hypotheses, binders, or
+   a conclusion from an enclosing theorem.  Translate that rewritten claim
+   under the same isolated local-assertion scope.
+4. Specialize each elaborated candidate with the corrected
+   `dropLocalContext` before accepting it.
+5. Require a relevance check against the *original short claim*.  The existing
+   `checkTranslationM`/round-trip equivalence machinery can describe the Lean
+   candidate and compare it with the source.  For this fallback path, a failed
+   or unavailable check should reject the candidate and try the next one,
+   rather than treating elaboration alone as success.
+6. As an additional diagnostic, flag a local assertion candidate which becomes
+   definitionally equal to the current theorem goal.  This cannot be a blanket
+   rejection because a legitimate final assertion may equal the goal, but it
+   should require the relevance check to pass and should be recorded as a
+   likely target-copy event for nonterminal JSON nodes.
+
+This design still permits `fullStatement` to repair genuinely incomplete
+informal prose; it prevents that repair path from seeing the answer it is
+supposed to translate and makes semantic relevance, rather than mere Lean
+elaboration, the acceptance condition.
+
+Regression tests should include: an instance binder whose generated name
+differs from the local name; two ordinary variables with the same type which
+must not be swapped; a new binder which must be retained while later local
+binders are specialized; matching local lets without unfolding their values;
+and the Lemma 4 `c = x*y*x⁻¹*y⁻¹` input with the full recurrence present as
+the current goal.  The last test must reject the recurrence as a translation
+of the commutator equality while still allowing a deliberately terminal
+assertion equal to the goal when its round-trip relevance check succeeds.
+
 ### Focused changes from the completed run
 
 1. **P0 -- retain the theorem after a proof-step error:** change the catch in
@@ -159,9 +298,11 @@ Focused TODO comments marking both control-flow changes are now in
    branch of `getCodeTactics`, use
    `appendTacticSeqSeq tacs (← \`(tacticSeq| repeat (sorry)))`.  Do not place
    this fallback inside assertion proof search.
-3. **P0 -- assertion relevance:** give `translateToPropStrict` a constrained
-   local-assertion path; do not accept an enclosing theorem as the translation
-   of a small local claim.
+3. **P0 -- assertion prompt scope and relevance:** give
+   `translateToPropStrict` a constrained local-assertion mode, exclude the
+   current goal from its translation prompt, specialize against the corrected
+   local-context matcher, and require round-trip equivalence to the original
+   short claim.
 4. **P0 -- explicit assertion failure:** replace `findTacticsI` at assertion
    call sites by an option/error path so the outer proof sequence can recover.
 5. **P1 -- concise proof context:** change `localDeclContextLine?` to omit the
@@ -171,6 +312,10 @@ Focused TODO comments marking both control-flow changes are now in
    identifiers.  A theorem may close legitimately before all proof nodes, but
    early closure caused by a mistranslated assertion must be reported rather
    than silently counted as success.
+7. **P0 -- typeclass-aware local specialization:** in `findLocalDecl?` and
+   `dropLocalContext`, match instance-implicit binders with `synthInstance?`,
+   remove the unconditional sort match, retain local-let fvars, and do not let
+   the first name mismatch prevent later specialization.
 
 ## Update: July 23 auto-implicit and `let`/`def` quick-fix rerun
 

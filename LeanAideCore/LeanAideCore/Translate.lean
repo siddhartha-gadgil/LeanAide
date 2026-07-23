@@ -110,6 +110,10 @@ def Translator.getLeanCodeJson (s: String)
     (translator : Translator)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
   traceAide `leanaide.translate.debug  s!"translating string `{s}` with  examples"
   -- logToStdErr `leanaide.translate.info s!"translating string `{s}` with  examples"
+  -- TODO-TranslationPromptScope: do not unconditionally prepend every
+  -- `promptContext` entry.  Accept an explicit scope/filter so local-assertion
+  -- translation can exclude the current goal while retaining prompt-only
+  -- assumptions; `translateMessages` will still supply the formal local lctx.
   let s ← withPreludes s
   setContext s
   match ← getCachedJson? s with

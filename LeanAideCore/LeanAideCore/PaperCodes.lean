@@ -43,6 +43,11 @@ def Translator.translateToPropStrictAux
         throwError s!"codegen: {← ppExpr prop} is not a Prop when translating assertion '{claim}'"
       return prop
   catch _ =>
+  -- TODO-LocalAssertionPromptScope: this is the first LLM fallback, and it is
+  -- where the Lemma 4 target-copy occurred.  In local-assertion mode, do not
+  -- prepend `Current goal` or other target-like prompt-context entries to the
+  -- source claim.  Supply the formal lctx separately, specialize the result,
+  -- and require round-trip relevance to the original short claim.
   let thm ← withPreludes claim
   traceAide `leanaide.papercodes.info s!"Translating to proposition: {claim}, full statement: {thm}"
   let (js, _, _) ← translator.getLeanCodeJson claim
@@ -79,10 +84,10 @@ def Translator.translateToPropStrict
     try
       Translator.translateToPropStrictAux claim translator
     catch e =>
-      -- TODO-LocalAssertionRelevance: local proof assertions need a constrained
-      -- fallback here.  Do not accept an enclosing/full theorem as the
-      -- translation of a small local claim merely because it elaborates; either
-      -- disable `fullStatement` in that mode or validate claim equivalence.
+      -- TODO-FullStatementFallbackScope: add an explicit declaration versus
+      -- local-assertion mode.  In local mode, rewrite only `claim` while
+      -- preserving identifiers, translate the rewrite without the current goal
+      -- in prompt context, and require round-trip equivalence before accepting.
       let fullClaim ← translator.server.fullStatement claim
       try
         Translator.translateToPropStrictAux fullClaim translator
@@ -922,6 +927,10 @@ where typeStx (js: Json) :
       | none =>
         traceAide `leanaide.papercodes.info s!"codegen: no 'lean_term' or 'lean_name' found for theorem {thmLabel} used in deduction of assertion"
   | none => pure ()
+  -- TODO-AssertionTranslationMode: thread the enclosing goal into `typeStx`
+  -- and call `translateToPropStrict` in local-assertion mode.  This enables an
+  -- isolated prompt and target-copy diagnostics; the command-level assertion
+  -- variants should continue to use declaration mode.
   let type ← translator.translateToPropStrict claim
   let mvar ← mkFreshExprMVar type
   let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError

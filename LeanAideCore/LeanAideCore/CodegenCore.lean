@@ -435,6 +435,13 @@ partial def getVars (type: Expr) : MetaM <| List Name := do
   | _ => return []
 
 
+-- TODO-LocalBinderMatch: refactor this matcher to accept `BinderInfo` and return
+-- an `Expr`, not only an `FVarId`.  After an exact-name/type match, resolve
+-- `.instImplicit` binders with `synthInstance?` so generated names such as
+-- `inst` match local names such as `inst_<hash>`.  Keep type-only matching of
+-- ordinary non-Prop variables restricted to a unique candidate; otherwise
+-- same-typed variables such as `x` and `y` can be silently interchanged.  A
+-- same-name type mismatch must fall through.
 def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
   let lctx ← getLCtx
   match lctx.findFromUserName? name with
@@ -461,9 +468,18 @@ def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
 partial def dropLocalContext (type: Expr) : MetaM Expr := do
   match type with
   | .forallE name binderType body _ => do
+    -- TODO-DropLocalContextTraversal: pass the binder info to the shared local
+    -- matcher.  If no original local declaration matches, preserve this binder,
+    -- recurse through its body, and rebuild it instead of returning the entire
+    -- untouched tail.  Match only against a snapshot of the original lctx and
+    -- track consumed ordinary declarations.
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
     | some (.cdecl _ fVarId _ dtype ..) =>
+      -- TODO-LocalSortDefEq: remove the unconditional sort/sort match.  Universe
+      -- levels and the complete binder types must be definitionally equal; use
+      -- `withNewMCtxDepth <| isDefEqGuarded ...` so checking cannot assign the
+      -- caller's metavariables.
       let check ← match dtype, binderType with
       | .sort _, .sort _ => pure true
       | _, _ =>   isDefEq dtype binderType
@@ -475,6 +491,9 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
         traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return type
     | some (.ldecl _ _ _ dtype value ..) =>
+      -- TODO-LocalLetFVar: retain this declaration's fvar id and instantiate the
+      -- candidate with `mkFVar fVarId`, not its expanded `value`.  Do the same
+      -- for a matching `.letE`, preserving local names and compact expressions.
       let check ← isDefEq dtype binderType
       traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
       if check then
