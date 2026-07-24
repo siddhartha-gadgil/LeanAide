@@ -7,20 +7,9 @@ namespace LeanAide
 def callSimilaritySearch (query : String) (descField : String := "docString") (numSim : Nat := 10) (url? :Option String) : MetaM <| Except String Json := do
   let js := Json.mkObj [("num", numSim), ("query", query), ("descField", descField)]
   try
-    let serverUrl ← try
-      getUrlM
-    catch e =>
-      match url? with
-      | some url => pure url
-      | none =>
-        -- TODO-SimilarityLocalUrlResolution: codegen commonly intends to use
-        -- the local server, but currently throws and logs this configuration
-        -- failure once for every similarity field/query before selecting it.
-        -- Resolve the local URL as an ordinary configured default (and log
-        -- only a real request failure), rather than using an exception for the
-        -- successful localhost path.
-        traceAide `leanaide.translate.info s!"Could not get URL for similarity search API, falling back to local server. Error was: {← e.toMessageData.toString}"
-        pure "http://localhost:7654"
+    let serverUrl ← match ← getUrlM? with
+      | some url => pure url       -- interactive Lean instance
+      | none => pure <| url?.getD "http://localhost:7654"
     let APIUrl := s!"{serverUrl}/run-sim-search"
     let inp ← IO.Process.output {cmd := "curl", args := #["--fail-with-body", "-X", "POST", APIUrl, "-H", "Content-Type: application/json", "-d", js.compress]}
     let ⟨err_code,stdout,stderr⟩ := inp

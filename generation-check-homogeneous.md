@@ -46,7 +46,10 @@ messages are configuration-fallback messages, not 165 search failures: each
 prompt builder can query several description fields, and generation proceeds
 immediately after them.  Supplying the configured URL explicitly, or making
 the local URL the resolved default without an exception, would remove this
-repeated noise and exception overhead.
+repeated noise and exception overhead.  This was implemented after the run:
+`getUrlM?` now uses non-throwing optional instance synthesis, preserving an
+interactive `LeanAideUrl` when present, and otherwise selecting the explicit
+builder URL or localhost without an expected exception.
 
 ### What worked
 
@@ -257,10 +260,10 @@ should normally be replaced by its fvar rather than by its expanded value.
    `dropLocalContext`; keep exact public-name matching for named binders.
 6. **P1:** bind universe levels in deferred proposition declarations and add
    proof-node failure diagnostics.
-7. **P2:** deduplicate identical source claims and configure the local
-   similarity URL without exception-based fallback.  The latter is marked by
-   `TODO-SimilarityLocalUrlResolution` in
-   `LeanAideCore/LeanAideCore/SimilaritySearch.lean`.
+7. **P2:** deduplicate identical source claims.  **Implemented after this
+   run:** similarity URL resolution now preserves an optional interactive Lean
+   instance and otherwise uses the explicit builder URL or localhost without
+   exception-based fallback.
 
 ## Update: July 23 corrected-goal and direct-validation rerun
 
