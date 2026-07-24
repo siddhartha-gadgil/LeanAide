@@ -534,6 +534,9 @@ partial def identNames : Syntax → MetaM (List Name)
 
 namespace LeanAide
 
+def isDefEqReadOnly (a b : Expr) : MetaM Bool :=
+  withNewMCtxDepth <| isDefEqGuarded a b
+
 open Elab Term
 
 elab "s%" s:term : term => do

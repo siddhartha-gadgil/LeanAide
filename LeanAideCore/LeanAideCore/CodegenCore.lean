@@ -82,7 +82,7 @@ initialize registerBuiltinAttribute {
           BinderInfo.default)
         BinderInfo.default)
       BinderInfo.default
-    unless ← isDefEq declTy expectedType do
+    unless ← isDefEqReadOnly declTy expectedType do
       throwError -- replace with error
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
     let keys ← codegenKeyM stx
@@ -444,7 +444,7 @@ def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
   let lctx ← getLCtx
   match lctx.findFromUserName? name with
   | some (.cdecl _ fVarId _ dtype ..) =>
-    let check ← isDefEq dtype type
+    let check ← isDefEqReadOnly dtype type
     logInfo m!"Checking {dtype} and {type} gives {check}"
     if check
       then return fVarId
@@ -454,7 +454,7 @@ def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
       lctx.decls.findSomeM? fun decl =>
         match decl with
         | some <| .cdecl _ fVarId _ dtype .. => do
-          let check ← isDefEq dtype type
+          let check ← isDefEqReadOnly dtype type
           traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
           if check then pure <| some fVarId
           else pure none
@@ -478,14 +478,8 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
     | some (.cdecl _ fVarId _ dtype ..) =>
-      -- TODO-LocalSortDefEq: remove the unconditional sort/sort match.  Universe
-      -- levels and the complete binder types must be definitionally equal; use
-      -- `withNewMCtxDepth <| isDefEqGuarded ...` so checking cannot assign the
-      -- caller's metavariables.
-      let check ← match dtype, binderType with
-      | .sort _, .sort _ => pure true
-      | _, _ =>   isDefEq dtype binderType
-        traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
+      let check ← isDefEqReadOnly dtype binderType
+      traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 (mkFVar fVarId)
         dropLocalContext body'
@@ -496,7 +490,7 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
       -- TODO-LocalLetFVar: retain this declaration's fvar id and instantiate the
       -- candidate with `mkFVar fVarId`, not its expanded `value`.  Do the same
       -- for a matching `.letE`, preserving local names and compact expressions.
-      let check ← isDefEq dtype binderType
+      let check ← isDefEqReadOnly dtype binderType
       traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 value
@@ -515,7 +509,7 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
     | some (.ldecl _ _ _ dtype dvalue ..) =>
-      let check ← isDefEq dtype ltype <&&> isDefEq dvalue value
+      let check ← withNewMCtxDepth <| isDefEqGuarded dtype ltype <&&> isDefEqGuarded dvalue value
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 value
@@ -536,7 +530,7 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
     | some (.cdecl _ fVarId _ dtype ..) =>
-      let check ← isDefEq dtype binderType
+      let check ← isDefEqReadOnly dtype binderType
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 (mkFVar fVarId)
@@ -545,7 +539,7 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
         logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return expr
     | some (.ldecl _ _ _ dtype value ..) =>
-      let check ← isDefEq dtype binderType
+      let check ← isDefEqReadOnly dtype binderType
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 value
@@ -558,7 +552,7 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
     | some (.ldecl _ _ _ dtype dvalue ..) =>
-      let check ← isDefEq dtype type <&&> isDefEq dvalue value
+      let check ← withNewMCtxDepth <| isDefEqGuarded dtype type <&&> isDefEqGuarded dvalue value
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
           let body' := body.instantiate1 dvalue

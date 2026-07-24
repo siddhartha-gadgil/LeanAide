@@ -194,10 +194,11 @@ policy should be:
 This constrained fallback is needed only for anonymous candidate binders; it
 does not replace the public-name rule.  It is marked by
 `TODO-LocalAnonymousBinderMatch` in
-`LeanAideCore/LeanAideCore/CodegenCore.lean`.  The existing sort shortcut and
-local-let substitution issues also remain: sorts should use guarded
-definitional equality, and a matched `.ldecl` should normally be replaced by
-its fvar rather than by its expanded value.
+`LeanAideCore/LeanAideCore/CodegenCore.lean`.  The sort shortcut identified by
+this run has since been removed: all compatibility tests now use the
+read-only `isDefEqReadOnly` helper (or one shared new metavariable depth for a
+paired check).  The local-let substitution issue remains: a matched `.ldecl`
+should normally be replaced by its fvar rather than by its expanded value.
 
 ### Remaining proof failures and regressions
 
@@ -458,12 +459,14 @@ described in the July 24 section only when the *candidate* binder was
 anonymous.  This does not justify type-only matching for named ordinary
 variables or hypotheses.
 
-Two independent `dropLocalContext` issues remain, but they are not part of
-the name-mismatch fix:
+Two independent `dropLocalContext` issues were identified here, but they are
+not part of the name-mismatch fix:
 
-- The `.sort _, .sort _ => true` shortcut treats every pair of sorts as a
-  match, even when their universe levels are not definitionally equal.  Use
-  guarded definitional equality instead.
+- **Implemented after the July 24 run:** the `.sort _, .sort _ => true`
+  shortcut was removed.  Sorts and all other compatibility tests now use
+  `isDefEqReadOnly`, which combines `withNewMCtxDepth` with
+  `isDefEqGuarded`; universe levels are checked without assigning caller
+  metavariables.
 - For an `.ldecl`, the code substitutes the declaration's expanded value.
   It should normally substitute `mkFVar fVarId`, retaining local names such as
   `c`, `f`, `a`, `w`, `u`, and `v` and avoiding expression expansion.
@@ -561,8 +564,8 @@ succeeds.
    names are retained, while original anonymous/internal/inaccessible names
    receive safe type-hashed names.  Anonymous *candidate* binders still need
    the separate constrained unique role-and-type specialization described in
-   the July 24 update.  The sort-equality and local-let-fvar corrections remain
-   separate focused TODOs.
+   the July 24 update.  The sort-equality correction is now implemented; the
+   local-let-fvar correction remains a separate focused TODO.
 
 ## Update: July 23 auto-implicit and `let`/`def` quick-fix rerun
 
