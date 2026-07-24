@@ -372,6 +372,11 @@ Should perhaps try to use automation if there is no proof.
 def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let (stx, name, pf, isProp, labelled) ← thmStxParts js
+  -- TODO-DynamicUniversePrelude (theorem command): call
+  -- `registerUniverseParams labelled.type` here, outside `thmStxParts`'
+  -- rollback and before constructing or validating the declaration.  For a
+  -- theorem, parameters are determined by its type; do not register levels
+  -- occurring only in the generated proof.
   -- TODO-DeferredTheoremCommit: register theorem metadata at command-commit
   -- time, after the generated declaration is accepted by `runAndCommitCommands`.
   Translate.addTheorem labelled
@@ -382,6 +387,9 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
     `(command| noncomputable def $n : $stx := by $pf)
 | _, `commandSeq, js => do
   let (stx, name, pf, isProp, labelled) ← thmStxParts js
+  -- TODO-DynamicUniversePrelude (theorem command sequence): call
+  -- `registerUniverseParams labelled.type` here, outside `thmStxParts`'
+  -- rollback, before adding `DefData` or returning the command sequence.
   -- TODO-DeferredTheoremCommit: register theorem metadata at command-commit
   -- time, after the generated declaration is accepted by `runAndCommitCommands`.
   Translate.addTheorem labelled
@@ -497,6 +505,12 @@ Generate code for a definition. It processes the `definition` field to generate 
 @[codegen "definition"]
 def defCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
+  -- TODO-DynamicUniversePrelude (definition commit): refactor `defCmdStx` to
+  -- return any parameters collected by its Expr-derived existential fallback,
+  -- and call `registerUniverseNames` here outside the helper's rollback before
+  -- returning the command sequence.  A successful syntax-only definition needs
+  -- no pre-validation extraction; its accepted `ConstantInfo.levelParams` can
+  -- be synchronized by the common command-commit path.
   let stx ← defCmdStx js
   `(commandSeq | $stx)
 | _, ``tacticSeq, js => do
@@ -536,6 +550,12 @@ where
           let claim := s!"There exists {name} such that:\n{statement}"
           let type ←
             translator.translateToPropStrict claim
+          -- TODO-DynamicUniversePrelude (definition existential fallback):
+          -- this helper is inside `withoutModifyingTranslateAndTermState`, so
+          -- registering `type` here would be rolled back.  Return its
+          -- `(collectLevelParams {} type).params` with the command sequence and
+          -- let the top-level `commandSeq` caller register them before commit;
+          -- the tactic-sequence caller must not promote proof-local universes.
           let typeStx ← delabDetailed type
           let mvar ← mkFreshExprMVar type
           let proof ←
@@ -868,9 +888,15 @@ If the assertion involves existential quantification, additional handling is don
 @[codegen "assert_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
+  -- TODO-DynamicUniversePrelude (command-level assertion): extend `typeStx` to
+  -- return the translated Expr (or its collected parameters), then register it
+  -- here outside the helper's rollback before emitting the top-level example.
   let (stx, tac, _) ← typeStx js
   `(command| example : $stx := by $tac)
 | _, `commandSeq, js => do
+  -- TODO-DynamicUniversePrelude (assertion declaration): extend `typeStx` to
+  -- return the translated Expr (or its collected parameters), then register it
+  -- here outside the helper's rollback before emitting the theorem sequence.
   let (stx, tac, isProp) ← typeStx js
   let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
@@ -2040,6 +2066,11 @@ def inductiveCommand (translator : CodeGenerator := {}) (name: String) (paramete
     TranslateM (TSyntax `commandSeq) := withoutModifyingTranslateAndTermState do
   let inductiveIdent := mkIdent name.toName
   let typeExprWithoutParams ← withoutModifyingState <| withParamsLocalDecl translator parametersRaw.toList fun _ => getFullType translator isProp indicesRaw.toList
+  -- TODO-DynamicUniversePrelude (inductive declaration): collect parameters
+  -- from `typeExprWithoutParams` and `fullTypeExpr` with
+  -- `collectLevelParams`.  Because this whole helper rolls TranslateM state
+  -- back, return the collected names alongside the syntax; the top-level
+  -- `inductiveDefinitionCode` caller must register them before validation.
   let typeStxWithoutParams ← delabDetailed typeExprWithoutParams
   let fullTypeExpr ← withTypeLocalDecl translator name isProp (parametersRaw.toList ++ indicesRaw.toList) fun expr => return expr
   let explicitParamsIdents : Array Ident := parametersRaw.filterMap fun (name, _, binder) =>
@@ -2072,6 +2103,9 @@ def inductiveCommand (translator : CodeGenerator := {}) (name: String) (paramete
 @[codegen "inductive-type-definition"]
 def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
+  -- TODO-DynamicUniversePrelude (inductive commit): receive the universe names
+  -- collected by `inductiveCommand` and call `registerUniverseNames` here,
+  -- outside that helper's rollback and before returning the command sequence.
   let .ok name := js.getObjValAs? String "name" | throwError
     s!"codegen: no 'name' found in 'inductive-type-definition'"
   let isProp := js.getObjValAs? Bool "is_prop" |>.toOption.getD false

@@ -154,12 +154,16 @@ structure Translate.State where
   queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.emptyWithCapacity 100000
   /-- Descriptions, docstrings etc -/
   descriptionMap : Std.HashMap Name Json := Std.HashMap.emptyWithCapacity 100000
-  -- TODO-DynamicUniversePrelude (state/collection): store a deduplicated set of
-  -- universe parameter names used by accepted generated expressions.  Provide
-  -- a registration helper that instantiates metavariables, recursively collects
-  -- only `Level.param` names (including those under `succ`/`max`/`imax`), and is
-  -- called before such an Expr is delaborated back to command syntax.  Do not
-  -- turn unresolved level metavariables into persistent universe names.
+  -- TODO-DynamicUniversePrelude (state/collection): store a deduplicated,
+  -- deterministic collection of universe parameter names used by accepted
+  -- generated expressions.  Add `registerUniverseParams (e : Expr)` using
+  -- `let e ← instantiateMVars e`; reject `e.hasLevelMVar`; then obtain the used
+  -- names with `(collectLevelParams {} e).params`.  Call it before an Expr is
+  -- delaborated into a top-level declaration.  Do not call it for tactic-local
+  -- `have`/case expressions: a fresh proof-only universe must be rejected, not
+  -- promoted into the file prelude.  `collectLevelParams` recursively visits
+  -- parameters under `succ`/`max`/`imax`; do not manufacture names for level
+  -- metavariables.
   cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
@@ -319,6 +323,13 @@ def cmdPreludeBriefBlob? : TranslateM <| Option String := do
   let cmds := cmds.map (·.pretty)
   return some <| cmds.foldl (· ++ "\n" ++ · ) "import Mathlib\n"
 
+-- TODO-DynamicUniversePrelude (syntax-only validation): factor the successful
+-- command path shared by `runCommand` and `runAndCommitCommands`.  After
+-- `runFrontendSafeM` has installed the validated environment, use
+-- `DefData.ofSyntax? cmd`; for its declaration name inspect
+-- `(← getEnv).find? name`, then merge `ConstantInfo.levelParams` through a
+-- `registerUniverseNames` helper.  This is post-validation synchronization for
+-- LLM-produced syntax, not a way to rescue the command currently being checked.
 def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
   let safe ←   runFrontendSafeM (← ppCommand cmd).pretty
   if safe then
@@ -348,7 +359,10 @@ def runAndCommitCommands (cmds: TSyntax ``commandSeq) : TranslateM (Array Syntax
   -- current universe prelude, and emit declarations for newly committed names
   -- before the first dependent command.  Include those declarations in both
   -- `safeCmds` (for final `document_code`) and `writeCommands` (for the live
-  -- file), without repeatedly emitting names already written.
+  -- file), without repeatedly emitting names already written.  For syntax-only
+  -- commands, obtain newly accepted parameters from `ConstantInfo.levelParams`
+  -- as described at `runCommand`; expression-derived commands must have called
+  -- `registerUniverseParams` before reaching validation.
   let cmds := getCommands cmds
   let mut safeCmds := #[]
   for cmd in cmds do

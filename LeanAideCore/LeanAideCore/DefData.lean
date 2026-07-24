@@ -105,6 +105,15 @@ def toDeclaration (data: DefData) : TermElabM Declaration := do
     -- logInfo s!"toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr}"
     -- logInfo s!"Mvar? : {valueExpr.hasExprMVar}, {valueExpr.hasLevelMVar}"
     -- logInfo s!"{repr valueExpr}"
+    -- TODO-DynamicUniversePrelude (direct declarations): replace both
+    -- `levelParams := []` values below.  For a theorem, use
+    -- `(collectLevelParams {} typeExpr).params.toList` and reject any parameter
+    -- found in `valueExpr` but absent from the type; proof-only universes must
+    -- not be silently promoted.  For a definition, accumulate both expressions:
+    -- `let s := collectLevelParams (collectLevelParams {} typeExpr) valueExpr`
+    -- and use `s.params.toList`.  Reject `typeExpr.hasLevelMVar` or
+    -- `valueExpr.hasLevelMVar` after `instantiateMVars` rather than constructing
+    -- a declaration with unresolved levels.
     let decl ← match data.isProp with
     | true => do
         let decl := .thmDecl {
