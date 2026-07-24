@@ -443,20 +443,10 @@ def runTacticsAndFindTryThisI (goal : MVarId) (tacticSeqs : List (TSyntax ``tact
   -- return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
 def introUserName? (n : Name) : Option Name :=
-  -- TODO-AnonymousBinderBeforeErase: test `n.isInternal` before
-  -- `eraseMacroScopes`.  An anonymous arrow binder has a hygienic name such
-  -- as `a._@._internal._hyg.0`; erasing scopes turns it into the apparently
-  -- public name `a`, causing collisions.  Return `none` for the original
-  -- internal name so the callers retain their existing type-hash fallback;
-  -- only genuinely named binders should keep the cleaned public name.
-  if n.isInaccessibleUserName then
+  if n ==.anonymous || n.isInternal || n.isInaccessibleUserName then
     none
   else
-    let clean := n.eraseMacroScopes
-    if clean == .anonymous || clean.isInternal then
-      none
-    else
-      some clean
+      some n.eraseMacroScopes
 
 partial def extractInstanceIntros (goal: MVarId) (accum: List Name := []) :
     MetaM <| MVarId × List Name := goal.withContext do
@@ -467,10 +457,8 @@ partial def extractInstanceIntros (goal: MVarId) (accum: List Name := []) :
       match introUserName? n with
       | some publicName => publicName
       | none =>
-        if n.isInternal then
-          s!"{n.components[0]!}_{hash}".toName
-        else
-          n
+          let stem := n.components.head?.getD `a
+          s!"{stem}_{hash}".toName
     let (_, goal') ← goal.intro n
     extractInstanceIntros goal'  (accum ++ [n])
   | _ => do
@@ -488,10 +476,8 @@ partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := [
       match introUserName? n with
       | some publicName => publicName
       | none =>
-        if n.isInternal then
-          s!"{n.components[0]!}_{hash}".toName
-        else
-          n
+          let stem := n.components.head?.getD `a
+          s!"{stem}_{hash}".toName
     let (_, goal') ← goal.intro n
     let k' := if bi.isInstImplicit then k + 1 else k
     extractIntros goal' k' (accum ++ [n])
@@ -501,10 +487,8 @@ partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := [
       match introUserName? n with
       | some publicName => publicName
       | none =>
-        if n.isInternal then
-          s!"{n.components[0]!}_{hash}".toName
-        else
-          n
+          let stem := n.components.head?.getD `a
+          s!"{stem}_{hash}".toName
     let (_, goal') ← goal.intro n
     extractIntros goal' k (accum ++ [n])
   | _, _ => do

@@ -142,10 +142,8 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
       match introUserName? n with
       | some publicName => publicName
       | none =>
-        if n.isInternal then
-          s!"{n.components[0]!}_{hash}".toName
-        else
-          n
+          let stem := n.components.head?.getD `a
+          s!"{stem}_{hash}".toName
     addPromptContext s!"Fix {n} : {← ppExpr type}"
     let (_, goal') ← goal.intro n
     goal'.withContext do
@@ -156,10 +154,8 @@ def consumeIntros (goal: MVarId) (maxDepth : Nat)
       match introUserName? n with
       | some publicName => publicName
       | none =>
-        if n.isInternal then
-          s!"{n.components[0]!}_{hash}".toName
-        else
-          n
+          let stem := n.components.head?.getD `a
+          s!"{stem}_{hash}".toName
     addPromptContext s!"Fix {n} : {← ppExpr type} := {← ppExpr value}"
     let (_, goal') ← goal.intro n
     goal'.withContext do

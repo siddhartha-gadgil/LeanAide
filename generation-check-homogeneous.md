@@ -132,10 +132,11 @@ original binder `Name` distinguishes the two cases:
   `true`.  It should use the existing type-hash fallback, producing a name such
   as `a_<hash>`.
 
-The current `introUserName?` calls `eraseMacroScopes` before checking
-`isInternal`.  For an anonymous arrow this cleaning collapses the internal
-hygienic name to plain `a`, so several unrelated hypotheses and an ordinary
-element are all introduced as `a`.  Lemma 3 demonstrates the regression:
+At the time of the July 24 run, `introUserName?` called `eraseMacroScopes`
+before checking `isInternal`.  For an anonymous arrow this cleaning collapsed
+the internal hygienic name to plain `a`, so several unrelated hypotheses and
+an ordinary element were all introduced as `a`.  Lemma 3 demonstrates that
+run-time regression:
 
 ```lean
 intro G inst l a a w y z s t a a
@@ -145,7 +146,7 @@ Candidates then select a shadowing group element where a proposition proof is
 expected and fail elaboration.  This is why the new Lemma 3 contains no useful
 intermediate assertion and immediately reaches its terminal `sorry`.
 
-The fix is deliberately simple and applies before any cleaning:
+The post-run fix is deliberately simple and applies before any cleaning:
 
 ```lean
 if n.isInternal then
@@ -154,11 +155,12 @@ else
   some n.eraseMacroScopes      -- retain a genuinely public source name
 ```
 
-Any additional checks for inaccessible or otherwise unusable names should
-also be made on the original name.  Do not infer anonymity from the cleaned
-name `a`.  The existing callers already interpret `none` as the hashed
-fallback.  This is marked by `TODO-AnonymousBinderBeforeErase` in
-`LeanAideCore/LeanAideCore/RunTactics.lean`.
+The implemented version also rejects the literal `.anonymous` name and
+inaccessible names.  All three callers interpret `none` as a type-hashed name;
+they use the original first name component as the stem and safely default to
+`a` when `.anonymous` has no components.  Public names retain their cleaned
+name.  The earlier TODO has therefore been removed.  A fresh codegen run is
+still needed to confirm the expected Lemma 3 improvement in generated output.
 
 ### `dropLocalContext`: remaining anonymous candidate binders
 
@@ -239,8 +241,8 @@ its fvar rather than by its expanded value.
 
 ### Focused implementation order
 
-1. **P0:** detect anonymous/internal binders before erasing macro scopes and
-   restore hashed names for them.
+1. **Implemented after this run:** detect anonymous/internal/inaccessible
+   binders before erasing macro scopes and use safe type-hashed names for them.
 2. **P0:** preserve local lets such as `C` in temporary frontend contexts.
 3. **P0:** restrict terminal `repeat (sorry)` to the outermost theorem proof;
    nested proof blocks must return open goals to the enclosing sequence.
@@ -551,12 +553,12 @@ succeeds.
    identifiers.  A theorem may close legitimately before all proof nodes, but
    early closure caused by a mistranslated assertion must be reported rather
    than silently counted as success.
-7. **Partly implemented -- stable public intro names:** retaining genuinely
-   public names is correct, but anonymity must be tested on the original name
-   before erasing macro scopes.  Once that is fixed, anonymous candidate
-   binders still need the constrained unique role-and-type specialization
-   described in the July 24 update.  The sort-equality and local-let-fvar
-   corrections remain separate focused TODOs.
+7. **Implemented after the July 24 run -- stable public intro names:** public
+   names are retained, while original anonymous/internal/inaccessible names
+   receive safe type-hashed names.  Anonymous *candidate* binders still need
+   the separate constrained unique role-and-type specialization described in
+   the July 24 update.  The sort-equality and local-let-fvar corrections remain
+   separate focused TODOs.
 
 ## Update: July 23 auto-implicit and `let`/`def` quick-fix rerun
 
