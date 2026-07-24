@@ -246,7 +246,9 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     -- failed statement translation, failed assertion proof search, and other
     -- handler errors.  Log the source id/claim and saved error before recursing,
     -- and include these attempted/failed node ids in the generation summary.
-    | .error _ => getCodeTacticsAux translator goal sources accum
+    | .error e =>
+      traceAide `leanaide.codegen.info s!"getCode for source {source.pretty} failed with error: {e}"
+      getCodeTacticsAux translator goal sources accum
     | .ok code? =>
       match code? with
       | none => do -- pure side effect, no code generated

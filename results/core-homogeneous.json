@@ -488,21 +488,16 @@
             "proof_steps": [
               {
                 "type": "assert_statement",
-                "name": "c_0_s_1_t",
-                "claim": "C 0 = s^{-1} * t",
-                "proof_method": "Named local obligation from unresolved claim dependency.",
-                "source": {
-                  "text": "C_0 = s^{-1}t",
-                  "kind": "deduced_from_claim"
-                }
-              },
-              {
-                "type": "assert_statement",
                 "claim": "C 0 = s^{-1} * t",
                 "proof_method": "by the definition of C at n=0",
                 "from": "C 0",
                 "relation": "=",
-                "to": "s^{-1}t"
+                "to": "s^{-1}t",
+                "name": "c_0_s_1_t",
+                "source": {
+                  "text": "C_0 = s^{-1}t",
+                  "kind": "deduced_from_claim"
+                }
               },
               {
                 "type": "assert_statement",
@@ -552,21 +547,6 @@
               {
                 "type": "assert_statement",
                 "claim": "C (n + 1) = w * (y * C n * z) * w⁻¹",
-                "proof_method": "side condition for C_{n+1} = w (y C_n z) w^{-1}"
-              },
-              {
-                "type": "assert_statement",
-                "name": "c_n_1_w_y_c_n_z",
-                "claim": "C (n + 1) = w * y * C n * z * w⁻¹",
-                "proof_method": "Named local obligation from unresolved claim dependency.",
-                "source": {
-                  "text": "C_{n+1}=w y C_n z w^{-1}",
-                  "kind": "deduced_from_claim"
-                }
-              },
-              {
-                "type": "assert_statement",
-                "claim": "C (n + 1) = w * (y * C n * z) * w⁻¹",
                 "proof_method": "By the defining recurrence for C, regrouping the product associatively.",
                 "from": "C (n + 1)",
                 "relation": "=",
@@ -577,13 +557,13 @@
               },
               {
                 "type": "assert_statement",
-                "claim": "l (C (n + 1)) = l (y * C n * z)",
-                "proof_method": "side condition for l(C_{n+1}) = l(y C_n z)"
-              },
-              {
-                "type": "assert_statement",
-                "claim": "l (C (n + 1)) = l (y * C n * z)",
-                "proof_method": "side condition for l(C_{n+1}) = l(y C_n z)"
+                "name": "c_n_1_w_y_c_n_z",
+                "claim": "C (n + 1) = w * y * C n * z * w⁻¹",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                  "text": "C_{n+1}=w y C_n z w^{-1}",
+                  "kind": "deduced_from_claim"
+                }
               },
               {
                 "type": "assert_statement",
@@ -605,11 +585,6 @@
                     "verification_status": "local_declaration_match"
                   }
                 ]
-              },
-              {
-                "type": "assert_statement",
-                "claim": "l (y * C n * z) ≤ l y + l (C n) + l z",
-                "proof_method": "side condition for l(y C_n z) <= l(y)+l(C_n)+l(z)"
               },
               {
                 "type": "assert_statement",
@@ -646,11 +621,6 @@
                 "from": "l applied to y + l applied to C n + l applied to z",
                 "relation": "<=",
                 "to": "l(y)+(l(s^{-1})+l(t)+n(l(y)+l(z)))+l(z)"
-              },
-              {
-                "type": "assert_statement",
-                "claim": "l y + (l s⁻¹ + l t + n * (l y + l z)) + l z = l s⁻¹ + l t + (n + 1) * (l y + l z)",
-                "proof_method": "side condition for l(y)+(l(s^{-1})+l(t)+n(l(y)+l(z)))+l(z) = l(s^{-1})+l(t)+(n+1)(l(y)+l(z))"
               },
               {
                 "type": "assert_statement",
@@ -1017,13 +987,8 @@
               "type": "assert_statement",
               "claim": "w * u = a",
               "proof_method": "By the definitions of w, u, and a, and the exponent law x * x^(m-1) = x^m.",
-              "arguments": []
-            },
-            {
-              "type": "assert_statement",
+              "arguments": [],
               "name": "w_u_a",
-              "claim": "w * u = a",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
               "source": {
                 "text": "w * u = a",
                 "kind": "deduced_from_claim"
@@ -1040,16 +1005,6 @@
                   "description": "Equality gives conjugacy by the identity conjugator."
                 }
               ]
-            },
-            {
-              "type": "assert_statement",
-              "name": "w_x",
-              "claim": "w = x",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
-              "source": {
-                "text": "w = x",
-                "kind": "deduced_from_claim"
-              }
             },
             {
               "type": "assert_statement",
@@ -1085,25 +1040,10 @@
             },
             {
               "type": "assert_statement",
-              "name": "a_x_m_c_k",
-              "claim": "a = x^m c^k",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
-              "source": {
-                "text": "a = x^m c^k",
-                "kind": "deduced_from_claim"
-              }
-            },
-            {
-              "type": "assert_statement",
               "claim": "v * w^{-1} = y^{-1} * a * y",
               "proof_method": "Use xyx^{-1} = c y inside the expression for v * w^{-1}, combine c^(k-1) c = c^k, and substitute a = x^m c^k.",
-              "arguments": []
-            },
-            {
-              "type": "assert_statement",
+              "arguments": [],
               "name": "v_w_1_y_1_a_y",
-              "claim": "v * w^{-1} = y^{-1} * a * y",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
               "source": {
                 "text": "v * w^{-1} = y^{-1} * a * y",
                 "kind": "deduced_from_claim"
@@ -1113,13 +1053,8 @@
               "type": "assert_statement",
               "claim": "a = y * (v * w^{-1}) * y^{-1}",
               "proof_method": "Rearrange by conjugating with y.",
-              "arguments": []
-            },
-            {
-              "type": "assert_statement",
+              "arguments": [],
               "name": "a_y_v_w_1_y_1",
-              "claim": "a = y * (v * w^{-1}) * y^{-1}",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
               "source": {
                 "text": "a = y * (v * w^{-1}) * y^{-1}",
                 "kind": "deduced_from_claim"
@@ -1148,29 +1083,9 @@
             },
             {
               "type": "assert_statement",
-              "name": "u_x_m_1_c_k",
-              "claim": "u = x^(m-1) c^k",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
-              "source": {
-                "text": "u = x^(m-1) c^k",
-                "kind": "deduced_from_claim"
-              }
-            },
-            {
-              "type": "assert_statement",
               "claim": "l applied to u = f applied to m - 1 and k",
               "proof_method": "By the definition of u and the definition of f.",
               "arguments": []
-            },
-            {
-              "type": "assert_statement",
-              "name": "v_y_1_x_m_c_k_1",
-              "claim": "v = y^{-1} x^m c^(k-1) x y",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
-              "source": {
-                "text": "v = y^{-1} x^m c^(k-1) x y",
-                "kind": "deduced_from_claim"
-              }
             },
             {
               "type": "assert_statement",
@@ -1210,16 +1125,6 @@
                   "verification_status": "local_declaration_match"
                 }
               ]
-            },
-            {
-              "type": "assert_statement",
-              "name": "a_x_m_c_k",
-              "claim": "a = x^m c^k",
-              "proof_method": "Named local obligation from unresolved claim dependency.",
-              "source": {
-                "text": "a = x^m c^k",
-                "kind": "deduced_from_claim"
-              }
             },
             {
               "type": "assert_statement",

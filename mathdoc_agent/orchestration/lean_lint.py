@@ -675,11 +675,122 @@ def flatten_redundant_proof_wrappers(value: Any) -> Any:
     return normalized
 
 
+_ASSERTION_PROOF_FIELDS = (
+    "lean_term",
+    "lean_name",
+    "proof",
+    "proof_method",
+    "from",
+    "relation",
+    "to",
+    "side_conditions",
+    "deduced_from_theorem",
+)
+
+_MATERIALIZED_DEPENDENCY_PROOF_METHOD = (
+    "Named local obligation from unresolved claim dependency."
+)
+
+
+def _has_content(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (list, dict)):
+        return bool(value)
+    return True
+
+
+def _assertion_quality(step: dict[str, Any]) -> tuple[int, int, int, int]:
+    """Rank duplicate assertions by useful proof information, not provenance noise."""
+    proof_method = step.get("proof_method")
+    source = step.get("source")
+    is_materialized_placeholder = (
+        proof_method == _MATERIALIZED_DEPENDENCY_PROOF_METHOD
+        or (
+            isinstance(source, dict)
+            and source.get("kind") == "deduced_from_claim"
+        )
+    )
+    evidence = [step.get(key) for key in _ASSERTION_PROOF_FIELDS]
+    return (
+        0 if is_materialized_placeholder else 1,
+        sum(_has_content(value) for value in evidence),
+        sum(len(repr(value)) for value in evidence if _has_content(value)),
+        len(step),
+    )
+
+
+def _merge_duplicate_assertions(
+    first: dict[str, Any],
+    later: dict[str, Any],
+) -> dict[str, Any]:
+    """Keep the better proof description while retaining missing provenance fields."""
+    if _assertion_quality(later) > _assertion_quality(first):
+        preferred, fallback = later, first
+    else:
+        preferred, fallback = first, later
+    merged = deepcopy(preferred)
+    for key, value in fallback.items():
+        if key not in merged or not _has_content(merged[key]):
+            merged[key] = deepcopy(value)
+    return merged
+
+
+def deduplicate_redundant_proof_steps(value: Any) -> Any:
+    """Deduplicate repeated assertions within each individual proof-step scope.
+
+    Only ``assert_statement`` nodes with the same whitespace-normalized claim
+    are merged. Repeated definitions, calculations, assumptions, and nodes in
+    distinct branches remain untouched because repetition can be meaningful
+    there. The first position is retained to preserve dependency ordering; if
+    a later duplicate has better proof metadata, that metadata is moved to the
+    retained assertion.
+    """
+    if isinstance(value, list):
+        return [deduplicate_redundant_proof_steps(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+
+    normalized = {
+        key: deduplicate_redundant_proof_steps(item)
+        for key, item in value.items()
+    }
+    proof_steps = normalized.get("proof_steps")
+    if not isinstance(proof_steps, list):
+        return normalized
+
+    deduplicated: list[Any] = []
+    assertion_positions: dict[str, int] = {}
+    for step in proof_steps:
+        if not isinstance(step, dict) or step.get("type") != "assert_statement":
+            deduplicated.append(step)
+            continue
+        claim = step.get("claim")
+        if not isinstance(claim, str) or not claim.strip():
+            deduplicated.append(step)
+            continue
+        claim_key = " ".join(claim.split())
+        position = assertion_positions.get(claim_key)
+        if position is None:
+            assertion_positions[claim_key] = len(deduplicated)
+            deduplicated.append(step)
+            continue
+        previous = deduplicated[position]
+        if isinstance(previous, dict):
+            deduplicated[position] = _merge_duplicate_assertions(previous, step)
+
+    normalized["proof_steps"] = deduplicated
+    return normalized
+
+
 def finalize_lean_facing_json(data: dict[str, Any]) -> dict[str, Any]:
     """Return JSON normalized for Lean codegen plus structured lint metadata."""
     materialized = materialize_remaining_deduced_from_claims(deepcopy(data))
     flattened = flatten_redundant_proof_wrappers(materialized)
-    normalized, issues = _normalize_value(flattened)
+    deduplicated = deduplicate_redundant_proof_steps(flattened)
+    normalized, issues = _normalize_value(deduplicated)
     if not isinstance(normalized, dict):
         return {
             "document": normalized,

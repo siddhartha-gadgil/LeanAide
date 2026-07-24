@@ -1196,6 +1196,97 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([step["claim"] for step in steps], ["A", "B", "C", "D"])
         self.assertEqual(finalize_lean_facing_json(finalized), finalized)
 
+    def test_finalize_lean_facing_json_deduplicates_assertions_in_one_scope(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "R",
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {
+                                    "type": "assert_statement",
+                                    "name": "p",
+                                    "claim": "P",
+                                    "proof_method": (
+                                        "Named local obligation from unresolved "
+                                        "claim dependency."
+                                    ),
+                                    "source": {
+                                        "text": "P",
+                                        "kind": "deduced_from_claim",
+                                    },
+                                },
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "Q",
+                                    "proof_method": "By hypothesis.",
+                                },
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "P",
+                                    "proof_method": "Use the named hypothesis h.",
+                                    "lean_term": "h",
+                                },
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+
+        finalized = finalize_lean_facing_json(data)
+        steps = finalized["document"]["body"][0]["proof"]["proof_steps"]
+
+        self.assertEqual([step["claim"] for step in steps], ["P", "Q"])
+        self.assertEqual(steps[0]["proof_method"], "Use the named hypothesis h.")
+        self.assertEqual(steps[0]["lean_term"], "h")
+        self.assertEqual(steps[0]["name"], "p")
+        self.assertEqual(steps[0]["source"]["kind"], "deduced_from_claim")
+        self.assertEqual(finalize_lean_facing_json(finalized), finalized)
+
+    def test_finalize_lean_facing_json_keeps_same_claim_in_distinct_branches(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "R n",
+                        "proof": {
+                            "type": "induction_proof",
+                            "on": "n",
+                            "base_case_proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {"type": "assert_statement", "claim": "P"}
+                                ],
+                            },
+                            "induction_step_proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {"type": "assert_statement", "claim": "P"}
+                                ],
+                            },
+                        },
+                    }
+                ]
+            }
+        }
+
+        finalized = finalize_lean_facing_json(data)
+        proof = finalized["document"]["body"][0]["proof"]
+
+        self.assertEqual(
+            [step["claim"] for step in proof["base_case_proof"]["proof_steps"]],
+            ["P"],
+        )
+        self.assertEqual(
+            [step["claim"] for step in proof["induction_step_proof"]["proof_steps"]],
+            ["P"],
+        )
+
     def test_finalize_lean_facing_json_preserves_structural_and_labeled_proofs(self) -> None:
         finalized = finalize_lean_facing_json(
             {
