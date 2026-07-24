@@ -1100,41 +1100,36 @@
               "arguments": []
             },
             {
-              "type": "proof",
-              "proof_steps": [
-                {
-                  "type": "assert_statement",
-                  "name": "v_w_1_y_1_a_y",
-                  "claim": "v * w^{-1} = y^{-1} * a * y",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "v * w^{-1} = y^{-1} * a * y",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "a = y * (v * w^{-1}) * y^{-1}",
-                  "proof_method": "Rearrange by conjugating with y.",
-                  "arguments": []
-                },
-                {
-                  "type": "assert_statement",
-                  "name": "a_y_v_w_1_y_1",
-                  "claim": "a = y * (v * w^{-1}) * y^{-1}",
-                  "proof_method": "Named local obligation from unresolved claim dependency.",
-                  "source": {
-                    "text": "a = y * (v * w^{-1}) * y^{-1}",
-                    "kind": "deduced_from_claim"
-                  }
-                },
-                {
-                  "type": "assert_statement",
-                  "claim": "a is conjugate to v * w^{-1}",
-                  "proof_method": "Use the displayed conjugation equation.",
-                  "arguments": []
-                }
-              ]
+              "type": "assert_statement",
+              "name": "v_w_1_y_1_a_y",
+              "claim": "v * w^{-1} = y^{-1} * a * y",
+              "proof_method": "Named local obligation from unresolved claim dependency.",
+              "source": {
+                "text": "v * w^{-1} = y^{-1} * a * y",
+                "kind": "deduced_from_claim"
+              }
+            },
+            {
+              "type": "assert_statement",
+              "claim": "a = y * (v * w^{-1}) * y^{-1}",
+              "proof_method": "Rearrange by conjugating with y.",
+              "arguments": []
+            },
+            {
+              "type": "assert_statement",
+              "name": "a_y_v_w_1_y_1",
+              "claim": "a = y * (v * w^{-1}) * y^{-1}",
+              "proof_method": "Named local obligation from unresolved claim dependency.",
+              "source": {
+                "text": "a = y * (v * w^{-1}) * y^{-1}",
+                "kind": "deduced_from_claim"
+              }
+            },
+            {
+              "type": "assert_statement",
+              "claim": "a is conjugate to v * w^{-1}",
+              "proof_method": "Use the displayed conjugation equation.",
+              "arguments": []
             },
             {
               "type": "assert_statement",
