@@ -439,86 +439,132 @@ partial def getVars (type: Expr) : MetaM <| List Name := do
       return n::names
   | _ => return []
 
-
-def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
+def findUniqueCompatibleDecl?
+    (bi : BinderInfo) (type : Expr) :
+    MetaM (Option LocalDecl) := do
   let lctx ← getLCtx
-  match lctx.findFromUserName? name with
-  | some (.cdecl _ fVarId _ dtype ..) =>
-    let check ← isDefEqReadOnly dtype type
-    logInfo m!"Checking {dtype} and {type} gives {check}"
-    if check
-      then return fVarId
-      else return none
-  | _ =>
-    if ← isProp type then
-      lctx.decls.findSomeM? fun decl =>
-        match decl with
-        | some <| .cdecl _ fVarId _ dtype .. => do
-          let check ← isDefEqReadOnly dtype type
-          traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
-          if check then pure <| some fVarId
-          else pure none
-        | _ => pure none
-    else
-      return none
+  let mut found? : Option LocalDecl := none
 
+  for decl? in lctx.decls do
+    let some decl := decl? | continue
+
+    if decl.isImplementationDetail then
+      continue
+
+    let roleMatches : Bool :=
+      match decl with
+      | .cdecl (bi := declBi) .. => declBi == bi
+      | .ldecl .. => bi == .default
+
+    unless roleMatches do
+      continue
+
+    if ← isDefEqReadOnly decl.type type then
+      if found?.isSome then
+        return none
+      found? := some decl
+
+  return found?
+
+def findUniqueCompatibleLetDecl?
+    (type value : Expr) (nondep : Bool) :
+    MetaM (Option LocalDecl) := do
+  let lctx ← getLCtx
+  let mut found? : Option LocalDecl := none
+
+  for decl? in lctx.decls do
+    let some decl := decl? | continue
+    if decl.isImplementationDetail then
+      continue
+
+    let .ldecl (type := declType) (value := declValue)
+        (nondep := declNondep) .. := decl
+      | continue
+
+    unless declNondep == nondep do
+      continue
+    unless ← isDefEqReadOnly declType type do
+      continue
+
+    -- Never inspect a nondependent ldecl's potentially invalid RHS.
+    if !nondep then
+      unless ← isDefEqReadOnly declValue value do
+        continue
+
+    if found?.isSome then
+      return none
+    found? := some decl
+
+  return found?
 
 partial def dropLocalContext (type: Expr) : MetaM Expr := do
   match type with
-  | .forallE name binderType body _ => do
-    -- TODO-LocalAnonymousBinderMatch: distinguish public candidate binders
-    -- from Lean's hygienic names before matching.  A translated `[Group G]`
-    -- has an internal raw name (pretty-printed as `inst`) and therefore does
-    -- not match the genuinely named local `[inst : Group G]`; blindly erasing
-    -- scopes would likewise turn anonymous proposition binders into colliding
-    -- `a`s.  Preserve exact cleaned-name matching for public binders.  For an
-    -- original internal/anonymous binder, use its BinderInfo role plus guarded
-    -- definitional equality of the type and accept only a unique compatible
-    -- local declaration (identical Prop hypotheses are interchangeable).
+  | .forallE rawName binderType body bi => do
     let lctx ← getLCtx
-    match lctx.findFromUserName? name with
-    | some (.cdecl _ fVarId _ dtype ..) =>
-      let check ← isDefEqReadOnly dtype binderType
-      traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 (mkFVar fVarId)
-        dropLocalContext body'
-      else
-        traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
-        return type
-    | some (.ldecl _ fVarId _ dtype _ ..) =>
-      let check ← isDefEqReadOnly dtype binderType
-      traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 (mkFVar fVarId)
-        dropLocalContext body'
-      else
-        traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
-        return type
-    | none =>
-      match ← findLocalDecl? name binderType with
-      | some fVarId =>
-        let body' := body.instantiate1 (mkFVar fVarId)
-        dropLocalContext body'
+    match introUserName? rawName with
+    | some publicName =>
+      match lctx.findFromUserName? publicName with
+      | some (.cdecl _ fVarId _ dtype _ _) =>
+        let check ← isDefEqReadOnly dtype binderType
+        traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
+        if check then
+          let body' := body.instantiate1 (mkFVar fVarId)
+          dropLocalContext body'
+        else
+          traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+          return type
+      | some (.ldecl _ fVarId _ dtype  ..) =>
+        let check ← isDefEqReadOnly dtype binderType
+        traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
+        if check then
+          let body' := body.instantiate1 (mkFVar fVarId)
+          dropLocalContext body'
+        else
+          traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+          return type
       | none =>
         return type
-  | .letE name ltype value body _ =>
+    | none =>
+        -- Anonymous/internal binder: do not manufacture `inst`, `a`, etc.
+        match ← findUniqueCompatibleDecl? bi binderType with
+        | some decl =>
+          dropLocalContext <|
+            body.instantiate1 (mkFVar decl.fvarId)
+        | none => return type
+  | .letE rawName ltype value body nondep =>
     let lctx ← getLCtx
-    match lctx.findFromUserName? name with
-    | some (.ldecl _ fVarId _ dtype dvalue ..) =>
-      let check ← withNewMCtxDepth <| isDefEqGuarded dtype ltype <&&> isDefEqGuarded dvalue value
-      -- logInfo m!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 (mkFVar fVarId)
-        dropLocalContext body'
-      else
-        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
-        return type
-    | _ =>
-      withLetDecl name ltype value fun x => do
-          let body' := body.instantiate1 x
-          let inner ← dropLocalContext body'
-          mkLetFVars #[x] inner
+    match introUserName? rawName with
+    | some publicName =>
+      match lctx.findFromUserName? publicName with
+      | some (.ldecl _ fVarId _ dtype dvalue declNondep ..) =>
+        let check ←
+          if declNondep != nondep then
+            pure false
+          else
+          if nondep then withNewMCtxDepth <| isDefEqGuarded dtype ltype
+          else withNewMCtxDepth <| isDefEqGuarded dtype ltype <&&>
+          isDefEqGuarded dvalue value
+        -- logInfo m!"Checking {dtype} and {type} gives {check}"
+        if check then
+          let body' := body.instantiate1 (mkFVar fVarId)
+          dropLocalContext body'
+        else
+          logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
+          return type
+      | _ =>
+        withLetDecl publicName ltype value (nondep := nondep) fun x => do
+            let body' := body.instantiate1 x
+            let inner ← dropLocalContext body'
+            mkLetFVars #[x] inner
+    | none =>
+        match ← findUniqueCompatibleLetDecl? ltype value nondep with
+        | some decl =>
+            dropLocalContext <|
+              body.instantiate1 (mkFVar decl.fvarId)
+        | none =>
+            withLetDecl rawName ltype value (nondep := nondep) fun x => do
+              let inner ← dropLocalContext (body.instantiate1 x)
+              mkLetFVars #[x] inner
   | _ => return type
 
 partial def fillLocalContext (expr: Expr) : MetaM Expr := do
