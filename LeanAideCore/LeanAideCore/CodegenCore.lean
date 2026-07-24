@@ -441,6 +441,9 @@ partial def getVars (type: Expr) : MetaM <| List Name := do
       return n::names
   | _ => return []
 
+-- TODO-DropLocalContextConsumedFVars (anonymous match): accept a
+-- `consumed : FVarIdSet` argument and skip any `decl.fvarId` it contains
+-- before deciding whether the remaining compatible declaration is unique.
 def findUniqueCompatibleDecl?
     (bi : BinderInfo) (type : Expr) :
     MetaM (Option LocalDecl) := do
@@ -468,6 +471,9 @@ def findUniqueCompatibleDecl?
 
   return found?
 
+-- TODO-DropLocalContextConsumedFVars (anonymous let match): accept the same
+-- `consumed : FVarIdSet` argument and exclude consumed `.ldecl`s from both
+-- compatibility testing and the uniqueness count.
 def findUniqueCompatibleLetDecl?
     (type value : Expr) (nondep : Bool) :
     MetaM (Option LocalDecl) := do
@@ -499,12 +505,22 @@ def findUniqueCompatibleLetDecl?
 
   return found?
 
+-- TODO-DropLocalContextConsumedFVars: thread an `FVarIdSet` through
+-- `dropLocalContext` and make both compatibility helpers ignore already-used
+-- declarations. After every successful public-name or anonymous/internal
+-- forall/let match, insert that fvar before recursing. Otherwise, with only
+-- `x : α` in the local context, two successive candidate binders
+-- `∀ (_ _ : α), ...` can both be specialized to `x`; the second binder must
+-- remain generalized unless a distinct compatible local declaration exists.
 partial def dropLocalContext (type: Expr) : MetaM Expr := do
   match type with
   | .forallE rawName binderType body bi => do
     let lctx ← getLCtx
     match introUserName? rawName with
     | some publicName =>
+      -- TODO-DropLocalContextConsumedFVars (public match): reject the result of
+      -- this name lookup when its fvar is consumed; on a successful match,
+      -- recurse with that fvar inserted into the consumed set.
       match lctx.findFromUserName? publicName with
       | some (.cdecl _ fVarId _ dtype _ _) =>
         let check ← isDefEqReadOnly dtype binderType
@@ -528,6 +544,9 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
         return type
     | none =>
         -- Anonymous/internal binder: do not manufacture `inst`, `a`, etc.
+        -- TODO-DropLocalContextConsumedFVars (anonymous match): pass the
+        -- consumed set to this helper and insert the selected fvar before the
+        -- recursive call.
         match ← findUniqueCompatibleDecl? bi binderType with
         | some decl =>
           dropLocalContext <|
@@ -537,6 +556,9 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
     let lctx ← getLCtx
     match introUserName? rawName with
     | some publicName =>
+      -- TODO-DropLocalContextConsumedFVars (public let match): reject a
+      -- consumed named `.ldecl`; after a successful match, recurse with its
+      -- fvar inserted into the consumed set.
       match lctx.findFromUserName? publicName with
       | some (.ldecl _ fVarId _ dtype dvalue declNondep ..) =>
         let check ←
@@ -554,16 +576,25 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
           logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
           return type
       | _ =>
+        -- TODO-DropLocalContextConsumedFVars (local creation): pass the
+        -- consumed set unchanged into this newly created let's body. Do not
+        -- mark `x` consumed unless a later binder actually matches it.
         withLetDecl publicName ltype value (nondep := nondep) fun x => do
             let body' := body.instantiate1 x
             let inner ← dropLocalContext body'
             mkLetFVars #[x] inner
     | none =>
+        -- TODO-DropLocalContextConsumedFVars (anonymous let match): pass the
+        -- consumed set to this helper and insert the selected fvar before
+        -- recursing.
         match ← findUniqueCompatibleLetDecl? ltype value nondep with
         | some decl =>
             dropLocalContext <|
               body.instantiate1 (mkFVar decl.fvarId)
         | none =>
+            -- TODO-DropLocalContextConsumedFVars (local creation): preserve
+            -- the consumed set when entering this reconstructed let; `x`
+            -- becomes consumed only if a nested candidate actually selects it.
             withLetDecl rawName ltype value (nondep := nondep) fun x => do
               let inner ← dropLocalContext (body.instantiate1 x)
               mkLetFVars #[x] inner
