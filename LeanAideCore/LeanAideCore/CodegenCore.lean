@@ -220,6 +220,12 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   | [] => do
     return (accum, goal)
   | source::sources => do
+    -- TODO-DuplicateProofNodes: exact repeated assertion nodes currently
+    -- trigger translation/proof generation again and may shadow the same
+    -- hash-derived local name.  Track attempted source ids/content and, after
+    -- translation, avoid adding a proposition already present in the local
+    -- context.  The upstream source audit should deduplicate too, but codegen
+    -- must remain robust to an unaudited JSON input.
     if ← goal.isAssigned then
       traceAide `leanaide.codegen.info s!"goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after getCode for source {source.pretty}"
       throwError
@@ -235,6 +241,11 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         set translateState
         pure (Except.error (← e.toMessageData.toString))
     match result with
+    -- TODO-ProofStepFailureDiagnostics: continuing after a rejected proof node
+    -- is correct, but discarding this error makes the log unable to distinguish
+    -- failed statement translation, failed assertion proof search, and other
+    -- handler errors.  Log the source id/claim and saved error before recursing,
+    -- and include these attempted/failed node ids in the generation summary.
     | .error _ => getCodeTacticsAux translator goal sources accum
     | .ok code? =>
       match code? with
@@ -455,6 +466,15 @@ def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
 partial def dropLocalContext (type: Expr) : MetaM Expr := do
   match type with
   | .forallE name binderType body _ => do
+    -- TODO-LocalAnonymousBinderMatch: distinguish public candidate binders
+    -- from Lean's hygienic names before matching.  A translated `[Group G]`
+    -- has an internal raw name (pretty-printed as `inst`) and therefore does
+    -- not match the genuinely named local `[inst : Group G]`; blindly erasing
+    -- scopes would likewise turn anonymous proposition binders into colliding
+    -- `a`s.  Preserve exact cleaned-name matching for public binders.  For an
+    -- original internal/anonymous binder, use its BinderInfo role plus guarded
+    -- definitional equality of the type and accept only a unique compatible
+    -- local declaration (identical Prop hypotheses are interchangeable).
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
     | some (.cdecl _ fVarId _ dtype ..) =>

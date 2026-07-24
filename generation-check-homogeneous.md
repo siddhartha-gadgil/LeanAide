@@ -1,5 +1,260 @@
 # Generation check for `results/homogeneous.md`
 
+## Update: July 24 full rebuilt core rerun
+
+### Run status and overall comparison
+
+`lake build codegen` succeeded before the run.  The fresh invocation
+
+```bash
+lake exe codegen results/core-homogeneous.json
+```
+
+ran from 06:26:21 to 08:21:09 in `.logs/2026-07-24.log`, exited 0, and wrote
+both authorized artifacts.  Both files also pass independent
+`lake env lean <file>` checks.  Their remaining diagnostics are linter
+warnings and the expected warnings for declarations containing `sorry`, not
+elaboration errors.
+
+| Result | July 23 rerun | July 24 rerun |
+|---|---:|---:|
+| live-file lines | 374 | 192 |
+| final-file lines | 644 | 299 |
+| definitions emitted | 4/4 | 4/4 |
+| proof-bearing Lemmas 1--4 emitted | 3/4 | 4/4 |
+| declaration goals containing `sorry` | 11 | 4 |
+
+The final file now reports eight declarations: `PseudoLength`, `IsLength`,
+`IsHomogeneousPseudoLength`, `IsTorsionFree`, and `lemma_1` through
+`lemma_4`.  There is exactly one terminal `repeat (sorry)` in each lemma.
+Thus source theorem retention and the location of incompleteness improved
+substantially: Lemma 2 is no longer lost after a failed proof node, and no
+local assertion is accepted merely because its own proof was filled with
+`sorry`.  None of the four lemmas is complete yet.
+
+The separate proofless root theorem
+`core_homogeneous_root_homogeneity_square` is still omitted because its
+deferred proposition command contains an unbound `u_12`; this is distinct
+from coverage of the four proof-bearing lemmas.
+
+The run made 121 uncached chat requests and received 121 responses; 19 other
+requests were served from cache.  No API, LeanSearch, similarity-search, or
+process timeout is recorded.  Similarity search was used successfully through
+`http://localhost:7654`, but every lookup first logged that synthesis of
+`LeanAide.LeanAideUrl` failed and then selected that local URL.  The 165 such
+messages are configuration-fallback messages, not 165 search failures: each
+prompt builder can query several description fields, and generation proceeds
+immediately after them.  Supplying the configured URL explicitly, or making
+the local URL the resolved default without an exception, would remove this
+repeated noise and exception overhead.
+
+### What worked
+
+1. **A failed proof node no longer discards its theorem.**  Lemma 2 is present,
+   its base case is retained, and exhausted proof search closes only the
+   remaining successor branch with the visible terminal fallback.
+2. **The corrected metavariable-assignment test continues through real open
+   goals.**  There is no recurrence of the old check of the already-assigned
+   input metavariable or of tactics being run after the actual continuation
+   goal was closed.
+3. **Direct validation of local definitions works in the actual goal
+   context.**  Lemma 4 emits `a`, `w`, `u`, and `v`; later data definitions can
+   depend on earlier locals.  Proof-valued locals are also kept compact in
+   prompts instead of printing their full assigned proof terms.
+4. **Useful proof work is retained.**  Lemma 1 proves the forward conjugacy
+   inequality and several supporting estimates.  Lemma 2 proves its base
+   case.  Lemma 4 proves two conjugacy-witness constructions and the main
+   commutator group identity before its premature terminal fallback.
+5. **The generated claims are semantically much better than the old full
+   `CodeGen/homogeneous.lean`.**  That 1,675-line file has 15 declarations and
+   31 sorry goals, but it covers a larger document and its first four lemma
+   statements omit essential assumptions: Lemma 1 omits homogeneity, Lemma 2
+   leaves `C` arbitrary, Lemma 3 omits homogeneity and conjugacy, and Lemma 4
+   leaves `f` arbitrary.  The new core file includes the definitions of `C`,
+   `c`, and `f` and all relevant hypotheses in the formal claims.  Its smaller
+   size therefore reflects both the deliberately smaller source extract and
+   removal of sorry-backed generalized assertions, not loss of those formal
+   dependencies.
+
+### Correction: the induction hypothesis is present
+
+The Lemma 2 successor goal is correctly updated by induction.  The real Meta
+local context repeatedly contains
+
+```lean
+n : ℕ
+ih : l (C n) ≤ l s⁻¹ + l t + (n : ℝ) * (l y + l z)
+```
+
+and the formal `Available variables` block sent to the translator includes
+`ih`.  The generated branch header also correctly reads
+`| succ n ih => ...`.  It was therefore inaccurate to say that induction did
+not include the induction hypothesis.
+
+The inconsistency is in `promptContext`: its prose still shows the outer
+theorem as `Current goal`, adds `Fix n`, and does not add `Fix ih`.  This stale
+prose can mislead the model even though the formal variable block is correct.
+The induction handler should refresh or extend the branch prompt after the
+induction tactic, using the declarations from the returned successor
+metavariable.  This is marked by `TODO-InductionPromptContext` in
+`LeanAideCore/LeanAideCore/PaperCodes.lean`.
+
+The immediate Lemma 2 blocker is instead the temporary frontend's treatment
+of local definitions.  `localDeclToBracketedBinder?` drops every `.ldecl`, so
+the frontend variable prelude omits
+
+```lean
+let C : ℕ → G := fun n => ...
+```
+
+while retaining the later declaration whose type contains `C`, namely `ih`.
+All candidates then fail before their own proposition is checked with
+
+```text
+Function expected at C but this term has type ?m.1
+```
+
+Reconstruct a local let in the temporary frontend, or at minimum add an
+ordinary typed binder `(C : ℕ → G)` before dependent declarations.  The
+actual Meta context may keep the definition and its value.  This is marked by
+`TODO-FrontendLocalLetBinder` in
+`LeanAideCore/LeanAideCore/Aides/Syntax.lean`.
+
+### Named versus anonymous hypotheses
+
+The latest naming change is correct only for genuinely named binders.  Lean's
+original binder `Name` distinguishes the two cases:
+
+- A public source binder such as `(a : P)` has a non-internal name (`a`), and
+  should retain that public name after macro scopes are erased.
+- An anonymous arrow binder such as `P → Q` is assigned a hygienic internal
+  name resembling `a._@._internal._hyg.0`; its original `Name.isInternal` is
+  `true`.  It should use the existing type-hash fallback, producing a name such
+  as `a_<hash>`.
+
+The current `introUserName?` calls `eraseMacroScopes` before checking
+`isInternal`.  For an anonymous arrow this cleaning collapses the internal
+hygienic name to plain `a`, so several unrelated hypotheses and an ordinary
+element are all introduced as `a`.  Lemma 3 demonstrates the regression:
+
+```lean
+intro G inst l a a w y z s t a a
+```
+
+Candidates then select a shadowing group element where a proposition proof is
+expected and fail elaboration.  This is why the new Lemma 3 contains no useful
+intermediate assertion and immediately reaches its terminal `sorry`.
+
+The fix is deliberately simple and applies before any cleaning:
+
+```lean
+if n.isInternal then
+  none                         -- caller uses generatedNameFromBinderRoleAndType
+else
+  some n.eraseMacroScopes      -- retain a genuinely public source name
+```
+
+Any additional checks for inaccessible or otherwise unusable names should
+also be made on the original name.  Do not infer anonymity from the cleaned
+name `a`.  The existing callers already interpret `none` as the hashed
+fallback.  This is marked by `TODO-AnonymousBinderBeforeErase` in
+`LeanAideCore/LeanAideCore/RunTactics.lean`.
+
+### `dropLocalContext`: remaining anonymous candidate binders
+
+Preserving public names fixes named variables and named hypotheses, but the
+fresh run shows one remaining, narrower specialization problem.  A candidate
+written as
+
+```lean
+∀ (G : Type u_12) [Group G] (l : G → ℝ), ...
+```
+
+has an anonymous internal binder for `[Group G]`, even though pretty-printing
+may display it as `inst`.  The goal context, by contrast, has the genuinely
+named public binder `[inst : Group G]`.  `dropLocalContext` matches `G` and
+then stops because raw exact-name lookup cannot match those two binders.  This
+is why some Lemma 1 assertions remain unnecessarily generalized.
+
+Do not erase the anonymous candidate's internal name and look up the resulting
+`inst` or `a`: that recreates the collision just diagnosed.  The specialization
+policy should be:
+
+1. For a public candidate binder, use the cleaned public name and guarded
+   definitional equality of its type.
+2. For an originally internal/anonymous candidate binder, use its binder role
+   (`instImplicit`, ordinary explicit, or proposition hypothesis) plus guarded
+   definitional equality to find a *unique* compatible local declaration.
+3. If there is no unique match, leave the candidate generalized instead of
+   guessing.  Track consumed declarations so two binders cannot select the
+   same local declaration.
+
+This constrained fallback is needed only for anonymous candidate binders; it
+does not replace the public-name rule.  It is marked by
+`TODO-LocalAnonymousBinderMatch` in
+`LeanAideCore/LeanAideCore/CodegenCore.lean`.  The existing sort shortcut and
+local-let substitution issues also remain: sorts should use guarded
+definitional equality, and a matched `.ldecl` should normally be replaced by
+its fvar rather than by its expanded value.
+
+### Remaining proof failures and regressions
+
+1. **Lemma 1:** the forward inequality is proved, but generation does not use
+   the reverse conjugacy identity to obtain `l x ≤ l (y*x*y⁻¹)`.  It ends with
+   one theorem-level `sorry`.  The identical estimate
+   `assert_13007743013346282788` is emitted twice.
+2. **Lemma 2:** the base case is proved, and its first equality is emitted
+   twice.  The successor proof is blocked by the omitted local `C` in the
+   temporary frontend, not by a missing `ih`.
+3. **Lemma 3:** anonymous binders collapse to `a`, producing both name
+   collisions and incorrect hypothesis selection.  Fixing the pre-cleaning
+   anonymity test is the first required change.
+4. **Lemma 4:** the nested proof block successfully establishes its conjugacy
+   witnesses, but terminal fallback is applied when *that nested block's*
+   sources are exhausted.  The resulting `repeat (sorry)` closes the outer
+   theorem, so the remaining outer JSON nodes (the use of Lemma 3, rewriting
+   `u`, `v`, and `f`, and the final calculation) are never attempted.  This is
+   a regression in the scope of the new fallback.  Only the outermost theorem
+   proof may insert terminal `sorry`; a nested proof must return its partial
+   tactics and open continuation goal to its enclosing source loop.  This is
+   marked by `TODO-NestedProofNoTerminalSorry` in
+   `LeanAideCore/LeanAideCore/PaperCodes.lean`.
+5. **Deferred root theorem:** delaboration serializes `u_12` into the RHS of a
+   generated proposition definition, where `autoImplicit` cannot bind it.
+   Collect and emit the expression's level parameters explicitly, or avoid
+   delaborating and re-elaborating the proposition.  This is marked by
+   `TODO-DeferredPropUniverseBinders` in `LeanAide/PaperCodes.lean`.
+6. **Duplicate nodes:** exact repeated claims remain in Lemmas 1, 2, and 4.
+   The source audit should deduplicate them, and codegen should also avoid
+   adding a proposition already present in the local context.  The codegen
+   guard is marked by `TODO-DuplicateProofNodes` in
+   `LeanAideCore/LeanAideCore/CodegenCore.lean`.
+7. **Failure accounting:** the proof-step recovery currently matches
+   `.error _` and silently continues.  The theorem is correctly retained, but
+   the log and final summary cannot say which JSON node failed or whether its
+   failure was translation or proof search.  Log the source identifier,
+   informal claim, and error, and aggregate failed node IDs in final coverage
+   diagnostics.  This is marked by `TODO-ProofStepFailureDiagnostics` in
+   `LeanAideCore/LeanAideCore/CodegenCore.lean`.
+
+### Focused implementation order
+
+1. **P0:** detect anonymous/internal binders before erasing macro scopes and
+   restore hashed names for them.
+2. **P0:** preserve local lets such as `C` in temporary frontend contexts.
+3. **P0:** restrict terminal `repeat (sorry)` to the outermost theorem proof;
+   nested proof blocks must return open goals to the enclosing sequence.
+4. **P1:** refresh induction branch prose from the returned goal context,
+   including `ih`.
+5. **P1:** add unique role-and-type matching only for anonymous binders in
+   `dropLocalContext`; keep exact public-name matching for named binders.
+6. **P1:** bind universe levels in deferred proposition declarations and add
+   proof-node failure diagnostics.
+7. **P2:** deduplicate identical source claims and configure the local
+   similarity URL without exception-based fallback.  The latter is marked by
+   `TODO-SimilarityLocalUrlResolution` in
+   `LeanAideCore/LeanAideCore/SimilaritySearch.lean`.
+
 ## Update: July 23 corrected-goal and direct-validation rerun
 
 ### Completed run and confirmed behavior
@@ -153,11 +408,9 @@ Focused TODO comments marking both control-flow changes are now in
    first appears inside a serialized proposition value; the level-preserving
    serialization recommendation below remains necessary.
 
-### Why `dropLocalContext` left the assertions generalized
+### July 23 `dropLocalContext` evidence, refined by the July 24 run
 
-The dominant observed mismatch is the generated name of the typeclass
-instance, not its type or the order of the ordinary variables.  The active
-context contains
+The July 23 active context contained
 
 ```lean
 [inst_14157295161945824867 : Group G]
@@ -184,26 +437,20 @@ The fresh log gives a direct controlled comparison:
    lost only its `G` binder.  Its result still began
    `∀ [inst : Group G] (l : G → ℝ), ...`.
 
-Thus the current local context is present and usable.  The mismatch was
-introduced earlier, while the goal binders were being introduced: a public
-binder such as `inst` carried macro scopes and was replaced by a generated
-`inst_<hash>` name.  The translation prompt and a subsequently generalized
-candidate could consequently use different names for the same binder.
+This established that the local context was present and that exact-name
+specialization worked once names agreed.  Preserving a genuinely public name
+such as `inst` was therefore the correct first fix.
 
-The direct fix is to retain usable public binder names.  The implemented
-`introUserName?` erases macro scopes and returns the public name, while
-inaccessible, anonymous, or genuinely internal names retain the previous
-fallback (hash an internal name; otherwise leave it unchanged).  Its callers
-use an explicit `match`, so the unsafe hash expression is not evaluated for
-public or anonymous names.  This policy is now used for forall, instance, and
-let binders in both `extractIntros`/`extractInstanceIntros` and
-`consumeIntros`.  `lake build LeanAideCore` succeeds with these changes.
-
-With the public name `inst` preserved in the local context and prompt, the
-candidate should use `inst` too, and the existing exact-name specialization
-works.  The observed failure therefore does not require `synthInstance?`,
-type-only matching of ordinary variables, consumed-declaration tracking, or
-recursive reconstruction after a mismatch.
+The July 24 run reveals a second case which the earlier conclusion missed: a
+candidate may itself contain an anonymous internal binder such as `[Group G]`.
+That binder has no public source name to preserve, even though its pretty
+printer may display `inst`.  It therefore cannot match the named local
+instance by exact raw name.  Public goal binders should keep their public
+names; anonymous goal binders should keep the hash fallback; and
+`dropLocalContext` should use the constrained unique role-and-type match
+described in the July 24 section only when the *candidate* binder was
+anonymous.  This does not justify type-only matching for named ordinary
+variables or hypotheses.
 
 Two independent `dropLocalContext` issues remain, but they are not part of
 the name-mismatch fix:
@@ -304,11 +551,12 @@ succeeds.
    identifiers.  A theorem may close legitimately before all proof nodes, but
    early closure caused by a mistranslated assertion must be reported rather
    than silently counted as success.
-7. **Implemented -- stable public intro names:** `introUserName?` now preserves
-   public names after erasing macro scopes, and every forall/instance/let intro
-   call site uses its safe explicit fallback.  This removes the observed
-   `inst`/`inst_<hash>` mismatch without a typeclass-aware binder matcher.  The
-   sort-equality and local-let-fvar corrections remain separate focused TODOs.
+7. **Partly implemented -- stable public intro names:** retaining genuinely
+   public names is correct, but anonymity must be tested on the original name
+   before erasing macro scopes.  Once that is fixed, anonymous candidate
+   binders still need the constrained unique role-and-type specialization
+   described in the July 24 update.  The sort-equality and local-let-fvar
+   corrections remain separate focused TODOs.
 
 ## Update: July 23 auto-implicit and `let`/`def` quick-fix rerun
 

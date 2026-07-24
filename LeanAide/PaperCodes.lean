@@ -47,6 +47,12 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
   let propName := mkIdent (name ++ `prop)
   let propExpr := mkSort Level.zero
   let propIdent ← delabDetailed propExpr
+  -- TODO-DeferredPropUniverseBinders: `stx` is delaborated from an Expr and
+  -- may contain generated level names such as `u_12`.  In this proposition
+  -- definition they occur only in the RHS, so `autoImplicit` cannot bind them
+  -- and the whole deferred theorem is dropped.  Collect and bind every level
+  -- parameter explicitly (or create the declaration from the Expr without a
+  -- lossy delaborate/re-elaborate round trip) before emitting this command.
   let head ← `(command| def $propName : $propIdent:term := $stx)
   let fctIdent := mkIdent ``Fact
   let instName := "assume_" ++ name.toString |>.toName

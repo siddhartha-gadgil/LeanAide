@@ -443,6 +443,12 @@ def runTacticsAndFindTryThisI (goal : MVarId) (tacticSeqs : List (TSyntax ``tact
   -- return #[← `(tactic| trace $header)] ++ res ++ #[← `(tactic| trace $tail)]
 
 def introUserName? (n : Name) : Option Name :=
+  -- TODO-AnonymousBinderBeforeErase: test `n.isInternal` before
+  -- `eraseMacroScopes`.  An anonymous arrow binder has a hygienic name such
+  -- as `a._@._internal._hyg.0`; erasing scopes turns it into the apparently
+  -- public name `a`, causing collisions.  Return `none` for the original
+  -- internal name so the callers retain their existing type-hash fallback;
+  -- only genuinely named binders should keep the cleaned public name.
   if n.isInaccessibleUserName then
     none
   else

@@ -687,6 +687,13 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
   withoutModifyingTranslateAndTermState do
+    -- TODO-NestedProofNoTerminalSorry: this is a nested proof block, not the
+    -- end of the enclosing theorem's source list.  The terminal fallback in
+    -- `getCodeTactics` can currently insert `repeat (sorry)` here and close the
+    -- theorem before later outer JSON nodes are attempted.  Add an explicit
+    -- outermost/terminal-fallback mode (or expose the partial-tactics/open-goal
+    -- result): nested blocks must return progress without `sorry`, while only
+    -- the outermost exhausted theorem proof may use the fallback.
     getCodeTactics translator goal  content
 | goal?, kind, _ => throwError
     s!"codegen: proof does not work for kind {kind}where goal present: {goal?.isSome}"
@@ -1303,6 +1310,12 @@ def inductionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let some inductionStepProofStx ←
     withoutModifyingTranslateAndTermState do
     stepGoal.withContext do
+    -- TODO-InductionPromptContext: the branch Meta context correctly contains
+    -- `n` and `ih`, and `availableVariablesBlob` exposes both, but the retained
+    -- prose prompt context still describes the outer theorem and has no
+    -- branch-specific `Fix ih`.  Make the actual branch goal/context
+    -- authoritative (or exclude stale target-like prompt entries in local
+    -- assertion mode); do not diagnose this as a missing induction hypothesis.
     getProof translator stepGoal inductionStepProof | throwError
     s!"codegen: no translation found for induction_step_proof {inductionStepProof}"
   let tacs := #[← `(tactic|

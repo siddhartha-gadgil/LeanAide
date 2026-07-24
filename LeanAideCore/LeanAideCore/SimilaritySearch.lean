@@ -13,6 +13,12 @@ def callSimilaritySearch (query : String) (descField : String := "docString") (n
       match url? with
       | some url => pure url
       | none =>
+        -- TODO-SimilarityLocalUrlResolution: codegen commonly intends to use
+        -- the local server, but currently throws and logs this configuration
+        -- failure once for every similarity field/query before selecting it.
+        -- Resolve the local URL as an ordinary configured default (and log
+        -- only a real request failure), rather than using an exception for the
+        -- successful localhost path.
         traceAide `leanaide.translate.info s!"Could not get URL for similarity search API, falling back to local server. Error was: {← e.toMessageData.toString}"
         pure "http://localhost:7654"
     let APIUrl := s!"{serverUrl}/run-sim-search"

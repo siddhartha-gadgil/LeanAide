@@ -162,6 +162,13 @@ def localDeclToBracketedBinder? (decl : LocalDecl) :
             `(bracketedBinder| [$nameStx:ident : $typeStx:term])
       return some binder
   | .ldecl .. =>
+      -- TODO-FrontendLocalLetBinder: do not simply omit local lets from the
+      -- reconstructed frontend context.  In an induction branch, later cdecls
+      -- such as `ih : l (C n) ≤ ...` still refer to the omitted `C`, producing
+      -- the misleading error "Function expected at C" for every candidate.
+      -- Represent the let at least as an ordinary typed binder for frontend
+      -- elaboration (or reconstruct a scoped let before dependent binders),
+      -- while the real Meta context continues to retain its value.
       return none
 
 /-- Return the current local context as `bracketedBinder`s in dependency order. -/
