@@ -486,14 +486,11 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
       else
         traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return type
-    | some (.ldecl _ _ _ dtype value ..) =>
-      -- TODO-LocalLetFVar: retain this declaration's fvar id and instantiate the
-      -- candidate with `mkFVar fVarId`, not its expanded `value`.  Do the same
-      -- for a matching `.letE`, preserving local names and compact expressions.
+    | some (.ldecl _ fVarId _ dtype _ ..) =>
       let check ← isDefEqReadOnly dtype binderType
       traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
       if check then
-        let body' := body.instantiate1 value
+        let body' := body.instantiate1 (mkFVar fVarId)
         dropLocalContext body'
       else
         traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
@@ -508,11 +505,11 @@ partial def dropLocalContext (type: Expr) : MetaM Expr := do
   | .letE name ltype value body _ =>
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
-    | some (.ldecl _ _ _ dtype dvalue ..) =>
+    | some (.ldecl _ fVarId _ dtype dvalue ..) =>
       let check ← withNewMCtxDepth <| isDefEqGuarded dtype ltype <&&> isDefEqGuarded dvalue value
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
-        let body' := body.instantiate1 value
+        let body' := body.instantiate1 (mkFVar fVarId)
         dropLocalContext body'
       else
         logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
