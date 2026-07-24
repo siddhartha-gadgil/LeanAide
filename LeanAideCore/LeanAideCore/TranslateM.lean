@@ -154,6 +154,12 @@ structure Translate.State where
   queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.emptyWithCapacity 100000
   /-- Descriptions, docstrings etc -/
   descriptionMap : Std.HashMap Name Json := Std.HashMap.emptyWithCapacity 100000
+  -- TODO-DynamicUniversePrelude (state/collection): store a deduplicated set of
+  -- universe parameter names used by accepted generated expressions.  Provide
+  -- a registration helper that instantiates metavariables, recursively collects
+  -- only `Level.param` names (including those under `succ`/`max`/`imax`), and is
+  -- called before such an Expr is delaborated back to command syntax.  Do not
+  -- turn unresolved level metavariables into persistent universe names.
   cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
@@ -257,6 +263,11 @@ def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   | none => return none
 
 open PrettyPrinter
+-- TODO-DynamicUniversePrelude (rendering/cache): add one canonical renderer
+-- for the state's collected names, producing `universe ...` or no text.  Make
+-- `cmdPreludeBlob`, the frontend-prelude builders, and the brief prompt prelude
+-- use it, so the same names are visible to prompts and textual elaboration and
+-- automatically contribute to every cache salt derived from `cmdPreludeBlob`.
 def cmdPreludeBlob : TranslateM String := do
   let cmds := (← get).cmdPrelude
   let cmds ←
@@ -284,6 +295,10 @@ def variablePreludeForFrontendBlob? : TranslateM <| Option String := do
   | none => return none
 
 def withCommandPrelude (body : String) : TranslateM String := do
+  -- TODO-DynamicUniversePrelude (frontend): prepend the canonical universe
+  -- prelude before command and local-variable preludes.  This is required even
+  -- when `cmdPrelude` is empty because each frontend run has fresh command
+  -- parser state and cannot recover scoped `universe` commands from the Env.
   let preludes := #[
     ← cmdPreludeForFrontendBlob?,
     ← variablePreludeForFrontendBlob?
@@ -329,6 +344,11 @@ Runs commands and adds them to the prelude if they run correctly.
 -- Warning: do not call this inside rollback; file writes persist but
 -- `cmdPrelude` updates would be restored away.
 def runAndCommitCommands (cmds: TSyntax ``commandSeq) : TranslateM (Array Syntax.Command) := do
+  -- TODO-DynamicUniversePrelude (commit/output): validate each command with the
+  -- current universe prelude, and emit declarations for newly committed names
+  -- before the first dependent command.  Include those declarations in both
+  -- `safeCmds` (for final `document_code`) and `writeCommands` (for the live
+  -- file), without repeatedly emitting names already written.
   let cmds := getCommands cmds
   let mut safeCmds := #[]
   for cmd in cmds do
@@ -632,6 +652,10 @@ def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
 
 
 structure Translate.SavedState where
+  -- TODO-DynamicUniversePrelude (rollback): include both collected and already
+  -- emitted universe-name sets here once they are added to `Translate.State`,
+  -- so failed/backtracked translations cannot leak names or desynchronize live
+  -- output bookkeeping from the command prelude.
   cmdPrelude : Array Syntax.Command
   defs : Array (DefData)
   promptContext : Array String

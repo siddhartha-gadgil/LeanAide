@@ -14,6 +14,9 @@ def TopCodeData.toString (tc : TopCodeData) : String :=
   let codeStr := String.intercalate "\n" tc.codeLines
   s!"{importsStr}\n{codeStr}\n"
 
+-- TODO-DynamicUniversePrelude (final top code): combine this configured base
+-- header with the universes collected during generation when returning
+-- `top_code`; keep the fixed names only as compatibility defaults.
 def topCodeData : TopCodeData :=
   { imports := ["import Mathlib"]
     codeLines := ["universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u_11 u₁ u₂ u₃",

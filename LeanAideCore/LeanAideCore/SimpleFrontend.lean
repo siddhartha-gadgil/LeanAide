@@ -11,6 +11,10 @@ Code from Lean 4 copied, simplified and customized. The main change is that inst
 In the `runFrontendM` function the environment is modified if the `modifyEnv` flag is set to true. The `elabFrontDefValueM` function is used to get the value of a definition in the environment. The `checkElabFrontM` function is used to check if the code has any errors.
 -/
 
+-- TODO-DynamicUniversePrelude (frontend default): retain this fixed list only
+-- as a backwards-compatible fallback for standalone callers.  TranslateM
+-- callers must supply their collected universe declaration in the input/top
+-- context instead of extending this list whenever `u_12`, `u_13`, ... appear.
 def simpleRunFrontend
     (input : String)
     (env: Environment)

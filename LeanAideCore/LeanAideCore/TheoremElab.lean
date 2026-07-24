@@ -10,6 +10,10 @@ These can be headed with `theorem`, `def`, `example` or nothing and may or may n
 -/
 namespace LeanAide
 
+-- TODO-DynamicUniversePrelude (term elaboration): keep these as standalone
+-- defaults, but let TranslateM callers extend `Term.withLevelNames` with the
+-- names in the tracked universe prelude.  A fixed finite list must not be the
+-- correctness boundary for generated declarations.
 def levelNames :=
   [`u, `v, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `v₁, `v₂, `uι, `W₁, `W₂, `w₁, `w₂, `u', `v', `uu, `w, `w', `wE, `uE, `x]
 
