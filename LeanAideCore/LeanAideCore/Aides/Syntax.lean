@@ -139,8 +139,10 @@ The binder shape is preserved:
 * `BinderInfo.strictImplicit` becomes `⦃x : T⦄`;
 * `BinderInfo.instImplicit` becomes `[x : T]`.
 
-Local `let` declarations are skipped, because a `variable` command cannot
-preserve their values.
+Local `let` declarations become ordinary explicit typed binders.  The
+temporary frontend needs their names and types for dependent declarations;
+their definitional values remain available in the real Meta context and are
+not delaborated here.
 -/
 def localDeclToBracketedBinder? (decl : LocalDecl) :
     MetaM (Option (TSyntax `Lean.Parser.Term.bracketedBinder)) := do
@@ -161,15 +163,10 @@ def localDeclToBracketedBinder? (decl : LocalDecl) :
         | BinderInfo.instImplicit =>
             `(bracketedBinder| [$nameStx:ident : $typeStx:term])
       return some binder
-  | .ldecl .. =>
-      -- TODO-FrontendLocalLetBinder: do not simply omit local lets from the
-      -- reconstructed frontend context.  In an induction branch, later cdecls
-      -- such as `ih : l (C n) ≤ ...` still refer to the omitted `C`, producing
-      -- the misleading error "Function expected at C" for every candidate.
-      -- Represent the let at least as an ordinary typed binder for frontend
-      -- elaboration (or reconstruct a scoped let before dependent binders),
-      -- while the real Meta context continues to retain its value.
-      return none
+  | .ldecl _ _ userName type .. =>
+      let nameStx := mkIdent userName
+      let typeStx ← delabLocalDeclType type
+      `(bracketedBinder| ($nameStx:ident : $typeStx:term))
 
 /-- Return the current local context as `bracketedBinder`s in dependency order. -/
 def localContextBracketedBinders :

@@ -102,9 +102,9 @@ induction tactic, using the declarations from the returned successor
 metavariable.  This is marked by `TODO-InductionPromptContext` in
 `LeanAideCore/LeanAideCore/PaperCodes.lean`.
 
-The immediate Lemma 2 blocker is instead the temporary frontend's treatment
-of local definitions.  `localDeclToBracketedBinder?` drops every `.ldecl`, so
-the frontend variable prelude omits
+The immediate Lemma 2 blocker in this run was the temporary frontend's
+treatment of local definitions.  `localDeclToBracketedBinder?` dropped every
+`.ldecl`, so the frontend variable prelude omitted
 
 ```lean
 let C : ℕ → G := fun n => ...
@@ -117,11 +117,10 @@ All candidates then fail before their own proposition is checked with
 Function expected at C but this term has type ?m.1
 ```
 
-Reconstruct a local let in the temporary frontend, or at minimum add an
-ordinary typed binder `(C : ℕ → G)` before dependent declarations.  The
-actual Meta context may keep the definition and its value.  This is marked by
-`TODO-FrontendLocalLetBinder` in
-`LeanAideCore/LeanAideCore/Aides/Syntax.lean`.
+This has since been fixed by reconstructing every non-implementation-detail
+local let as an ordinary typed binder, such as `(C : ℕ → G)`, before later
+dependent declarations.  Its value is deliberately not delaborated: the
+actual Meta context retains the definition and its definitional value.
 
 ### Named versus anonymous hypotheses
 
@@ -210,8 +209,9 @@ should normally be replaced by its fvar rather than by its expanded value.
    one theorem-level `sorry`.  The identical estimate
    `assert_13007743013346282788` is emitted twice.
 2. **Lemma 2:** the base case is proved, and its first equality is emitted
-   twice.  The successor proof is blocked by the omitted local `C` in the
-   temporary frontend, not by a missing `ih`.
+   twice.  In this run the successor proof was blocked by the omitted local
+   `C` in the temporary frontend, not by a missing `ih`; the local-let binder
+   reconstruction has since been fixed and needs confirmation in a fresh run.
 3. **Lemma 3:** anonymous binders collapse to `a`, producing both name
    collisions and incorrect hypothesis selection.  Fixing the pre-cleaning
    anonymity test is the first required change.
@@ -250,7 +250,8 @@ should normally be replaced by its fvar rather than by its expanded value.
 
 1. **Implemented after this run:** detect anonymous/internal/inaccessible
    binders before erasing macro scopes and use safe type-hashed names for them.
-2. **P0:** preserve local lets such as `C` in temporary frontend contexts.
+2. **Implemented after this run:** preserve local lets such as `C` as typed
+   binders in temporary frontend contexts without delaborating their values.
 3. **Implemented after this run:** flatten anonymous linear `proof` wrappers
    in the final Python normalization, while preserving structural branch
    proofs and their local terminal `sorry`s.
