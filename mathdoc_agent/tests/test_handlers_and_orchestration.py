@@ -1159,6 +1159,86 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("claim", step)
         self.assertNotIn("lean_validation", step)
 
+    def test_finalize_lean_facing_json_flattens_unlabeled_linear_proof_wrappers(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "Q",
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {"type": "assert_statement", "claim": "A"},
+                                {
+                                    "type": "proof",
+                                    "proof_steps": [
+                                        {"type": "assert_statement", "claim": "B"},
+                                        {
+                                            "type": "proof",
+                                            "proof_steps": [
+                                                {"type": "assert_statement", "claim": "C"}
+                                            ],
+                                        },
+                                    ],
+                                },
+                                {"type": "assert_statement", "claim": "D"},
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+
+        finalized = finalize_lean_facing_json(data)
+        steps = finalized["document"]["body"][0]["proof"]["proof_steps"]
+
+        self.assertEqual([step["claim"] for step in steps], ["A", "B", "C", "D"])
+        self.assertEqual(finalize_lean_facing_json(finalized), finalized)
+
+    def test_finalize_lean_facing_json_preserves_structural_and_labeled_proofs(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "induction_proof",
+                                "on": "n",
+                                "base_case_proof": {
+                                    "type": "proof",
+                                    "proof_steps": [
+                                        {"type": "assert_statement", "claim": "Base"}
+                                    ],
+                                },
+                                "induction_step_proof": {
+                                    "type": "proof",
+                                    "proof_steps": [
+                                        {
+                                            "type": "proof",
+                                            "claim_label": "Local step claim",
+                                            "proof_steps": [
+                                                {"type": "assert_statement", "claim": "Step"}
+                                            ],
+                                        }
+                                    ],
+                                },
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        proof = finalized["document"]["body"][0]["proof"]
+        self.assertEqual(proof["base_case_proof"]["type"], "proof")
+        self.assertEqual(proof["induction_step_proof"]["type"], "proof")
+        labeled = proof["induction_step_proof"]["proof_steps"][0]
+        self.assertEqual(labeled["type"], "proof")
+        self.assertEqual(labeled["claim_label"], "Local step claim")
+
     def test_finalize_lean_facing_json_repairs_stale_materialized_claim_marker(self) -> None:
         finalized = finalize_lean_facing_json(
             {

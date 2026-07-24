@@ -215,12 +215,15 @@ its fvar rather than by its expanded value.
    witnesses, but terminal fallback is applied when *that nested block's*
    sources are exhausted.  The resulting `repeat (sorry)` closes the outer
    theorem, so the remaining outer JSON nodes (the use of Lemma 3, rewriting
-   `u`, `v`, and `f`, and the final calculation) are never attempted.  This is
-   a regression in the scope of the new fallback.  Only the outermost theorem
-   proof may insert terminal `sorry`; a nested proof must return its partial
-   tactics and open continuation goal to its enclosing source loop.  This is
-   marked by `TODO-NestedProofNoTerminalSorry` in
-   `LeanAideCore/LeanAideCore/PaperCodes.lean`.
+   `u`, `v`, and `f`, and the final calculation) are never attempted.  The
+   cause is an unnecessary anonymous `proof` wrapper directly inside the
+   linear `proof_steps` list, not an induction-like structural subproof.
+   `finalize_lean_facing_json` now flattens such wrappers after all late
+   materialization passes.  It preserves induction/case/contradiction proof
+   fields and labeled local proofs, so those owned subgoals retain informative
+   branch-local terminal `sorry`s.  No Lean fallback change is needed and the
+   obsolete Lean TODO has been removed.  The July 24 generated artifact
+   remains historical output from before this Python fix.
 5. **Deferred root theorem:** delaboration serializes `u_12` into the RHS of a
    generated proposition definition, where `autoImplicit` cannot bind it.
    Collect and emit the expression's level parameters explicitly, or avoid
@@ -244,8 +247,9 @@ its fvar rather than by its expanded value.
 1. **Implemented after this run:** detect anonymous/internal/inaccessible
    binders before erasing macro scopes and use safe type-hashed names for them.
 2. **P0:** preserve local lets such as `C` in temporary frontend contexts.
-3. **P0:** restrict terminal `repeat (sorry)` to the outermost theorem proof;
-   nested proof blocks must return open goals to the enclosing sequence.
+3. **Implemented after this run:** flatten anonymous linear `proof` wrappers
+   in the final Python normalization, while preserving structural branch
+   proofs and their local terminal `sorry`s.
 4. **P1:** refresh induction branch prose from the returned goal context,
    including `ih`.
 5. **P1:** add unique role-and-type matching only for anonymous binders in

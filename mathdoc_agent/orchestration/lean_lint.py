@@ -636,10 +636,50 @@ def _normalize_value(value: Any, path: str = "") -> tuple[Any, list[dict[str, st
     return normalized, issues
 
 
+def flatten_redundant_proof_wrappers(value: Any) -> Any:
+    """Flatten unlabeled linear proof wrappers inside ``proof_steps`` lists.
+
+    Late repair passes can materialize an assertion and its dependencies as an
+    anonymous ``{"type": "proof", "proof_steps": [...]}`` item.  Such an item
+    is only a sequential grouping: leaving it nested makes codegen treat the
+    end of the group as the end of a proof.  Proof objects owned by structural
+    nodes (for example induction branches) and labeled local proofs are kept.
+    """
+    if isinstance(value, list):
+        return [flatten_redundant_proof_wrappers(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+
+    normalized = {
+        key: flatten_redundant_proof_wrappers(item)
+        for key, item in value.items()
+    }
+    proof_steps = normalized.get("proof_steps")
+    if not isinstance(proof_steps, list):
+        return normalized
+
+    flattened: list[Any] = []
+    for step in proof_steps:
+        if not isinstance(step, dict) or step.get("type") != "proof":
+            flattened.append(step)
+            continue
+        claim_label = step.get("claim_label")
+        nested_steps = step.get("proof_steps")
+        if (
+            isinstance(claim_label, str) and claim_label.strip()
+        ) or not isinstance(nested_steps, list):
+            flattened.append(step)
+            continue
+        flattened.extend(nested_steps)
+    normalized["proof_steps"] = flattened
+    return normalized
+
+
 def finalize_lean_facing_json(data: dict[str, Any]) -> dict[str, Any]:
     """Return JSON normalized for Lean codegen plus structured lint metadata."""
     materialized = materialize_remaining_deduced_from_claims(deepcopy(data))
-    normalized, issues = _normalize_value(materialized)
+    flattened = flatten_redundant_proof_wrappers(materialized)
+    normalized, issues = _normalize_value(flattened)
     if not isinstance(normalized, dict):
         return {
             "document": normalized,

@@ -683,13 +683,6 @@ def proofCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: Syn
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok content := js.getObjValAs? (List Json) "proof_steps" | throwError "missing or invalid 'proof_steps' in 'proof'"
   withoutModifyingTranslateAndTermState do
-    -- TODO-NestedProofNoTerminalSorry: this is a nested proof block, not the
-    -- end of the enclosing theorem's source list.  The terminal fallback in
-    -- `getCodeTactics` can currently insert `repeat (sorry)` here and close the
-    -- theorem before later outer JSON nodes are attempted.  Add an explicit
-    -- outermost/terminal-fallback mode (or expose the partial-tactics/open-goal
-    -- result): nested blocks must return progress without `sorry`, while only
-    -- the outermost exhausted theorem proof may use the fallback.
     getCodeTactics translator goal  content
 | goal?, kind, _ => throwError
     s!"codegen: proof does not work for kind {kind}where goal present: {goal?.isSome}"
