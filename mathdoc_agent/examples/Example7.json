@@ -1,0 +1,353 @@
+{
+  "document": {
+    "type": "document",
+    "body": [
+      {
+        "type": "theorem",
+        "label": "Example7.root.thm",
+        "header": "Theorem",
+        "name": "example7_root_thm",
+        "claim": "∀ (X : Type*) [TopologicalSpace X], (∀ U : Set X, IsOpen U ↔ U = ∅ ∨ Set.Countable (Set.univ \\ U)) → ¬ Set.Countable (Set.univ : Set X) → ∀ (x : ℕ → X) (L : X), Tendsto x atTop (𝓝 L) ↔ ∃ N : ℕ, ∀ n : ℕ, n ≥ N → x n = L",
+        "hypothesis": [
+          {
+            "type": "assume_statement",
+            "assumption": "$X$ is an uncountable set equipped with the co-countable topology."
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "In the co-countable topology on $X$, a set $U$ is open iff $U=\\emptyset$ or $X\\setminus U$ is countable."
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "$(x_n)$ is a sequence in $X$ and $L\\in X$."
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "Let X be an uncountable set equipped with the co-countable topology"
+          }
+        ],
+        "proof": {
+          "type": "bi-implication_cases_proof",
+          "if_proof": {
+            "type": "proof",
+            "claim_label": "If (x_n) converges to L in the co-countable topology, then there exists N such that for all n ≥ N, x_n = L.",
+            "proof_steps": [
+              {
+                "type": "assume_statement",
+                "arguments": [],
+                "assumption": "(x_n) converges to L in the co-countable topology"
+              },
+              {
+                "type": "let_statement",
+                "arguments": [],
+                "variable_name": "A",
+                "variable_type": "set X",
+                "value": "{y : X | ∃ n : ℕ, y = x_n ∧ y ≠ L}",
+                "properties": "the set of all sequence values different from L"
+              },
+              {
+                "deduced_from_theorem": [
+                  {
+                    "claim": "The range of a function from ℕ is countable.",
+                    "name": "countability of the range of a sequence",
+                    "description": "Applied to the sequence n ↦ x_n.",
+                    "lean_name_candidate": "Set.countable_range",
+                    "verification_status": "unverified"
+                  },
+                  {
+                    "claim": "Every subset of a countable set is countable.",
+                    "name": "subsets of countable sets are countable",
+                    "description": "Applied because A is a subset of the range of the sequence.",
+                    "lean_name_candidate": "Set.Countable.mono",
+                    "verification_status": "unverified"
+                  }
+                ],
+                "type": "assert_statement",
+                "claim": "A is countable",
+                "proof_method": "Since A is a subset of the range of the sequence, and the range of a sequence indexed by ℕ is countable, A is countable.",
+                "source_claim": "Since A is a subset of the range of the sequence, A is countable.",
+                "arguments": []
+              },
+              {
+                "type": "let_statement",
+                "arguments": [],
+                "variable_name": "U",
+                "variable_type": "set X",
+                "value": "X \\ A",
+                "properties": "the complement in X of the countable set A"
+              },
+              {
+                "type": "assert_statement",
+                "name": "u_x_a",
+                "claim": "U = X \\ A",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                  "text": "U = X \\ A",
+                  "kind": "deduced_from_claim"
+                }
+              },
+              {
+                "deduced_from_theorem": [
+                  {
+                    "claim": "In the co-countable topology, the complement of a countable subset is open.",
+                    "name": "definition of the co-countable topology",
+                    "description": "Used with the countable set A.",
+                    "lean_name_candidate": "Filter.mem_cocountable",
+                    "verification_status": "unverified"
+                  }
+                ],
+                "type": "assert_statement",
+                "claim": "U is open",
+                "proof_method": "By the definition of the co-countable topology, since X \\ U = A is countable, U is open.",
+                "source_claim": "Then U is open and contains L.",
+                "arguments": []
+              },
+              {
+                "type": "assert_statement",
+                "name": "u_x_a",
+                "claim": "U = X \\ A",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                  "text": "U = X \\ A",
+                  "kind": "deduced_from_claim"
+                }
+              },
+              {
+                "type": "assert_statement",
+                "name": "a_y_x_n_y_x_n_y",
+                "claim": "A = {y : X | exists n : Nat, y = xSeq applied to n and y != L}",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                  "text": "A = {y : X | ∃ n : ℕ, y = x_n ∧ y ≠ L}",
+                  "kind": "deduced_from_claim"
+                }
+              },
+              {
+                "type": "assert_statement",
+                "claim": "L ∈ U",
+                "proof_method": "By definition, L is not in A because every element of A is different from L; hence L belongs to X \\ A = U.",
+                "source_claim": "Then U is open and contains L.",
+                "arguments": []
+              },
+              {
+                "deduced_from_theorem": [
+                  {
+                    "claim": "If the sequence xSeq converges to L, then for every open set U containing L, there exists N such that for all n with n >= N, xSeq applied to n is in U.",
+                    "name": "definition of sequence convergence in a topological space",
+                    "description": "Applied to the open neighborhood U of L.",
+                    "lean_name_candidate": "tendsto_atTop_nhds",
+                    "verification_status": "unverified"
+                  }
+                ],
+                "type": "assert_statement",
+                "claim": "There exists N such that for all n with n >= N, xSeq applied to n is in U",
+                "proof_method": "Apply convergence of (x_n) to the open neighborhood U of L.",
+                "source_claim": "By convergence, there is N such that for all n ≥ N, x_n ∈ U.",
+                "arguments": []
+              },
+              {
+                "type": "let_statement",
+                "proof_method": "Choose N from the eventual membership statement obtained by convergence.",
+                "source_claim": "there is N such that for all n ≥ N, x_n ∈ U",
+                "arguments": [],
+                "variable_name": "N",
+                "variable_type": "ℕ",
+                "value": "a natural number such that for all n ≥ N, x_n ∈ U",
+                "properties": "∀ n ≥ N, x_n ∈ U"
+              },
+              {
+                "type": "assert_statement",
+                "name": "n_n_x_n_u",
+                "claim": "For all n with n >= N, xSeq applied to n is in U",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                  "text": "∀ n ≥ N, x_n ∈ U",
+                  "kind": "deduced_from_claim"
+                }
+              },
+              {
+                "type": "assert_statement",
+                "name": "u_x_a",
+                "claim": "U = X \\ A",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                  "text": "U = X \\ A",
+                  "kind": "deduced_from_claim"
+                }
+              },
+              {
+                "type": "assert_statement",
+                "claim": "For all n with n >= N, xSeq applied to n is not in A",
+                "proof_method": "For n ≥ N, convergence gives x_n ∈ U, and membership in U = X \\ A means x_n ∉ A.",
+                "source_claim": "Since x_n ∈ U means x_n ∉ A",
+                "arguments": []
+              },
+              {
+                "type": "assert_statement",
+                "name": "a_y_x_n_y_x_n_y",
+                "claim": "A = {y : X | exists n : Nat, y = xSeq applied to n and y != L}",
+                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "source": {
+                  "text": "A = {y : X | ∃ n : ℕ, y = x_n ∧ y ≠ L}",
+                  "kind": "deduced_from_claim"
+                }
+              },
+              {
+                "type": "assert_statement",
+                "claim": "For every n, if xSeq applied to n is not equal to L then xSeq applied to n is in A",
+                "proof_method": "This follows directly from the definition of A by taking the same index n as witness.",
+                "source_claim": "any non-L sequence value lies in A",
+                "arguments": []
+              },
+              {
+                "type": "assert_statement",
+                "claim": "For all n with n >= N, xSeq applied to n = L",
+                "proof_method": "Fix n ≥ N. If x_n ≠ L, then x_n ∈ A by the definition of A, contradicting x_n ∉ A. Therefore x_n = L.",
+                "source_claim": "it follows that x_n = L for all n ≥ N.",
+                "arguments": []
+              },
+              {
+                "type": "assert_statement",
+                "claim": "There exists N such that for all n with n >= N, xSeq applied to n = L",
+                "proof_method": "Use the chosen N as the witness.",
+                "source_claim": "there exists N such that for all n ≥ N, x_n = L",
+                "arguments": []
+              }
+            ],
+            "id": "Example7.root.thm.proof.root.forward",
+            "status": "resolved",
+            "text": "Assume that (x_n) converges to L. Let A := {x_n | n ∈ ℕ, x_n ≠ L}. Since A is a subset of the range of the sequence, A is countable. Put U := X \\ A. Then U is open and contains L. By convergence, there is N such that for all n ≥ N, x_n ∈ U. Since x_n ∈ U means x_n ∉ A, and any non-L sequence value lies in A, it follows that x_n = L for all n ≥ N."
+          },
+          "only_if_proof": {
+            "type": "proof",
+            "claim_label": "If there exists N such that for all n ≥ N, x_n = L, then (x_n) converges to L in the co-countable topology.",
+            "proof_steps": [
+              {
+                "type": "existence_proof",
+                "full_claim": "There exists M such that for all n ≥ M, x_n ∈ U.",
+                "variable_name": "M",
+                "claim": "For all n with n >= M, xSeq applied to n is in U.",
+                "witness": "N",
+                "proof": {
+                  "type": "proof",
+                  "proof_steps": [
+                    {
+                      "type": "theorem",
+                      "label": "Example7.root.thm.proof.root.reverse.resolved1.eventual_membership.witness_verification",
+                      "header": "Claim",
+                      "name": "example7_root_thm_proof_root_reverse_resolved1_eventual_membership_witness_verification",
+                      "claim": "For all n with n >= M, xSeq applied to n is in U.",
+                      "proof": {
+                        "type": "proof",
+                        "proof_steps": [
+                          {
+                            "type": "assume_statement",
+                            "arguments": [],
+                            "assumption": "n ≥ M",
+                            "variable_name": "n",
+                            "variable_type": "natural number"
+                          },
+                          {
+                            "type": "assert_statement",
+                            "name": "m_n",
+                            "claim": "M = N",
+                            "proof_method": "Named local obligation from unresolved claim dependency.",
+                            "source": {
+                              "text": "M = N",
+                              "kind": "deduced_from_claim"
+                            }
+                          },
+                          {
+                            "deduced_from_theorem": [
+                              {
+                                "claim": "If a = b, then inequalities involving a may be rewritten with b.",
+                                "name": "substitution of equality",
+                                "description": "Rewrite M as N in the assumption n ≥ M.",
+                                "lean_name_candidate": "Mathlib.Tactic.IntervalCases.of_le_right",
+                                "verification_status": "unverified"
+                              }
+                            ],
+                            "type": "assert_statement",
+                            "claim": "n ≥ N",
+                            "proof_method": "Rewrite M = N in the assumption n ≥ M.",
+                            "arguments": []
+                          },
+                          {
+                            "type": "assert_statement",
+                            "name": "for_all_k_n_x_k_l",
+                            "claim": "xSeq applied to n is in U",
+                            "proof_method": "Named local obligation from unresolved claim dependency.",
+                            "source": {
+                              "text": "For all k ≥ N, x_k = L",
+                              "kind": "deduced_from_claim"
+                            }
+                          },
+                          {
+                            "deduced_from_theorem": [
+                              {
+                                "claim": "If ∀ k, P k holds, then P n holds for any particular n.",
+                                "name": "universal instantiation",
+                                "description": "Apply the eventual constancy hypothesis to n.",
+                                "lean_name_candidate": "Nat.forall_lt_iff_fin",
+                                "verification_status": "unverified"
+                              }
+                            ],
+                            "type": "assert_statement",
+                            "claim": "xSeq applied to n = L",
+                            "proof_method": "Apply the hypothesis For all k ≥ N, x_k = L to the previously proved n ≥ N.",
+                            "arguments": []
+                          },
+                          {
+                            "type": "assert_statement",
+                            "name": "l_u",
+                            "claim": "L ∈ U",
+                            "proof_method": "Named local obligation from unresolved claim dependency.",
+                            "source": {
+                              "text": "L ∈ U",
+                              "kind": "deduced_from_claim"
+                            }
+                          },
+                          {
+                            "deduced_from_theorem": [
+                              {
+                                "claim": "If a = b and b ∈ U, then a ∈ U.",
+                                "name": "substitution of equality in membership",
+                                "description": "Rewrite x_n as L in the membership statement L ∈ U.",
+                                "lean_name_candidate": "SetLike.mem_mk_set",
+                                "verification_status": "unverified"
+                              }
+                            ],
+                            "type": "assert_statement",
+                            "claim": "xSeq applied to n is in U",
+                            "proof_method": "Since x_n = L and L ∈ U, substitute equals in the membership relation.",
+                            "arguments": []
+                          }
+                        ]
+                      },
+                      "id": "Example7.root.thm.proof.root.reverse.resolved1.eventual_membership.witness_verification",
+                      "status": "resolved",
+                      "text": "For any n ≥ M, we have n ≥ N, hence x_n = L; since L ∈ U, it follows that x_n ∈ U."
+                    }
+                  ]
+                },
+                "id": "Example7.root.thm.proof.root.reverse.resolved1.eventual_membership",
+                "status": "resolved"
+              }
+            ],
+            "id": "Example7.root.thm.proof.root.reverse",
+            "status": "resolved",
+            "text": "Assume there exists N such that for all n ≥ N, x_n = L. Let U be any open set with L ∈ U. For all n ≥ N, x_n = L ∈ U, so taking M = N proves that eventually x_n ∈ U. Hence (x_n) converges to L."
+          },
+          "id": "Example7.root.thm.proof.root",
+          "status": "resolved"
+        },
+        "source": {
+          "text": "The co-countable topology on a set $X$ is defined such that $U$ is open if $U = \\emptyset$ or $X \\setminus U$ is countable.\nLet $X$ be an uncountable set equipped with the co-countable topology. Prove that a sequence $(x_n)$ in $X$ converges to a point $L \\in X$ if and only if the sequence is \"eventually constant\" (i.e., there exists an integer $N$ such that for all $n \\ge N$, $x_n = L$).",
+          "id": "Example7.root.thm"
+        },
+        "id": "Example7.root.thm",
+        "status": "resolved"
+      }
+    ]
+  }
+}

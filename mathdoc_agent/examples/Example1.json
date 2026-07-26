@@ -1,0 +1,734 @@
+{
+  "document": {
+    "type": "document",
+    "body": [
+      {
+        "type": "theorem",
+        "label": "Example1.root.thm",
+        "header": "Theorem",
+        "name": "example1_root_thm",
+        "claim": "∀ (G : Type*) [Group G], (∀ a b : G, (a * b) ^ 2 = a ^ 2 * b ^ 2) → ∀ a b : G, a * b = b * a",
+        "hypothesis": [
+          {
+            "type": "assume_statement",
+            "assumption": "G is a group."
+          },
+          {
+            "type": "assume_statement",
+            "assumption": "For all a, b in G, (a*b)^2 = a^2*b^2."
+          }
+        ],
+        "proof": {
+          "type": "proof",
+          "proof_steps": [
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step1",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step1",
+              "claim": "∀ (G : Type*) [Group G], (∀ a b : G, (a * b) ^ 2 = a ^ 2 * b ^ 2) → ∀ a b : G, a * b = b * a",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "assume_statement",
+                    "arguments": [],
+                    "assumption": "G is a group such that for all a, b ∈ G, we have [missing condition]",
+                    "variable_name": "G",
+                    "variable_type": "Group",
+                    "properties": "for all a, b ∈ G, [condition omitted in source fragment]"
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step1",
+              "status": "resolved",
+              "text": "Let $G$ be a group such that for all $a,b \\in G$ we have",
+              "hypothesis": [
+                {
+                  "type": "assume_statement",
+                  "assumption": "Let G be a group such that for all a,b \\in G we have"
+                }
+              ]
+            },
+            {
+              "type": "assert_statement",
+              "claim": "(ab)^2 = a^2 b^2",
+              "proof_method": "calculation step",
+              "from": "(ab)^2",
+              "relation": "=",
+              "to": "a^2 b^2"
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step3",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step3",
+              "claim": "∀ (G : Type*) [Group G] (a b : G), (a * b) ^ 2 = a ^ 2 * b ^ 2 → a * b * a * b = a * a * b * b",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "An identity involving a defined operation may be rewritten by unfolding the definition of that operation.",
+                        "name": "definition unfolding",
+                        "description": "Used to interpret the preceding identity after expanding the group operation."
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "claim": "(a * b) ^ 2 = a ^ 2 * b ^ 2 ↔ a * b * a * b = a * a * b * b",
+                    "proof_method": "By the definition of the group operation, unfold the operation in the preceding identity.",
+                    "source_claim": "By the definition of the group operation, this identity means",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step3",
+              "status": "resolved",
+              "text": "By the definition of the group operation, this identity means"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "abab = aabb",
+              "proof_method": "calculation step",
+              "from": "abab",
+              "relation": "=",
+              "to": "aabb"
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step5",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step5",
+              "claim": "∀ (G : Type*) [Group G], (∀ a b : G, (a * b) ^ 2 = a ^ 2 * b ^ 2) → ∀ a b : G, a * b = b * a",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "proof",
+                    "proof_steps": [
+                      {
+                        "type": "fix",
+                        "arguments": [],
+                        "variable_name": "a",
+                        "variable_type": "G",
+                        "properties": "arbitrary element of G"
+                      },
+                      {
+                        "type": "fix",
+                        "arguments": [],
+                        "variable_name": "b",
+                        "variable_type": "G",
+                        "properties": "arbitrary element of G"
+                      },
+                      {
+                        "type": "assert_statement",
+                        "claim": "It suffices to prove a * b = b * a for the arbitrary elements a b : G.",
+                        "proof_method": "Elementwise proof of commutativity: after fixing arbitrary a and b in G, the universal Abelian conclusion follows by generalization.",
+                        "arguments": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step5",
+              "status": "resolved",
+              "text": "for all $a,b \\in G$."
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step6",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step6",
+              "claim": "∀ (G : Type*) [Group G] (a b : G), (∀ x y : G, (x * y) ^ 2 = x ^ 2 * y ^ 2) → a * b = b * a",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "assume_statement",
+                    "arguments": [],
+                    "variable_name": "a",
+                    "variable_type": "G",
+                    "properties": "arbitrary element"
+                  },
+                  {
+                    "type": "assume_statement",
+                    "arguments": [],
+                    "variable_name": "b",
+                    "variable_type": "G",
+                    "properties": "arbitrary element"
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step6",
+              "status": "resolved",
+              "text": "Fix arbitrary elements $a,b \\in G$.",
+              "hypothesis": [
+                {
+                  "type": "assume_statement",
+                  "assumption": "Fix arbitrary elements a,b \\in G"
+                }
+              ]
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step7",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step7",
+              "claim": "∀ (G : Type*) [Group G] (a b : G), (∀ x y : G, (x * y) ^ 2 = x ^ 2 * y ^ 2) → a * b = b * a",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "assert_statement",
+                    "claim": "ab = ba",
+                    "proof_method": "This is the target equality needed to prove that G is Abelian.",
+                    "source_claim": "We want to prove that ab = ba.",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step7",
+              "status": "resolved",
+              "text": "We want to prove that $ab = ba$."
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step8",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step8",
+              "claim": "∀ (G : Type*) [Group G] (a b : G), a * b * a * b = a * a * b * b → a * b = b * a",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "assert_statement",
+                    "name": "h_abab_eq_aabb",
+                    "claim": "a * b * a * b = a * a * b * b",
+                    "proof_method": "Specialized: For all a, b in G, (a*b)^2 = a^2*b^2.",
+                    "lean_term": "h a b",
+                    "source_claim": "For all a, b in G, (a*b)^2 = a^2*b^2.",
+                    "arguments": [
+                      "a",
+                      "b"
+                    ]
+                  },
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "In a group, equalities may be multiplied on the left or right by group elements and simplified using associativity, identity, inverses, and cancellation.",
+                        "name": "group axioms and cancellation",
+                        "description": "Used to rearrange and cancel factors in the given equality.",
+                        "lean_name_candidate": "mul_left_cancel",
+                        "verification_status": "unverified"
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "claim": "a * b * a * b = a * a * b * b → a * b = b * a",
+                    "proof_method": "Apply standard group equality operations: multiply by inverses as needed, reassociate products, simplify identities and inverse pairs, and cancel common factors.",
+                    "source_claim": "Since $abab = aabb$, we can manipulate this equality using the group axioms.",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step8",
+              "status": "resolved",
+              "text": "Since $abab = aabb$, we can manipulate this equality using the group axioms."
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step9",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step9",
+              "claim": "∀ (G : Type*) [Group G] (a b : G), a * b * a * b = a * a * b * b → a⁻¹ * (a * b * a * b) = a⁻¹ * (a * a * b * b)",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "If x = y in a group, then for any g, g * x = g * y.",
+                        "name": "Equality is preserved under left multiplication",
+                        "description": "Used with g = a⁻¹.",
+                        "lean_name_candidate": "smul_eq_iff_eq_inv_smul",
+                        "verification_status": "unverified"
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "claim": "a⁻¹ * (a * b * a * b) = a⁻¹ * (a * a * b * b)",
+                    "proof_method": "Apply congruence of equality under the map x ↦ a⁻¹ * x.",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step9",
+              "status": "resolved",
+              "text": "First, multiply both sides on the left by $a^{-1}$."
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step10",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step10",
+              "claim": "∀ (G : Type*) [Group G] (a b : G), a⁻¹ * (a * b * a * b) = a⁻¹ * (a * a * b * b) → (a⁻¹ * a) * b * a * b = (a⁻¹ * a) * a * b * b",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "In a group, multiplication is associative: for all a b c, (a * b) * c = a * (b * c).",
+                        "name": "associativity of the group operation",
+                        "description": "Used to reassociate the preceding expression.",
+                        "lean_name_candidate": "mul_assoc",
+                        "verification_status": "unverified"
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "proof_method": "By associativity of the group operation, applied to the preceding claim or expression referred to as “this.”",
+                    "source_claim": "Using associativity of the group operation, this gives",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step10",
+              "status": "resolved",
+              "text": "Using associativity of the group operation, this gives"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "a^{-1}(abab) = a^{-1}(aabb)",
+              "proof_method": "calculation step",
+              "from": "a^{-1}(abab)",
+              "relation": "=",
+              "to": "a^{-1}(aabb)"
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step12",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step12",
+              "claim": "∀ (G : Type*) [Group G] (a b : G), a⁻¹ * (a * b * a * b) = a⁻¹ * (a * a * b * b) → (a⁻¹ * a) * b * a * b = (a⁻¹ * a) * a * b * b",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "For any associative binary operation, products with the same ordered factors are equal after changing only parentheses.",
+                        "name": "Associativity",
+                        "description": "Used to rewrite each side by reassociating products without changing factor order.",
+                        "lean_name_candidate": "Mathlib.Tactic.RingNF.mul_assoc_rev",
+                        "verification_status": "unverified"
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "claim": "a⁻¹ * (a * b * a * b) = a⁻¹ * (a * a * b * b) ↔ (a⁻¹ * a) * b * a * b = (a⁻¹ * a) * a * b * b",
+                    "proof_method": "Apply associativity to reassociate the products on both sides.",
+                    "source_claim": "Rewriting each side using associativity:",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step12",
+              "status": "resolved",
+              "text": "Rewriting each side using associativity:"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "(a⁻¹ * a) * b * a * b = (a⁻¹ * a) * a * b * b",
+              "proof_method": "side condition for (a^{-1}a)bab = (a^{-1}a)abb"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "(a⁻¹ * a) * b * a * b = (a⁻¹ * a) * a * b * b",
+              "proof_method": "side condition for (a^{-1}a)bab = (a^{-1}a)abb"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "(a⁻¹ * a) * b * a * b = (a⁻¹ * a) * a * b * b",
+              "proof_method": "calculation step",
+              "from": "(a^{-1}a)bab",
+              "relation": "=",
+              "to": "(a^{-1}a)abb",
+              "side_conditions": [
+                "a, b \\in G",
+                "The equality uses the order change from bab to abb; the source fragment gives no explicit commutation fact or prior claim justifying this rewrite."
+              ]
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step14",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step14",
+              "claim": "∀ (G : Type*) [Group G] (a b : G), (a⁻¹ * a) * b * a * b = (a⁻¹ * a) * a * b * b → b * a * b = a * b * b",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "For any group element a, a^{-1} * a = e, where e is the identity element.",
+                        "name": "left inverse law in a group",
+                        "description": "Applied to the element a.",
+                        "lean_name_candidate": "Group.inv_mul_cancel",
+                        "verification_status": "unverified"
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "claim": "a⁻¹ * a = 1",
+                    "proof_method": "By the left inverse law in the group G, where e is the identity element of G.",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step14",
+              "status": "resolved",
+              "text": "Since $a^{-1}a = e$, where $e$ is the identity element of $G$, this simplifies to"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "ebab = eabb",
+              "proof_method": "calculation step",
+              "from": "ebab",
+              "relation": "=",
+              "to": "eabb"
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step16",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step16",
+              "claim": "ba = ab",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "assert_statement",
+                    "name": "g_is_abelian",
+                    "claim": "G is Abelian.",
+                    "proof_method": "Named local obligation from unresolved claim dependency.",
+                    "source": {
+                      "text": "G is Abelian.",
+                      "kind": "deduced_from_claim"
+                    }
+                  },
+                  {
+                    "type": "assert_statement",
+                    "claim": "G is Abelian.",
+                    "proof_method": "This is the desired conclusion, already available as the document result/contextual claim.",
+                    "source_claim": "so",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step16",
+              "status": "resolved",
+              "text": "so"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "bab = abb",
+              "proof_method": "calculation step",
+              "from": "bab",
+              "relation": "=",
+              "to": "abb"
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step18",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step18",
+              "claim": "(bab) * b⁻¹ = (abb) * b⁻¹",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "If x = y in a group, then x * z = y * z for any group element z.",
+                        "name": "right multiplication preserves equality",
+                        "description": "Used to multiply both sides of the preceding equality on the right by b⁻¹.",
+                        "lean_name_candidate": "mul_left_cancel_iff",
+                        "verification_status": "unverified"
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "proof_method": "Apply congruence of right multiplication by b⁻¹ to the preceding equality.",
+                    "source_claim": "Next, multiply both sides of this new equality on the right by b^{-1}.",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step18",
+              "status": "resolved",
+              "text": "Next, multiply both sides of this new equality on the right by $b^{-1}$."
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step19",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step19",
+              "claim": "ba * (b * b⁻¹) = ab * (b * b⁻¹)",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "For any elements a, b, c in a semigroup or group, (a * b) * c = a * (b * c).",
+                        "name": "Associativity",
+                        "description": "Used to reassociate a product.",
+                        "lean_name_candidate": "mul_assoc",
+                        "verification_status": "unverified"
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "proof_method": "Using associativity again, a product is reassociated, but the source omits the resulting equality.",
+                    "source_claim": "Using associativity again, we obtain",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step19",
+              "status": "resolved",
+              "text": "Using associativity again, we obtain"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "(bab) * b⁻¹ = (abb) * b⁻¹",
+              "proof_method": "side condition for (bab)b^{-1} = (abb)b^{-1}"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "(bab) * b⁻¹ = (abb) * b⁻¹",
+              "proof_method": "side condition for (bab)b^{-1} = (abb)b^{-1}"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "(bab) * b⁻¹ = (abb) * b⁻¹",
+              "proof_method": "side condition for (bab)b^{-1} = (abb)b^{-1}"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "(bab)b^{-1} = (abb)b^{-1}",
+              "proof_method": "Right-multiply the equality bab = abb by b^{-1}.",
+              "from": "(bab)b^{-1}",
+              "relation": "=",
+              "to": "(abb)b^{-1}",
+              "side_conditions": [
+                "b \\in G",
+                "b^{-1} \\in G",
+                "group multiplication is defined"
+              ]
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step21",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step21",
+              "claim": "ba * (b * b⁻¹) = ab * (b * b⁻¹)",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "assert_statement",
+                    "claim": "ba * (b * b⁻¹) = ab * (b * b⁻¹)",
+                    "proof_method": "Rewriting each side; the source does not specify the equality or the rewrite rules used.",
+                    "source_claim": "Rewriting each side:",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step21",
+              "status": "resolved",
+              "text": "Rewriting each side:"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "ba(bb^{-1}) = ab(b b^{-1})",
+              "proof_method": "calculation step",
+              "from": "ba(bb^{-1})",
+              "relation": "=",
+              "to": "ab(b b^{-1})"
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step23",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step23",
+              "claim": "ba * e = ab * e",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "proof",
+                    "proof_steps": [
+                      {
+                        "deduced_from_theorem": [
+                          {
+                            "claim": "In a group, every element multiplied on the right by its inverse is the identity.",
+                            "name": "right inverse law",
+                            "lean_name_candidate": "Equiv.inv_mulRight",
+                            "verification_status": "unverified"
+                          }
+                        ],
+                        "type": "assert_statement",
+                        "claim": "b * b⁻¹ = e",
+                        "proof_method": "Apply the group right-inverse identity to b.",
+                        "arguments": []
+                      },
+                      {
+                        "type": "assert_statement",
+                        "name": "ba_b_b_ab_b_b",
+                        "claim": "ba * (b * b⁻¹) = ab * (b * b⁻¹)",
+                        "proof_method": "Named local obligation from unresolved claim dependency.",
+                        "source": {
+                          "text": "ba * (b * b⁻¹) = ab * (b * b⁻¹)",
+                          "kind": "deduced_from_claim"
+                        }
+                      },
+                      {
+                        "type": "assert_statement",
+                        "name": "b_b_e",
+                        "claim": "b * b⁻¹ = e",
+                        "proof_method": "Named local obligation from unresolved claim dependency.",
+                        "source": {
+                          "text": "b * b⁻¹ = e",
+                          "kind": "deduced_from_claim"
+                        }
+                      },
+                      {
+                        "type": "assert_statement",
+                        "claim": "ba * e = ab * e",
+                        "proof_method": "Rewrite the preceding equality using b * b⁻¹ = e.",
+                        "arguments": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step23",
+              "status": "resolved",
+              "text": "Since $bb^{-1} = e$, this becomes"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "ba e = ab e",
+              "proof_method": "calculation step",
+              "from": "ba e",
+              "relation": "=",
+              "to": "ab e"
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step25",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step25",
+              "claim": "ba = ab",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "In a group, the identity element is a right identity: for every element x, x * e = x.",
+                        "name": "right identity law",
+                        "description": "This is exactly the premise cited by the fragment.",
+                        "lean_name_candidate": "MulOneClass.mul_one",
+                        "verification_status": "unverified"
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "claim": "For all x ∈ G, x * e = x.",
+                    "proof_method": "By the group identity axiom/right identity law.",
+                    "source_claim": "Because xe = x for all x ∈ G, we have",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step25",
+              "status": "resolved",
+              "text": "Because $xe = x$ for all $x \\in G$, we have"
+            },
+            {
+              "type": "assert_statement",
+              "claim": "ba = ab",
+              "proof_method": "calculation step",
+              "from": "ba",
+              "relation": "=",
+              "to": "ab"
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step27",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step27",
+              "claim": "∀ a b : G, a * b = b * a",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "assert_statement",
+                    "claim": "a * b = b * a",
+                    "proof_method": "Since the earlier argument proved ab = ba for arbitrary elements a and b of G, universally generalize over a and b.",
+                    "arguments": []
+                  },
+                  {
+                    "deduced_from_theorem": [
+                      {
+                        "claim": "A group is Abelian if and only if every pair of its elements commutes.",
+                        "name": "characterization of Abelian groups by pairwise commutativity",
+                        "description": "Applies the definition/characterization of an Abelian group to the universal commutativity statement.",
+                        "lean_name_candidate": "CommGroup.ofIsMulCommutative.congr_simp",
+                        "verification_status": "unverified"
+                      }
+                    ],
+                    "type": "assert_statement",
+                    "claim": "G is Abelian",
+                    "proof_method": "Apply the definition of Abelian group to the universal commutativity statement.",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step27",
+              "status": "resolved",
+              "text": "Since $a$ and $b$ were arbitrary elements of $G$, this shows that $ab = ba$ for all $a,b \\in G$."
+            },
+            {
+              "type": "theorem",
+              "label": "Example1.root.thm.proof.root.step28",
+              "header": "Claim",
+              "name": "example1_root_thm_proof_root_step28",
+              "claim": "G is Abelian",
+              "proof": {
+                "type": "proof",
+                "proof_steps": [
+                  {
+                    "type": "assert_statement",
+                    "claim": "G is Abelian.",
+                    "proof_method": "This is exactly the available document result / previously established local conclusion.",
+                    "source_claim": "Therefore $G$ is Abelian.",
+                    "arguments": []
+                  }
+                ]
+              },
+              "id": "Example1.root.thm.proof.root.step28",
+              "status": "resolved",
+              "text": "Therefore $G$ is Abelian."
+            }
+          ],
+          "id": "Example1.root.thm.proof.root",
+          "status": "resolved",
+          "text": "Let $G$ be a group such that for all $a,b \\in G$ we have\n\\[\n(ab)^2 = a^2 b^2.\n\\]\nBy the definition of the group operation, this identity means\n\\[\nabab = aabb\n\\]\nfor all $a,b \\in G$.\n\nFix arbitrary elements $a,b \\in G$. We want to prove that $ab = ba$. Since $abab = aabb$, we can manipulate this equality using the group axioms.\n\nFirst, multiply both sides on the left by $a^{-1}$. Using associativity of the group operation, this gives\n\\[\na^{-1}(abab) = a^{-1}(aabb).\n\\]\nRewriting each side using associativity:\n\\[\n(a^{-1}a)bab = (a^{-1}a)abb.\n\\]\nSince $a^{-1}a = e$, where $e$ is the identity element of $G$, this simplifies to\n\\[\nebab = eabb,\n\\]\nso\n\\[\nbab = abb.\n\\]\n\nNext, multiply both sides of this new equality on the right by $b^{-1}$. Using associativity again, we obtain\n\\[\n(bab)b^{-1} = (abb)b^{-1}.\n\\]\nRewriting each side:\n\\[\nba(bb^{-1}) = ab(b b^{-1}).\n\\]\nSince $bb^{-1} = e$, this becomes\n\\[\nba e = ab e.\n\\]\nBecause $xe = x$ for all $x \\in G$, we have\n\\[\nba = ab.\n\\]\n\nSince $a$ and $b$ were arbitrary elements of $G$, this shows that $ab = ba$ for all $a,b \\in G$. Therefore $G$ is Abelian."
+        },
+        "source": {
+          "text": "A group G satisfying (a*b)^2 = a^2*b^2 for all a, b in G is Abelian",
+          "id": "Example1.root.thm"
+        },
+        "id": "Example1.root.thm",
+        "status": "resolved"
+      }
+    ]
+  }
+}

@@ -138,7 +138,7 @@ structure LabelledTheorem where
   label : String
   /-- Statement of the theorem -/
   type : Expr
-  /-- Whether the theorem is proved-/
+  /-- Whether the theorem is proved; need not be a complete proof, just to know if a proof is deferred -/
   isProved : Bool
   /-- source -/
   source: Json
@@ -157,7 +157,7 @@ structure Translate.State where
   cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
-  preludes : Array String := #[]
+  promptContext : Array String := #[]
   varPreludes : Array String := #[]
   outputFile : Option System.FilePath := none
   errorLog : Array ElabErrorData := #[]
@@ -284,6 +284,11 @@ def variablePreludeForFrontendBlob? : TranslateM <| Option String := do
   | some cmd => return some (← PrettyPrinter.ppCommand cmd).pretty
   | none => return none
 
+-- TODO(generation-check-homogeneous): Keep prompt-only declarations separate
+-- from the frontend prelude. Validate the command prelude on its own before
+-- appending `body`, and do not attribute prelude diagnostics to `body`. Any
+-- declaration open in local free variables must be closed before it can enter
+-- this global-command prelude; changing the order alone is not a complete fix.
 def withCommandPrelude (body : String) : TranslateM String := do
   let preludes := #[
     ← cmdPreludeForFrontendBlob?,
@@ -305,30 +310,43 @@ def cmdPreludeBriefBlob? : TranslateM <| Option String := do
   let cmds := cmds.map (·.pretty)
   return some <| cmds.foldl (· ++ "\n" ++ · ) "import Mathlib\n"
 
+-- TODO(generation-check-homogeneous): Make this operation transactional. Check
+-- error-severity messages and update the environment/prelude only on success;
+-- do not discard the `runFrontendM` result.
 def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
   discard <|  runFrontendM (← ppCommand cmd).pretty true
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
-def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
-  modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
-
-def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
-  let cmds := getCommands cmds
-  for cmd in cmds do
-    discard <| runFrontendM (← ppCommand cmd).pretty true
-  modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
-
-def writeCommands  (cmds : TSyntax ``commandSeq) : TranslateM Unit := do
+def writeCommands  (cmds : Array <| TSyntax `command) : TranslateM Unit := do
   match (← get).outputFile with
   | none => return
   | some file => do
     let contents ← IO.FS.readFile file
-    let cmds := getCommands cmds
     let mut lines : Array String := #[]
     for cmd in cmds do
       let cmdStr := (← ppCommand cmd).pretty
       lines := lines.push cmdStr
     IO.FS.writeFile file <| contents ++ (lines.foldr (· ++ "\n" ++ · ) "")
+
+-- TODO(generation-check-homogeneous): Rename this state-only operation to
+-- `addCommandToPrelude` (and its plural analogue accordingly). The current name
+-- incorrectly suggests that the command is elaborated or run. Prompt-only
+-- context needs a separate API and must not be added here.
+def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
+  modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
+
+-- TODO(generation-check-homogeneous): Split this into clearly named validation
+-- and commit operations (for example `runAndCommitCommands`). Elaborate the
+-- complete sequence in saved state, collect errors, and perform the environment
+-- update, output write, and prelude append atomically only after success. This
+-- full-declaration check must also reject proof terms with unexpected universe
+-- parameters and tactics appended after a goal-closing fallback.
+def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
+  let cmds := getCommands cmds
+  for cmd in cmds do
+    discard <| runFrontendM (← ppCommand cmd).pretty true
+  writeCommands cmds
+  modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
 
 def registerDefnEnv (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statementStx
@@ -370,13 +388,13 @@ def defsNames : TranslateM <| Array Name := do
   let defs := (← get).defs
   defs.mapM <| fun dfn => do pure dfn.name
 
-def addPrelude (p: String) : TranslateM Unit := do
+def addPromptContext (p: String) : TranslateM Unit := do
   modify fun s =>
-    if s.preludes.contains p then
+    if s.promptContext.contains p then
       s
     else
-      -- logToStdErr `leanaide.translate.info s!"Adding prelude: {p}"
-    {s with preludes := s.preludes.push p}
+      -- logToStdErr `leanaide.translate.info s!"Adding prompt context: {p}"
+    {s with promptContext := s.promptContext.push p}
 
 def addVarPrelude (p: String) : TranslateM Unit := do
   let decl := if p.startsWith "inst" then s!"[{p}]" else
@@ -392,10 +410,10 @@ def addVarPrelude (p: String) : TranslateM Unit := do
       {s with varPreludes := s.varPreludes.push decl}
 
 def clearPreludes : TranslateM Unit := do
-  modify fun s => {s with preludes := #[]}
+  modify fun s => {s with promptContext := #[]}
 
 def preludesBlob : TranslateM <| Array String := do
-  let preludes := (← get).preludes
+  let preludes := (← get).promptContext
   preludes.mapM <| fun p => do pure p
 
 def withPreludes (s: String) : TranslateM String := do
@@ -623,19 +641,45 @@ def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
 structure Translate.SavedState where
   cmdPrelude : Array Syntax.Command
   defs : Array (DefData)
-  preludes : Array String
+  promptContext : Array String
   context : Option String
   recentTranslations: Array ChatPair
   outputFile : Option System.FilePath
 
+-- TODO(generation-check-homogeneous): This backtracking instance deliberately
+-- saves only `Translate.State`; it does not restore the underlying Term/Meta
+-- state or metavariable context. Rename/use a more explicit prompt-state scope,
+-- and provide two separate contracts: a handler transaction that restores both
+-- states when a candidate fails and commits only explicitly allowed state on
+-- success, and an always-restore syntax-generation scope for callers that must
+-- replay syntax on the original goal. A successful handler may retain allowed
+-- Translate effects, while live `MVarId` helpers must commit successful
+-- Term/Meta state because their results depend on it.
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
-    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, preludes := σ.preludes, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
+    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, promptContext := σ.promptContext, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
     return (saved, σ)
   restoreState := fun ss => do
   modify fun s =>
-      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, preludes := ss.preludes, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
+      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, promptContext := ss.promptContext, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
 
+-- TODO(handler-backtracking): This is an always-restore scope and is appropriate
+-- for recursive `proofCode` and other computations whose returned syntax/value
+-- is independent of both saved states. Do not use it as the generic handler
+-- retry transaction: it would discard intentional Translate effects from a
+-- successful handler. Add a separate handler transaction that restores both
+-- states on exception and defines its success policy explicitly (normally retain
+-- allowed Translate effects while restoring speculative Term/Meta state for
+-- replayable syntax).
+def withoutModifyingTranslateAndTermState
+    (x : TranslateM α) : TranslateM α := do
+  let translateState ← get
+  let termState ← Term.saveState
+  try
+    x
+  finally
+    termState.restore
+    set translateState
 
 structure CodeElabResult where
   declarations : List Name

@@ -638,14 +638,34 @@ def finalize_lean_facing_json(data: dict[str, Any]) -> dict[str, Any]:
     materialized = materialize_remaining_deduced_from_claims(deepcopy(data))
     normalized, issues = _normalize_value(materialized)
     if not isinstance(normalized, dict):
-        return {"document": normalized, "lean_validation": {"status": "needs_review", "issues": issues}}
-    if issues:
-        top_validation = normalized.get("lean_validation")
-        top_issues: list[Any] = []
-        if isinstance(top_validation, dict) and isinstance(top_validation.get("issues"), list):
-            top_issues = list(top_validation["issues"])
-        normalized["lean_validation"] = {
+        return {
+            "document": normalized,
+            "lean_validation": {"status": "needs_review", "issues": issues},
+        }
+    validation_container = normalized
+    document = normalized.get("document")
+    root_validation: Any = None
+    if isinstance(document, dict):
+        validation_container = document
+        root_validation = normalized.pop("lean_validation", None)
+    existing_validation = validation_container.get("lean_validation")
+    prior_issues: list[Any] = []
+    for validation in (root_validation, existing_validation):
+        if isinstance(validation, dict) and isinstance(
+            validation.get("issues"), list
+        ):
+            prior_issues.extend(validation["issues"])
+    if issues or prior_issues:
+        combined_issues: list[Any] = []
+        seen: set[str] = set()
+        for issue in [*prior_issues, *issues]:
+            key = repr(issue)
+            if key in seen:
+                continue
+            seen.add(key)
+            combined_issues.append(issue)
+        validation_container["lean_validation"] = {
             "status": "needs_review",
-            "issues": [*top_issues, *issues],
+            "issues": combined_issues,
         }
     return normalized

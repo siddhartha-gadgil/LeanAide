@@ -26,6 +26,10 @@ def checkTypeElabFrontWithCommandPreludeM (type : String) :
 def elabFrontTheoremExprWithCommandPreludeM (type : String) :
     TranslateM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem
+  -- TODO(generation-check-homogeneous): This path is used for theorem/assertion
+  -- translation, so require a proposition. A `noncomputable def` accepts
+  -- predicate- and type-valued candidates and caused Lemma 6's false success;
+  -- use a theorem declaration or explicitly check `isProp` on the result.
   let input ←
     withCommandPrelude
       s!"set_option autoImplicit false in\nnoncomputable def {n} : {type} := by sorry"
@@ -43,6 +47,10 @@ def elabFrontTheoremExprWithCommandPreludeM (type : String) :
 def elabThm4Aux (s : String)
   (_levelNames : List Lean.Name := levelNames)
   : TranslateM <| Except ElabError Expr := do
+  -- TODO(generation-check-homogeneous): Preserve layout while parsing the full
+  -- extracted Lean declaration. Replacing newlines with spaces breaks valid
+  -- consecutive `let` terms; this caused the first valid Lemma 5 candidates to
+  -- fail before elaboration. Strip fences/prose without flattening Lean syntax.
   let s := s.replace "\n" " "
   let env ← getEnv
   let stx ←
@@ -56,6 +64,9 @@ def elabThm4Aux (s : String)
     let ctx? ← getContext
     -- match ← elabThmFromStx stx levelNames with
     -- | Except.error err₁ =>
+      -- TODO(generation-check-homogeneous): Check the prelude independently and
+      -- retain source ranges so errors from earlier commands are not recorded
+      -- as errors in the theorem expression currently being tested.
       let frontEndErrs ← do
         try
           checkTypeElabFrontWithCommandPreludeM s
@@ -83,6 +94,11 @@ def elabThm4 (s : String)
   traceAide `leanaide.elaboration.info s!"Trying to elaborate '{s}'"
   match ← elabThm4Aux s levelNames with
   | Except.error err =>
+      -- TODO(generation-check-homogeneous): Replace exhaustive `lineBlocks`
+      -- recovery with a bounded syntax-aware extraction (full response, fenced
+      -- Lean declaration/term, and at most a small fixed set of prose suffixes).
+      -- Never accept an isolated proof line, `sorry`, or a line subset that has
+      -- discarded the `let` binders required by the candidate statement.
       let groups := lineBlocks s
       traceAide `leanaide.elaboration.info s!"Checking groups: {groups.length}"
       let elabs? ←  groups.findSomeM? (fun s => do

@@ -53,6 +53,9 @@ def elabCodegenCmdImpl' : CommandElab
     let codeM? ←
       unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) q((TranslateM (Option (TSyntax ``commandSeq)))) e
     let code? ←  codeM?.run' {}
+    -- TODO(generation-check-homogeneous): Report absence of generated code as a
+    -- code action diagnostic, not as a generated `#check` command that could be
+    -- copied into output or a later command prelude.
     let code := code?.getD (← `(commandSeq|#check "No code generated"))
     TryThis.addSuggestion stx code
 | _ => throwUnsupportedSyntax

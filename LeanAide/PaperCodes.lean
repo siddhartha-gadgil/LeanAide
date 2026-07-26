@@ -24,6 +24,18 @@ Generate code for a theorem, lemma, proposition, corollary, or claim. It process
 
 Should perhaps try to use automation if there is no proof.
 -/
+-- TODO(mathlib-deferred-theorem): Rename this handler to
+-- `deferredTheoremCode` and restrict it to the single Mathlib-dependent case:
+-- a `commandSeq` theorem with no proof, represented using `Fact`. Reject every
+-- other goal/kind/schema shape before translating the claim so the core handler
+-- remains the sole implementation for ordinary theorems and proof generation.
+-- Extract/reuse an unregistered core helper for the common checked claim, final
+-- name, label, and theorem metadata instead of retaining this duplicated handler.
+-- Do not use `newName`: it repeatedly calls `resolveGlobalName` and is too slow
+-- for this path. If collision handling is required, check the exact environment
+-- name and staged definitions once, then append a deterministic source hash.
+-- Keep this registered under the `"theorem"` key only as the optional Mathlib
+-- fallback after `theoremCodeCore` reports that precise unsupported case.
 @[codegen "theorem"]
 def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
@@ -60,6 +72,14 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     else
       `(commandSeq| noncomputable def $n : $stx := by $pf)
   | none =>
+    -- TODO(mathlib-deferred-theorem): This should become the entire body of the
+    -- renamed Mathlib fallback. Build and elaborate a real deferred theorem
+    -- interface: emit the proposition definition and a checked theorem/witness
+    -- whose proof is obtained from `[Fact proposition]`. The current code merely
+    -- constructs the intended `Fact` command and discards it, so no deferred
+    -- proof can actually be used. Commit both commands and theorem metadata only
+    -- after the complete sequence elaborates successfully; do not expose a
+    -- partially registered deferred theorem on failure.
     let propName := mkIdent (name ++ `prop)
     let propExpr := mkSort Level.zero
     let propIdent ← delabDetailed propExpr
@@ -100,7 +120,10 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
 where
   thmStxParts (js: Json)  :
-    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq) × Bool  := withoutModifyingState do
+    TranslateM <| Syntax.Term × Name × Option (TSyntax ``tacticSeq) × Bool  :=
+    -- TODO(term-state-isolation): Replace this syntax-producing scope with
+    -- `withoutModifyingTranslateAndTermState` so speculative elaboration cannot leak metavariables.
+    withoutModifyingState do
     match js.getObjVal?  "hypothesis" with
       | Except.ok h => contextRun translator none ``tacticSeq h
       | Except.error _ => pure ()
@@ -121,7 +144,10 @@ where
       | Except.error _ => pure 0
     traceAide `leanaide.papercodes.info s!"hypothesis size: {hypSize} in proof"
     let proofStx? ← proof?.mapM fun
-      pf => withoutModifyingState do
+      pf =>
+      -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
+      -- only generated proof syntax should cross this speculative boundary.
+      withoutModifyingState do
       let pfGoal ← mkFreshExprMVar type
       let (pfGoal', names') ← extractIntros pfGoal.mvarId! hypSize
       traceAide `leanaide.papercodes.debug s!"Extracted intros, names: {names'}"
@@ -129,6 +155,8 @@ where
       traceAide `leanaide.papercodes.debug s!"Consumed intros, names: {names}"
       let (pfGoal, resTacs) ← resolveIntros pfGoal'' names
       let pfStx ←
+        -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`
+        -- if this inner scope remains after the enclosing proof scope is isolated.
         withoutModifyingState do
         pfGoal.withContext do
         match ←
@@ -156,6 +184,11 @@ where
     traceAide `leanaide.papercodes.info s!"Obtained or skipped proof; obtained: {proofStx?.isSome}"
     let thm ← withPreludes claim
     let name := (js.getObjValAs? Name "name").toOption.getD <| ← translator.server.theoremName thm
+    -- TODO(mathlib-deferred-theorem): Remove this `newName` call when narrowing
+    -- the handler. Its repeated `resolveGlobalName` loop is unnecessarily slow
+    -- and performs broad name resolution rather than the exact declaration-name
+    -- collision check needed here. Reuse the finalized core naming helper, or do
+    -- one exact environment/staged-definition check and add a deterministic hash.
     let name ← newName name
     let name :=
       if name.toString = "[anonymous]" then
@@ -168,6 +201,9 @@ where
     traceAide `leanaide.papercodes.info s!"codegen: Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
     let label := js.getObjValAs? String "label" |>.toOption.getD name.toString
+    -- TODO(generation-check-homogeneous): Set `isProved` only after the complete
+    -- declaration elaborates successfully and its proof is hole-free. Presence
+    -- of a JSON `proof` field does not mean codegen completed the proof.
     Translate.addTheorem <| {name := name, type := type, label := label, isProved := proof?.isSome, source:= js}
     logInfo m!"All theorems : {← allLabels}"
     return (typeStx, name, proofStx?, ← isProp type)
@@ -178,6 +214,10 @@ If goal is a `there exists` statement and binderName matches variable_name, it r
 -/
 @[codegen "let_statement"]
 def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind)) := fun s js => do
+  -- TODO(generation-check-homogeneous): A notation-introducing `let_statement`
+  -- must materialize a typed Lean local definition. Do not silently keep a
+  -- missing `value` as prose only; repair/reject the node or derive a checked
+  -- value before later claims are allowed to use its `variable_name`.
   match s, js with
   | ``tacticSeq, js => do
     let statement := statement js
@@ -185,7 +225,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
     | .error _ =>
       -- If there is no value, we do not need to return a value
       traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjValAs? String "variable_name" |>.toOption.getD ""}"
-      addPrelude statement
+      addPromptContext statement
       return none
     | .ok value =>
       match goal? with
@@ -204,7 +244,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
         commandToTactic
           (← defStx translator js statement value)
       let stxs := #[letStx]
-      addPrelude statement
+      addPromptContext statement
       return some <| ← `(tacticSeq| $stxs*)
   | ``commandSeq, js => do
     let statement := statement js
@@ -212,7 +252,7 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
     | .error _ =>
       -- If there is no value, we do not need to return a value
       traceAide `leanaide.papercodes.info s!"codegen: No value in 'let_statement' for {js.getObjValAs? String "variable_name" |>.toOption.getD ""}"
-      addPrelude statement
+      addPromptContext statement
       return none
     | .ok value =>
       let defStx ←
@@ -225,11 +265,11 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
         registerDefnEnv data
       | none =>
         traceAide `leanaide.papercodes.info s!"codegen: No definition found for 'let_statement' {statement} with value {value}"
-      addPrelude statement
+      addPromptContext statement
       return some <| ← `(commandSeq| $stxs*)
 
   | _, js =>
-      addPrelude <| statement js
+      addPromptContext <| statement js
       return none
   where
     statement (js: Json) : String :=
@@ -254,6 +294,8 @@ def letCode (translator : CodeGenerator := {})(goal? : Option (MVarId)) : (kind:
           | _, _ => ""
         s!"{varSegment} {kindSegment} {valueSegment} {propertySegment}".trimAscii.toString ++ "."
     defStx (translator: CodeGenerator) (js: Json) (statement: String)  (value: String) : TranslateM Syntax.Command :=
+      -- TODO(term-state-isolation): Replace this syntax-producing speculative scope with
+      -- `withoutModifyingTranslateAndTermState` after checking its translation fallback paths.
       withoutModifyingState do
         let statement' ← withPreludes statement
         let varName ← match js.getObjValAs? String "variable_name" with
@@ -396,6 +438,13 @@ def existenceProof (translator : CodeGenerator) (variableName construction : Str
     let letTactic ← simpleLet letTactic
     let useTacticSeq ← `(tacticSeq| $letTactic; use $varId:ident)
     traceAide `leanaide.papercodes.info s!"Existence proof: created tactic sequence for definition and use:\n{useTacticSeq}"
+    -- TODO(assigned-goal-invariant): Update this caller when
+    -- `runForSingleGoal` gains a structured result. A tactic failure must not be
+    -- interpreted as closure (`none`) or one remaining goal (`some`). Validate
+    -- that `newGoal` is unassigned; `runForSingleGoal` should commit its state on
+    -- this successful live-goal path. The following tactic-mode `getCode`, by
+    -- contrast, returns replayable syntax and must always restore Term/Meta state
+    -- so it cannot leave `newGoal` assigned.
     let newGoal? ← runForSingleGoal goal useTacticSeq
     match newGoal? with
     | some newGoal =>
@@ -495,10 +544,19 @@ def constructionProofCode (translator : CodeGenerator := {}) (goal? : Option MVa
       s!"codegen: no 'full_claim' found in 'construction_proof'"
     let .ok claim := js.getObjValAs? String "claim" | throwError
       s!"codegen: no 'claim' found in 'construction_proof'"
+    -- TODO(generation-check-homogeneous): Operate on `goal` and its actual
+    -- existential binders instead of retranslating/proving `full_claim` and
+    -- `claim` independently. Refine the witness once and discharge only the
+    -- resulting verification goal; complex constructions should invoke a
+    -- reusable library theorem rather than recursively replaying the proof tree.
     let existenceType ← translator.translateToPropStrict fullClaim
     let existenceGoal ← mkFreshExprMVar existenceType
     let existenceProofTacs ←
         existenceProof translator variableName construction verification existenceGoal.mvarId!
+    -- TODO(generation-check-homogeneous): Never delaborate the mvar expression.
+    -- Read its assignment with `getExprMVarAssignment?`, recursively resolve it
+    -- using `instantiateMVars`, infer/instantiate the assigned value's type, and
+    -- delaborate that type (or the assigned value when a value is required).
     let existenceSyntax ← delabDetailed existenceGoal
     let hash := fullClaim.hash
     let existsId := mkIdent (s!"assert_exists_{hash}").toName
@@ -545,6 +603,8 @@ def uniquenessProofCore (translator : CodeGenerator) (existence_js : Json) (proo
   let goalType ← translator.translateToPropStrict uniquenessClaim
   let uniquenessGoalExpr ← mkFreshExprMVar goalType
   let uniquenessGoal := uniquenessGoalExpr.mvarId!
+  -- TODO(term-state-isolation): Replace with `withoutModifyingTranslateAndTermState`;
+  -- only the generated uniqueness proof syntax should escape this scope.
   let some proofStx ← withoutModifyingState do
     getProof translator uniquenessGoal proof | throwError
     s!"codegen: no tactics found for contrapositive proof {proof}"

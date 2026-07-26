@@ -31,6 +31,8 @@ CODEGEN_STRING_FIELDS = {
     "lean_term",
 }
 
+_ASSIGNMENT_PATTERN = re.compile(r":=")
+
 INFORMAL_NOTATION_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"\b[A-Za-z]+_\{[^}]+\}"),
     re.compile(r"\b[A-Za-z]+_[A-Za-z0-9]+"),
@@ -40,7 +42,6 @@ INFORMAL_NOTATION_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"\btensor_Z\b"),
     re.compile(r"\b[A-Za-z]+\([^)]*,[^)]*\)"),
     re.compile(r"\b[A-Za-z]+/[A-Za-z]+\([^)]+\)"),
-    re.compile(r":="),
 )
 
 _DEFAULT_BATCH_SIZE = 40
@@ -58,7 +59,21 @@ def _batch_size() -> int:
 
 
 def _has_informal_notation(value: str) -> bool:
-    return any(pattern.search(value) for pattern in INFORMAL_NOTATION_PATTERNS)
+    if any(pattern.search(value) for pattern in INFORMAL_NOTATION_PATTERNS):
+        return True
+    return bool(_ASSIGNMENT_PATTERN.search(value)) and not _has_lean_let_binding(
+        value
+    )
+
+
+def _has_lean_let_binding(value: str) -> bool:
+    """Return whether `:=` belongs to at least one Lean-style let binder."""
+    return bool(
+        re.search(
+            r"\blet\s+[A-Za-z_][A-Za-z0-9_']*(?:\s*:[^:=;]+)?\s*:=",
+            value,
+        )
+    )
 
 
 def _nearby_context(value: dict[str, Any]) -> dict[str, Any]:
@@ -186,7 +201,8 @@ def deterministic_repair_text(text: str) -> str:
         lambda m: f"{m.group(1)} modulo {m.group(2)} applied to {m.group(3).strip()}",
         text,
     )
-    text = text.replace(":=", " is defined as ")
+    if not _has_lean_let_binding(text):
+        text = text.replace(":=", " is defined as ")
     text = re.sub(r"\\mathbb\{([^}]+)\}", r"\1", text)
     text = re.sub(r"\\operatorname\{([^}]+)\}", r"\1", text)
     text = re.sub(r"\\([A-Za-z]+)", r"\1", text)
