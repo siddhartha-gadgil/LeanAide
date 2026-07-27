@@ -267,6 +267,12 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           else
               -- continue with the next source
           -- runForSingleGoal checks that the goal is unassigned
+          -- TODO-ProofNodeValidationRecovery: catch a failure while validating
+          -- returned tactic syntax just like a failure in `getCode`.  Log the
+          -- rejected source and continue with the original goal, remaining
+          -- sources, and unchanged accumulator; otherwise one malformed local
+          -- assertion bypasses the terminal `repeat (sorry)` fallback and
+          -- drops the whole theorem.
           let goal? ← runForSingleGoal goal code
           match goal? with
           | none => do -- tactics closed the goal
@@ -529,6 +535,11 @@ partial def dropLocalContext (type: Expr) (consumed: FVarIdSet := ∅) : MetaM E
           traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
           return type
       | none =>
+        -- TODO-PublicBinderCompatibleFallback: if a model supplied a public
+        -- binder name that is absent locally (for example `inst` versus the
+        -- generated `inst_<hash>`), try `findUniqueCompatibleDecl?` before
+        -- retaining the generalized binder.  Do not use this fallback when an
+        -- existing declaration with that public name has an incompatible type.
         return type
     | none =>
         -- Anonymous/internal binder: do not manufacture `inst`, `a`, etc.

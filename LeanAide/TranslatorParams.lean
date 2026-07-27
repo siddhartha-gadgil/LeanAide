@@ -108,6 +108,10 @@ def Translator.CliDefaultJson := json% {"useInstructions": false,
   [{"similarSearch": {"n": 20, "descField": "docString"}},
    {"similarSearch": {"n": 2, "descField": "concise-description"}},
    {"similarSearch": {"n": 2, "descField": "description"}}]},
+ -- TODO-TranslationResponseCount: the July 27 core run needed at most the
+ -- third candidate for proposition translation (23 first, 3 second, 1 third).
+ -- Test a default of four, or two followed by a second batch on failure,
+ -- instead of paying for eight candidates on every translation request.
  "params": {"temp": 1, "stopTokens": [], "n": 8, "maxTokens": 1600},
  "messageBuilder": {"directBuilder":
   {"userHead": "user",

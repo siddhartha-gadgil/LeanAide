@@ -470,6 +470,11 @@ The output is a JSON object with the result of the elaboration, including logs a
 def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
     match data.getObjValAs? String "document_code" with
     | Except.ok code => do
+      -- TODO-ElaborationUsesTopCode: prepend the supplied `top_code` (or at
+      -- least its dynamic universe declarations) before calling the frontend.
+      -- The July 27 generated files elaborate independently, but this check
+      -- returned fallback because it validated `document_code` without
+      -- `universe u_12 u_13`.
       let names? := data.getObjValAs? (List Name) "declarations" |>.toOption
       try
         let (exprs, logs) ←

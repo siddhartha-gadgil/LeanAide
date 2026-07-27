@@ -1,5 +1,203 @@
 # Generation check for `results/homogeneous.md`
 
+## Update: July 27 rebuilt core rerun
+
+### Run status and comparison
+
+`lake build codegen` completed successfully before running
+
+```bash
+lake exe codegen results/core-homogeneous.json
+```
+
+The fresh log is `.logs/2026-07-27.log`.  Generation ran from 19:11:51 to
+22:08:48 and wrote both `CodeGen/Live/core-homogeneous.lean` and
+`CodeGen/core-homogeneous.lean`.  Codegen exited 1, but this does **not** mean
+that either generated file is invalid: independent `lake env lean` checks of
+both files exit 0.  The nonzero status comes from the built-in final
+elaboration check ignoring the returned `top_code`, and hence checking the
+document without its dynamic `universe u_12 u_13` header.  The final file's
+embedded diagnostic therefore contains a false `unknown universe level
+u_12` error even though the complete file elaborates.
+
+| Result | July 24 | July 27 |
+|---|---:|---:|
+| live-file lines | 192 | 82 |
+| final-file lines | 299 | 128 |
+| ordinary definitions emitted | 4/4 | 4/4 |
+| deferred root proposition emitted | no | yes |
+| proof-bearing Lemmas 1--4 emitted | 4/4 | 1/4 |
+| emitted lemmas with terminal `repeat (sorry)` | 4 | 1 |
+
+The sole proof-bearing declaration is Lemma 2.  Thus the shorter output is
+mainly a regression, not merely cleaner code.  The earlier July 24 file
+emitted Lemmas 1--4; the July 27 run drops Lemmas 1, 3, and 4 after uncaught
+local-tactic validation errors.
+
+Both core outputs remain much smaller and have better top-level statements
+than the old full `CodeGen/homogeneous.lean`: the latter covers the entire
+document, has 1,675 lines, 15 declarations, and 31 sorry goals, but its early
+lemma statements omit essential assumptions or leave `C` and `f` arbitrary.
+The present regression concerns theorem retention, not a reason to return to
+those older statements.
+
+### What improved
+
+1. **Dynamic universes work on successful top-level paths.**  The live output
+   writes `universe u_12`, emits
+   `core_homogeneous_root_homogeneity_square.prop`, and validates
+   `IsTorsionFree (A : Type u_12)` directly.  This fixes the July 24 omission
+   of the deferred root proposition and the earlier existential-definition
+   fallback.
+2. **The named/anonymous intro fix is active.**  Anonymous hypotheses now use
+   stable type-hashed names such as `inst_14157295161945824867` and
+   `a_5288622521694023602`; Lemma 3 no longer starts with the July 24 collision
+   `intro G inst l a a ... a a`.
+3. **Local lets reach temporary frontends.**  Lemma 2's `C : Nat -> G` is
+   available during proposition and proof validation.  Its induction goal is
+   updated correctly and contains `ih`; the base case is completed and useful
+   successor assertions are retained.
+4. **The Python flattening pass improved traversal.**  The Lemma 4 log reaches
+   the outer steps after the formerly premature nested proof: it processes the
+   local terms `a`, `u`, `v`, and `w` and later commutator identities.  Lemma 4
+   is still lost for the universe/exception reason below, not because the old
+   nested terminal sorry stopped traversal.
+5. **Normal exhaustion behaves correctly.**  Lemma 2 keeps its successful
+   proof prefix and places `repeat (sorry)` only in the unresolved successor
+   branch.  This is the intended interactive output.
+
+### Why Lemmas 1, 3, and 4 were dropped
+
+All three expose one missing part of the new universe implementation.
+`assertionCode.typeStx` collects the level names used by a translated local
+assertion, but runs under `withoutModifyingTranslateAndTermState`.  The
+command and command-sequence branches subsequently call
+`registerUniverseNames`; the tactic-sequence and tactic branches discard the
+returned names.  Consequently a syntactically generated `have` can mention a
+level absent from the command blob used by `runForSingleGoal`.
+
+- **Lemma 1:** the theorem uses `u_13`, while a generalized local assertion
+  introduces `u_14`; validation fails with `unknown universe level u_14`.
+- **Lemma 3:** the theorem uses `u_14`, while a local assertion introduces
+  `u_15`; validation fails with `unknown universe level u_15`.
+- **Lemma 4:** a generalized assertion introduces `u_12`; its restored proof
+  validation blob lacks that declaration and fails with `unknown universe
+  level u_12`.
+
+This also explains why the intended terminal fallback is bypassed.  In
+`getCodeTacticsAux`, errors thrown by `getCode` are caught and cause the next
+JSON proof node to be tried.  However, after a handler returns tactic syntax,
+the later `runForSingleGoal goal code` call is outside that catch.  Its
+universe error escapes the entire proof and theorem handler before source
+exhaustion can append `repeat (sorry)`.
+
+Two independent fixes are required:
+
+1. In both local assertion tactic branches, bind the names returned by
+   `typeStx` and call `registerUniverseNames names.toArray` outside the rollback.
+2. Catch failures while applying/validating returned tactics.  Log the source
+   and error, then recurse with the original goal, remaining sources, and
+   unchanged accumulator.  This preserves theorem retention for any future
+   malformed tactic, not only missing universes.
+
+These sites are marked `TODO-LocalAssertionUniverseRegistration` in
+`PaperCodes.lean` and `TODO-ProofNodeValidationRecovery` in
+`CodegenCore.lean`.
+
+### The local-context mismatch is persistent, not a new result regression
+
+The July 27 assertions are still often generalized over variables already in
+scope, for example
+
+```lean
+G : Type u_13
+inst_14157295161945824867 : Group G
+l : G -> Real
+...
+|- forall [inst : Group G] (l : G -> Real), ...
+```
+
+The July 24 generated Lemma 1 already contained the same full-statement
+fallback shape, so the observable mismatch predates the latest changes.  The
+fresh trace does reveal the current exact matching failure: a model-generated
+public binder named `inst` does not find the hashed local declaration
+`inst_<hash>`.  In the public-name branch, `dropLocalContext` returns the
+generalized type immediately when exact lookup returns `none`; it does not try
+the now-available unique role-and-type matcher.
+
+When a public name is absent locally, use `findUniqueCompatibleDecl?` as a
+fallback.  Do not use it when that public name resolves to an incompatible
+declaration, because that would silently replace a genuinely wrong binder.
+This is marked `TODO-PublicBinderCompatibleFallback` in `CodegenCore.lean`.
+Fixing it should also prevent otherwise irrelevant fresh universes such as
+`u_14` and `u_15` from entering local assertion types.
+
+### Eight translation responses: observed value and cost
+
+The run completed 49 API responses and encountered five additional requests
+that waited about 15 minutes and returned HTML error pages.  Of the successful
+responses, 31 requested eight translation candidates and 18 proof calls
+requested one response.  Across successful calls the log reports 696,635
+tokens: 176,788 prompt and 519,847 completion tokens.
+
+For the 27 eight-candidate proposition calls whose candidate rank is visible:
+
+| first elaborating candidate | calls |
+|---|---:|
+| 1 | 23 |
+| 2 | 3 |
+| 3 | 1 |
+| 4--8 | 0 |
+
+Four other eight-response calls translated local definitions and do not log a
+comparable candidate rank.  Thus this run is direct evidence against reducing
+all the way to one: four proposition translations were rescued by candidates
+2 or 3.  It provides no evidence that candidates 5--8 add value.  The best
+low-risk next setting is **four responses for statement translation**, while
+keeping proof calls at one.  A more aggressive staged policy is two responses
+followed by a second two-response request only if both fail; that retains a
+four-candidate budget but trades tokens for an extra round trip on the four
+observed rescue cases.
+
+Successful eight-response calls averaged about 118 seconds, heavily skewed by
+one 877-second response.  Five further calls returned non-JSON HTML after
+roughly 900 seconds.  `ChatClient.queryAux` invokes `curl` without
+`--fail-with-body`, an HTTP-status check, or a time bound, and then tries to
+parse stdout unconditionally as JSON.  Add bounded connect/overall timeouts,
+status-aware failure handling, and retry/backoff.  The relevant sites are
+marked `TODO-TranslationResponseCount` and
+`TODO-LLMRequestBoundsAndStatus`.
+
+### Other output and diagnostic issues
+
+1. `elaborateTask` documents a `top_code` input but ignores it.  It should
+   prepend `top_code` when validating `document_code`; otherwise the final
+   summary and exit status disagree with the valid file written to disk.
+   This is marked `TODO-ElaborationUsesTopCode` in `Responses.lean`.
+2. `foldContext` does not match grouped binders such as `{G R : Type _}` and
+   prints `could not be folded` during sorry analysis.  Support arrays of
+   binder identifiers so purged-sorry diagnostics do not silently lose their
+   context.  This is marked `TODO-FoldMultiIdentifierBinders` in
+   `DefData.lean`.
+3. The generated `#check` string commands are harmless and both files
+   elaborate, but they remain prompt/prelude noise rather than useful final
+   declarations.
+
+### Focused implementation order after this run
+
+1. **P0:** register universe names returned by local assertion tactic
+   translation.
+2. **P0:** recover from `runForSingleGoal` validation errors and preserve the
+   terminal local sorry fallback.
+3. **P0:** make final elaboration include `top_code`, so valid runs do not exit
+   1 with false universe errors.
+4. **P1:** try the unique compatible declaration fallback when a candidate's
+   public binder name is absent locally.
+5. **P1:** reduce translation `n` from eight to four and add HTTP timeout,
+   status, and retry handling; reassess candidate ranks on the next run.
+6. **P2:** support grouped binders in `foldContext` and remove final `#check`
+   string noise.
+
 ## Update: July 24 full rebuilt core rerun
 
 ### Run status and overall comparison

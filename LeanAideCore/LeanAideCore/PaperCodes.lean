@@ -903,6 +903,10 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     cmdResolveExistsHave stx
   mkCommandSeq <| #[head] ++ resolvedCmds
 | _, ``tacticSeq, js => do
+  -- TODO-LocalAssertionUniverseRegistration: retain `names` here and register
+  -- them after `typeStx` returns.  `typeStx` deliberately rolls its state back,
+  -- but the returned tactic may mention a fresh level (u_14/u_15 in the July
+  -- 27 core run), which must be present in the validation command blob.
   let (stx, tac, _, _) ← typeStx js
   let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
@@ -913,6 +917,8 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let tacSeq := #[headTac] ++ resTacs
   `(tacticSeq| $tacSeq*)
 | _, `tactic, js => do
+  -- TODO-LocalAssertionUniverseRegistration: as for `tacticSeq`, register the
+  -- universe names returned by `typeStx` before this tactic is validated.
   let (stx, tac, _, _) ← typeStx js
   `(tactic| have : $stx := by $tac)
 | _, kind, _ => throwError

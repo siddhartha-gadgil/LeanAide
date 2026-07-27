@@ -181,6 +181,9 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM 
     | some h => #["-H", h] ++ baseArgs
     | none => baseArgs
   -- logInfo s!"Querying {url} with {data}"
+  -- TODO-LLMRequestBoundsAndStatus: add `--fail-with-body`, a bounded timeout,
+  -- and explicit exit/status handling before JSON parsing.  The July 27 run
+  -- spent about 15 minutes on five requests that returned HTML error pages.
   let output ← IO.Process.output {cmd := "curl", args := (args ++ #["--data", data])}
   let output := output.stdout
   trace[Translate.info] "Model response: {output}"

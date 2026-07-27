@@ -16,6 +16,9 @@ def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
         `(($n : $type) → $tailType)
     | `(funImplicitBinder |{$n:ident : $type:term}) => do
         `({$n : $type} → $tailType)
+    -- TODO-FoldMultiIdentifierBinders: also fold grouped binders such as
+    -- `{G R : Type _}`.  The current single-identifier pattern prints
+    -- "could not be folded" during final sorry analysis.
     | `(funBinder|(_ : $type:term)) => do
         `((_ : $type) → $tailType)
     | `(funImplicitBinder|{_ : $type:term}) => do
