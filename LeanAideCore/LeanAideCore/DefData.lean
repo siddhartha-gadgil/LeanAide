@@ -99,34 +99,31 @@ open Elab Term  in
 def toDeclaration (data: DefData) : TermElabM Declaration := do
     let typeExpr ← elabType data.type
     let valueExpr ← elabTerm data.value typeExpr
+    Term.synthesizeSyntheticMVarsNoPostponing
     let valueExpr ← instantiateMVars valueExpr
     let typeExpr ← instantiateMVars typeExpr
-    Term.synthesizeSyntheticMVarsNoPostponing
+    if typeExpr.hasExprMVar || valueExpr.hasExprMVar || typeExpr.hasLevelMVar || valueExpr.hasLevelMVar then
+        throwError s!"toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr} has unresolved metavariables"
     -- logInfo s!"toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr}"
     -- logInfo s!"Mvar? : {valueExpr.hasExprMVar}, {valueExpr.hasLevelMVar}"
     -- logInfo s!"{repr valueExpr}"
-    -- TODO-DynamicUniversePrelude (direct declarations): replace both
-    -- `levelParams := []` values below.  For a theorem, use
-    -- `(collectLevelParams {} typeExpr).params.toList` and reject any parameter
-    -- found in `valueExpr` but absent from the type; proof-only universes must
-    -- not be silently promoted.  For a definition, accumulate both expressions:
-    -- `let s := collectLevelParams (collectLevelParams {} typeExpr) valueExpr`
-    -- and use `s.params.toList`.  Reject `typeExpr.hasLevelMVar` or
-    -- `valueExpr.hasLevelMVar` after `instantiateMVars` rather than constructing
-    -- a declaration with unresolved levels.
     let decl ← match data.isProp with
     | true => do
+        let levelParams := (collectLevelParams {} typeExpr).params.toList
+        let valParams := (collectLevelParams {} valueExpr).params.toList
+        if valParams.any (fun p => !levelParams.contains p) then
+            throwError s!"toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr} has level parameters in the value not present in the type"
         let decl := .thmDecl {
             name := data.name,
             type := typeExpr,
             value := valueExpr,
-            levelParams := []
+            levelParams := levelParams
         }
         return decl
     | false => do
         let decl := Declaration.defnDecl {
             name := data.name,
-            levelParams := [],
+            levelParams := collectLevelParams (collectLevelParams {} typeExpr) valueExpr |>.params.toList,
             type := typeExpr,
             value := valueExpr,
             hints := ReducibilityHints.abbrev,
