@@ -154,16 +154,9 @@ structure Translate.State where
   queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.emptyWithCapacity 100000
   /-- Descriptions, docstrings etc -/
   descriptionMap : Std.HashMap Name Json := Std.HashMap.emptyWithCapacity 100000
-  -- TODO-DynamicUniversePrelude (state/collection): store a deduplicated,
-  -- deterministic collection of universe parameter names used by accepted
-  -- generated expressions.  Add `registerUniverseParams (e : Expr)` using
-  -- `let e ← instantiateMVars e`; reject `e.hasLevelMVar`; then obtain the used
-  -- names with `(collectLevelParams {} e).params`.  Call it before an Expr is
-  -- delaborated into a top-level declaration.  Do not call it for tactic-local
-  -- `have`/case expressions: a fresh proof-only universe must be rejected, not
-  -- promoted into the file prelude.  `collectLevelParams` recursively visits
-  -- parameters under `succ`/`max`/`imax`; do not manufacture names for level
-  -- metavariables.
+  /-- Universe parameters used by generated top-level declarations. -/
+  universeLevels : Array Name := #[]
+  writtenUniverseLevels : Array Name := #[]
   cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
@@ -181,6 +174,9 @@ structure Translate.State where
   recentTranslations: Array ChatPair := #[] -- (input, output)
   numRecentTranslationsToUse : Nat := 0
 deriving Inhabited
+
+def defaultUniverses : Array Name :=
+  #[`u, `v, `w, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `u₃]
 
 /-- Monad with environment for translation -/
 abbrev TranslateM := StateT Translate.State TermElabM
@@ -266,14 +262,45 @@ def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   | some desc => return desc
   | none => return none
 
+def universeParamsOfExpr (e : Expr) : MetaM (Array Name) := do
+  let e ← instantiateMVars e
+  if e.hasLevelMVar then
+    throwError "unresolved universe metavariables"
+  return (collectLevelParams {} e).params
+
+def registerUniverseNames (names : Array Name) : TranslateM Unit :=
+  -- deduplicate and update state
+  modify fun s => {s with universeLevels := (s.universeLevels ++ names).toList.eraseDups.toArray}
+
+def registerUniverseParamsFromExpr (e : Expr) : TranslateM Unit := do
+  registerUniverseNames (← universeParamsOfExpr e)
+
+def universeCommand? (exclusions := defaultUniverses) : TranslateM (Option Syntax.Command) := do
+  let levels := (← get).universeLevels
+  let levels := levels.toList.eraseDups.toArray.filter (fun u ↦ !(exclusions.contains u))
+  if levels.isEmpty then return none
+  let levelIds := levels.map (mkIdent)
+  let levelCmd ← `(command| universe $levelIds*)
+  return some levelCmd
+
+def unwrittenUniverseCommand? : TranslateM (Option Syntax.Command) := do
+  universeCommand? <| defaultUniverses ++ (← get).writtenUniverseLevels
+
+
+def universeCommandStr : TranslateM String := do
+  match ← universeCommand? with
+  | none => return ""
+  | some cmd => return (← PrettyPrinter.ppCommand cmd).pretty ++ "\n"
+
+def cmdsWithUniverse : TranslateM (Array Syntax.Command) := do
+  match ← universeCommand? with
+  | none => return (← get).cmdPrelude
+  | some levelCmd =>
+    return #[levelCmd] ++ (← get).cmdPrelude
+
 open PrettyPrinter
--- TODO-DynamicUniversePrelude (rendering/cache): add one canonical renderer
--- for the state's collected names, producing `universe ...` or no text.  Make
--- `cmdPreludeBlob`, the frontend-prelude builders, and the brief prompt prelude
--- use it, so the same names are visible to prompts and textual elaboration and
--- automatically contribute to every cache salt derived from `cmdPreludeBlob`.
 def cmdPreludeBlob : TranslateM String := do
-  let cmds := (← get).cmdPrelude
+  let cmds ← cmdsWithUniverse
   let cmds ←
     cmds.mapM (fun cmd => PrettyPrinter.ppCommand cmd)
   let cmds := cmds.map (·.pretty)
@@ -285,7 +312,7 @@ def commandNeededForFrontendPrelude (cmd : Syntax.Command) : TranslateM Bool := 
   | none => return true
 
 def cmdPreludeForFrontendBlob? : TranslateM <| Option String := do
-  let cmds := (← get).cmdPrelude
+  let cmds ← cmdsWithUniverse
   let cmds ← cmds.filterM commandNeededForFrontendPrelude
   if cmds.isEmpty then return none
   let cmds ←
@@ -299,10 +326,6 @@ def variablePreludeForFrontendBlob? : TranslateM <| Option String := do
   | none => return none
 
 def withCommandPrelude (body : String) : TranslateM String := do
-  -- TODO-DynamicUniversePrelude (frontend): prepend the canonical universe
-  -- prelude before command and local-variable preludes.  This is required even
-  -- when `cmdPrelude` is empty because each frontend run has fresh command
-  -- parser state and cannot recover scoped `universe` commands from the Env.
   let preludes := #[
     ← cmdPreludeForFrontendBlob?,
     ← variablePreludeForFrontendBlob?
@@ -314,7 +337,7 @@ def withCommandPrelude (body : String) : TranslateM String := do
       return prelude ++ "\n" ++ body
 
 def cmdPreludeBriefBlob? : TranslateM <| Option String := do
-  let cmds := (← get).cmdPrelude
+  let cmds ← cmdsWithUniverse
   if cmds.isEmpty then return none
   let cmds ←
     cmds.mapM (fun cmd => do
@@ -323,13 +346,6 @@ def cmdPreludeBriefBlob? : TranslateM <| Option String := do
   let cmds := cmds.map (·.pretty)
   return some <| cmds.foldl (· ++ "\n" ++ · ) "import Mathlib\n"
 
--- TODO-DynamicUniversePrelude (syntax-only validation): factor the successful
--- command path shared by `runCommand` and `runAndCommitCommands`.  After
--- `runFrontendSafeM` has installed the validated environment, use
--- `DefData.ofSyntax? cmd`; for its declaration name inspect
--- `(← getEnv).find? name`, then merge `ConstantInfo.levelParams` through a
--- `registerUniverseNames` helper.  This is post-validation synchronization for
--- LLM-produced syntax, not a way to rescue the command currently being checked.
 def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
   let safe ←   runFrontendSafeM (← ppCommand cmd).pretty
   if safe then
@@ -355,20 +371,22 @@ Runs commands and adds them to the prelude if they run correctly.
 -- Warning: do not call this inside rollback; file writes persist but
 -- `cmdPrelude` updates would be restored away.
 def runAndCommitCommands (cmds: TSyntax ``commandSeq) : TranslateM (Array Syntax.Command) := do
-  -- TODO-DynamicUniversePrelude (commit/output): validate each command with the
-  -- current universe prelude, and emit declarations for newly committed names
-  -- before the first dependent command.  Include those declarations in both
-  -- `safeCmds` (for final `document_code`) and `writeCommands` (for the live
-  -- file), without repeatedly emitting names already written.  For syntax-only
-  -- commands, obtain newly accepted parameters from `ConstantInfo.levelParams`
-  -- as described at `runCommand`; expression-derived commands must have called
-  -- `registerUniverseParams` before reaching validation.
+  -- Callers must register expression-derived universe parameters before this
+  -- function so validation and live output use the same universe context.
   let cmds := getCommands cmds
   let mut safeCmds := #[]
+  let mut success := false
   for cmd in cmds do
-    let safe ←  runFrontendSafeM (← ppCommand cmd).pretty
-    if safe then safeCmds := safeCmds ++ #[cmd]
-  writeCommands safeCmds
+    let safe ←  runFrontendSafeM <| (← universeCommandStr) ++ (← ppCommand cmd).pretty
+    if safe then
+      safeCmds := safeCmds ++ #[cmd]
+      success := true
+  let univHeader ← match ← unwrittenUniverseCommand? with
+    | none => pure #[]
+    | some cmd => pure #[cmd]
+  if success then
+    writeCommands <| univHeader ++ safeCmds
+    modify fun s => {s with writtenUniverseLevels := (s.writtenUniverseLevels ++ s.universeLevels).toList.eraseDups.toArray}
   modify fun s => {s with cmdPrelude := s.cmdPrelude ++ safeCmds}
   return safeCmds
 
@@ -666,24 +684,22 @@ def timedTest : TranslateM (Nat × Nat × Nat × Json × Json × Json) := do
 
 
 structure Translate.SavedState where
-  -- TODO-DynamicUniversePrelude (rollback): include both collected and already
-  -- emitted universe-name sets here once they are added to `Translate.State`,
-  -- so failed/backtracked translations cannot leak names or desynchronize live
-  -- output bookkeeping from the command prelude.
   cmdPrelude : Array Syntax.Command
   defs : Array (DefData)
   promptContext : Array String
+  universeLevels : Array Name := #[]
   context : Option String
   recentTranslations: Array ChatPair
   outputFile : Option System.FilePath
 
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
-    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, promptContext := σ.promptContext, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
+    let saved : Translate.SavedState :=
+    {cmdPrelude := σ.cmdPrelude, defs := σ.defs, promptContext := σ.promptContext, universeLevels := σ.universeLevels, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
     return (saved, σ)
   restoreState := fun ss => do
   modify fun s =>
-      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, promptContext := ss.promptContext, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
+      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, promptContext := ss.promptContext, universeLevels := ss.universeLevels, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
 
 def withoutModifyingTranslateAndTermState
     (x : TranslateM α) : TranslateM α := do

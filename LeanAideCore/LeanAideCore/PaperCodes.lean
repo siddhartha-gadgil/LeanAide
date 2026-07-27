@@ -373,7 +373,7 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
 | _, `command, js => do
   let (stx, name, pf, isProp, labelled) ← thmStxParts js
   -- TODO-DynamicUniversePrelude (theorem command): call
-  -- `registerUniverseParams labelled.type` here, outside `thmStxParts`'
+  -- `registerUniverseParamsFromExpr labelled.type` here, outside `thmStxParts`'
   -- rollback and before constructing or validating the declaration.  For a
   -- theorem, parameters are determined by its type; do not register levels
   -- occurring only in the generated proof.
@@ -388,7 +388,7 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
 | _, `commandSeq, js => do
   let (stx, name, pf, isProp, labelled) ← thmStxParts js
   -- TODO-DynamicUniversePrelude (theorem command sequence): call
-  -- `registerUniverseParams labelled.type` here, outside `thmStxParts`'
+  -- `registerUniverseParamsFromExpr labelled.type` here, outside `thmStxParts`'
   -- rollback, before adding `DefData` or returning the command sequence.
   -- TODO-DeferredTheoremCommit: register theorem metadata at command-commit
   -- time, after the generated declaration is accepted by `runAndCommitCommands`.
