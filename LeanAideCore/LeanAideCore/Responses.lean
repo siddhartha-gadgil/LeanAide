@@ -455,12 +455,8 @@ def leanFromStructuredJsonTask (data: Json) (translator : Translator) : Translat
           namesFromCommands <| getCommands codeStx
         let code ←
           PrettyPrinter.ppCategory ``commandSeq codeStx
-        -- TODO-DynamicUniversePrelude (final artifact): return `top_code` with
-        -- the generation state's collected universe declaration (or ensure the
-        -- same declaration is already present in `document_code`).  The final
-        -- file must expose exactly the universe context used for validation.
         return Json.mkObj
-          [("result", "success"), ("document_code", code.pretty), ("declarations", toJson declarations), ("top_code", ← topCodeM)]
+          [("result", "success"), ("document_code", code.pretty), ("declarations", toJson declarations), ("top_code", (← topCodeM) ++ "\n" ++ (← universeCommandStr))]
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]

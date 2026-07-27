@@ -175,9 +175,6 @@ structure Translate.State where
   numRecentTranslationsToUse : Nat := 0
 deriving Inhabited
 
-def defaultUniverses : Array Name :=
-  #[`u, `v, `w, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `u₃]
-
 /-- Monad with environment for translation -/
 abbrev TranslateM := StateT Translate.State TermElabM
 
@@ -275,7 +272,7 @@ def registerUniverseNames (names : Array Name) : TranslateM Unit :=
 def registerUniverseParamsFromExpr (e : Expr) : TranslateM Unit := do
   registerUniverseNames (← universeParamsOfExpr e)
 
-def universeCommand? (exclusions := defaultUniverses) : TranslateM (Option Syntax.Command) := do
+def universeCommand? (exclusions := levelNames) : TranslateM (Option Syntax.Command) := do
   let levels := (← get).universeLevels
   let levels := levels.toList.eraseDups.toArray.filter (fun u ↦ !(exclusions.contains u))
   if levels.isEmpty then return none
@@ -284,7 +281,7 @@ def universeCommand? (exclusions := defaultUniverses) : TranslateM (Option Synta
   return some levelCmd
 
 def unwrittenUniverseCommand? : TranslateM (Option Syntax.Command) := do
-  universeCommand? <| defaultUniverses ++ (← get).writtenUniverseLevels
+  universeCommand? <| levelNames ++ (← get).writtenUniverseLevels.toList
 
 
 def universeCommandStr : TranslateM String := do
