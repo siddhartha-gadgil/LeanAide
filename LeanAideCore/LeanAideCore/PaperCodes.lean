@@ -2063,16 +2063,22 @@ def getFullType (translator : CodeGenerator := {}) (isProp : Bool) (parameters :
 
 def inductiveCommand (translator : CodeGenerator := {}) (name: String) (parametersRaw : Array (String × String × Option String))
   (indicesRaw : Array (String × String × Option String)) (constructorsRaw : Array (String × Array (String × String × Option String) × Array String)) (isProp : Bool) :
-    TranslateM (TSyntax `commandSeq) := withoutModifyingTranslateAndTermState do
+    TranslateM ((TSyntax `commandSeq) × List Name) := withoutModifyingTranslateAndTermState do
   let inductiveIdent := mkIdent name.toName
   let typeExprWithoutParams ← withoutModifyingState <| withParamsLocalDecl translator parametersRaw.toList fun _ => getFullType translator isProp indicesRaw.toList
-  -- TODO-DynamicUniversePrelude (inductive declaration): collect parameters
-  -- from `typeExprWithoutParams` and `fullTypeExpr` with
-  -- `collectLevelParams`.  Because this whole helper rolls TranslateM state
-  -- back, return the collected names alongside the syntax; the top-level
-  -- `inductiveDefinitionCode` caller must register them before validation.
+  Term.synthesizeSyntheticMVarsNoPostponing
+  let typeExprWithoutParams ← instantiateMVars typeExprWithoutParams
+  if typeExprWithoutParams.hasMVar then
+    throwError s!"inductiveCommand: typeExprWithoutParams has metavariables: {typeExprWithoutParams}"
+  let typeLevelParams := collectLevelParams {} typeExprWithoutParams |>.params.toList
   let typeStxWithoutParams ← delabDetailed typeExprWithoutParams
   let fullTypeExpr ← withTypeLocalDecl translator name isProp (parametersRaw.toList ++ indicesRaw.toList) fun expr => return expr
+  let fullTypeExprType ← inferType fullTypeExpr
+  Term.synthesizeSyntheticMVarsNoPostponing
+  let fullTypeExprType ← instantiateMVars fullTypeExprType
+  if fullTypeExprType.hasMVar then
+    throwError s!"inductiveCommand: fullTypeExprType has metavariables: {fullTypeExprType}"
+  let fullTypeLevelParams := collectLevelParams {} fullTypeExprType |>.params.toList
   let explicitParamsIdents : Array Ident := parametersRaw.filterMap fun (name, _, binder) =>
     match getBinderInfo binder with
     | BinderInfo.default => some (mkIdent name.toName)
@@ -2093,19 +2099,16 @@ def inductiveCommand (translator : CodeGenerator := {}) (name: String) (paramete
     ctorFields.mapM fun (ctorIdent, ctorParams, index_args) => do
       `(ctor| | $ctorIdent:ident $ctorParams* : $inductiveIdent $explicitParamsIdents* $index_args*)
   if parametersRaw.isEmpty then
-    `(commandSeq| inductive $inductiveIdent:ident : $typeStxWithoutParams where
-      $ctors:ctor*)
+    return (← `(commandSeq| inductive $inductiveIdent:ident : $typeStxWithoutParams where
+      $ctors:ctor*), typeLevelParams ++ fullTypeLevelParams)
   else
     let params ← getBracketedBinders translator parametersRaw
-    `(commandSeq| inductive $inductiveIdent:ident $params* : $typeStxWithoutParams where
-        $ctors:ctor*)
+    return (← `(commandSeq| inductive $inductiveIdent:ident $params* : $typeStxWithoutParams where
+        $ctors:ctor*), typeLevelParams ++ fullTypeLevelParams)
 
 @[codegen "inductive-type-definition"]
 def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
-  -- TODO-DynamicUniversePrelude (inductive commit): receive the universe names
-  -- collected by `inductiveCommand` and call `registerUniverseNames` here,
-  -- outside that helper's rollback and before returning the command sequence.
   let .ok name := js.getObjValAs? String "name" | throwError
     s!"codegen: no 'name' found in 'inductive-type-definition'"
   let isProp := js.getObjValAs? Bool "is_prop" |>.toOption.getD false
@@ -2141,7 +2144,9 @@ def inductiveDefinitionCode (translator : CodeGenerator := {}) : Option MVarId �
       pure (ctorArgName, ctorArgType, ctorArgDefault)
     let indexArgs := constructorJson.getObjValAs? (Array String) "index_args" |>.toOption.getD #[]
     pure (constructorName, constructorArgsRaw, indexArgs)
-  inductiveCommand translator name parametersRaw indicesRaw constructorsRaw isProp
+  let (cmds, typeLevelParams) ← inductiveCommand translator name parametersRaw indicesRaw constructorsRaw isProp
+  registerUniverseNames typeLevelParams.toArray
+  return (some cmds)
 | _, kind, _ => throwError
     s!"codegen: inductive_type_definition does not work for kind {kind}"
 
