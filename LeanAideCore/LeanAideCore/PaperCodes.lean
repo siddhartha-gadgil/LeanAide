@@ -506,23 +506,23 @@ Generate code for a definition. It processes the `definition` field to generate 
 @[codegen "definition"]
 def defCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `commandSeq, js => do
-  -- TODO-DynamicUniversePrelude (definition commit): refactor `defCmdStx` to
-  -- return any parameters collected by its Expr-derived existential fallback,
-  -- and call `registerUniverseNames` here outside the helper's rollback before
-  -- returning the command sequence.  A successful syntax-only definition needs
-  -- no pre-validation extraction; its accepted `ConstantInfo.levelParams` can
-  -- be synchronized by the common command-commit path.
-  let stx ← defCmdStx js
+  let (stx, params?) ← defCmdStx js
+  match params? with
+  | some params => registerUniverseNames params.toArray
+  | none => pure ()
   `(commandSeq | $stx)
 | _, ``tacticSeq, js => do
-  let stx ← defCmdStx js
+  let (stx, params?) ← defCmdStx js
+  match params? with
+  | some _ => throwError "existential definition fallback is unavailable in tactic mode"
+  | none => pure ()
   let tac ← commandSeqToTacticSeq stx
   `(tacticSeq| $tac)
 | _, kind, _ => throwError
     s!"codegen: 'definition' does not work for kind {kind}"
 where
   defCmdStx (js: Json) :
-    TranslateM <| TSyntax ``commandSeq :=
+    TranslateM <| TSyntax ``commandSeq × (Option (List Name)) :=
     withoutModifyingTranslateAndTermState do
     let .ok statement :=
       js.getObjValAs? String "definition" | throwError
@@ -545,18 +545,16 @@ where
             `(command| noncomputable def $nameStx $args*:= $value)
         | _ => throwError s!"commandToTerm: unsupported command {cmd}"
         let cmds := #[renamedCmd]
-        `(commandSeq| $cmds*)
+        return (← `(commandSeq| $cmds*), none)
       | .error errs =>
         try
           let claim := s!"There exists {name} such that:\n{statement}"
           let type ←
             translator.translateToPropStrict claim
-          -- TODO-DynamicUniversePrelude (definition existential fallback):
-          -- this helper is inside `withoutModifyingTranslateAndTermState`, so
-          -- registering `type` here would be rolled back.  Return its
-          -- `(collectLevelParams {} type).params` with the command sequence and
-          -- let the top-level `commandSeq` caller register them before commit;
-          -- the tactic-sequence caller must not promote proof-local universes.
+          let type ← instantiateMVars type
+          if type.hasLevelMVar then
+            throwError s!"codegen: 'definition' {name} has unresolved level metavariables in type {← ppExpr type}"
+          let typeLevelParams := collectLevelParams {} type |>.params.toList
           let typeStx ← delabDetailed type
           let mvar ← mkFreshExprMVar type
           let proof ←
@@ -578,7 +576,7 @@ where
           let resolvedCmds ←
             cmdResolveExistsHave typeStx
           if resolvedCmds.size > 1 then -- we check that the generated definition is indeed existential, otherwise we throw an error.
-            mkCommandSeq <| #[head] ++ resolvedCmds
+            return (← mkCommandSeq <| #[head] ++ resolvedCmds, some typeLevelParams)
           else
             throwError s!"codegen: no definition translation found for {statement}; outputs: {errs.map (·.text)}\nDid not fall back to existential definition because {← ppExpr type} did not produce multiple resolved commands"
         catch e =>
@@ -889,16 +887,12 @@ If the assertion involves existential quantification, additional handling is don
 @[codegen "assert_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  -- TODO-DynamicUniversePrelude (command-level assertion): extend `typeStx` to
-  -- return the translated Expr (or its collected parameters), then register it
-  -- here outside the helper's rollback before emitting the top-level example.
-  let (stx, tac, _) ← typeStx js
+  let (stx, tac, _, names) ← typeStx js
+  registerUniverseNames names.toArray
   `(command| example : $stx := by $tac)
 | _, `commandSeq, js => do
-  -- TODO-DynamicUniversePrelude (assertion declaration): extend `typeStx` to
-  -- return the translated Expr (or its collected parameters), then register it
-  -- here outside the helper's rollback before emitting the theorem sequence.
-  let (stx, tac, isProp) ← typeStx js
+  let (stx, tac, isProp, names) ← typeStx js
+  registerUniverseNames names.toArray
   let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let head ← `(command| theorem $name : $stx := by $tac)
@@ -909,7 +903,7 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     cmdResolveExistsHave stx
   mkCommandSeq <| #[head] ++ resolvedCmds
 | _, ``tacticSeq, js => do
-  let (stx, tac, _) ← typeStx js
+  let (stx, tac, _, _) ← typeStx js
   let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let headTac ← `(tactic| have $name : $stx := by $tac)
@@ -919,12 +913,12 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let tacSeq := #[headTac] ++ resTacs
   `(tacticSeq| $tacSeq*)
 | _, `tactic, js => do
-  let (stx, tac, _) ← typeStx js
+  let (stx, tac, _, _) ← typeStx js
   `(tactic| have : $stx := by $tac)
 | _, kind, _ => throwError
     s!"codegen: test does not work for kind {kind}"
 where typeStx (js: Json) :
-    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) × Bool :=      withoutModifyingTranslateAndTermState do
+    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) × Bool × (List Name) :=      withoutModifyingTranslateAndTermState do
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in 'assertion_statement'"
   let deducedFrom? := js.getObjValAs? (Array Json) "deduced_from_theorem" |>.toOption
@@ -969,6 +963,11 @@ where typeStx (js: Json) :
   -- isolated prompt and target-copy diagnostics; the command-level assertion
   -- variants should continue to use declaration mode.
   let type ← translator.translateToPropStrict claim
+  Term.synthesizeSyntheticMVarsNoPostponing
+  let type ← instantiateMVars type
+  if type.hasLevelMVar then
+    throwError s!"codegen: 'assertion_statement' {claim} has unresolved level metavariables in type {← ppExpr type}"
+  let names := collectLevelParams {} type |>.params.toList
   let mvar ← mkFreshExprMVar type
   let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError
     s!"codegen: failed to apply deduction theorems for assertion; deduction tactics:\n{deductionHaves}"
@@ -976,7 +975,7 @@ where typeStx (js: Json) :
     s!"codegen: failed to find tactics for assertion {claim} with type {← ppExpr type}"
   let tacs := getTactics tacs
   addPromptContext <| "Assume: " ++ claim
-  return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type)
+  return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type, names)
 
 /--
 Generate code for a non-destructive specialization of an already proved claim.
