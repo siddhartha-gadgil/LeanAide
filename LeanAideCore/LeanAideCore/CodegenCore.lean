@@ -697,17 +697,13 @@ def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
 | `(command|def $name  : $type := $value) => do
   let typeElab ← elabType type
   let type ← dropLocalContext typeElab ∅
-  -- TODO-DynamicUniversePrelude (purged definition): call
-  -- `registerUniverseParamsFromExpr type` after specialization and before delaboration;
-  -- the rewritten top-level declaration must be checked with that prelude.
+  registerUniverseParamsFromExpr type
   let type ← delabDetailed type
   `(command|def $name : $type := $value)
 | `(command|theorem $name  : $type := $value) => do
   let typeElab ← elabType type
   let type ← dropLocalContext typeElab ∅
-  -- TODO-DynamicUniversePrelude (purged theorem): call
-  -- `registerUniverseParamsFromExpr type` after specialization and before delaboration.
-  -- Do not collect additional parameters from the proof syntax.
+  registerUniverseParamsFromExpr type
   let type ← delabDetailed type
   `(command|theorem $name : $type := $value)
 | stx => return stx
