@@ -372,13 +372,12 @@ Should perhaps try to use automation if there is no proof.
 def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
   let (stx, name, pf, isProp, labelled) ← thmStxParts js
-  -- TODO-DynamicUniversePrelude (theorem command): call
-  -- `registerUniverseParamsFromExpr labelled.type` here, outside `thmStxParts`'
-  -- rollback and before constructing or validating the declaration.  For a
-  -- theorem, parameters are determined by its type; do not register levels
-  -- occurring only in the generated proof.
   -- TODO-DeferredTheoremCommit: register theorem metadata at command-commit
   -- time, after the generated declaration is accepted by `runAndCommitCommands`.
+  let type ← instantiateMVars labelled.type
+  if type.hasLevelMVar then
+    throwError s!"codegen: 'theorem' {name} has unresolved level metavariables in type {← ppExpr type}"
+  registerUniverseParamsFromExpr type
   Translate.addTheorem labelled
   let n := mkIdent name
   if isProp then
@@ -387,11 +386,13 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
     `(command| noncomputable def $n : $stx := by $pf)
 | _, `commandSeq, js => do
   let (stx, name, pf, isProp, labelled) ← thmStxParts js
-  -- TODO-DynamicUniversePrelude (theorem command sequence): call
-  -- `registerUniverseParamsFromExpr labelled.type` here, outside `thmStxParts`'
-  -- rollback, before adding `DefData` or returning the command sequence.
   -- TODO-DeferredTheoremCommit: register theorem metadata at command-commit
   -- time, after the generated declaration is accepted by `runAndCommitCommands`.
+  let type ← instantiateMVars labelled.type
+  if type.hasLevelMVar then
+    throwError s!"codegen: 'theorem' {name} has unresolved level metavariables in type {← ppExpr type}"
+  registerUniverseParamsFromExpr type
+
   Translate.addTheorem labelled
   let n := mkIdent name
   let defn : DefData := {

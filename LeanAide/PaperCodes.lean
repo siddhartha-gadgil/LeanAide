@@ -47,18 +47,10 @@ def theoremCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
   let propName := mkIdent (name ++ `prop)
   let propExpr := mkSort Level.zero
   let propIdent ← delabDetailed propExpr
-  -- TODO-DynamicUniversePrelude (deferred proposition): `stx` is delaborated
-  -- from an Expr and
-  -- may contain generated level names such as `u_12`.  In this proposition
-  -- definition they occur only in the RHS, so `autoImplicit` cannot bind them
-  -- and the whole deferred theorem is dropped.  Register the level parameters
-  -- from `labelledTheorem.type` with the generic `TranslateM` universe tracker
-  -- here, outside `thmStxParts`' rollback, before emitting this command:
-  -- `let type ← instantiateMVars labelledTheorem.type`; reject
-  -- `type.hasLevelMVar`; then register `(collectLevelParams {} type).params`.
-  -- The resulting shared universe prelude must precede `head` in checks and
-  -- output.  Do not wait to recover these names from the environment: `head`
-  -- cannot elaborate without them because they occur only in its value.
+  let type ← instantiateMVars labelledTheorem.type
+  if type.hasLevelMVar then
+    throwError s!"codegen: 'theorem' {name} has unresolved level metavariables in type {← ppExpr type}"
+  registerUniverseParamsFromExpr type
   let head ← `(command| def $propName : $propIdent:term := $stx)
   let fctIdent := mkIdent ``Fact
   let instName := "assume_" ++ name.toString |>.toName
