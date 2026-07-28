@@ -112,6 +112,67 @@ failed to generate complete proof code.  The current behavior is better for
 debugging than dropping declarations, but it should be reported as proof
 failure rather than success.
 
+### Cause analysis for proof failures
+
+The proof failures are not caused by a single layer.  They are a mixture of
+source-level gaps, JSON translation defects, Lean translation errors, and
+automation limits.
+
+| Failure class | Main evidence | Primary layer |
+|---|---|---|
+| Asymptotic/Archimedean limit steps are only prose | Lemmas 1 and 3 use "since this holds for every positive integer `n` and the error term tends to `0`" without giving a formal epsilon/Archimedean lemma or a named theorem to apply. | Source proof detail |
+| Positive-integer scope and casts drift | Lemma 1 alternates between positive integer, `Nat`, `Int`, and real coercions; failed goals include both `∀ (n : ℕ), 0 < n → ...` and `∀ (n : ℤ), 0 < n → ...`. | Source plus JSON |
+| Intermediate global target asserted too early | Lemma 1 JSON asserts `l(y * x * y⁻¹) ≤ l(x)` before the fixed-`n` argument that proves it; codegen then tries to prove the final inequality directly and fails. | JSON proof segmentation |
+| Local hypotheses are re-emitted as new assertions | Lemma 1 emits `l is a homogeneous pseudo-length function on G` and `0 < n` as fresh assertions, and the log shows these drift to unrelated ambient goals such as `l (y * x * y⁻¹) = l x`. | JSON dependency rewriting |
+| Informal mathematical predicates remain unformalized | Lemma 4 keeps `a is conjugate to w * u` and `v is conjugate to x^(m+1)c^(k-1)`.  These have no Lean proposition/API in the generated context, so they cannot be used directly by codegen. | JSON translation |
+| English application notation remains in claims | Lemma 4 failures include `l applied to v = f applied to m + 1 and k - 1` and `f applied to m and k <= ...`; this should have been normalized to `l v = f (m + 1) (k - 1)` and `f m k ≤ ...`. | JSON translation |
+| Mixed equality/inequality chains are kept as single assertions | Lemma 1 has `l(x) = l(y⁻¹ z y) ≤ l(z) = l(yxy⁻¹).`; Lean needs this split into equalities and an inequality, then recombined. | JSON translation |
+| Let-bound functions/types are mangled | Lemma 4 generated local assertions sometimes redefine `f : ℕ → ℕ → ℝ` inside a theorem whose `f` is `ℤ → ℤ → ℝ`. | Lean statement translation from JSON |
+| Automation solves small local facts but not proof planning | The log shows successful `simp only [conj_zpow, implies_true]` and `grind only [IsHomogeneousPseudoLength, PseudoLength, ...]`, but failures remain for applying Lemmas 1--3 with the right instantiations, long arithmetic rearrangements, and limit arguments. | Lean/codegen automation |
+
+Lemma-by-lemma classification:
+
+1. **Lemma 1:** the source contains the mathematical plan but not enough
+   formal detail for the limiting step.  JSON also harms the proof: it asserts
+   the first inequality before proving the fixed-`n` estimate, reasserts local
+   hypotheses, drifts between `Nat`/`Int` exponents, and keeps malformed
+   expressions such as `n l(...)` and `yxy⁻¹`.  Lean automation succeeds on
+   the conjugate-power identity and pseudo-length symmetry/triangle steps, so
+   the remaining failure is mostly source/JSON proof planning plus the absence
+   of a reusable limit lemma.
+2. **Lemma 2:** the source proof is mostly detailed enough for formalization:
+   it gives the induction, the recurrence for `C`, the use of Lemma 1, the
+   triangle inequality, and the final arithmetic.  The failures are mainly
+   Lean/codegen translation issues: the `let C` theorem statement leads to
+   awkward binders in the generated proof, the induction hypothesis is
+   re-emitted as a named unresolved claim instead of being used directly, and
+   the final arithmetic is sent to generic automation as an isolated goal.
+3. **Lemma 3:** the source gives a good high-level proof, but it again relies
+   on a nontrivial limit/Archimedean step without a formal lemma.  JSON keeps
+   positive-`n` reasoning as a sequence of assertions whose types quantify
+   over `n`, and several failed goals show that codegen cannot combine
+   homogeneity, Lemma 2, inverse symmetry, division by `2n`, and the limiting
+   argument automatically.  This is a genuine mixture: the source should
+   include or cite the limiting lemma, while Lean automation needs better
+   theorem instantiation and arithmetic support.
+4. **Lemma 4:** the source is detailed enough mathematically but not formal
+   enough at the "conjugate to" abstraction boundary.  It describes conjugacy
+   informally and then expects Lemma 1 to turn conjugacy into equality of
+   lengths.  JSON preserves the informal predicate instead of translating it
+   into explicit equations with conjugators.  It also emits English
+   application notation and one incorrect local type for `f`.  The Lean layer
+   can prove many definition-expansion equalities by `simp`, but it cannot
+   use an unformalized conjugacy statement or repair the bad application
+   syntax.
+
+The practical conclusion is that stronger Lean automation alone will not make
+these proofs complete.  It will help for group simplification and arithmetic,
+but the JSON must first contain formal, scoped, single-relation proof claims.
+The source also needs a small number of formal-friendly details, especially
+explicit limit lemmas and explicit conjugating equations.  See
+`notes/proof-guidelines.md` for reusable instructions to pass to source
+authors or proof-generation agents.
+
 ### Python/JSON causes still visible in the run
 
 Several failed assertions come directly from JSON that is too informal for the
@@ -234,6 +295,33 @@ eager list:
    branch.
 7. **P1:** avoid generating public definitions when Mathlib lookup has already
    identified an equivalent or intended existing name.
+
+Focused TODO markers for these priorities:
+
+| priority | marker | location |
+|---|---|---|
+| P0 final validation/top-code import replay | `TODO-TopCodeValidationImportReplay` | `LeanAideCore/LeanAideCore/Responses.lean`, inside `elaborateTask`; related prelude checking note: `TODO-Deferred(generation-check-homogeneous)` in `LeanAideCore/LeanAideCore/TheoremElabCheck.lean` |
+| P0 terminal `repeat (sorry)` proof status | `TODO-RepeatSorryProofFailure` | `LeanAideCore/LeanAideCore/CodegenCore.lean`, near the tactic fallbacks in `findTacticsI` and `addProof` |
+| P0 active diagnostic `#check` commands | `TODO-GeneratedDiagnosticCommands` | `LeanAide/Codegen.lean`, inside `elabCode`; `LeanAideCore/LeanAideCore/PaperCodes.lean`, inside the `check` command generator |
+| P0 staged automation/timing | `TODO-TacticOrderQuick`, `TODO-TacticOrderLazy` | `LeanAideCore/LeanAideCore/CodegenCore.lean`, near `getQuickTactics?` and `findTactics?`; `LeanAideCore/LeanAideCore/RunTactics.lean`, near `runTacticsAndFindTryThis?` |
+| P1 Python JSON normalization | implemented for duplicate contextual dependencies, informal `applied to`, mixed relation chains, stale materialized claim markers, and residual `deduced_from_claim`; remaining exact theorem-term work is `TODO-TheoremDependencyLeanTerm`; remaining construction-schema work is `TODO-StructuredConstructionSchema` | `mathdoc_agent/orchestration/lean_lint.py`, `mathdoc_agent/orchestration/lean_json_repair.py`, `mathdoc_agent/orchestration/deduced_from_claim_rewrite.py`; TODOs in `mathdoc_agent/orchestration/mathlib_reuse.py` and `mathdoc_agent/mathagents/prompts.py` |
+| P1 pseudo-length local expander | `TODO-PseudoLengthLocalExpander` | `LeanAideCore/LeanAideCore/CodegenCore.lean`, before broad quick automation |
+| P1 Mathlib definition reuse/no duplicate public definitions | implemented by the Mathlib-reuse cache and exact-definition recording; keep auditing generated JSON for duplicate public definitions when reuse metadata is present | `mathdoc_agent/orchestration/mathlib_reuse.py`, especially `record_mathlib_definitions` and `find_mathlib_definition` |
+
+Python/JSON implementation status for the P1 work:
+
+| priority concern | status | implementation site |
+|---|---|---|
+| ambient assumptions must become formal theorem context instead of later proof haves | implemented deterministically for common forms and covered by consolidated LLM repair for paraphrases | `mathdoc_agent/orchestration/lean_lint.py`, `mathdoc_agent/orchestration/lean_json_repair.py` |
+| instantiated theorem dependencies need checked executable terms before becoming `lean_name` uses | unsafe `lean_name` is demoted; exact `lean_term` synthesis/verification remains TODO | `TODO-TheoremDependencyLeanTerm` in `mathdoc_agent/orchestration/mathlib_reuse.py` |
+| raw materialized `deduced_from_claim` haves need a final blocking audit | implemented as named local theorem obligations plus consolidated LLM repair | `mathdoc_agent/orchestration/deduced_from_claim_rewrite.py`, `mathdoc_agent/orchestration/lean_json_repair.py` |
+| complex constructions and existential destructuring need structured JSON, not prompt-only prose discipline | LLM-backed repair added; typed construction/destructuring schemas remain TODO | `TODO-StructuredConstructionSchema` in `mathdoc_agent/mathagents/prompts.py` |
+
+The narrower normalizations for duplicate contextual dependencies, `applied to`
+notation, positivity assumptions, and mixed relation chains have been
+implemented in `deduced_from_claim_rewrite.py` and `lean_lint.py`; they no
+longer need TODO markers.  The paraphrase-sensitive cases are now sent through
+the consolidated `Lean JSON repairer` agent before final JSON normalization.
 
 ## Update: July 27 rebuilt core rerun
 

@@ -835,6 +835,10 @@ def enrich_theorem_dependencies(data: dict[str, Any]) -> dict[str, Any]:
     promoted to `lean_name` without an instantiated `lean_term` proving the
     particular local step.
     """
+    # TODO-TheoremDependencyLeanTerm(generation-check-homogeneous): synthesize
+    # and verify the instantiated `lean_term` for exact theorem matches, then
+    # promote the candidate to executable `lean_name`/`lean_term` only after
+    # that check succeeds.
     search_enabled = _env_flag("MATHDOC_AGENT_LEANSEARCH_DEDUCED_THEOREMS")
 
     local_declarations: dict[str, str] = {}

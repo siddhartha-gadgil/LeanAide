@@ -471,6 +471,9 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
     match data.getObjValAs? String "document_code" with
     | Except.ok code => do
       let names? := data.getObjValAs? (List Name) "declarations" |>.toOption
+      -- TODO-TopCodeValidationImportReplay: final validation should not replay
+      -- import-containing `top_code` inside an already imported codegen process.
+      -- Use a fresh frontend check, or split imports from the in-process prefix.
       let topCode := data.getObjValAs? String "top_code" |>.toOption.getD (← topCodeM)
       try
         let (exprs, logs) ←

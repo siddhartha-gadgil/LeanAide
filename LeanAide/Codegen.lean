@@ -54,6 +54,8 @@ def elabCodegenCmdImpl' : CommandElab
       unsafe evalExpr (TranslateM (Option (TSyntax ``commandSeq))) q((TranslateM (Option (TSyntax ``commandSeq)))) e
     let code? ←  codeM?.run' {}
     -- As this in interactive mode, we default to returning a check command if no code is generated.
+    -- TODO-GeneratedDiagnosticCommands: generated files and preludes should
+    -- carry missing-code diagnostics as comments or metadata, not active #check.
     let code := code?.getD (← `(commandSeq|#check "No code generated"))
     TryThis.addSuggestion stx code
 | _ => throwUnsupportedSyntax

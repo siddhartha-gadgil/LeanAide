@@ -208,6 +208,9 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   catch _ =>
   traceAide `leanaide.codegen.info "Trying exact tactics or automation"
 
+  -- TODO-PseudoLengthLocalExpander: expose conjuncts of pseudo-length and
+  -- homogeneous pseudo-length hypotheses as named local haves before broad
+  -- automation, so later tactics work on smaller goals with reusable facts.
   -- TODO-TacticOrderQuick: keep this generic automation path, but split its
   -- tactics into cheap deterministic candidates and expensive suggestion
   -- queries.  The July 28 traces show time lost when slow failing `simp?` /
@@ -316,6 +319,8 @@ def findTactics? (goal :  MVarId):
 def findTacticsI (goal :  MVarId):
     TranslateM (Array (Syntax.Tactic)) := goal.withContext do
   let tacs? ← findTactics? goal
+  -- TODO-RepeatSorryProofFailure: terminal `repeat (sorry)` is an open proof
+  -- obligation, not a successful proof result; diagnostics should report it.
   let defaultTacs ← `(tacticSeq| repeat (sorry))
   return getTactics <| tacs?.getD defaultTacs
 
@@ -365,6 +370,8 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
       appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
     | none => do
       traceAide `leanaide.codegen.info s!"no auto tactics found for goal: {← ppExpr <| ← goal.getType}"
+      -- TODO-RepeatSorryProofFailure: this fallback should propagate a proof
+      -- failure status instead of being treated as generated proof success.
       appendTacticSeqSeq tacs (← `(tacticSeq| repeat (sorry)))
 
 

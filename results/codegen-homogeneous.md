@@ -864,3 +864,17 @@ Then verify in Lean that the term has the target type before accepting it.
 5. Reject strict translations that contain `sorryAx`, metavariables, or sub-line fallbacks.
 
 6. Replace raw materialized deduced-from-claim assertions with either omitted hypotheses, checked specializations, or named local theorem obligations.
+
+Python-side priority status:
+
+| priority | status | implementation site |
+|---|---|---|
+| formal theorem context extraction | implemented deterministically for common forms and sent to the consolidated LLM repairer for paraphrases | `mathdoc_agent/orchestration/lean_lint.py`, `mathdoc_agent/orchestration/lean_json_repair.py` |
+| checked instantiated theorem dependencies | unsafe executable names are demoted; exact term synthesis/verification remains TODO | `TODO-TheoremDependencyLeanTerm` in `mathdoc_agent/orchestration/mathlib_reuse.py` |
+| final audit for materialized claim haves | residual claim dependencies now become named local theorem obligations; paraphrases are included in the LLM repair pass | `mathdoc_agent/orchestration/deduced_from_claim_rewrite.py`, `mathdoc_agent/orchestration/lean_json_repair.py` |
+| structured construction/destructuring JSON | LLM repair pass added; typed construction/destructuring schemas remain TODO | `TODO-StructuredConstructionSchema` in `mathdoc_agent/mathagents/prompts.py` |
+
+The duplicate-context, positivity, English-application, and mixed-chain
+normalizations are now implemented rather than left as TODOs.  The new
+consolidated LLM repairer is intended to catch paraphrases that do not match
+those deterministic normalizers.

@@ -290,6 +290,8 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
         return s!" with value `{valueStr}`"
     let valueStr := valueStr?.getD ""
     let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}{valueStr}"
+    -- TODO-GeneratedDiagnosticCommands: command-generation diagnostics should
+    -- not become active #check/#eval commands in generated code or preludes.
     let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
     return some stx
 | some goal, ``tacticSeq, js => goal.withContext do

@@ -12,7 +12,9 @@ from copy import deepcopy
 from typing import Any
 
 from mathdoc_agent.orchestration.deduced_from_claim_rewrite import (
+    local_obligation_theorem_from_claim,
     materialize_remaining_deduced_from_claims,
+    remove_contextual_deduced_from_claims,
 )
 
 
@@ -69,7 +71,8 @@ _LOCAL_DEFINITION_PREFIXES = (
     "write ",
 )
 
-_RELATION_BOUNDARY = r"<=|>=|≤|≥|=|<|>"
+_RELATION_BOUNDARY = r"<=|>=|≤|≥|=|<|>|\bequals\b"
+_RELATION_TOKEN_RE = re.compile(r"\s*(<=|>=|≤|≥|=|<|>)\s*")
 
 
 def _escape_pointer_part(part: str) -> str:
@@ -247,9 +250,60 @@ def _normalize_conjugate_claim(text: str) -> str:
     return f"∃ g, {lhs} = g * ({rhs}) * g⁻¹"
 
 
+def _split_mixed_relation_chain(text: str) -> list[str] | None:
+    if any(token in text for token in ("∀", "∃", "→", "->")):
+        return None
+    parts = _RELATION_TOKEN_RE.split(text.strip().rstrip("."))
+    if len(parts) < 5:
+        return None
+    terms = parts[0::2]
+    relations = parts[1::2]
+    if len(relations) < 2:
+        return None
+    if any(not term.strip() for term in terms):
+        return None
+    if any(re.search(r"\b(and|or|if|then|because|since)\b", term, re.IGNORECASE) for term in terms):
+        return None
+    return [
+        f"{left.strip()} {relation} {right.strip()}"
+        for left, relation, right in zip(terms, relations, terms[1:])
+    ]
+
+
+def _split_assertion_mixed_relation_chain(value: dict[str, Any], claim: str) -> list[dict[str, Any]] | None:
+    split_claims = _split_mixed_relation_chain(claim)
+    if split_claims is None:
+        return None
+    original_name = value.get("name")
+    omitted_keys = {
+        "claim",
+        "name",
+        "from",
+        "relation",
+        "to",
+        "start",
+        "target",
+        "source_claim",
+    }
+    base = {
+        key: deepcopy(item)
+        for key, item in value.items()
+        if key not in omitted_keys
+    }
+    steps: list[dict[str, Any]] = []
+    for index, split_claim in enumerate(split_claims, start=1):
+        step = {**base, "claim": split_claim}
+        if isinstance(original_name, str) and original_name.strip():
+            step["name"] = f"{original_name}_{index}"
+        step["proof_method"] = "Split from a mixed relation chain in the source assertion."
+        steps.append(step)
+    return steps
+
+
 def _normalize_lean_facing_text(text: str) -> str:
     normalized = _normalize_applied_to(text)
     normalized = _normalize_conjugate_claim(normalized)
+    normalized = re.sub(r"(?<!\bnot\s)\bequals\b", "=", normalized, flags=re.IGNORECASE)
     return normalized
 
 
@@ -286,6 +340,131 @@ def _argument_names(raw_args: str) -> list[str]:
         else:
             args.append(_ascii_identifier(arg, fallback="arg"))
     return args
+
+
+def _split_context_clauses(body: str) -> list[str]:
+    """Split simple ambient-context clauses without parsing mathematical `and`."""
+    return [
+        clause.strip()
+        for clause in re.split(r"\s+and\s+", body)
+        if clause.strip()
+    ]
+
+
+def _type_and_properties_from_description(description: str) -> tuple[str, str | None]:
+    description = " ".join(description.strip().split())
+    lowered = description.casefold()
+    if lowered in {"positive integer", "positive natural number", "positive nat"}:
+        return description.split(" ", 1)[1], "positive"
+    if lowered.startswith("positive "):
+        return description[len("positive ") :], "positive"
+    return description, None
+
+
+def _structured_assumption_step(
+    *,
+    name: str,
+    variable_type: str,
+    assumption: str,
+    properties: str | None = None,
+) -> dict[str, Any]:
+    step = {
+        "type": "assume_statement",
+        "assumption": assumption,
+        "variable_name": _ascii_identifier(name),
+        "variable_type": variable_type.strip(),
+    }
+    if properties is not None and properties.strip():
+        step["properties"] = properties.strip()
+    return step
+
+
+def _structured_assumption_steps_from_sentence(sentence: str) -> list[dict[str, Any]]:
+    text = _normalize_source_context_text(sentence)
+    lowered = text.casefold()
+    prefix = None
+    for candidate in ("let ", "fix ", "assume "):
+        if lowered.startswith(candidate):
+            prefix = candidate
+            break
+    if prefix is None:
+        return []
+
+    body = text[len(prefix) :].strip()
+    if not body:
+        return []
+
+    steps: list[dict[str, Any]] = []
+    for clause in _split_context_clauses(body):
+        match = re.fullmatch(
+            r"([A-Za-z_][A-Za-z0-9_']*)\s*:\s*(.+?)\s+be\s+(?:a|an|the)?\s*(.+)",
+            clause,
+            flags=re.IGNORECASE,
+        )
+        if match is not None:
+            steps.append(
+                _structured_assumption_step(
+                    name=match.group(1),
+                    variable_type=match.group(2),
+                    properties=match.group(3),
+                    assumption=text,
+                )
+            )
+            continue
+
+        match = re.fullmatch(
+            r"([A-Za-z_][A-Za-z0-9_']*)\s*:\s*(.+)",
+            clause,
+            flags=re.IGNORECASE,
+        )
+        if match is not None:
+            steps.append(
+                _structured_assumption_step(
+                    name=match.group(1),
+                    variable_type=match.group(2),
+                    assumption=text,
+                )
+            )
+            continue
+
+        match = re.fullmatch(
+            r"([A-Za-z_][A-Za-z0-9_']*(?:\s*,\s*[A-Za-z_][A-Za-z0-9_']*)*)\s+in\s+(.+)",
+            clause,
+            flags=re.IGNORECASE,
+        )
+        if match is not None:
+            variable_type = match.group(2).strip()
+            for name in _argument_names(match.group(1)):
+                steps.append(
+                    _structured_assumption_step(
+                        name=name,
+                        variable_type=variable_type,
+                        assumption=text,
+                    )
+                )
+            continue
+
+        match = re.fullmatch(
+            r"([A-Za-z_][A-Za-z0-9_']*)\s+be\s+(?:a|an|the)?\s*(.+)",
+            clause,
+            flags=re.IGNORECASE,
+        )
+        if match is not None:
+            variable_type, properties = _type_and_properties_from_description(
+                match.group(2)
+            )
+            steps.append(
+                _structured_assumption_step(
+                    name=match.group(1),
+                    variable_type=variable_type,
+                    properties=properties,
+                    assumption=text,
+                )
+            )
+            continue
+
+        return []
+    return steps
 
 
 def _function_definition_step(body: str) -> dict[str, Any] | None:
@@ -345,6 +524,10 @@ def _source_context_steps(source: str) -> list[dict[str, Any]]:
         if definition_step is not None:
             steps.append(definition_step)
             continue
+        structured_steps = _structured_assumption_steps_from_sentence(sentence)
+        if structured_steps:
+            steps.extend(structured_steps)
+            continue
         if lowered.startswith(_SOURCE_CONTEXT_PREFIXES):
             steps.append(
                 {
@@ -360,6 +543,18 @@ def _source_context_steps(source: str) -> list[dict[str, Any]]:
 
 def _same_text(left: str, right: str) -> bool:
     return " ".join(left.split()).casefold() == " ".join(right.split()).casefold()
+
+
+def _assumption_identity(step: dict[str, Any]) -> tuple[str, str]:
+    assumption = step.get("assumption")
+    variable_name = step.get("variable_name")
+    assumption_text = (
+        " ".join(assumption.split()).casefold()
+        if isinstance(assumption, str)
+        else ""
+    )
+    variable_text = variable_name if isinstance(variable_name, str) else ""
+    return (assumption_text, variable_text)
 
 
 def _context_normal_form(text: str) -> str:
@@ -426,8 +621,23 @@ def _context_entry_from_step(value: Any) -> str | None:
     if not isinstance(value, dict):
         return None
     step_type = value.get("type")
+    if step_type == "assume_statement":
+        assumption = value.get("assumption")
+        if isinstance(assumption, str) and assumption.strip():
+            return assumption
+        variable_name = value.get("variable_name")
+        variable_type = value.get("variable_type")
+        properties = value.get("properties")
+        if isinstance(variable_name, str) and variable_name.strip():
+            if isinstance(variable_type, str) and variable_type.strip():
+                text = f"{variable_name} is a {variable_type}"
+            else:
+                text = variable_name
+            if isinstance(properties, str) and properties.strip():
+                text = f"{text}; {properties}"
+            if text != variable_name:
+                return text
     key = {
-        "assume_statement": "assumption",
         "assert_statement": "claim",
         "theorem": "claim",
     }.get(str(step_type))
@@ -456,11 +666,11 @@ def _promote_source_context_hypotheses(value: dict[str, Any]) -> dict[str, Any]:
         return value
     existing = value.get("hypothesis")
     hypotheses = list(existing) if isinstance(existing, list) else []
-    existing_assumptions = [
-        item.get("assumption")
+    existing_assumptions = {
+        _assumption_identity(item)
         for item in hypotheses
         if isinstance(item, dict) and isinstance(item.get("assumption"), str)
-    ]
+    }
     existing_defs = {
         item.get("variable_name")
         for item in hypotheses
@@ -482,10 +692,11 @@ def _promote_source_context_hypotheses(value: dict[str, Any]) -> dict[str, Any]:
         assumption = step.get("assumption")
         if not isinstance(assumption, str):
             continue
-        if any(_same_text(assumption, existing_item) for existing_item in existing_assumptions):
+        identity = _assumption_identity(step)
+        if identity in existing_assumptions:
             continue
         hypotheses.append(step)
-        existing_assumptions.append(assumption)
+        existing_assumptions.add(identity)
         added = True
     if not added:
         return value
@@ -495,17 +706,20 @@ def _promote_source_context_hypotheses(value: dict[str, Any]) -> dict[str, Any]:
 def _repair_stale_materialized_claim_obligation(value: dict[str, Any]) -> dict[str, Any]:
     if (
         value.get("type") != "assert_statement"
-        or value.get("proof_method") != "Materialized from deduced_from_claim."
+        or value.get("proof_method")
+        not in {
+            "Materialized from deduced_from_claim.",
+            "Named local obligation from unresolved claim dependency.",
+        }
     ):
         return value
     claim = value.get("claim")
     if not isinstance(claim, str) or not claim.strip():
         return value
-    repaired = {
-        **value,
-        "proof_method": "Named local obligation from unresolved claim dependency.",
-    }
-    repaired.setdefault("name", _lean_identifier_from_text(claim, fallback="local_obligation"))
+    repaired = local_obligation_theorem_from_claim(claim)
+    for key, item in value.items():
+        if key not in repaired and key not in {"type", "proof_method"}:
+            repaired[key] = item
     source = repaired.get("source")
     if not isinstance(source, dict):
         repaired["source"] = {"text": claim, "kind": "deduced_from_claim"}
@@ -652,6 +866,14 @@ def _lint_string_field(key: str, value: str, path: str) -> list[dict[str, str]]:
     return issues
 
 
+def _should_normalize_codegen_text(key: str, path: str) -> bool:
+    if key not in _CODEGEN_STRING_FIELDS:
+        return False
+    if "/deduced_from_theorem/" in path and key == "claim":
+        return False
+    return True
+
+
 def _annotate_object(value: dict[str, Any], issues: list[dict[str, str]]) -> dict[str, Any]:
     if not issues:
         return value
@@ -689,6 +911,7 @@ def _normalize_theorem_dependencies(
             and lean_name.strip()
             and not (isinstance(lean_term, str) and lean_term.strip())
         ):
+            requires_instantiation = item.get("requires_instantiation") is True
             item = {
                 key: entry
                 for key, entry in item.items()
@@ -696,30 +919,24 @@ def _normalize_theorem_dependencies(
             }
             item.setdefault("lean_name_candidate", lean_name)
             item.setdefault("verification_status", "unverified")
+            if requires_instantiation:
+                item["formalization_status"] = item.get(
+                    "formalization_status",
+                    "unresolved_lean_term",
+                )
+                issues.append(
+                    _issue(
+                        item_path,
+                        "lean_name_without_lean_term",
+                        (
+                            "`lean_name` is only a declaration hint here; no exact "
+                            "`lean_term` was supplied for this theorem instance."
+                        ),
+                    )
+                )
             changed = True
             normalized_dependencies.append(item)
             continue
-        if (
-            isinstance(lean_name, str)
-            and lean_name.strip()
-            and not (isinstance(lean_term, str) and lean_term.strip())
-            and item.get("requires_instantiation") is True
-        ):
-            item = {
-                **item,
-                "formalization_status": item.get("formalization_status", "unresolved_lean_term"),
-            }
-            changed = True
-            issues.append(
-                _issue(
-                    item_path,
-                    "lean_name_without_lean_term",
-                    (
-                        "`lean_name` is only a declaration hint here; no exact "
-                        "`lean_term` was supplied for this theorem instance."
-                    ),
-                )
-            )
         normalized_dependencies.append(item)
 
     if changed:
@@ -775,10 +992,13 @@ def _normalize_value(value: Any, path: str = "") -> tuple[Any, list[dict[str, st
                 local_issues.extend(_lint_string_field(key, item, _child_path(path, key)))
                 continue
         child, child_issues = _normalize_value(item, _child_path(path, key))
+        child_path = _child_path(path, key)
+        if isinstance(child, str) and _should_normalize_codegen_text(key, child_path):
+            child = _normalize_lean_facing_text(child)
         normalized[key] = child
         issues.extend(child_issues)
-        if isinstance(item, str):
-            local_issues.extend(_lint_string_field(key, item, _child_path(path, key)))
+        if isinstance(child, str):
+            local_issues.extend(_lint_string_field(key, child, child_path))
 
     normalized, dependency_issues = _normalize_theorem_dependencies(normalized, path)
     local_definition = _local_definition_from_step(normalized)
@@ -972,10 +1192,14 @@ def normalize_proof_steps_for_lean_context(
             )
             if normalized is None:
                 continue
-            normalized_items.append(normalized)
-            entry = _context_entry_from_step(normalized)
-            if entry is not None:
-                running_context.append(entry)
+            normalized_sequence = normalized if isinstance(normalized, list) else [normalized]
+            for normalized_item in normalized_sequence:
+                if normalized_item is None:
+                    continue
+                normalized_items.append(normalized_item)
+                entry = _context_entry_from_step(normalized_item)
+                if entry is not None:
+                    running_context.append(entry)
         return normalized_items
 
     if not isinstance(value, dict):
@@ -984,6 +1208,9 @@ def normalize_proof_steps_for_lean_context(
     local_context = [*context, *_context_from_hypotheses(value)]
     normalized: dict[str, Any] = {}
     for key, item in value.items():
+        if key == "deduced_from_theorem":
+            normalized[key] = item
+            continue
         child_context = local_context if key == "proof" else context
         if key in {
             "proof",
@@ -1007,6 +1234,9 @@ def normalize_proof_steps_for_lean_context(
             normalized["claim"] = normalized_claim
             if _claim_available_in_context(normalized_claim, context):
                 return None
+            split_steps = _split_assertion_mixed_relation_chain(normalized, normalized_claim)
+            if split_steps is not None:
+                return split_steps
     elif step_type == "assume_statement":
         assumption = normalized.get("assumption")
         if isinstance(assumption, str):
@@ -1022,7 +1252,8 @@ def normalize_proof_steps_for_lean_context(
 
 def finalize_lean_facing_json(data: dict[str, Any]) -> dict[str, Any]:
     """Return JSON normalized for Lean codegen plus structured lint metadata."""
-    materialized = materialize_remaining_deduced_from_claims(deepcopy(data))
+    context_cleaned = remove_contextual_deduced_from_claims(data)
+    materialized = materialize_remaining_deduced_from_claims(context_cleaned)
     flattened = flatten_redundant_proof_wrappers(materialized)
     deduplicated = deduplicate_redundant_proof_steps(flattened)
     context_normalized = normalize_proof_steps_for_lean_context(deduplicated)

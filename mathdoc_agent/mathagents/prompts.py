@@ -147,6 +147,10 @@ Do not invent a `lean_term` if the local Lean names are not available; leave an
 unresolved detail instead.
 """
 
+# TODO-StructuredConstructionSchema(generation-check-homogeneous): replace
+# prompt-only guidance for complex constructions with typed
+# construction/destructuring JSON schemas so quotient, tensor, completion,
+# induced-map, and prior-existence uses are represented structurally.
 SIMPLE_PROOF_INSTRUCTIONS = """
 Refine a simple proof fragment by extracting method, hints, referenced lemmas,
 referenced hypotheses, intermediate proof steps, and unresolved details. Do not
@@ -202,6 +206,13 @@ not an instruction. For example use `B(x, ε/3) ∩ B(y, ε/3) ≠ ∅`,
 `z ∈ B(x, ε/3) ∩ B(y, ε/3)`, or
 `B(x, ε/3) ∩ B(y, ε/3) = ∅`, not "negate the desired conclusion",
 "produce a witness", "verify the witness", or "conclude the claim".
+Do not put a mixed chain such as `A = B ≤ C = D` in one assertion. Split it
+into separate assertions `A = B`, `B ≤ C`, and `C = D`, followed by a final
+conclusion only when the source explicitly states one.
+Do not leave informal predicates such as "`a` is conjugate to `b`" unless a
+formal conjugacy predicate has already been introduced. Prefer an explicit
+equation with a conjugator, such as `a = g * b * g⁻¹`, or a precise existential
+claim giving that conjugator.
 Keep claims close to Lean-codegen prose. Prefer local ASCII names already
 introduced in the proof over raw display notation: use `barL` instead of
 `\\bar l`, `normQ` instead of `‖·‖_ℚ` or `||·||_Q`, `VQ` instead of
@@ -227,6 +238,9 @@ Avoid extracting obvious typing side conditions as standalone assertions, for
 example `x ∈ G`, `s^{-1} ∈ G`, `n > 0`, or "`l` is a pseudo-length function",
 when they are already hypotheses or fixed-variable context. Keep them in
 assumptions, variable types, or proof methods instead.
+When the source fixes a positive integer/natural number, keep the positivity in
+the assumption or variable type. Do not later re-emit `0 < n` as a new
+`assert_statement` unless that positivity is genuinely proved inside the proof.
 If a proof uses a complex construction, such as a quotient, tensor product,
 completion, induced function, lifted map, or destructuring an existential
 theorem, introduce explicit named objects with `let_statement` steps and record
@@ -550,6 +564,44 @@ Preferred repairs:
 Do not delete content and do not mark entries unsupported. If exact Lean syntax
 is unavailable, use precise ASCII mathematical prose that has no informal local
 notation.
+"""
+
+LEAN_JSON_REPAIR_INSTRUCTIONS = """
+Repair exported PaperStructure JSON before Lean code generation.
+
+You receive high-risk JSON entries selected by deterministic linters. Make
+source-faithful, Lean-facing repairs using patches only. Prefer one consolidated
+patch set that fixes several related problems in the same local context.
+
+Repair priorities:
+- Convert ambient source context into formal `hypothesis` entries on theorem
+  objects. Use `assume_statement` objects with `assumption`, and when clear also
+  `variable_name`, `variable_type`, and `properties`.
+- Do not leave local hypotheses or fixed-variable facts as new proof haves. If
+  a claim is already in hypothesis/context, remove the duplicate object.
+- If a `deduced_from_theorem` entry cites a theorem used at particular local
+  variables/hypotheses, add an exact `lean_term` only when the term is clear.
+  Otherwise demote any executable name to `lean_name_candidate` with
+  `verification_status`.
+- Replace informal application prose, mixed relation chains, and informal
+  predicates such as "is conjugate to" with explicit Lean-facing propositions
+  or smaller proof steps.
+- Replace unresolved materialized claim assertions with separate local theorem
+  objects when the claim genuinely needs proof before use.
+- For quotient, tensor, completion, induced-map, lifted-map, and existence
+  destructuring prose, introduce explicit named objects with types/values and
+  separate property assertions. Do not ask Lean codegen to invent objects from
+  prose.
+
+Patch actions:
+- `replace_object`: replace the object at `path` with `value`.
+- `replace_string`: replace a string field at `path` with `text`.
+- `insert_before`: insert `value` before the object at `path`.
+- `remove_object`: remove the object at `path`.
+- `append_hypothesis`: append `value` to the theorem object at `path`.
+
+Never remove mathematical content. Do not invent a Lean theorem name or
+`lean_term`. When in doubt, make the JSON more explicit rather than more terse.
 """
 
 DEDUCED_FROM_CLAIM_REWRITE_INSTRUCTIONS = """

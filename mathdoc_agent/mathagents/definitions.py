@@ -21,6 +21,7 @@ from mathdoc_agent.models.refinement_specs import (
     DocumentRefinementSpec,
     InformalNotationRepairSpec,
     InductionRefinementSpec,
+    LeanJsonRepairSpec,
     ProofResolutionSpec,
     ProofSanityAuditSpec,
     SimpleProofRefinementSpec,
@@ -154,6 +155,11 @@ informal_notation_repair_agent = _agent(
     "Informal notation repairer",
     prompts.INFORMAL_NOTATION_REPAIR_INSTRUCTIONS,
     InformalNotationRepairSpec,
+)
+lean_json_repair_agent = _agent(
+    "Lean JSON repairer",
+    prompts.LEAN_JSON_REPAIR_INSTRUCTIONS,
+    LeanJsonRepairSpec,
 )
 
 proof_resolution_agents = {

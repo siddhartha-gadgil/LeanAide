@@ -914,7 +914,7 @@ Allowed actions:
 - `insert_lemma_before`: insert a named theorem with its own proof steps.
 
 After applying patches, the pipeline deterministically materializes any
-remaining `deduced_from_claim` dependencies as explicit assertions.
+remaining `deduced_from_claim` dependencies as named local theorem obligations.
 
 ### `claim_audit_agent`
 
@@ -1037,6 +1037,92 @@ Allowed actions:
 - `replace_claim`: replace only the claim string.
 - `replace_assertion_with_steps`: replace the enclosing `assert_statement` with
   a proof object containing smaller `LogicalProofStepData` steps.
+
+### `lean_json_repair_agent`
+
+Definition:
+
+```python
+lean_json_repair_agent = _agent(
+    "Lean JSON repairer",
+    prompts.LEAN_JSON_REPAIR_INSTRUCTIONS,
+    LeanJsonRepairSpec,
+)
+```
+
+Used by:
+
+- `repair_lean_json_with_llm` after theorem-dependency enrichment and before
+  final deterministic Lean-facing normalization.
+
+Expected input payload:
+
+```json
+{
+  "task": "Repair high-risk exported PaperStructure JSON before Lean code generation. Return only JSON-pointer patches.",
+  "repair_entries": [
+    {
+      "path": "/document/body/0/proof/proof_steps/1",
+      "reasons": ["informal_or_compound_string", "theorem_dependency"],
+      "object": {
+        "type": "assert_statement",
+        "claim": "l applied to v equals f applied to m + 1 and k - 1",
+        "deduced_from_theorem": [
+          {
+            "claim": "general theorem",
+            "lean_name_candidate": "candidate_name"
+          }
+        ]
+      }
+    }
+  ],
+  "patch_rules": {
+    "replace_object": "Use for malformed or understructured JSON objects.",
+    "replace_string": "Use for one bad Lean-facing string field.",
+    "insert_before": "Use to add a local theorem, let, or assumption before use.",
+    "remove_object": "Use only for duplicate context facts already available.",
+    "append_hypothesis": "Use to add missing theorem context from source."
+  }
+}
+```
+
+Function:
+
+- Consolidate paraphrase-sensitive repairs that rule-based passes may miss.
+- Add formal theorem hypotheses from source context when the phrasing is not
+  caught by deterministic context parsing.
+- Repair informal application prose, mixed relation chains, informal predicates,
+  theorem-dependency instantiations, materialized local obligations, and complex
+  construction/destructuring prose in one local patch set.
+- Keep edits scoped to high-risk JSON entries selected by deterministic
+  linters.
+- Send bounded batches controlled by
+  `MATHDOC_AGENT_LEAN_JSON_REPAIR_BATCH_SIZE` (default `20`).
+
+Output schema: `LeanJsonRepairSpec`.
+
+```json
+{
+  "patches": [
+    {
+      "path": "/document/body/0/proof/proof_steps/1/claim",
+      "action": "replace_string",
+      "text": "l v = f (m + 1) (k - 1)",
+      "value": null,
+      "notes": []
+    }
+  ],
+  "notes": []
+}
+```
+
+Allowed actions:
+
+- `replace_object`: replace the object at `path`.
+- `replace_string`: replace the string field at `path`.
+- `insert_before`: insert an object before an array item.
+- `remove_object`: remove an object or field.
+- `append_hypothesis`: append one hypothesis object to a theorem.
 
 ### `informal_notation_repair_agent`
 

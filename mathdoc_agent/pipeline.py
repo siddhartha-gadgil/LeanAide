@@ -36,6 +36,7 @@ from mathdoc_agent.orchestration.informal_notation_repair import (
     repair_informal_notation_for_lean,
 )
 from mathdoc_agent.orchestration.lean_lint import finalize_lean_facing_json
+from mathdoc_agent.orchestration.lean_json_repair import repair_lean_json_with_llm
 from mathdoc_agent.orchestration.mathlib_reuse import (
     enrich_theorem_dependencies,
     record_mathlib_definitions,
@@ -60,6 +61,7 @@ _DEFAULT_PROOF_SANITY_AGENT = object()
 _DEFAULT_PROOF_SANITY_REPAIR_AGENT = object()
 _DEFAULT_SOURCE_COVERAGE_AGENT = object()
 _DEFAULT_CALCULATION_AUDIT_AGENT = object()
+_DEFAULT_LEAN_JSON_REPAIR_AGENT = object()
 _LEANAIDE_LAKE_NAME = "LeanAide"
 _LEANAIDE_PROCESS_URL = "http://localhost:7654"
 _LEANAIDE_READY_PREFIX = "Server ready"
@@ -517,6 +519,7 @@ async def generate_math_document_json(
     proof_sanity_repair_agent: Any | None = _DEFAULT_PROOF_SANITY_REPAIR_AGENT,
     source_coverage_agent: Any | None = _DEFAULT_SOURCE_COVERAGE_AGENT,
     calculation_audit_agent: Any | None = _DEFAULT_CALCULATION_AUDIT_AGENT,
+    lean_json_repair_agent: Any | None = _DEFAULT_LEAN_JSON_REPAIR_AGENT,
     proof_resolution_agents: (
         dict[str, object] | None | object
     ) = _DEFAULT_PROOF_RESOLUTION_AGENTS,
@@ -596,6 +599,16 @@ async def generate_math_document_json(
             else calculation_audit_agent
         )
     )
+    resolved_lean_json_repair_agent = (
+        definitions.lean_json_repair_agent
+        if lean_json_repair_agent is _DEFAULT_LEAN_JSON_REPAIR_AGENT
+        and using_default_registries
+        else (
+            None
+            if lean_json_repair_agent is _DEFAULT_LEAN_JSON_REPAIR_AGENT
+            else lean_json_repair_agent
+        )
+    )
     document = await generate_math_document(
         source_text,
         id=id,
@@ -644,6 +657,7 @@ async def generate_math_document_json(
     )
     data = await rewrite_informal_claims_for_lean(data, resolved_claim_agent)
     data = await asyncio.to_thread(enrich_theorem_dependencies, data)
+    data = await repair_lean_json_with_llm(data, resolved_lean_json_repair_agent)
     data = finalize_lean_facing_json(data)
     return json.dumps(data, indent=indent, ensure_ascii=False)
 
@@ -665,6 +679,7 @@ def generate_math_document_json_sync(
     proof_sanity_repair_agent: Any | None = _DEFAULT_PROOF_SANITY_REPAIR_AGENT,
     source_coverage_agent: Any | None = _DEFAULT_SOURCE_COVERAGE_AGENT,
     calculation_audit_agent: Any | None = _DEFAULT_CALCULATION_AUDIT_AGENT,
+    lean_json_repair_agent: Any | None = _DEFAULT_LEAN_JSON_REPAIR_AGENT,
     proof_resolution_agents: (
         dict[str, object] | None | object
     ) = _DEFAULT_PROOF_RESOLUTION_AGENTS,
@@ -686,6 +701,7 @@ def generate_math_document_json_sync(
             proof_sanity_repair_agent=proof_sanity_repair_agent,
             source_coverage_agent=source_coverage_agent,
             calculation_audit_agent=calculation_audit_agent,
+            lean_json_repair_agent=lean_json_repair_agent,
             proof_resolution_agents=proof_resolution_agents,
         )
     )
