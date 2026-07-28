@@ -1,5 +1,202 @@
 # Generation check for `results/homogeneous.md`
 
+## Update: July 28 rebuilt core rerun
+
+### Run status and headline result
+
+The fresh invocation
+
+```bash
+lake exe codegen results/core-homogeneous.json
+```
+
+ran from 15:34:04 to 17:57:26 in `.logs/2026-07-28.log`, made real LLM
+calls through the local server, wrote `CodeGen/Live/core-homogeneous.lean`
+and `CodeGen/core-homogeneous.lean`, and exited 1.  The nonzero exit is now
+caused by the final elaboration pass reporting
+
+```text
+invalid 'import' command, it must be used in the beginning of the file
+```
+
+This is a different failure mode from July 27.  July 27 failed because the
+final checker missed dynamic universe declarations and because proof-node
+validation errors dropped Lemmas 1, 3, and 4.  July 28 shows that the theorem
+retention path has improved: all four lemmas are present in the generated
+file.  However, each proof still ends with `repeat (sorry)`, so this is not a
+proof-completion success.
+
+| Result | July 27 | July 28 |
+|---|---:|---:|
+| live-file lines | 82 | 237 |
+| final-file lines | 128 | 255 |
+| ordinary definitions emitted | 4/4 | 4/4 |
+| deferred root proposition emitted | yes | yes |
+| proof-bearing Lemmas 1--4 emitted | 1/4 | 4/4 |
+| emitted lemmas with terminal `repeat (sorry)` | 1 | 4 |
+| codegen exit status | 1 | 1 |
+
+The final embedded elaboration summary is misleading in one respect: it says
+`Sorries: none`, but the elaboration result is `fallback` because the frontend
+found the misplaced `import`.  Since that pass did not successfully elaborate
+the file, its sorry summary cannot be trusted.  The generated file itself has
+four explicit terminal `repeat (sorry)` sites, one in each lemma.
+
+### What improved
+
+1. **No proof-bearing lemma is now silently dropped.**  The final declaration
+   list is `PseudoLength`, `IsLength`, `IsHomogeneousPseudoLength`,
+   `core_homogeneous_root_homogeneity_square.prop`, `IsTorsionFree`,
+   `lemma_1`, `lemma_2`, `lemma_3`, and `lemma_4`.  This is the main
+   improvement over July 27.
+2. **The earlier local-universe loss no longer stops theorem retention.**
+   The generated file includes dynamic universes `u_12` through `u_16`, and
+   the theorem declarations using them are emitted.
+3. **The local context and previous code are still reaching translation
+   prompts.**  The trace repeatedly includes the generated code context and
+   an `Available variables` block before local assertion translation.
+4. **The statement-translation response count reduction is active.**  The
+   first OpenAI payload in the July 28 log uses `"n": 4`, not the earlier
+   eight-candidate setting.  The run still produced valid top-level
+   statements, so this change did not cause an observable statement-layer
+   regression on this core file.
+
+### Regressions and remaining output defects
+
+1. **The final validation path still assembles the frontend input
+   incorrectly.**  `codegen.lean` writes the final file by combining
+   `top_code` and `document_code`, then calls `elaborateTask result
+   translator`.  `elaborateTask` reads `top_code`, but the final frontend
+   result reports an `import Mathlib` after earlier commands.  The required
+   fix is to ensure the validation call uses exactly the same top/document
+   split as `generatedFileContents`, with all imports in the top prefix and
+   no imports in the document body.  This is now the cause of the nonzero
+   process exit.
+2. **Diagnostic `#check` strings are still generated and still enter
+   preludes.**  The generated Lean contains four active `#check` commands
+   checking string literals for `commutatorElement`, `commutator`,
+   `Abelianization`, and `AddCommGroup.torsion`.  These should be metadata or
+   comments, not executable declarations or prompt prelude material.
+3. **Mathlib-lookup replacement remains incomplete.**  The run still emits
+   `def IsTorsionFree (A : Type u_12) [AddCommGroup A] : Prop :=
+   AddCommGroup.torsion A = ⊥` immediately after a diagnostic lookup of
+   `AddCommGroup.torsion`.  If the intended object is already represented in
+   Mathlib, the Python/lookup layer should record and reuse that name rather
+   than generate a new definition with a broad name.
+4. **The generated statements still use local `have` binders in theorem
+   types.**  Lemmas 2 and 4 have theorem statements containing
+   `have C : ... := ...;` and `have f : ... := ...;`.  This elaborates, but it
+   is poor generated API: these should be explicit `let` binders or ordinary
+   quantified parameters followed by a body-level local definition.
+
+### Lemma-by-lemma proof status
+
+| Lemma | July 28 generated? | Proof status | Main failed proof nodes |
+|---|---:|---|---|
+| Lemma 1, conjugation invariance | yes | partial prefix plus `repeat (sorry)` | first inequality `l (y*x*y⁻¹) ≤ l x`; homogeneity specializations; division by positive integer; limiting argument; reverse inequality |
+| Lemma 2, bound for `C n` | yes | base case and several successor assertions generated, then `repeat (sorry)` | use of conjugation invariance in the successor step; applying the induction hypothesis; final transitive inequality |
+| Lemma 3, two-conjugacy estimate | yes | only an inverse-symmetry assertion retained, then `repeat (sorry)` | powers of conjugates; `2n*l(a)=l(a^(2n))`; applying Lemma 2; final limit step |
+| Lemma 4, convexity/subharmonic inequality | yes | many definitional identities retained, then `repeat (sorry)` | prose claims of the form “is conjugate to”; using Lemma 3; translating `f applied to ...`; final inequality |
+
+Thus no lemma failed to generate a declaration in this run, but all four
+failed to generate complete proof code.  The current behavior is better for
+debugging than dropping declarations, but it should be reported as proof
+failure rather than success.
+
+### Python/JSON causes still visible in the run
+
+Several failed assertions come directly from JSON that is too informal for the
+Lean stage:
+
+- `l is a homogeneous pseudo-length function on G` is emitted as an
+  `assert_statement` even though it is already the local hypothesis.  Codegen
+  tries to translate it and obtains the unrelated target
+  `l (y * x * y⁻¹) = l x`.
+- `0 < n` is emitted as a fresh assertion outside the local binder where `n`
+  is known positive, again causing translation to drift to the ambient theorem
+  target.
+- Claims such as `a is conjugate to w * u` and `v is conjugate to
+  x^(m+1)c^(k-1)` are not formal Lean claims.  The Python side should either
+  translate them to an explicit `∃ g, ...`/`IsConj` statement, if that is the
+  intended Lean API, or rewrite them into the concrete equality needed by the
+  subsequent proof step.
+- “applied to” prose remains in Lemma 4 claims, for example `f applied to m
+  + 1 and k - 1`.  These should be normalized before JSON emission to Lean
+  syntax-like text such as `f (m + 1) (k - 1)`.
+- The proof still contains limit arguments over positive integers as
+  informal assertions.  These need either named Mathlib lemmas supplied by
+  lookup or separate generated lemmas with explicit Lean statements; raw
+  automation cannot infer the intended analytic step from the prose.
+
+### Lean/codegen proof-search issues
+
+The July 28 log contains 68 `Trying automation tactics` rounds and 35
+`failed to find tactics for assertion` diagnostics.  Some failures are
+mathematically hard, but many are avoidable sequencing costs.
+
+For simple group identities, the successful tactic is often discovered by
+Lean's suggestion machinery after starting with generic automation.  For
+example, the conjugate-power assertion
+
+```lean
+∀ (n : ℤ), 0 < n → (y * x * y⁻¹) ^ n = y * x ^ n * y⁻¹
+```
+
+is solved by the extracted suggestion
+
+```lean
+simp only [conj_zpow, implies_true]
+```
+
+The current order still runs the general tactic-message loop around the full
+wrapped goal before retaining that result.  For this class of goal, a cheap
+domain-specific pre-pass should try known group-normalization and
+homogeneous-pseudo-length destructuring before expensive generic search and
+LLM proof calls.
+
+For pseudo-length consequences, successful retained assertions use
+
+```lean
+grind only [IsHomogeneousPseudoLength, PseudoLength, #67c8, #f957]
+```
+
+or variants of that.  The failures show the same definitions are not being
+specialized early enough for homogeneity and triangle-inequality steps.  A
+targeted local-premise expander should expose the conjuncts of
+`IsHomogeneousPseudoLength G ℝ l` once, produce local haves for
+nonnegativity, inverse invariance, triangle inequality, and homogeneity, and
+then try `simp`/`grind`/`linarith` on those smaller goals.  That would avoid
+many repeated unsuccessful full-context searches.
+
+The automation loop also repeatedly tests `simp?`, `try simp?; exact?`, and
+`grind` on goals where the next JSON node is plainly a restated local
+hypothesis or a named local obligation.  Before invoking automation, codegen
+should check whether the claim is already present in the local context, is a
+specialization of a local universal hypothesis, or is only a definitional
+unfolding of a local `let`.  Those checks are cheaper and more reliable than
+general proof search.
+
+### Updated implementation priorities
+
+1. **P0:** fix final validation so `elaborateTask` receives top code only as
+   top code and never sees an `import` in the document body.  This should make
+   the process exit status meaningful again.
+2. **P0:** classify theorem generation with terminal `repeat (sorry)` as a
+   proof failure in diagnostics, even if the declaration itself elaborates.
+3. **P0:** remove active `#check` string commands from generated code and from
+   command preludes; keep them only as comments or metadata.
+4. **P0:** add a cheap proof pre-pass for local-context lookup,
+   specialization of already available local hypotheses, and definitional
+   local-let unfolding before generic automation.
+5. **P1:** normalize Python JSON claims before codegen: remove duplicate
+   hypotheses, replace “applied to” prose, formalize or eliminate “is
+   conjugate to”, and avoid asserting hypotheses that are already in scope.
+6. **P1:** add a pseudo-length/homogeneous-pseudo-length local expander that
+   creates reusable local haves from the conjunctive definition once per proof
+   branch.
+7. **P1:** avoid generating public definitions when Mathlib lookup has already
+   identified an equivalent or intended existing name.
+
 ## Update: July 27 rebuilt core rerun
 
 ### Run status and comparison
