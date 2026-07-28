@@ -241,11 +241,6 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
         set translateState
         pure (Except.error (← e.toMessageData.toString))
     match result with
-    -- TODO-ProofStepFailureDiagnostics: continuing after a rejected proof node
-    -- is correct, but discarding this error makes the log unable to distinguish
-    -- failed statement translation, failed assertion proof search, and other
-    -- handler errors.  Log the source id/claim and saved error before recursing,
-    -- and include these attempted/failed node ids in the generation summary.
     | .error e =>
       traceAide `leanaide.codegen.info s!"getCode for source {source.pretty} failed with error: {e}"
       getCodeTacticsAux translator goal sources accum
@@ -267,13 +262,19 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
           else
               -- continue with the next source
           -- runForSingleGoal checks that the goal is unassigned
-          -- TODO-ProofNodeValidationRecovery: catch a failure while validating
-          -- returned tactic syntax just like a failure in `getCode`.  Log the
-          -- rejected source and continue with the original goal, remaining
-          -- sources, and unchanged accumulator; otherwise one malformed local
-          -- assertion bypasses the terminal `repeat (sorry)` fallback and
-          -- drops the whole theorem.
-          let goal? ← runForSingleGoal goal code
+          let translateState ← get
+          let termState ← Term.saveState
+          let result ← try
+            pure (Except.ok (← runForSingleGoal goal code))
+          catch e =>
+            termState.restore
+            set translateState
+            pure (Except.error (← e.toMessageData.toString))
+          match result with
+          | .error e =>
+            traceAide `leanaide.codegen.info s!"runForSingleGoal for source {source.pretty} failed with error: {e}"
+            getCodeTacticsAux translator goal sources accum
+          | .ok goal? => do
           match goal? with
           | none => do -- tactics closed the goal
             traceAide `leanaide.codegen.info s!"goal closed by tactics"

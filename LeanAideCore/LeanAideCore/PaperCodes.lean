@@ -410,11 +410,19 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
   else
     `(commandSeq| noncomputable def $n : $stx := by $pf)
 | some goal, ``tacticSeq, js => goal.withContext do
-  let (stx, name, pf, _) ← thmStxParts js
+  let (stx, name, pf, _, labelled) ← thmStxParts js
+  let type ← instantiateMVars labelled.type
+  if type.hasLevelMVar then
+    throwError s!"codegen: 'theorem' {name} has unresolved level metavariables in type {← ppExpr type}"
+  registerUniverseParamsFromExpr type
   let n := mkIdent name
   `(tacticSeq| have $n : $stx := by $pf)
 | some _, `tactic, js => do
-  let (stx, name, pf, _) ← thmStxParts js
+  let (stx, name, pf, _, labelled) ← thmStxParts js
+  let type ← instantiateMVars labelled.type
+  if type.hasLevelMVar then
+    throwError s!"codegen: 'theorem' {name} has unresolved level metavariables in type {← ppExpr type}"
+  registerUniverseParamsFromExpr type
   let n := mkIdent name
   `(tactic| have $n : $stx := by $pf)
 | goal?, kind, _ => throwError
@@ -422,6 +430,12 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
 where
   thmStxParts (js: Json)  :
     TranslateM <| Syntax.Term × Name × (TSyntax ``tacticSeq) × Bool × LabelledTheorem  :=
+    -- TODO-ProofUniverseRegistrationEscapesRollback: local assertion branches
+    -- now register the levels needed while validating their returned tactics,
+    -- but this outer rollback discards those registrations before the completed
+    -- theorem command reaches `runAndCommitCommands`.  Return the proof's
+    -- collected level names to the theorem handler (or preserve just
+    -- `universeLevels` across this rollback) and register them there.
     withoutModifyingTranslateAndTermState do
     let proof? :=
       js.getObjVal? "proof" |>.toOption
@@ -903,11 +917,8 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     cmdResolveExistsHave stx
   mkCommandSeq <| #[head] ++ resolvedCmds
 | _, ``tacticSeq, js => do
-  -- TODO-LocalAssertionUniverseRegistration: retain `names` here and register
-  -- them after `typeStx` returns.  `typeStx` deliberately rolls its state back,
-  -- but the returned tactic may mention a fresh level (u_14/u_15 in the July
-  -- 27 core run), which must be present in the validation command blob.
-  let (stx, tac, _, _) ← typeStx js
+  let (stx, tac, _, names) ← typeStx js
+  registerUniverseNames names.toArray
   let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let headTac ← `(tactic| have $name : $stx := by $tac)
@@ -917,9 +928,8 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
   let tacSeq := #[headTac] ++ resTacs
   `(tacticSeq| $tacSeq*)
 | _, `tactic, js => do
-  -- TODO-LocalAssertionUniverseRegistration: as for `tacticSeq`, register the
-  -- universe names returned by `typeStx` before this tactic is validated.
-  let (stx, tac, _, _) ← typeStx js
+  let (stx, tac, _, names) ← typeStx js
+  registerUniverseNames names.toArray
   `(tactic| have : $stx := by $tac)
 | _, kind, _ => throwError
     s!"codegen: test does not work for kind {kind}"
