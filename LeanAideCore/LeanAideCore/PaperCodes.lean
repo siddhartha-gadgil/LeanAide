@@ -371,13 +371,14 @@ Should perhaps try to use automation if there is no proof.
 @[codegen "theorem"]
 def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  let (stx, name, pf, isProp, labelled) ← thmStxParts js
+  let (stx, name, pf, isProp, labelled, addedLevels) ← thmStxParts js
   -- TODO-DeferredTheoremCommit: register theorem metadata at command-commit
   -- time, after the generated declaration is accepted by `runAndCommitCommands`.
   let type ← instantiateMVars labelled.type
   if type.hasLevelMVar then
     throwError s!"codegen: 'theorem' {name} has unresolved level metavariables in type {← ppExpr type}"
   registerUniverseParamsFromExpr type
+  registerUniverseNames addedLevels
   Translate.addTheorem labelled
   let n := mkIdent name
   if isProp then
@@ -385,14 +386,14 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
   else
     `(command| noncomputable def $n : $stx := by $pf)
 | _, `commandSeq, js => do
-  let (stx, name, pf, isProp, labelled) ← thmStxParts js
+  let (stx, name, pf, isProp, labelled, addedLevels) ← thmStxParts js
   -- TODO-DeferredTheoremCommit: register theorem metadata at command-commit
   -- time, after the generated declaration is accepted by `runAndCommitCommands`.
   let type ← instantiateMVars labelled.type
   if type.hasLevelMVar then
     throwError s!"codegen: 'theorem' {name} has unresolved level metavariables in type {← ppExpr type}"
   registerUniverseParamsFromExpr type
-
+  registerUniverseNames addedLevels
   Translate.addTheorem labelled
   let n := mkIdent name
   let defn : DefData := {
@@ -410,32 +411,28 @@ def theoremCodeCore (translator : CodeGenerator := {}) : Option MVarId →  (kin
   else
     `(commandSeq| noncomputable def $n : $stx := by $pf)
 | some goal, ``tacticSeq, js => goal.withContext do
-  let (stx, name, pf, _, labelled) ← thmStxParts js
+  let (stx, name, pf, _, labelled, addedLevels) ← thmStxParts js
   let type ← instantiateMVars labelled.type
   if type.hasLevelMVar then
     throwError s!"codegen: 'theorem' {name} has unresolved level metavariables in type {← ppExpr type}"
   registerUniverseParamsFromExpr type
+  registerUniverseNames addedLevels
   let n := mkIdent name
   `(tacticSeq| have $n : $stx := by $pf)
 | some _, `tactic, js => do
-  let (stx, name, pf, _, labelled) ← thmStxParts js
+  let (stx, name, pf, _, labelled, addedLevels) ← thmStxParts js
   let type ← instantiateMVars labelled.type
   if type.hasLevelMVar then
     throwError s!"codegen: 'theorem' {name} has unresolved level metavariables in type {← ppExpr type}"
   registerUniverseParamsFromExpr type
+  registerUniverseNames addedLevels
   let n := mkIdent name
   `(tactic| have $n : $stx := by $pf)
 | goal?, kind, _ => throwError
     s!"codegen: 'theorem' does not work for kind {kind}where goal present: {goal?.isSome}"
 where
   thmStxParts (js: Json)  :
-    TranslateM <| Syntax.Term × Name × (TSyntax ``tacticSeq) × Bool × LabelledTheorem  :=
-    -- TODO-ProofUniverseRegistrationEscapesRollback: local assertion branches
-    -- now register the levels needed while validating their returned tactics,
-    -- but this outer rollback discards those registrations before the completed
-    -- theorem command reaches `runAndCommitCommands`.  Return the proof's
-    -- collected level names to the theorem handler (or preserve just
-    -- `universeLevels` across this rollback) and register them there.
+    TranslateM <| Syntax.Term × Name × (TSyntax ``tacticSeq) × Bool × LabelledTheorem × Array Name  :=
     withoutModifyingTranslateAndTermState do
     let proof? :=
       js.getObjVal? "proof" |>.toOption
@@ -471,8 +468,9 @@ where
         name
     traceAide `leanaide.papercodes.info s!"Theorem name: {name} for {thm}"
     let typeStx ← delabDetailed type
+    let previousUniverseLevels := (← get).universeLevels
     let proofStx ←
-      withoutModifyingTranslateAndTermState do
+      withoutModifyingTranslateAndTermStateWithUniverseLevels do
       addPromptContext s!"Current goal (context only; not an available theorem):
           {← ppExpr type}"
       -- Finding proof
@@ -483,7 +481,7 @@ where
       traceAide `leanaide.papercodes.debug s!"Consumed intros, names: {names}"
       let (pfGoal, resTacs) ← resolveIntros pfGoal'' names
       let pfStx ←
-        withoutModifyingTranslateAndTermState do
+        withoutModifyingTranslateAndTermStateWithUniverseLevels do
         pfGoal.withContext do
         match ←
         getProof translator pfGoal pf with
@@ -512,7 +510,9 @@ where
     -- `isProved` is only to separate deferred proofs, and not for claims of completeness.
     let labelled : LabelledTheorem := {name := name, label := label, isProved := proof?.isSome, source:= js, type := type}
     logInfo m!"All theorems : {← allLabels}"
-    return (typeStx, name, proofStx, ← isProp type, labelled)
+    let newUniverseLevels := (← get).universeLevels
+    let addedLevels := newUniverseLevels.filter (fun l => !previousUniverseLevels.contains l)
+    return (typeStx, name, proofStx, ← isProp type, labelled, addedLevels)
 
 /--
 Generate code for a definition. It processes the `definition` field to generate the appropriate Lean code.

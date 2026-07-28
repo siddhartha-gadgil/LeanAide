@@ -536,12 +536,11 @@ partial def dropLocalContext (type: Expr) (consumed: FVarIdSet := ∅) : MetaM E
           traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
           return type
       | none =>
-        -- TODO-PublicBinderCompatibleFallback: if a model supplied a public
-        -- binder name that is absent locally (for example `inst` versus the
-        -- generated `inst_<hash>`), try `findUniqueCompatibleDecl?` before
-        -- retaining the generalized binder.  Do not use this fallback when an
-        -- existing declaration with that public name has an incompatible type.
-        return type
+        match ← findUniqueCompatibleDecl? bi binderType consumed with
+        | some decl =>
+          dropLocalContext (
+            body.instantiate1 (mkFVar decl.fvarId)) (consumed.insert decl.fvarId)
+        | none => return type
     | none =>
         -- Anonymous/internal binder: do not manufacture `inst`, `a`, etc.
         match ← findUniqueCompatibleDecl? bi binderType consumed with

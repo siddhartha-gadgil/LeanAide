@@ -708,6 +708,17 @@ def withoutModifyingTranslateAndTermState
     termState.restore
     set translateState
 
+def withoutModifyingTranslateAndTermStateWithUniverseLevels
+    (x : TranslateM α) : TranslateM α := do
+  let translateState ← get
+  let termState ← Term.saveState
+  try
+    x
+  finally
+    termState.restore
+    set {translateState with universeLevels := (← get).universeLevels}
+
+
 structure CodeElabResult where
   declarations : List Name
   logs : List String
