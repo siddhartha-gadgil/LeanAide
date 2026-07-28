@@ -69,6 +69,8 @@ _LOCAL_DEFINITION_PREFIXES = (
     "write ",
 )
 
+_RELATION_BOUNDARY = r"<=|>=|≤|≥|=|<|>"
+
 
 def _escape_pointer_part(part: str) -> str:
     return part.replace("~", "~0").replace("/", "~1")
@@ -174,6 +176,81 @@ def _normalize_source_context_text(text: str) -> str:
     text = text.replace("\\(", "").replace("\\)", "")
     text = text.replace("$", "")
     return text[:-1].strip() if text.endswith(".") else text
+
+
+def _strip_outer_parentheses(text: str) -> str:
+    text = text.strip()
+    if text.startswith("(") and text.endswith(")"):
+        return text[1:-1].strip()
+    return text
+
+
+def _lean_app_arg(text: str) -> str:
+    text = _strip_outer_parentheses(text.strip())
+    if not text:
+        return text
+    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_']*|[0-9]+", text):
+        return text
+    return f"({text})"
+
+
+def _normalize_applied_to_once(text: str) -> tuple[str, bool]:
+    pattern = re.compile(
+        r"\b(?P<fn>[A-Za-z_][A-Za-z0-9_']*)\s+applied\s+to\s+"
+        r"(?P<args>.*?)"
+        r"(?=(?:\s+[+*/]\s+[A-Za-z_][A-Za-z0-9_']*\s+applied\s+to)"
+        r"|(?:\s*(?:" + _RELATION_BOUNDARY + r"|[,;.]))"
+        r"|(?:\)\s*/)|$)",
+        flags=re.IGNORECASE,
+    )
+    match = pattern.search(text)
+    if match is None:
+        return text, False
+
+    raw_args = match.group("args").strip()
+    raw_args = re.sub(r"\s+", " ", raw_args)
+    raw_args = raw_args.rstrip()
+    raw_args = raw_args[:-1].rstrip() if raw_args.endswith(".") else raw_args
+    if not raw_args:
+        return text, False
+    args = [
+        _lean_app_arg(arg)
+        for arg in re.split(r"\s+and\s+", raw_args)
+        if arg.strip()
+    ]
+    if not args:
+        return text, False
+    replacement = f"{match.group('fn')} {' '.join(args)}"
+    return f"{text[:match.start()]}{replacement}{text[match.end():]}", True
+
+
+def _normalize_applied_to(text: str) -> str:
+    normalized = text
+    for _ in range(12):
+        normalized, changed = _normalize_applied_to_once(normalized)
+        if not changed:
+            break
+    return normalized
+
+
+def _normalize_conjugate_claim(text: str) -> str:
+    match = re.fullmatch(
+        r"\s*(?P<lhs>.+?)\s+is\s+conjugate\s+to\s+(?P<rhs>.+?)\s*\.?\s*",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return text
+    lhs = _strip_outer_parentheses(match.group("lhs"))
+    rhs = _strip_outer_parentheses(match.group("rhs"))
+    rhs = re.sub(r"\s+in\s+[A-Za-z_][A-Za-z0-9_']*\s*$", "", rhs)
+    return f"∃ g, {lhs} = g * ({rhs}) * g⁻¹"
+
+
+def _normalize_lean_facing_text(text: str) -> str:
+    normalized = _normalize_applied_to(text)
+    normalized = _normalize_conjugate_claim(normalized)
+    return normalized
 
 
 def _split_source_context_sentences(source: str) -> list[str]:
@@ -283,6 +360,92 @@ def _source_context_steps(source: str) -> list[dict[str, Any]]:
 
 def _same_text(left: str, right: str) -> bool:
     return " ".join(left.split()).casefold() == " ".join(right.split()).casefold()
+
+
+def _context_normal_form(text: str) -> str:
+    normalized = _normalize_source_context_text(text).casefold()
+    normalized = normalized.replace("→", "->")
+    normalized = normalized.replace("\\to", "->")
+    normalized = normalized.replace("pseudo-length", "pseudo length")
+    normalized = normalized.replace("pseudo_length", "pseudo length")
+    normalized = re.sub(r"\b(assume|suppose|fix|let)\s+(that\s+)?", "", normalized)
+    normalized = re.sub(r"\bbe\b", "is", normalized)
+    normalized = re.sub(r"\bon\s+[a-z][a-z0-9_']*\b", "", normalized)
+    normalized = re.sub(
+        r"\b([a-z][a-z0-9_']*)\s*:\s*[^,.;]+?\s+is\b",
+        r"\1 is",
+        normalized,
+    )
+    normalized = re.sub(r"\b(a|an|the)\b", " ", normalized)
+    normalized = re.sub(r"[^a-z0-9_'<>=≤≥+\-*/^⁻¹]+", " ", normalized)
+    return " ".join(normalized.split())
+
+
+def _positive_subject(text: str) -> str | None:
+    normalized = _normalize_source_context_text(text)
+    match = re.fullmatch(
+        r"(?:0|zero)\s*(?:<|≤|<=)\s*([A-Za-z_][A-Za-z0-9_']*)",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if match is not None and match.group(0).find("<") >= 0:
+        return match.group(1)
+    match = re.search(
+        r"\b([A-Za-z_][A-Za-z0-9_']*)\s+is\s+(?:a\s+)?positive\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if match is not None:
+        return match.group(1)
+    match = re.search(
+        r"\b([A-Za-z_][A-Za-z0-9_']*)\s+(?:positive\s+)?(?:integer|natural number|nat)\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if match is not None and "positive" in normalized.casefold():
+        return match.group(1)
+    return None
+
+
+def _claim_available_in_context(claim: str, context: list[str]) -> bool:
+    claim_nf = _context_normal_form(claim)
+    if not claim_nf:
+        return False
+    context_nfs = [_context_normal_form(item) for item in context if item.strip()]
+    if any(claim_nf == item for item in context_nfs):
+        return True
+    if any(claim_nf and claim_nf in item for item in context_nfs):
+        return True
+    positive_subject = _positive_subject(claim)
+    if positive_subject is not None:
+        return any(_positive_subject(item) == positive_subject for item in context)
+    return False
+
+
+def _context_entry_from_step(value: Any) -> str | None:
+    if not isinstance(value, dict):
+        return None
+    step_type = value.get("type")
+    key = {
+        "assume_statement": "assumption",
+        "assert_statement": "claim",
+        "theorem": "claim",
+    }.get(str(step_type))
+    if key is None:
+        return None
+    text = value.get(key)
+    return text if isinstance(text, str) and text.strip() else None
+
+
+def _context_from_hypotheses(value: dict[str, Any]) -> list[str]:
+    context: list[str] = []
+    hypotheses = value.get("hypothesis")
+    if isinstance(hypotheses, list):
+        for hypothesis in hypotheses:
+            entry = _context_entry_from_step(hypothesis)
+            if entry is not None:
+                context.append(entry)
+    return context
 
 
 def _promote_source_context_hypotheses(value: dict[str, Any]) -> dict[str, Any]:
@@ -785,12 +948,85 @@ def deduplicate_redundant_proof_steps(value: Any) -> Any:
     return normalized
 
 
+def normalize_proof_steps_for_lean_context(
+    value: Any,
+    *,
+    context: list[str] | None = None,
+) -> Any:
+    """Normalize proof steps using only the current syntactic proof context.
+
+    This removes haves that restate available assumptions, and rewrites obvious
+    English scaffolding in claims to Lean-facing propositions.  The pass is
+    branch-local: assumptions introduced in one proof-step list do not leak into
+    sibling branches.
+    """
+    context = list(context or [])
+
+    if isinstance(value, list):
+        normalized_items: list[Any] = []
+        running_context = list(context)
+        for item in value:
+            normalized = normalize_proof_steps_for_lean_context(
+                item,
+                context=running_context,
+            )
+            if normalized is None:
+                continue
+            normalized_items.append(normalized)
+            entry = _context_entry_from_step(normalized)
+            if entry is not None:
+                running_context.append(entry)
+        return normalized_items
+
+    if not isinstance(value, dict):
+        return value
+
+    local_context = [*context, *_context_from_hypotheses(value)]
+    normalized: dict[str, Any] = {}
+    for key, item in value.items():
+        child_context = local_context if key == "proof" else context
+        if key in {
+            "proof",
+            "proof_steps",
+            "base_case_proof",
+            "induction_step_proof",
+            "cases",
+            "case_proofs",
+        }:
+            child_context = local_context
+        normalized[key] = normalize_proof_steps_for_lean_context(
+            item,
+            context=child_context,
+        )
+
+    step_type = normalized.get("type")
+    if step_type == "assert_statement":
+        claim = normalized.get("claim")
+        if isinstance(claim, str):
+            normalized_claim = _normalize_lean_facing_text(claim)
+            normalized["claim"] = normalized_claim
+            if _claim_available_in_context(normalized_claim, context):
+                return None
+    elif step_type == "assume_statement":
+        assumption = normalized.get("assumption")
+        if isinstance(assumption, str):
+            normalized["assumption"] = _normalize_lean_facing_text(assumption)
+    else:
+        for key in _CODEGEN_STRING_FIELDS:
+            item = normalized.get(key)
+            if isinstance(item, str):
+                normalized[key] = _normalize_lean_facing_text(item)
+
+    return normalized
+
+
 def finalize_lean_facing_json(data: dict[str, Any]) -> dict[str, Any]:
     """Return JSON normalized for Lean codegen plus structured lint metadata."""
     materialized = materialize_remaining_deduced_from_claims(deepcopy(data))
     flattened = flatten_redundant_proof_wrappers(materialized)
     deduplicated = deduplicate_redundant_proof_steps(flattened)
-    normalized, issues = _normalize_value(deduplicated)
+    context_normalized = normalize_proof_steps_for_lean_context(deduplicated)
+    normalized, issues = _normalize_value(context_normalized)
     if not isinstance(normalized, dict):
         return {
             "document": normalized,

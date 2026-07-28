@@ -1247,6 +1247,115 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(steps[0]["source"]["kind"], "deduced_from_claim")
         self.assertEqual(finalize_lean_facing_json(finalized), finalized)
 
+    def test_finalize_lean_facing_json_removes_assertions_already_in_context(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "hypothesis": [
+                                {
+                                    "type": "assume_statement",
+                                    "assumption": "Let l : G -> R be a homogeneous pseudo-length function.",
+                                },
+                            ],
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "l is a homogeneous pseudo-length function on G",
+                                        "proof_method": (
+                                            "Named local obligation from unresolved "
+                                            "claim dependency."
+                                        ),
+                                    },
+                                    {
+                                        "type": "assume_statement",
+                                        "assumption": "n is a positive integer.",
+                                    },
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "0 < n",
+                                    },
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "Q",
+                                    },
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        steps = finalized["document"]["body"][0]["proof"]["proof_steps"]
+        self.assertEqual(
+            [(step["type"], step.get("claim") or step.get("assumption")) for step in steps],
+            [("assume_statement", "n is a positive integer."), ("assert_statement", "Q")],
+        )
+
+    def test_finalize_lean_facing_json_normalizes_applied_to_prose(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": (
+                                            "f applied to m and k <= "
+                                            "(f applied to m - 1 and k + f applied to m + 1 and k - 1) / 2"
+                                        ),
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        claim = finalized["document"]["body"][0]["proof"]["proof_steps"][0]["claim"]
+        self.assertIn("f m k <=", claim)
+        self.assertIn("f (m - 1) k", claim)
+        self.assertIn("f (m + 1) (k - 1)", claim)
+        self.assertNotIn("applied to", claim)
+
+    def test_finalize_lean_facing_json_formalizes_conjugacy_prose_claims(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "a is conjugate to w * u",
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        claim = finalized["document"]["body"][0]["proof"]["proof_steps"][0]["claim"]
+        self.assertEqual(claim, "∃ g, a = g * (w * u) * g⁻¹")
+
     def test_finalize_lean_facing_json_keeps_same_claim_in_distinct_branches(self) -> None:
         data = {
             "document": {
