@@ -354,6 +354,10 @@ def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tact
 
 
 def getQuickTactics? (goal: MVarId) (envHash? : Option UInt64) : TermElabM <| Option (TSyntax ``tacticSeq) := do
+  -- TODO-TacticOrderQuick: `try simp?; exact?` can be a slow failing
+  -- suggestion query.  Split cheap deterministic automation from expensive
+  -- suggestion tactics, and order this list using trace data on which tactic
+  -- succeeds fastest.
   let tactics? ←
     runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?), ← `(tacticSeq| grind?)] envHash? (strict := true)
   match tactics? with

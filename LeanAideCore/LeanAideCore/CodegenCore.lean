@@ -208,6 +208,10 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   catch _ =>
   traceAide `leanaide.codegen.info "Trying exact tactics or automation"
 
+  -- TODO-TacticOrderQuick: keep this generic automation path, but split its
+  -- tactics into cheap deterministic candidates and expensive suggestion
+  -- queries.  The July 28 traces show time lost when slow failing `simp?` /
+  -- `exact?`-style searches are tried before tactics that often succeed.
   match
     ← withoutModifyingTranslateAndTermState do
       getQuickTactics? goal (← cmdPreludeBlob).hash with
@@ -295,6 +299,10 @@ def findTactics? (goal :  MVarId):
   traceAide `leanaide.codegen.info "Trying automation tactics"
   let localNames  ← Translate.defsNames
   traceAide `leanaide.codegen.info s!"previous definitions/theorems names: {localNames}"
+  -- TODO-TacticOrderLazy: these suggestion tactics are constructed eagerly
+  -- before the ordered tactic search.  Stage this so cheaper automation can
+  -- succeed without paying for expensive failed `simp?`/`grind?` suggestion
+  -- search.
   let grindWs ← grindWithSuggestions
   let simpWs ← simpWithSuggestions goal localNames
   runTacticsAndFindTryThis? goal ([← `(tacticSeq|  simp?), ← `(tacticSeq | grind?),

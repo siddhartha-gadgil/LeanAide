@@ -63,15 +63,24 @@ four explicit terminal `repeat (sorry)` sites, one in each lemma.
 
 ### Regressions and remaining output defects
 
-1. **The final validation path still assembles the frontend input
-   incorrectly.**  `codegen.lean` writes the final file by combining
-   `top_code` and `document_code`, then calls `elaborateTask result
-   translator`.  `elaborateTask` reads `top_code`, but the final frontend
-   result reports an `import Mathlib` after earlier commands.  The required
-   fix is to ensure the validation call uses exactly the same top/document
-   split as `generatedFileContents`, with all imports in the top prefix and
-   no imports in the document body.  This is now the cause of the nonzero
-   process exit.
+1. **The final validation path replays an import-containing `top_code` in an
+   already imported frontend environment.**  The generated file itself is
+   written by `codegen.lean` as `generatedFileContents inputPath topCode
+   documentCode`, so the file has `import Mathlib` at the beginning.  The
+   nonzero exit comes immediately after that write, when `codegen.lean` calls
+   `elaborateTask result translator` on the raw JSON result.  In that path,
+   `Responses.elaborateTask` passes `top_code` into
+   `elabFrontDefsExprM`, and `SimpleFrontend.simpleRunFrontend` prepends
+   `top ++ input` before running the frontend inside the already imported
+   `codegen` process.  Since `top_code` normally contains `import Mathlib`,
+   the in-process validation can see an `import` after previous commands in
+   the active frontend stream and reports `invalid 'import' command, it must
+   be used in the beginning of the file`.  Thus the final build error is not
+   evidence that `CodeGen/core-homogeneous.lean` has an import in its document
+   body; it is caused by the validation entry point using import-bearing
+   `top_code` in the wrong frontend context.  The precise fix is to validate
+   the exact generated file in a fresh frontend, or to strip/import-separate
+   `top_code` for the in-process validation pass.
 2. **Diagnostic `#check` strings are still generated and still enter
    preludes.**  The generated Lean contains four active `#check` commands
    checking string literals for `commutatorElement`, `commutator`,
@@ -132,7 +141,26 @@ Lean stage:
 
 The July 28 log contains 68 `Trying automation tactics` rounds and 35
 `failed to find tactics for assertion` diagnostics.  Some failures are
-mathematically hard, but many are avoidable sequencing costs.
+mathematically hard, but many are avoidable sequencing costs.  The current
+tactic order is not optimal.
+
+The main issue is not that generic automation is tried before proof
+assertions.  In many goals, assertions add no useful information and generic
+automation is the right first path.  The issue is the order and staging among
+the automation tactics themselves.
+
+There are two concrete automation-ordering problems in the Lean code:
+
+1. `RunTactics.getQuickTactics?` tries `simp?`, then `try simp?; exact?`,
+   then `grind?`.  The middle tactic is a suggestion-producing search that can
+   fail slowly.  It should not be in the earliest cheap automation group unless
+   trace data shows it wins often enough to justify the cost.
+2. `CodegenCore.findTactics?` constructs `grindWithSuggestions` and
+   `simpWithSuggestions` before calling `runTacticsAndFindTryThis?`.  This
+   defeats the intended ordered search, because expensive suggestion-building
+   costs are paid eagerly even if a cheaper tactic would have succeeded first.
+   These candidates should be generated lazily, only after cheaper automation
+   has failed.
 
 For simple group identities, the successful tactic is often discovered by
 Lean's suggestion machinery after starting with generic automation.  For
@@ -148,11 +176,10 @@ is solved by the extracted suggestion
 simp only [conj_zpow, implies_true]
 ```
 
-The current order still runs the general tactic-message loop around the full
-wrapped goal before retaining that result.  For this class of goal, a cheap
-domain-specific pre-pass should try known group-normalization and
-homogeneous-pseudo-length destructuring before expensive generic search and
-LLM proof calls.
+The current order still runs the suggestion-message loop around the full
+wrapped goal before retaining that result.  For this class of goal, the
+automation list should put cheap deterministic normalizers before tactics that
+ask Lean to search for and report suggestions.
 
 For pseudo-length consequences, successful retained assertions use
 
@@ -169,25 +196,36 @@ then try `simp`/`grind`/`linarith` on those smaller goals.  That would avoid
 many repeated unsuccessful full-context searches.
 
 The automation loop also repeatedly tests `simp?`, `try simp?; exact?`, and
-`grind` on goals where the next JSON node is plainly a restated local
-hypothesis or a named local obligation.  Before invoking automation, codegen
-should check whether the claim is already present in the local context, is a
-specialization of a local universal hypothesis, or is only a definitional
-unfolding of a local `let`.  Those checks are cheaper and more reliable than
-general proof search.
+`grind`.  The logs should record, for each attempted goal, the time spent by
+each automation candidate and whether the extracted suggestion was ultimately
+used.  Without this, the order is based on intuition rather than the observed
+success/cost profile.
+
+The recommended automation pipeline is therefore staged rather than a single
+eager list:
+
+1. Very cheap closure and normalization: `assumption`, direct `simp` with no
+   suggestion extraction, small configured `simp only` sets, and domain
+   normalizers such as group simplification.
+2. Fast general automation with bounded cost: for example `grind` or
+   arithmetic tactics where the goal shape makes them plausible.
+3. Suggestion-producing tactics: `simp?`, `exact?`, `grind?`, and variants
+   using previous declaration names.  These should be lazy and late because
+   they are useful but can be expensive when they fail.
+4. LLM/hammer fallbacks only after the cheaper automation groups fail.
 
 ### Updated implementation priorities
 
-1. **P0:** fix final validation so `elaborateTask` receives top code only as
-   top code and never sees an `import` in the document body.  This should make
-   the process exit status meaningful again.
+1. **P0:** fix final validation so `elaborateTask` does not replay
+   import-containing `top_code` inside the already imported `codegen`
+   environment.  Validate the generated file in a fresh frontend, or split
+   imports out of the in-process validation prefix.
 2. **P0:** classify theorem generation with terminal `repeat (sorry)` as a
    proof failure in diagnostics, even if the declaration itself elaborates.
 3. **P0:** remove active `#check` string commands from generated code and from
    command preludes; keep them only as comments or metadata.
-4. **P0:** add a cheap proof pre-pass for local-context lookup,
-   specialization of already available local hypotheses, and definitional
-   local-let unfolding before generic automation.
+4. **P0:** reorder and stage automation tactics using timing/success traces;
+   make expensive suggestion-producing tactics lazy and late.
 5. **P1:** normalize Python JSON claims before codegen: remove duplicate
    hypotheses, replace “applied to” prose, formalize or eliminate “is
    conjugate to”, and avoid asserting hypotheses that are already in scope.
