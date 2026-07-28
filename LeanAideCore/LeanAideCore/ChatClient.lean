@@ -176,16 +176,14 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM 
   -- traceAide `leanaide.llm.info s!"Querying {url} at {← IO.monoMsNow }"
   let start ← IO.monoMsNow
   let baseArgs :=
-    #[url, "-X", "POST", "-H", "Content-Type: application/json"]
+    #[url, "--fail-with-body", "--max-time", "300", "-X", "POST", "-H",
+      "Content-Type: application/json"]
   let args := match authHeader? with
     | some h => #["-H", h] ++ baseArgs
     | none => baseArgs
   -- logInfo s!"Querying {url} with {data}"
-  -- TODO-LLMRequestBoundsAndStatus: add `--fail-with-body`, a bounded timeout,
-  -- and explicit exit/status handling before JSON parsing.  The July 27 run
-  -- spent about 15 minutes on five requests that returned HTML error pages.
-  let output ← IO.Process.output {cmd := "curl", args := (args ++ #["--data", data])}
-  let output := output.stdout
+  let result ← IO.Process.output {cmd := "curl", args := (args ++ #["--data", data])}
+  let output := result.stdout
   trace[Translate.info] "Model response: {output}"
   let queryJs := Json.mkObj [
     ("url", Json.str url),
@@ -193,6 +191,13 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM 
     ("data", data)]
   traceAide `leanaide.llm.info s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
   traceAide `leanaide.llm.info s!"Response: {output}" -- uncomment for debugging
+  if result.exitCode != 0 then
+    let error := s!"curl failed with exit code {result.exitCode}: {result.stderr}"
+    traceAide `leanaide.llm.info s!"{error}; response: {output}"
+    traceAide `leanaide.llm.info
+      (Json.mkObj [("query", queryJs), ("success", false), ("error", error),
+        ("response", output)]).compress
+    return .null
   match Lean.Json.parse output with
   | Except.ok j =>
     traceAide `leanaide.llm.info
