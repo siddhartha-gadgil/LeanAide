@@ -1,0 +1,237 @@
+import Mathlib
+universe u v u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u_11 u₁ u₂ v₁ v₂ uι W₁ W₂ w₁ w₂ u' v' uu w w' wE uE x
+set_option maxHeartbeats 10000000
+set_option linter.unreachableTactic false
+open scoped Nat
+def PseudoLength (G R : Type*) [Group G] [Preorder R] [Zero R] [Add R] (l : G → R) : Prop :=
+  (∀ g : G, 0 ≤ l g) ∧ l 1 = 0 ∧ (∀ g : G, l g⁻¹ = l g) ∧ ∀ g h : G, l (g * h) ≤ l g + l h
+def IsLength (G R : Type*) [Group G] [Preorder R] [Zero R] [Add R] (l : G → R) : Prop :=
+  PseudoLength G R l ∧ ∀ g : G, g ≠ 1 → 0 < l g
+def IsHomogeneousPseudoLength (G R : Type*) [Group G] [Preorder R] [AddMonoid R] (l : G → R) : Prop :=
+  PseudoLength G R l ∧ ∀ (g : G) (n : ℤ), l (g ^ n) = Int.natAbs n • l g
+universe u_12
+def core_homogeneous_root_homogeneity_square.prop : Prop :=
+  ∀ (G : Type u_12) [inst : Group G] (l : G → ℝ),
+    IsHomogeneousPseudoLength G ℝ l → ∀ (g : G), l (g ^ (2 : ℤ)) = (2 : ℝ) * l g
+#check
+  "commutatorElement has type {G : Type u_1} → [Group G] → Bracket G G with value `fun {G : Type u_1} [Group G] ↦ { bracket := fun (g₁ g₂ : G) ↦ g₁ * g₂ * g₁⁻¹ * g₂⁻¹ }`"
+#check
+  "commutator has type (G : Type u_1) → [inst : Group G] → Subgroup G with value `fun (G : Type u_1) [Group G] ↦ ⁅⊤, ⊤⁆`"
+#check
+  "Abelianization has type (G : Type u) → [Group G] → Type u with value `fun (G : Type u) [Group G] ↦ G ⧸ commutator G`"
+#check
+  "AddCommGroup.torsion has type (G : Type u_1) → [inst : AddCommGroup G] → AddSubgroup G with value `fun (G : Type u_1) [inst : AddCommGroup G] ↦\n  let __src : AddSubmonoid G := AddCommMonoid.addTorsion G;\n  { toAddSubmonoid := __src, neg_mem' := @AddCommGroup.torsion._proof_1 G inst }`"
+def IsTorsionFree (A : Type u_12) [AddCommGroup A] : Prop :=
+  AddCommGroup.torsion A = ⊥
+universe u_13
+theorem lemma_1 :
+    ∀ (G : Type u_13) [inst : Group G] (l : G → ℝ),
+      IsHomogeneousPseudoLength G ℝ l → ∀ (x y : G), l (y * x * y⁻¹) = l x :=
+  by
+  intro G inst_14157295161945824867 l a_8164486838467395441 x y
+  have assert_10154465978515182320 : ∀ (n : ℤ), (0 : ℤ) < n → (y * x * y⁻¹) ^ n = y * x ^ n * y⁻¹ := by
+    simp only [conj_zpow, implies_true]
+  have assert_16145068071302734885 : ∀ (n : ℤ), (0 : ℤ) < n → l (y * x ^ n * y⁻¹) ≤ l y + l (x ^ n) + l y⁻¹ := by
+    grind only [IsHomogeneousPseudoLength, PseudoLength, #67c8, #f957]
+  have assert_14763585233033458723 : l y⁻¹ = l y := by grind only [IsHomogeneousPseudoLength, PseudoLength, #f957]
+  let z : G := y * x * y⁻¹
+  have assert_808761162162607096 :
+    ∀ (n : ℤ),
+      (0 : ℤ) < n →
+        have z : G := y * x * y⁻¹;
+        y * x * y⁻¹ = y * x * y⁻¹ :=
+    by simp only [implies_true]
+  have assert_11752766792786098877 :
+    ∀ (n : ℤ),
+      (0 : ℤ) < n →
+        have z : G := y * x * y⁻¹;
+        z = y * x * y⁻¹ :=
+    by simp only [implies_true]
+  repeat (sorry)
+universe u_14
+theorem lemma_2 :
+    ∀ (G : Type u_14) [inst : Group G] (l : G → ℝ),
+      IsHomogeneousPseudoLength G ℝ l →
+        ∀ (w y z s t : G),
+          have C : ℕ → G := fun (n : ℕ) ↦ (w * y) ^ n * s⁻¹ * t * (z * w⁻¹) ^ n;
+          ∀ (n : ℕ), l (C n) ≤ l s⁻¹ + l t + (↑n : ℝ) * (l y + l z) :=
+  by
+  intro G inst_14157295161945824867 l a_8164486838467395441 w y z s t C n
+  induction n with
+  |
+    zero =>
+    have assert_3990386172727724816 :
+      have C : ℕ → G := fun (n : ℕ) ↦ (w * y) ^ n * s⁻¹ * t * (z * w⁻¹) ^ n;
+      C (0 : ℕ) = s⁻¹ * t :=
+      by simp only [pow_zero, one_mul, mul_one]
+    have assert_12019558206728279877 :
+      have C : ℕ → G := fun (n : ℕ) ↦ (w * y) ^ n * s⁻¹ * t * (z * w⁻¹) ^ n;
+      l (C (0 : ℕ)) ≤ l s⁻¹ + l t :=
+      by grind only [IsHomogeneousPseudoLength, PseudoLength, #67c8]
+    simp only [CharP.cast_eq_zero, zero_mul, add_zero]
+    exact RCLike.ofReal_le_ofReal.mp assert_12019558206728279877
+  | succ n
+    ih =>
+    have assert_10846837108401234115 :
+      have C : ℕ → G := fun (n : ℕ) ↦ (w * y) ^ n * s⁻¹ * t * (z * w⁻¹) ^ n;
+      ∀ (n : ℕ), l (C n) ≤ l s⁻¹ + l t + (↑n : ℝ) * (l y + l z) → C (n + (1 : ℕ)) = w * (y * C n * z) * w⁻¹ :=
+      by
+      dsimp
+      intro m hm
+      rw [pow_succ' (w * y) m, pow_succ (z * w⁻¹) m]
+      group
+    have assert_14831122349232906124 :
+      have C : ℕ → G := fun (n : ℕ) ↦ (w * y) ^ n * s⁻¹ * t * (z * w⁻¹) ^ n;
+      ∀ (n : ℕ), C (n + (1 : ℕ)) = w * y * C n * z * w⁻¹ :=
+      by
+      dsimp
+      intro m
+      rw [pow_succ' (w * y) m, pow_succ (z * w⁻¹) m]
+      simp [mul_assoc]
+    have assert_11928964480901247447 :
+      have C : ℕ → G := fun (n : ℕ) ↦ (w * y) ^ n * s⁻¹ * t * (z * w⁻¹) ^ n;
+      ∀ (n : ℕ), l (y * C n * z) ≤ l y + l (C n) + l z :=
+      by grind only [IsHomogeneousPseudoLength, PseudoLength, #67c8]
+    have assert_14504969557148171956 :
+      have C : ℕ → G := fun (n : ℕ) ↦ (w * y) ^ n * s⁻¹ * t * (z * w⁻¹) ^ n;
+      ∀ (n : ℕ),
+        l (C n) ≤ l s⁻¹ + l t + (↑n : ℝ) * (l y + l z) →
+          l y + l (C n) + l z ≤ l y + (l s⁻¹ + l t + (↑n : ℝ) * (l y + l z)) + l z :=
+      by simp only [add_le_add_iff_right, add_le_add_iff_left, imp_self, implies_true]
+    have assert_2653159188203849716 :
+      l y + (l s⁻¹ + l t + (↑n : ℝ) * (l y + l z)) + l z = l s⁻¹ + l t + (↑(n + (1 : ℕ)) : ℝ) * (l y + l z) := by
+      grind only
+    repeat (sorry)
+  done
+universe u_15
+theorem lemma_3 :
+    ∀ (G : Type u_15) [inst : Group G] (l : G → ℝ),
+      IsHomogeneousPseudoLength G ℝ l →
+        ∀ (a w y z s t : G), a = s * (w * y) * s⁻¹ → a = t * (z * w⁻¹) * t⁻¹ → l a ≤ (l y + l z) / (2 : ℝ) :=
+  by
+  intro G inst_14157295161945824867 l a_8164486838467395441 a w y z s t a_6383984861338069179 a_4866768517036219355
+  have assert_7641241013566416831 : ∀ (n : ℕ), (0 : ℕ) < n → l s⁻¹ = l s := by
+    grind only [IsHomogeneousPseudoLength, PseudoLength, #f957]
+  repeat (sorry)
+universe u_16
+theorem lemma_4 :
+    ∀ (G : Type u_16) [inst : Group G] (l : G → ℝ),
+      IsHomogeneousPseudoLength G ℝ l →
+        ∀ (x y : G),
+          have c : G := x * y * x⁻¹ * y⁻¹;
+          have f : ℤ → ℤ → ℝ := fun (m k : ℤ) ↦ l (x ^ m * c ^ k);
+          ∀ (m k : ℤ), f m k ≤ (f (m - (1 : ℤ)) k + f (m + (1 : ℤ)) (k - (1 : ℤ))) / (2 : ℝ) :=
+  by
+  intro G inst_14157295161945824867 l a_8164486838467395441 x y c f m k
+  let a : G := x ^ m * c ^ k
+  let w : G := x
+  let u : G := x ^ (m - 1) * c ^ k
+  let v : G := y⁻¹ * x ^ m * c ^ (k - 1) * x * y
+  have assert_16151234731217235105 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℤ → ℤ → ℝ := fun (m k : ℤ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      a = x ^ m * c ^ k :=
+    by simp only [implies_true]
+  have assert_8703559150552024807 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℤ → ℤ → ℝ := fun (m k : ℤ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      w = x :=
+    by simp only [implies_true]
+  have assert_15382712263603380398 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℕ → ℕ → ℝ := fun (m k : ℕ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      u = x ^ (m - (1 : ℤ)) * c ^ k :=
+    by simp only [implies_true]
+  have assert_13206205221453626135 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℤ → ℤ → ℝ := fun (m k : ℤ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      v = y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y :=
+    by simp only [implies_true]
+  have assert_11606668564828886587 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℕ → ℕ → ℝ := fun (m k : ℕ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      v * w⁻¹ = y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y * x⁻¹ :=
+    by simp only [implies_true]
+  have assert_14286077385229788033 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℤ → ℤ → ℝ := fun (m k : ℤ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      c = x * y * x⁻¹ * y⁻¹ :=
+    by simp only [implies_true]
+  have assert_7282319161153277845 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℤ → ℤ → ℝ := fun (m k : ℤ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      x * y * x⁻¹ = c * y :=
+    by simp only [inv_mul_cancel_right, implies_true]
+  have assert_11251285474415531252 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℤ → ℤ → ℝ := fun (m k : ℤ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      l u = f (m - (1 : ℤ)) k :=
+    by simp only [implies_true]
+  have assert_3328252475526390330 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℤ → ℤ → ℝ := fun (m k : ℤ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      y * v * y⁻¹ = x ^ m * c ^ (k - (1 : ℤ)) * x :=
+    by
+    dsimp
+    intros
+    simp [mul_assoc]
+  have assert_17580567712241515365 :
+    have c : G := x * y * x⁻¹ * y⁻¹;
+    have f : ℤ → ℤ → ℝ := fun (m k : ℤ) ↦ l (x ^ m * c ^ k);
+    ∀ (m k : ℤ),
+      have a : G := x ^ m * c ^ k;
+      have w : G := x;
+      have u : G := x ^ (m - (1 : ℤ)) * c ^ k;
+      have v : G := y⁻¹ * x ^ m * c ^ (k - (1 : ℤ)) * x * y;
+      x * (x ^ m * c ^ (k - (1 : ℤ)) * x) * x⁻¹ = x ^ (m + (1 : ℤ)) * c ^ (k - (1 : ℤ)) :=
+    by
+    dsimp
+    intro m k
+    rw [← (show x * x ^ m = x ^ (m + 1) by simpa [add_comm] using (zpow_add x (1 : ℤ) m).symm)]
+    simp [mul_assoc]
+  repeat (sorry)

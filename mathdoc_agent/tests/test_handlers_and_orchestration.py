@@ -36,6 +36,8 @@ from mathdoc_agent.models.refinement_specs import (
     DocumentRefinementSpec,
     InformalNotationRepairSpec,
     InductionRefinementSpec,
+    LeanJsonRepairPatchSpec,
+    LeanJsonRepairSpec,
     ProofResolutionSpec,
     ProofSanityAuditSpec,
     ProofSanityPatchSpec,
@@ -53,6 +55,10 @@ from mathdoc_agent.orchestration.informal_notation_repair import (
     repair_informal_notation_for_lean,
 )
 from mathdoc_agent.orchestration.lean_lint import finalize_lean_facing_json
+from mathdoc_agent.orchestration.lean_json_repair import (
+    lean_json_repair_entries,
+    repair_lean_json_with_llm,
+)
 from mathdoc_agent.orchestration.proof_orchestrator import refine_proof_tree
 from mathdoc_agent.orchestration.proof_resolution import (
     DIRECT_CODEGEN_PROOF_KINDS,
@@ -321,6 +327,39 @@ class InformalNotationAgent:
             text = text.replace("G_ab", "GAb")
             patches.append({"path": entry["path"], "replacement": text})
         return InformalNotationRepairSpec(patches=patches)
+
+
+class LeanJsonRepairAgent:
+    def __init__(self) -> None:
+        self.payloads = []
+
+    def __call__(self, payload):
+        self.payloads.append(payload)
+        patches = []
+        for entry in payload["repair_entries"]:
+            if "source_context" in entry["reasons"]:
+                patches.append(
+                    LeanJsonRepairPatchSpec(
+                        path=entry["path"],
+                        action="append_hypothesis",
+                        value={
+                            "type": "assume_statement",
+                            "assumption": "Let n be a positive integer",
+                            "variable_name": "n",
+                            "variable_type": "integer",
+                            "properties": "positive",
+                        },
+                    )
+                )
+            if "informal_or_compound_string" in entry["reasons"]:
+                patches.append(
+                    LeanJsonRepairPatchSpec(
+                        path=f"{entry['path']}/claim",
+                        action="replace_string",
+                        text="l v = f (m + 1) (k - 1)",
+                    )
+                )
+        return LeanJsonRepairSpec(patches=patches)
 
 
 class ProofSanityRepairAgent:
@@ -704,6 +743,9 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(exported["type"], "proof")
         self.assertGreaterEqual(len(exported["proof_steps"]), 4)
         self.assertNotEqual(exported["proof_steps"][0].get("claim"), "The whole proof follows from all the preceding reasoning.")
+        self.assertFalse(
+            any(step.get("type") == "theorem" for step in exported["proof_steps"])
+        )
 
     async def test_agent_runner_logs_to_stderr(self) -> None:
         stderr = io.StringIO()
@@ -978,10 +1020,10 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             steps[0],
             {
-                "type": "assert_statement",
+                "type": "theorem",
                 "name": "p",
                 "claim": "P",
-                "proof_method": "Named local obligation from unresolved claim dependency.",
+                "formalization_status": "local_obligation",
                 "source": {
                     "text": "P",
                     "kind": "deduced_from_claim",
@@ -989,6 +1031,41 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
             },
         )
         self.assertEqual(steps[1]["claim"], "Q")
+        self.assertNotIn("deduced_from_claim", steps[1])
+
+    async def test_deduced_from_claim_rewrite_drops_contextual_positive_dependency_without_agent(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "Q",
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {
+                                    "type": "assume_statement",
+                                    "assumption": "n is a positive integer.",
+                                },
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "Q",
+                                    "deduced_from_claim": ["0 < n"],
+                                },
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+
+        rewritten = await rewrite_deduced_from_claims_for_lean(data, None)
+        steps = rewritten["document"]["body"][0]["proof"]["proof_steps"]
+
+        self.assertEqual(
+            [(step["type"], step.get("claim") or step.get("assumption")) for step in steps],
+            [("assume_statement", "n is a positive integer."), ("assert_statement", "Q")],
+        )
         self.assertNotIn("deduced_from_claim", steps[1])
 
     def test_materialize_remaining_deduced_from_claim_wraps_single_assertion(self) -> None:
@@ -1003,6 +1080,11 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             [step["claim"] for step in rewritten["proof_steps"]],
             ["P", "Q"],
+        )
+        self.assertEqual(rewritten["proof_steps"][0]["type"], "theorem")
+        self.assertEqual(
+            rewritten["proof_steps"][0]["formalization_status"],
+            "local_obligation",
         )
         self.assertNotIn("deduced_from_claim", rewritten["proof_steps"][1])
 
@@ -1030,6 +1112,8 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
 
         body = finalized["document"]["body"]
         self.assertEqual([step["claim"] for step in body], ["P", "Q"])
+        self.assertEqual(body[0]["type"], "theorem")
+        self.assertEqual(body[0]["formalization_status"], "local_obligation")
         self.assertNotIn("deduced_from_claim", body[1])
         self.assertNotIn("results_used", body[1])
         dependency = body[1]["deduced_from_theorem"][0]
@@ -1043,6 +1127,37 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("lean_validation", finalized)
         self.assertIn("removed_results_used", codes)
         self.assertNotIn("lean_name_without_lean_term", codes)
+
+    def test_finalize_lean_facing_json_marks_instantiated_theorem_name_without_term(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "assert_statement",
+                            "claim": "Q",
+                            "deduced_from_theorem": [
+                                {
+                                    "claim": "For all x, P x.",
+                                    "lean_name": "some_theorem",
+                                    "requires_instantiation": True,
+                                }
+                            ],
+                        }
+                    ]
+                }
+            }
+        )
+
+        dependency = finalized["document"]["body"][0]["deduced_from_theorem"][0]
+        self.assertNotIn("lean_name", dependency)
+        self.assertEqual(dependency["lean_name_candidate"], "some_theorem")
+        self.assertEqual(dependency["formalization_status"], "unresolved_lean_term")
+        codes = {
+            issue["code"]
+            for issue in finalized["document"]["lean_validation"]["issues"]
+        }
+        self.assertIn("lean_name_without_lean_term", codes)
 
     def test_finalize_lean_facing_json_promotes_source_context_to_hypotheses(self) -> None:
         finalized = finalize_lean_facing_json(
@@ -1073,6 +1188,37 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
                 "Let G be a group",
                 "Let l : G -> R be a homogeneous pseudo-length function",
             ],
+        )
+        self.assertEqual(theorem["hypothesis"][0]["variable_name"], "G")
+        self.assertEqual(theorem["hypothesis"][0]["variable_type"], "group")
+        self.assertEqual(theorem["hypothesis"][1]["variable_name"], "l")
+        self.assertEqual(theorem["hypothesis"][1]["variable_type"], "G -> R")
+        self.assertEqual(
+            theorem["hypothesis"][1]["properties"],
+            "homogeneous pseudo-length function",
+        )
+
+    def test_finalize_lean_facing_json_splits_multi_variable_source_context(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "source": {
+                                "text": "Let G be a group and a,y,z in G. Then Q."
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        hypotheses = finalized["document"]["body"][0]["hypothesis"]
+        self.assertEqual(
+            [(item["variable_name"], item["variable_type"]) for item in hypotheses],
+            [("G", "group"), ("a", "G"), ("y", "G"), ("z", "G")],
         )
 
     def test_finalize_lean_facing_json_nests_existing_root_validation(self) -> None:
@@ -1156,6 +1302,341 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("claim", step)
         self.assertNotIn("lean_validation", step)
 
+    def test_finalize_lean_facing_json_flattens_unlabeled_linear_proof_wrappers(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "Q",
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {"type": "assert_statement", "claim": "A"},
+                                {
+                                    "type": "proof",
+                                    "proof_steps": [
+                                        {"type": "assert_statement", "claim": "B"},
+                                        {
+                                            "type": "proof",
+                                            "proof_steps": [
+                                                {"type": "assert_statement", "claim": "C"}
+                                            ],
+                                        },
+                                    ],
+                                },
+                                {"type": "assert_statement", "claim": "D"},
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+
+        finalized = finalize_lean_facing_json(data)
+        steps = finalized["document"]["body"][0]["proof"]["proof_steps"]
+
+        self.assertEqual([step["claim"] for step in steps], ["A", "B", "C", "D"])
+        self.assertEqual(finalize_lean_facing_json(finalized), finalized)
+
+    def test_finalize_lean_facing_json_deduplicates_assertions_in_one_scope(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "R",
+                        "proof": {
+                            "type": "proof",
+                            "proof_steps": [
+                                {
+                                    "type": "assert_statement",
+                                    "name": "p",
+                                    "claim": "P",
+                                    "proof_method": (
+                                        "Named local obligation from unresolved "
+                                        "claim dependency."
+                                    ),
+                                    "source": {
+                                        "text": "P",
+                                        "kind": "deduced_from_claim",
+                                    },
+                                },
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "Q",
+                                    "proof_method": "By hypothesis.",
+                                },
+                                {
+                                    "type": "assert_statement",
+                                    "claim": "P",
+                                    "proof_method": "Use the named hypothesis h.",
+                                    "lean_term": "h",
+                                },
+                            ],
+                        },
+                    }
+                ]
+            }
+        }
+
+        finalized = finalize_lean_facing_json(data)
+        steps = finalized["document"]["body"][0]["proof"]["proof_steps"]
+
+        self.assertEqual([step["claim"] for step in steps], ["P", "Q"])
+        self.assertEqual(steps[0]["proof_method"], "Use the named hypothesis h.")
+        self.assertEqual(steps[0]["lean_term"], "h")
+        self.assertEqual(steps[0]["name"], "p")
+        self.assertEqual(steps[0]["source"]["kind"], "deduced_from_claim")
+        self.assertEqual(finalize_lean_facing_json(finalized), finalized)
+
+    def test_finalize_lean_facing_json_removes_assertions_already_in_context(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "hypothesis": [
+                                {
+                                    "type": "assume_statement",
+                                    "assumption": "Let l : G -> R be a homogeneous pseudo-length function.",
+                                },
+                            ],
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "l is a homogeneous pseudo-length function on G",
+                                        "proof_method": (
+                                            "Named local obligation from unresolved "
+                                            "claim dependency."
+                                        ),
+                                    },
+                                    {
+                                        "type": "assume_statement",
+                                        "assumption": "n is a positive integer.",
+                                    },
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "0 < n",
+                                    },
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "Q",
+                                    },
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        steps = finalized["document"]["body"][0]["proof"]["proof_steps"]
+        self.assertEqual(
+            [(step["type"], step.get("claim") or step.get("assumption")) for step in steps],
+            [("assume_statement", "n is a positive integer."), ("assert_statement", "Q")],
+        )
+
+    def test_finalize_lean_facing_json_normalizes_applied_to_prose(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": (
+                                            "f applied to m and k <= "
+                                            "(f applied to m - 1 and k + f applied to m + 1 and k - 1) / 2"
+                                        ),
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        claim = finalized["document"]["body"][0]["proof"]["proof_steps"][0]["claim"]
+        self.assertIn("f m k <=", claim)
+        self.assertIn("f (m - 1) k", claim)
+        self.assertIn("f (m + 1) (k - 1)", claim)
+        self.assertNotIn("applied to", claim)
+
+    def test_finalize_lean_facing_json_normalizes_applied_to_with_equals(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "l applied to v equals f applied to m + 1 and k - 1",
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        claim = finalized["document"]["body"][0]["proof"]["proof_steps"][0]["claim"]
+        self.assertEqual(claim, "l v = f (m + 1) (k - 1)")
+
+    def test_finalize_lean_facing_json_splits_mixed_relation_chain_assertions(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "name": "chain",
+                                        "claim": "A = B ≤ C = D",
+                                        "proof_method": "By calculation.",
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        steps = finalized["document"]["body"][0]["proof"]["proof_steps"]
+        self.assertEqual([step["claim"] for step in steps], ["A = B", "B ≤ C", "C = D"])
+        self.assertEqual([step["name"] for step in steps], ["chain_1", "chain_2", "chain_3"])
+
+    def test_finalize_lean_facing_json_formalizes_conjugacy_prose_claims(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "a is conjugate to w * u",
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        claim = finalized["document"]["body"][0]["proof"]["proof_steps"][0]["claim"]
+        self.assertEqual(claim, "∃ g, a = g * (w * u) * g⁻¹")
+
+    def test_finalize_lean_facing_json_keeps_same_claim_in_distinct_branches(self) -> None:
+        data = {
+            "document": {
+                "body": [
+                    {
+                        "type": "theorem",
+                        "claim": "R n",
+                        "proof": {
+                            "type": "induction_proof",
+                            "on": "n",
+                            "base_case_proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {"type": "assert_statement", "claim": "P"}
+                                ],
+                            },
+                            "induction_step_proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {"type": "assert_statement", "claim": "P"}
+                                ],
+                            },
+                        },
+                    }
+                ]
+            }
+        }
+
+        finalized = finalize_lean_facing_json(data)
+        proof = finalized["document"]["body"][0]["proof"]
+
+        self.assertEqual(
+            [step["claim"] for step in proof["base_case_proof"]["proof_steps"]],
+            ["P"],
+        )
+        self.assertEqual(
+            [step["claim"] for step in proof["induction_step_proof"]["proof_steps"]],
+            ["P"],
+        )
+
+    def test_finalize_lean_facing_json_preserves_structural_and_labeled_proofs(self) -> None:
+        finalized = finalize_lean_facing_json(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "proof": {
+                                "type": "induction_proof",
+                                "on": "n",
+                                "base_case_proof": {
+                                    "type": "proof",
+                                    "proof_steps": [
+                                        {"type": "assert_statement", "claim": "Base"}
+                                    ],
+                                },
+                                "induction_step_proof": {
+                                    "type": "proof",
+                                    "proof_steps": [
+                                        {
+                                            "type": "proof",
+                                            "claim_label": "Local step claim",
+                                            "proof_steps": [
+                                                {"type": "assert_statement", "claim": "Step"}
+                                            ],
+                                        }
+                                    ],
+                                },
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        proof = finalized["document"]["body"][0]["proof"]
+        self.assertEqual(proof["base_case_proof"]["type"], "proof")
+        self.assertEqual(proof["induction_step_proof"]["type"], "proof")
+        labeled = proof["induction_step_proof"]["proof_steps"][0]
+        self.assertEqual(labeled["type"], "proof")
+        self.assertEqual(labeled["claim_label"], "Local step claim")
+
     def test_finalize_lean_facing_json_repairs_stale_materialized_claim_marker(self) -> None:
         finalized = finalize_lean_facing_json(
             {
@@ -1172,8 +1653,9 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         )
 
         step = finalized["document"]["body"][0]
-        self.assertEqual(step["proof_method"], "Named local obligation from unresolved claim dependency.")
+        self.assertEqual(step["type"], "theorem")
         self.assertEqual(step["name"], "p")
+        self.assertEqual(step["formalization_status"], "local_obligation")
         self.assertEqual(step["source"], {"text": "P", "kind": "deduced_from_claim"})
 
     def test_finalize_lean_facing_json_flags_semantic_drift_from_source(self) -> None:
@@ -1244,6 +1726,67 @@ class HandlerAndOrchestrationTests(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(repaired["document"]["body"][0]["claim"], claim)
+
+    def test_lean_json_repair_entries_collect_consolidated_risks(self) -> None:
+        entries = lean_json_repair_entries(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "source": {"text": "Let n be a positive integer. Then Q."},
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "l applied to v equals f applied to m + 1 and k - 1",
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            }
+        )
+
+        reasons_by_path = {entry["path"]: entry["reasons"] for entry in entries}
+        self.assertIn("source_context", reasons_by_path["/document/body/0"])
+        self.assertIn(
+            "informal_or_compound_string",
+            reasons_by_path["/document/body/0/proof/proof_steps/0"],
+        )
+
+    async def test_lean_json_repair_agent_applies_consolidated_patches(self) -> None:
+        repaired = await repair_lean_json_with_llm(
+            {
+                "document": {
+                    "body": [
+                        {
+                            "type": "theorem",
+                            "claim": "Q",
+                            "source": {"text": "Let n be a positive integer. Then Q."},
+                            "proof": {
+                                "type": "proof",
+                                "proof_steps": [
+                                    {
+                                        "type": "assert_statement",
+                                        "claim": "l applied to v equals f applied to m + 1 and k - 1",
+                                    }
+                                ],
+                            },
+                        }
+                    ]
+                }
+            },
+            LeanJsonRepairAgent(),
+        )
+
+        theorem = repaired["document"]["body"][0]
+        self.assertEqual(theorem["hypothesis"][0]["variable_name"], "n")
+        step = theorem["proof"]["proof_steps"][0]
+        self.assertEqual(step["claim"], "l v = f (m + 1) (k - 1)")
 
     async def test_informal_notation_repair_still_repairs_prose_assignment(self) -> None:
         repaired = await repair_informal_notation_for_lean(

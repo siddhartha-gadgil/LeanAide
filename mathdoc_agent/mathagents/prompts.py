@@ -38,17 +38,17 @@ assignment only inside the theorem statement. Put it in `data_entries` as an
 assumption/local-context item when available, or phrase it so downstream proof
 refinement can emit a `let_statement` with `variable_name` and `value`.
 If a proof immediately follows a theorem-like statement, attach the proof text
-to thdefinitionsm-like child in `proof_text`. Do not emit the proof as a separate
+to the theorem-like child in `proof_text`. Do not emit the proof as a separate
 paragraph. A text beginning with "Proof." or "Proof:" is never a paragraph.
 For ordinary definition children, fill Lean-codegen metadata through
 `data_entries`: use key `term` for a short ASCII Lean-style identifier or
 declaration name such as `PseudoLength`, `IsLength`, `IsHomogeneousPseudoLength`,
 `commutator`, `commutatorSubgroup`, `abelianization`, or `torsionSubgroup`; use
-key `definiens` for only the mathematical definition, without Markdown headers,
+key `definitions` for only the complete mathematical definition, without Markdown headers,
 bold markers, numbering labels, or explanatory prose. Use key `notation` only
 when the source explicitly defines notation. Never use prose names containing
 spaces, hyphens, parentheses, LaTeX, or display math as the definition `term`.
-If a definition introduces a predicate or property, make the definiens clearly
+If a definition introduces a predicate or property, make `definitions` clearly
 predicate-shaped: state the parameters and the proposition that defines the
 property. Do not rephrase predicate definitions as existence theorems.
 For structure-definition children, set `name`, `is_class`, `isProp`,
@@ -71,6 +71,29 @@ Use `data_entries` only for small string metadata as key/value pairs.
 Prefer labels that are stable source labels such as `Lemma 1`, `Proposition 7`,
 or a short ASCII identifier. Avoid putting full claims or display notation in
 labels.
+"""
+
+SOURCE_COVERAGE_AUDIT_INSTRUCTIONS = """
+Audit a parsed mathematical document against exact source blocks selected by a
+deterministic coverage check. Return patches only for genuinely omitted blocks
+or existing nodes that materially lost mathematical information.
+
+Use `insert_child` for an omitted paragraph, remark, definition, theorem, or
+other source node. Place it with `after_id` and choose a stable ASCII
+`id_suffix`. Use `replace_child` when an existing node is only a lossy summary;
+set `target_id` and return the complete replacement child.
+
+Preserve every explicit hypothesis, quantified variable, field, condition, and
+displayed equation. In particular, a definition listing axioms or properties
+must retain the formulas defining every item, not just their names. Preserve
+non-mathematical introductory and motivational prose as `paragraph` children.
+For ordinary definitions, put the complete defining formulas in a
+`data_entries` item with key `definitions`; raw child text alone is not a
+structured definition and does not satisfy the coverage audit.
+For theorem-like children, keep ambient context in `data_entries`, the
+conclusion in `statement`, and the complete following proof in `proof_text`.
+Do not duplicate content already represented losslessly, and do not invent
+stronger statements. Return only structured patches.
 """
 
 PROOF_CLASSIFIER_INSTRUCTIONS = """
@@ -124,6 +147,10 @@ Do not invent a `lean_term` if the local Lean names are not available; leave an
 unresolved detail instead.
 """
 
+# TODO-StructuredConstructionSchema(generation-check-homogeneous): replace
+# prompt-only guidance for complex constructions with typed
+# construction/destructuring JSON schemas so quotient, tensor, completion,
+# induced-map, and prior-existence uses are represented structurally.
 SIMPLE_PROOF_INSTRUCTIONS = """
 Refine a simple proof fragment by extracting method, hints, referenced lemmas,
 referenced hypotheses, intermediate proof steps, and unresolved details. Do not
@@ -179,6 +206,13 @@ not an instruction. For example use `B(x, ε/3) ∩ B(y, ε/3) ≠ ∅`,
 `z ∈ B(x, ε/3) ∩ B(y, ε/3)`, or
 `B(x, ε/3) ∩ B(y, ε/3) = ∅`, not "negate the desired conclusion",
 "produce a witness", "verify the witness", or "conclude the claim".
+Do not put a mixed chain such as `A = B ≤ C = D` in one assertion. Split it
+into separate assertions `A = B`, `B ≤ C`, and `C = D`, followed by a final
+conclusion only when the source explicitly states one.
+Do not leave informal predicates such as "`a` is conjugate to `b`" unless a
+formal conjugacy predicate has already been introduced. Prefer an explicit
+equation with a conjugator, such as `a = g * b * g⁻¹`, or a precise existential
+claim giving that conjugator.
 Keep claims close to Lean-codegen prose. Prefer local ASCII names already
 introduced in the proof over raw display notation: use `barL` instead of
 `\\bar l`, `normQ` instead of `‖·‖_ℚ` or `||·||_Q`, `VQ` instead of
@@ -204,6 +238,9 @@ Avoid extracting obvious typing side conditions as standalone assertions, for
 example `x ∈ G`, `s^{-1} ∈ G`, `n > 0`, or "`l` is a pseudo-length function",
 when they are already hypotheses or fixed-variable context. Keep them in
 assumptions, variable types, or proof methods instead.
+When the source fixes a positive integer/natural number, keep the positivity in
+the assumption or variable type. Do not later re-emit `0 < n` as a new
+`assert_statement` unless that positivity is genuinely proved inside the proof.
 If a proof uses a complex construction, such as a quotient, tensor product,
 completion, induced function, lifted map, or destructuring an existential
 theorem, introduce explicit named objects with `let_statement` steps and record
@@ -249,6 +286,28 @@ rewrite_by_lemma, definition_unfolding, normalization, positivity_side_goal,
 monotonicity_step, triangle_inequality_estimate, add_subtract_intermediate,
 casewise_calculation, inductive_step_calculation,
 extensionality_then_pointwise_calculation, calculation_to_contradiction.
+"""
+
+CALCULATION_AUDIT_INSTRUCTIONS = """
+Audit exported structured calculations after notation and claim repair.
+Every calculation must form one continuous chain from its declared `start` to
+its declared `target`, and must end with an explicit assertion of the overall
+relation stated by `claim_label` when that label is present.
+
+A calculation proof may also contain auxiliary equations or an induction
+hypothesis whose endpoints are not part of the main chain. Keep those as
+supporting assertions. If an existing final assertion exactly states the
+overall claim and its proof method explains how the auxiliary estimates are
+combined, treat it as the terminal conclusion rather than appending a duplicate.
+
+Use `string_patches` only to reconcile two notations for an endpoint when the
+proof text makes their equality unambiguous. Never hide a genuine missing
+mathematical step by rewriting an endpoint. Use `conclusion` to append the
+overall proposition proved by transitivity of the preceding steps. The
+conclusion must be a proposition, not prose such as "this proves the result".
+If relations do not compose, an endpoint is genuinely missing, or the source
+does not justify the target, leave that entry unpatched so validation reports
+it. Do not invent calculations.
 """
 
 STRUCTURED_PROOF_INSTRUCTIONS = """
@@ -505,6 +564,44 @@ Preferred repairs:
 Do not delete content and do not mark entries unsupported. If exact Lean syntax
 is unavailable, use precise ASCII mathematical prose that has no informal local
 notation.
+"""
+
+LEAN_JSON_REPAIR_INSTRUCTIONS = """
+Repair exported PaperStructure JSON before Lean code generation.
+
+You receive high-risk JSON entries selected by deterministic linters. Make
+source-faithful, Lean-facing repairs using patches only. Prefer one consolidated
+patch set that fixes several related problems in the same local context.
+
+Repair priorities:
+- Convert ambient source context into formal `hypothesis` entries on theorem
+  objects. Use `assume_statement` objects with `assumption`, and when clear also
+  `variable_name`, `variable_type`, and `properties`.
+- Do not leave local hypotheses or fixed-variable facts as new proof haves. If
+  a claim is already in hypothesis/context, remove the duplicate object.
+- If a `deduced_from_theorem` entry cites a theorem used at particular local
+  variables/hypotheses, add an exact `lean_term` only when the term is clear.
+  Otherwise demote any executable name to `lean_name_candidate` with
+  `verification_status`.
+- Replace informal application prose, mixed relation chains, and informal
+  predicates such as "is conjugate to" with explicit Lean-facing propositions
+  or smaller proof steps.
+- Replace unresolved materialized claim assertions with separate local theorem
+  objects when the claim genuinely needs proof before use.
+- For quotient, tensor, completion, induced-map, lifted-map, and existence
+  destructuring prose, introduce explicit named objects with types/values and
+  separate property assertions. Do not ask Lean codegen to invent objects from
+  prose.
+
+Patch actions:
+- `replace_object`: replace the object at `path` with `value`.
+- `replace_string`: replace a string field at `path` with `text`.
+- `insert_before`: insert `value` before the object at `path`.
+- `remove_object`: remove the object at `path`.
+- `append_hypothesis`: append `value` to the theorem object at `path`.
+
+Never remove mathematical content. Do not invent a Lean theorem name or
+`lean_term`. When in doubt, make the JSON more explicit rather than more terse.
 """
 
 DEDUCED_FROM_CLAIM_REWRITE_INSTRUCTIONS = """

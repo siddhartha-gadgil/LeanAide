@@ -22,7 +22,10 @@ class StatementData(DocumentKindData):
 
 class DefinitionData(DocumentKindData):
     term: Optional[str] = None
-    definitions: Optional[str] = None
+    definitions: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("definitions", "definition", "definiens"),
+    )
     notation: Optional[str] = None
     lean_name: Optional[str] = Field(
         default=None,

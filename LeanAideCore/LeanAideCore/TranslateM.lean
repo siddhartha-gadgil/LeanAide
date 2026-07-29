@@ -154,9 +154,17 @@ structure Translate.State where
   queryEmbeddingCache : Std.HashMap String (Except String Json) := Std.HashMap.emptyWithCapacity 100000
   /-- Descriptions, docstrings etc -/
   descriptionMap : Std.HashMap Name Json := Std.HashMap.emptyWithCapacity 100000
+  /-- Universe parameters used by generated top-level declarations. -/
+  universeLevels : Array Name := #[]
+  writtenUniverseLevels : Array Name := #[]
   cmdPrelude : Array Syntax.Command := #[]
   /-- Relevant definitions to include in a prompt -/
   defs : Array (DefData) := #[]
+  -- TODO-ScopedPromptContext: distinguish assumptions/definitions from current
+  -- goals and other target-like entries (using roles or an equivalent scoped
+  -- API).  Local-assertion translation must be able to retain prompt-only
+  -- assumptions while excluding the theorem goal; string-prefix filtering is
+  -- too brittle.  Reuse this field rather than adding a second context store.
   promptContext : Array String := #[]
   varPreludes : Array String := #[]
   outputFile : Option System.FilePath := none
@@ -251,9 +259,45 @@ def getDescriptionData (name: Name) : TranslateM <| Option Json := do
   | some desc => return desc
   | none => return none
 
+def universeParamsOfExpr (e : Expr) : MetaM (Array Name) := do
+  let e ← instantiateMVars e
+  if e.hasLevelMVar then
+    throwError "unresolved universe metavariables"
+  return (collectLevelParams {} e).params
+
+def registerUniverseNames (names : Array Name) : TranslateM Unit :=
+  -- deduplicate and update state
+  modify fun s => {s with universeLevels := (s.universeLevels ++ names).toList.eraseDups.toArray}
+
+def registerUniverseParamsFromExpr (e : Expr) : TranslateM Unit := do
+  registerUniverseNames (← universeParamsOfExpr e)
+
+def universeCommand? (exclusions := levelNames) : TranslateM (Option Syntax.Command) := do
+  let levels := (← get).universeLevels
+  let levels := levels.toList.eraseDups.toArray.filter (fun u ↦ !(exclusions.contains u))
+  if levels.isEmpty then return none
+  let levelIds := levels.map (mkIdent)
+  let levelCmd ← `(command| universe $levelIds*)
+  return some levelCmd
+
+def unwrittenUniverseCommand? : TranslateM (Option Syntax.Command) := do
+  universeCommand? <| levelNames ++ (← get).writtenUniverseLevels.toList
+
+
+def universeCommandStr : TranslateM String := do
+  match ← universeCommand? with
+  | none => return ""
+  | some cmd => return (← PrettyPrinter.ppCommand cmd).pretty ++ "\n"
+
+def cmdsWithUniverse : TranslateM (Array Syntax.Command) := do
+  match ← universeCommand? with
+  | none => return (← get).cmdPrelude
+  | some levelCmd =>
+    return #[levelCmd] ++ (← get).cmdPrelude
+
 open PrettyPrinter
 def cmdPreludeBlob : TranslateM String := do
-  let cmds := (← get).cmdPrelude
+  let cmds ← cmdsWithUniverse
   let cmds ←
     cmds.mapM (fun cmd => PrettyPrinter.ppCommand cmd)
   let cmds := cmds.map (·.pretty)
@@ -261,17 +305,11 @@ def cmdPreludeBlob : TranslateM String := do
 
 def commandNeededForFrontendPrelude (cmd : Syntax.Command) : TranslateM Bool := do
   match ← DefData.ofSyntax? cmd with
-  -- TODO: This duplicate-declaration filter can be useful only because
-  -- `runFrontendM` starts from the current environment. It is unsafe with the
-  -- current frontend cache, whose key depends on the input string/toolchain but
-  -- not on the current generated environment. Either include a generated-env
-  -- fingerprint in the cache key, or run frontend checks from a fixed base
-  -- environment with the full generated textual prelude.
   | some dfn => return (← getEnv).find? dfn.name |>.isNone
   | none => return true
 
 def cmdPreludeForFrontendBlob? : TranslateM <| Option String := do
-  let cmds := (← get).cmdPrelude
+  let cmds ← cmdsWithUniverse
   let cmds ← cmds.filterM commandNeededForFrontendPrelude
   if cmds.isEmpty then return none
   let cmds ←
@@ -284,11 +322,6 @@ def variablePreludeForFrontendBlob? : TranslateM <| Option String := do
   | some cmd => return some (← PrettyPrinter.ppCommand cmd).pretty
   | none => return none
 
--- TODO(generation-check-homogeneous): Keep prompt-only declarations separate
--- from the frontend prelude. Validate the command prelude on its own before
--- appending `body`, and do not attribute prelude diagnostics to `body`. Any
--- declaration open in local free variables must be closed before it can enter
--- this global-command prelude; changing the order alone is not a complete fix.
 def withCommandPrelude (body : String) : TranslateM String := do
   let preludes := #[
     ← cmdPreludeForFrontendBlob?,
@@ -301,7 +334,7 @@ def withCommandPrelude (body : String) : TranslateM String := do
       return prelude ++ "\n" ++ body
 
 def cmdPreludeBriefBlob? : TranslateM <| Option String := do
-  let cmds := (← get).cmdPrelude
+  let cmds ← cmdsWithUniverse
   if cmds.isEmpty then return none
   let cmds ←
     cmds.mapM (fun cmd => do
@@ -310,12 +343,10 @@ def cmdPreludeBriefBlob? : TranslateM <| Option String := do
   let cmds := cmds.map (·.pretty)
   return some <| cmds.foldl (· ++ "\n" ++ · ) "import Mathlib\n"
 
--- TODO(generation-check-homogeneous): Make this operation transactional. Check
--- error-severity messages and update the environment/prelude only on success;
--- do not discard the `runFrontendM` result.
 def runCommand (cmd: Syntax.Command) : TranslateM Unit := do
-  discard <|  runFrontendM (← ppCommand cmd).pretty true
-  modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
+  let safe ←   runFrontendSafeM (← ppCommand cmd).pretty
+  if safe then
+    modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
 def writeCommands  (cmds : Array <| TSyntax `command) : TranslateM Unit := do
   match (← get).outputFile with
@@ -328,25 +359,33 @@ def writeCommands  (cmds : Array <| TSyntax `command) : TranslateM Unit := do
       lines := lines.push cmdStr
     IO.FS.writeFile file <| contents ++ (lines.foldr (· ++ "\n" ++ · ) "")
 
--- TODO(generation-check-homogeneous): Rename this state-only operation to
--- `addCommandToPrelude` (and its plural analogue accordingly). The current name
--- incorrectly suggests that the command is elaborated or run. Prompt-only
--- context needs a separate API and must not be added here.
-def addCommand (cmd: Syntax.Command) : TranslateM Unit := do
+def addCommandToPrelude (cmd: Syntax.Command) : TranslateM Unit := do
   modify fun s  => {s with cmdPrelude := s.cmdPrelude.push cmd}
 
--- TODO(generation-check-homogeneous): Split this into clearly named validation
--- and commit operations (for example `runAndCommitCommands`). Elaborate the
--- complete sequence in saved state, collect errors, and perform the environment
--- update, output write, and prelude append atomically only after success. This
--- full-declaration check must also reject proof terms with unexpected universe
--- parameters and tactics appended after a goal-closing fallback.
-def addCommands (cmds: TSyntax ``commandSeq) : TranslateM Unit := do
+/--
+Runs commands and adds them to the prelude if they run correctly.
+-/
+-- Warning: do not call this inside rollback; file writes persist but
+-- `cmdPrelude` updates would be restored away.
+def runAndCommitCommands (cmds: TSyntax ``commandSeq) : TranslateM (Array Syntax.Command) := do
+  -- Callers must register expression-derived universe parameters before this
+  -- function so validation and live output use the same universe context.
   let cmds := getCommands cmds
+  let mut safeCmds := #[]
+  let mut success := false
   for cmd in cmds do
-    discard <| runFrontendM (← ppCommand cmd).pretty true
-  writeCommands cmds
-  modify fun s => {s with cmdPrelude := s.cmdPrelude ++ cmds}
+    let safe ←  runFrontendSafeM <| (← universeCommandStr) ++ (← ppCommand cmd).pretty
+    if safe then
+      safeCmds := safeCmds ++ #[cmd]
+      success := true
+  let univHeader ← match ← unwrittenUniverseCommand? with
+    | none => pure #[]
+    | some cmd => pure #[cmd]
+  if success then
+    writeCommands <| univHeader ++ safeCmds
+    modify fun s => {s with writtenUniverseLevels := (s.writtenUniverseLevels ++ s.universeLevels).toList.eraseDups.toArray}
+  modify fun s => {s with cmdPrelude := s.cmdPrelude ++ safeCmds}
+  return safeCmds
 
 def registerDefnEnv (dfn: DefData) : TranslateM Unit := do
   runCommand <| ← dfn.statementStx
@@ -444,8 +483,11 @@ def localDeclContextLine? (decl : LocalDecl) : TranslateM (Option String) := do
       return some <| binderInfoContextString binderInfo userName.toString typeStr
   | .ldecl _ _ userName type value .. =>
       let typeStr := (← PrettyPrinter.ppExpr type).pretty
-      let valueStr := (← PrettyPrinter.ppExpr value).pretty
-      return some s!"let {userName} : {typeStr} := {valueStr}"
+      if (← isProp type) then
+        return some s!"have {userName} : {typeStr} := ⋯"
+      else
+        let valueStr := (← PrettyPrinter.ppExpr value).pretty
+        return some s!"let {userName} : {typeStr} := {valueStr}"
 
 def localContextLines : TranslateM (Array String) := do
   let mut lines : Array String := #[]
@@ -642,35 +684,20 @@ structure Translate.SavedState where
   cmdPrelude : Array Syntax.Command
   defs : Array (DefData)
   promptContext : Array String
+  universeLevels : Array Name := #[]
   context : Option String
   recentTranslations: Array ChatPair
   outputFile : Option System.FilePath
 
--- TODO(generation-check-homogeneous): This backtracking instance deliberately
--- saves only `Translate.State`; it does not restore the underlying Term/Meta
--- state or metavariable context. Rename/use a more explicit prompt-state scope,
--- and provide two separate contracts: a handler transaction that restores both
--- states when a candidate fails and commits only explicitly allowed state on
--- success, and an always-restore syntax-generation scope for callers that must
--- replay syntax on the original goal. A successful handler may retain allowed
--- Translate effects, while live `MVarId` helpers must commit successful
--- Term/Meta state because their results depend on it.
 instance : MonadBacktrack Translate.SavedState TranslateM where
   saveState := fun σ  =>
-    let saved : Translate.SavedState := {cmdPrelude := σ.cmdPrelude, defs := σ.defs, promptContext := σ.promptContext, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
+    let saved : Translate.SavedState :=
+    {cmdPrelude := σ.cmdPrelude, defs := σ.defs, promptContext := σ.promptContext, universeLevels := σ.universeLevels, context := σ.context, recentTranslations := σ.recentTranslations, outputFile := σ.outputFile}
     return (saved, σ)
   restoreState := fun ss => do
   modify fun s =>
-      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, promptContext := ss.promptContext, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
+      {s with cmdPrelude := ss.cmdPrelude, defs := ss.defs, promptContext := ss.promptContext, universeLevels := ss.universeLevels, context := ss.context, recentTranslations := ss.recentTranslations, outputFile := ss.outputFile}
 
--- TODO(handler-backtracking): This is an always-restore scope and is appropriate
--- for recursive `proofCode` and other computations whose returned syntax/value
--- is independent of both saved states. Do not use it as the generic handler
--- retry transaction: it would discard intentional Translate effects from a
--- successful handler. Add a separate handler transaction that restores both
--- states on exception and defines its success policy explicitly (normally retain
--- allowed Translate effects while restoring speculative Term/Meta state for
--- replayable syntax).
 def withoutModifyingTranslateAndTermState
     (x : TranslateM α) : TranslateM α := do
   let translateState ← get
@@ -680,6 +707,17 @@ def withoutModifyingTranslateAndTermState
   finally
     termState.restore
     set translateState
+
+def withoutModifyingTranslateAndTermStateWithUniverseLevels
+    (x : TranslateM α) : TranslateM α := do
+  let translateState ← get
+  let termState ← Term.saveState
+  try
+    x
+  finally
+    termState.restore
+    set {translateState with universeLevels := (← get).universeLevels}
+
 
 structure CodeElabResult where
   declarations : List Name

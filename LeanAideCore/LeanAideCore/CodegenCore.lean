@@ -82,7 +82,7 @@ initialize registerBuiltinAttribute {
           BinderInfo.default)
         BinderInfo.default)
       BinderInfo.default
-    unless ← isDefEq declTy expectedType do
+    unless ← isDefEqReadOnly declTy expectedType do
       throwError -- replace with error
         s!"codegen: {decl} has type {declTy}, but expected {expectedType}"
     let keys ← codegenKeyM stx
@@ -152,23 +152,19 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
     let mut accumErrors : Array String := #[]
     for f in fs do
       traceAide `leanaide.codegen.info s!"trying {f} for key {key}"
+      let translateState ← get
+      let termState ← Term.saveState
       try
         -- logInfo m!"codegen: trying {f} for key {key}"
         let code? ← codeFromFunc goal? translator f kind source
         traceAide `leanaide.codegen.info s!"{f} for key {key} worked; returned : {code?.isSome}"
+        termState.restore
         return code?
       catch e =>
-        -- TODO(handler-backtracking): Save all reversible Translate and
-        -- Term/Meta state immediately before each `codeFromFunc`. On failure,
-        -- restore that snapshot before trying the next handler. On success,
-        -- retain explicitly permitted Translate effects, but restore speculative
-        -- Term/Meta assignments whenever the result is syntax to be replayed.
-        -- Do not implement this with an always-restore wrapper around every
-        -- handler: successful `none` handlers may intentionally update Translate
-        -- context. Fatal errors still need separate propagation when they may
-        -- have irreversible environment, file, or other IO effects.
         logWarning m!"codegen: error in {f} for key {key}: {← e.toMessageData.toString}"
         accumErrors := accumErrors.push s!"{f}: {← e.toMessageData.toString}"
+        termState.restore
+        set translateState
         continue -- try next function
     let allErrors := accumErrors.toList.foldl (init := "") (fun acc e => acc ++ "\n" ++ e)
     throwError
@@ -184,15 +180,15 @@ partial def getCode  (translator: CodeGenerator) (goal? : Option MVarId) (kind: 
       throwError
         s!"codegen: no key or type found in JSON object {source}, and no codegen functions registered"
     for f in fs.reverse do
+      let translateState ← get
+      let termState ← Term.saveState
       try
         let code? ← codeFromFunc goal? translator f kind source
+        termState.restore
         return code?
       catch _ =>
-        -- TODO(handler-backtracking): Use the same failure-only rollback as the
-        -- keyed branch: restore the failed candidate's Translate and Term/Meta
-        -- state, then continue. Commit allowed Translate effects only for the
-        -- successful handler, and restore its Term/Meta state if it returns
-        -- replayable syntax. Keep fatal/non-rollbackable errors distinguishable.
+        termState.restore
+        set translateState
         continue -- try next function
     throwError
       s!"codegen: no key or type found in JSON object {source} and no codegen functions returned a result"
@@ -211,10 +207,19 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
     return (← appendTacticSeqSeq accum (← `(tacticSeq| assumption)), none)
   catch _ =>
   traceAide `leanaide.codegen.info "Trying exact tactics or automation"
-  match ← getQuickTactics? goal (← cmdPreludeBlob).hash with
+
+  -- TODO-PseudoLengthLocalExpander: expose conjuncts of pseudo-length and
+  -- homogeneous pseudo-length hypotheses as named local haves before broad
+  -- automation, so later tactics work on smaller goals with reusable facts.
+  -- TODO-TacticOrderQuick: keep this generic automation path, but split its
+  -- tactics into cheap deterministic candidates and expensive suggestion
+  -- queries.  The July 28 traces show time lost when slow failing `simp?` /
+  -- `exact?`-style searches are tried before tactics that often succeed.
+  match
+    ← withoutModifyingTranslateAndTermState do
+      getQuickTactics? goal (← cmdPreludeBlob).hash with
   | some code => do
     traceAide `leanaide.codegen.info s!"exact tactics found for goal: {← ppExpr <| ← goal.getType}"
-    -- traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
     return (← appendTacticSeqSeq accum code, none)
   | none => do
   traceAide `leanaide.codegen.info "No exact or automation tactics found, trying sources"
@@ -222,76 +227,85 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   | [] => do
     return (accum, goal)
   | source::sources => do
-    -- TODO(assigned-goal-invariant): Run tactic-mode `getCode` transactionally.
-    -- Save Translate and Term/Meta state before invoking it. On failure, restore
-    -- both before propagating or trying another candidate. On success, preserve
-    -- intentional Translate effects needed by later JSON sources, but always
-    -- restore Term/Meta state because the returned tactic syntax is replayed
-    -- below. Any Translate value retained across this boundary must be closed
-    -- and independent of restored metavariables. Recursive `proofCode` has
-    -- violated this boundary by assigning `goal` to a term containing child
-    -- metavariables.
-    let code? ← try
-        getCode translator (some goal) ``tacticSeq source
+    -- TODO-DuplicateProofNodes: exact repeated assertion nodes currently
+    -- trigger translation/proof generation again and may shadow the same
+    -- hash-derived local name.  Track attempted source ids/content and, after
+    -- translation, avoid adding a proposition already present in the local
+    -- context.  The upstream source audit should deduplicate too, but codegen
+    -- must remain robust to an unaudited JSON input.
+    if ← goal.isAssigned then
+      traceAide `leanaide.codegen.info s!"goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after getCode for source {source.pretty}"
+      throwError
+        s!"codegen: goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after getCode for source {source.pretty}, but should be unassigned"
+    let translateState ← get
+    let termState ← Term.saveState
+    let result ← try
+        let code? ← getCode translator (some goal) ``tacticSeq source
+        termState.restore
+        pure (Except.ok code?)
       catch e =>
-        let err ←   e.toMessageData.toString
-        traceAide `leanaide.codegen.info s!"Error in getCode `tacticSeq for source {source.pretty}\nError: {err}"
-        -- TODO(handler-backtracking): Reach this catch only after the failed
-        -- handler's Translate and Term/Meta snapshot has been restored. Preserve
-        -- and rethrow fatal or non-rollbackable errors. A recoverable translation
-        -- failure may be handled after rollback, but it should terminate this
-        -- affected subgoal or produce one explicitly named outermost hole with
-        -- the JSON id/claim; converting it to `skip` falsely reports a successful
-        -- no-op and consumes later JSON without a proof of the failed step.
-        `(tacticSeq | skip)
-    -- TODO(assigned-goal-invariant): Before inspecting `code?`, assert that
-    -- `goal` is still unassigned. This check must also cover `none` and empty
-    -- syntax results, since a nominally side-effect-only handler can leak a
-    -- partial assignment. If assigned, log the assignment and recursively
-    -- unresolved child metavariables for diagnostics, restore the pre-handler
-    -- state, and throw; do not recover by treating those children as JSON goals.
-    match code? with
-    | none => do -- pure side effect, no code generated
+        termState.restore
+        set translateState
+        pure (Except.error (← e.toMessageData.toString))
+    match result with
+    | .error e =>
+      traceAide `leanaide.codegen.info s!"getCode for source {source.pretty} failed with error: {e}"
       getCodeTacticsAux translator goal sources accum
-    | some code => do
-      if (getTactics code).isEmpty then
-        -- no tactics generated, but side effect
+    | .ok code? =>
+      match code? with
+      | none => do -- pure side effect, no code generated
         getCodeTacticsAux translator goal sources accum
-      else
-        if ← endsWithDone code then
-          -- the tactics are "done", so we can return the accumulated tactics
-          traceAide `leanaide.codegen.info s!"goal still open after tactics, but tactics end with 'done' so no further tactics generated."
-          traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
-          traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-          return (← appendTacticSeqSeq accum code, none)
+      | some code => do
+        if (getTactics code).isEmpty then
+          -- no tactics generated, but side effect
+          getCodeTacticsAux translator goal sources accum
         else
-            -- continue with the next source
-        -- TODO(assigned-goal-invariant): Require `goal` to be unassigned and
-        -- known to be the current active goal before replay. Prefer an API where
-        -- a handler returns `(syntax, remainingGoals)` so generated code is
-        -- either executed once here or already executed, never both. Discovery
-        -- of child metavariables by traversing an assigned proof term is not a
-        -- substitute: it loses the tactic engine's active-goal contract.
-        let goal? ← runForSingleGoal goal code
-        match goal? with
-        | none => do -- tactics closed the goal
-          traceAide `leanaide.codegen.info s!"goal closed by tactics"
-          traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
-          traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
-          return (← appendTacticSeqSeq accum code, none)
-        | some newGoal => do
-          -- TODO(assigned-goal-invariant): Assert that `newGoal` is unassigned
-          -- before recursing. `some` must mean exactly one live active goal;
-          -- assigned metavariables, tactic failures, and multiple active goals
-          -- need distinct structured results and must not enter this branch.
-          let newAccum ← appendTacticSeqSeq accum code
-          getCodeTacticsAux translator newGoal sources newAccum
+          if ← endsWithDone code then
+            -- the tactics are "done", so we can return the accumulated tactics
+            traceAide `leanaide.codegen.info s!"goal still open after tactics, but tactics end with 'done' so no further tactics generated."
+            traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
+            traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+            return (← appendTacticSeqSeq accum code, none)
+          else
+              -- continue with the next source
+          -- runForSingleGoal checks that the goal is unassigned
+          let translateState ← get
+          let termState ← Term.saveState
+          let result ← try
+            pure (Except.ok (← runForSingleGoal goal code))
+          catch e =>
+            termState.restore
+            set translateState
+            pure (Except.error (← e.toMessageData.toString))
+          match result with
+          | .error e =>
+            traceAide `leanaide.codegen.info s!"runForSingleGoal for source {source.pretty} failed with error: {e}"
+            getCodeTacticsAux translator goal sources accum
+          | .ok goal? => do
+          match goal? with
+          | none => do -- tactics closed the goal
+            traceAide `leanaide.codegen.info s!"goal closed by tactics"
+            traceAide `leanaide.codegen.info s!"goal: {← ppExpr <| ← goal.getType}"
+            traceAide `leanaide.codegen.info s!"tactics: {← PrettyPrinter.ppCategory ``tacticSeq code}"
+            return (← appendTacticSeqSeq accum code, none)
+          | some newGoal => do
+            if ← newGoal.isAssigned then
+              traceAide `leanaide.codegen.info s!"goal {← ppExpr <| ← newGoal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar newGoal)} after tactics, but should be unassigned"
+              throwError
+                s!"codegen: goal {← ppExpr <| ← newGoal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar newGoal)} after tactics, but should be unassigned"
+            let newAccum ← appendTacticSeqSeq accum code
+            getCodeTacticsAux translator newGoal sources newAccum
 
 def findTactics? (goal :  MVarId):
     TranslateM (Option (TSyntax ``tacticSeq)) := goal.withContext do
+  withoutModifyingTranslateAndTermState do
   traceAide `leanaide.codegen.info "Trying automation tactics"
   let localNames  ← Translate.defsNames
   traceAide `leanaide.codegen.info s!"previous definitions/theorems names: {localNames}"
+  -- TODO-TacticOrderLazy: these suggestion tactics are constructed eagerly
+  -- before the ordered tactic search.  Stage this so cheaper automation can
+  -- succeed without paying for expensive failed `simp?`/`grind?` suggestion
+  -- search.
   let grindWs ← grindWithSuggestions
   let simpWs ← simpWithSuggestions goal localNames
   runTacticsAndFindTryThis? goal ([← `(tacticSeq|  simp?), ← `(tacticSeq | grind?),
@@ -299,13 +313,14 @@ def findTactics? (goal :  MVarId):
   grindWs, simpWs, ← `(tacticSeq| try simp; exact?)] ++ (← getAutoTactics).toList)
     (← cmdPreludeBlob).hash (strict := true)
 
+/- Find tactics using automation. Defaults to `repeat (sorry)` if no tactics are found. Use
+`findTactics?` to keep errors explicit.
+-/
 def findTacticsI (goal :  MVarId):
     TranslateM (Array (Syntax.Tactic)) := goal.withContext do
   let tacs? ← findTactics? goal
-  -- TODO(generation-check-homogeneous): Return an explicit failure (`none` or
-  -- an error) when automation finds no proof. Do not treat `repeat sorry` as a
-  -- successful tactic sequence; best-effort output may add one terminal hole
-  -- only after all generation for this goal has stopped.
+  -- TODO-RepeatSorryProofFailure: terminal `repeat (sorry)` is an open proof
+  -- obligation, not a successful proof result; diagnostics should report it.
   let defaultTacs ← `(tacticSeq| repeat (sorry))
   return getTactics <| tacs?.getD defaultTacs
 
@@ -323,19 +338,8 @@ Obtain a sequence of tactics to apply to a goal, given a list of JSON sources. T
 def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   (sources: List Json) :
     TranslateM (TSyntax ``tacticSeq) := goal.withContext do
-  -- TODO(assigned-goal-invariant): Define this function's public contract as
-  -- transactional syntax generation: it may execute tactics internally, but it
-  -- must always restore the entry Term/Meta state before returning or throwing,
-  -- since its result is syntax that callers replay. Successful Translate-state
-  -- effects may remain when they are part of the generation contract; callers
-  -- such as recursive `proofCode` that want no state effects should add the
-  -- stronger always-restore wrapper themselves. This central guarantee would
-  -- protect every recursive document/section/proof handler; the checks in
-  -- `getCodeTacticsAux` should remain as assertions that identify the first
-  -- handler that violated the boundary.
   match ← findTactics? goal with
   | some autoTacs => do
-    -- let traceText := Syntax.mkStrLit <| s!"Automation tactics found for {← ppExpr <| ← goal.getType}, closing goal"
     let autoTacs :=
       (getTactics autoTacs)
     let autoTac ← `(tacticSeq| $autoTacs*)
@@ -349,41 +353,27 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
   | none => do
     return tacs
   | some goal => goal.withContext do
-    -- TODO(assigned-goal-invariant): Treat an assigned `some goal` as a fatal
-    -- internal error, regardless of whether its instantiated assignment still
-    -- contains metavariables. `getCodeTacticsAux` promises that `some` is one
-    -- live, unassigned active goal; a fully assigned value should have returned
-    -- `none`, while an assigned value with child metavariables indicates leaked
-    -- tactic state. Keep the `instantiateMVars`/`getMVars` traversal only to log
-    -- useful diagnostics, then throw after restoring the transactional state.
-    -- Do not run automation on rediscovered children: they may not preserve the
-    -- tactic engine's goal order, focus, or distinction between user goals and
-    -- implementation metavariables.
-    let remaining ←
-      if ← goal.isAssigned then
-        let proof ← instantiateMVars (mkMVar goal)
-        let deps ← getMVars proof
-        deps.toList.filterM fun m => return !(← m.isAssigned)
-      else
-        pure [goal]
-    if remaining.isEmpty then
-      return tacs
-    let remainingTacs ← remaining.foldlM (init := #[]) fun accum goal =>
-      goal.withContext do
-        traceAide `leanaide.codegen.info s!"goal still open after tactics: {← ppExpr <| ← goal.getType}"
-        traceAide `leanaide.codegen.info "Local context:"
-        let lctx ← getLCtx
-        for decl in lctx do
-          traceAide `leanaide.codegen.info s!"{decl.userName} : {← ppExpr <| decl.type}"
-        let autoTacs ← findTacticsI goal
-        traceAide `leanaide.codegen.info s!"auto tactics:"
-        for tac in autoTacs do
-          traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
-        return accum ++ autoTacs
-    -- TODO(generation-check-homogeneous): Return an explicit unresolved/terminal
-    -- status with these fallback tactics. Syntax containing `repeat sorry` must
-    -- not be embedded in a nested proof and followed by more parent proof steps.
-    appendTacticSeqSeq tacs (← `(tacticSeq| $remainingTacs*))
+    if ← goal.isAssigned then
+      throwError
+        s!"codegen: goal {← ppExpr <| ← goal.getType} is assigned to {← ppExpr <| ← instantiateMVars (mkMVar goal)} after tactics, but should be unassigned"
+    traceAide `leanaide.codegen.info s!"goal still open after tactics: {← ppExpr <| ← goal.getType}"
+    traceAide `leanaide.codegen.info "Local context:"
+    let lctx ← getLCtx
+    for decl in lctx do
+      traceAide `leanaide.codegen.info s!"{decl.userName} : {← ppExpr <| decl.type}"
+    match ← findTactics? goal with
+    | some autoTacs => do
+      traceAide `leanaide.codegen.info s!"auto tactics:"
+      let autoTacs := getTactics autoTacs
+      for tac in autoTacs do
+        traceAide `leanaide.codegen.info s!"{← PrettyPrinter.ppTactic tac}"
+      appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
+    | none => do
+      traceAide `leanaide.codegen.info s!"no auto tactics found for goal: {← ppExpr <| ← goal.getType}"
+      -- TODO-RepeatSorryProofFailure: this fallback should propagate a proof
+      -- failure status instead of being treated as generated proof success.
+      appendTacticSeqSeq tacs (← `(tacticSeq| repeat (sorry)))
+
 
 
 /--
@@ -391,29 +381,31 @@ Given a `CodeGenerator`, an optional goal, and a list of JSON sources, this func
 -/
 def getCodeCommands (translator: CodeGenerator) (goal? : Option MVarId)
   (sources: List Json) :
-    TranslateM (TSyntax ``commandSeq) := withoutModifyingTranslateAndTermState do
+    TranslateM (TSyntax ``commandSeq) := do
   let mut accum : Array <| TSyntax ``commandSeq := #[]
   for source in sources do
+    let translateState ← get
+    let termState ← Term.saveState
     let code? ←
       try
         -- Translate.withDeferredTheorems do
-          getCode translator goal? ``commandSeq source
+        let code? ← getCode translator goal? ``commandSeq source
+        termState.restore
+        pure code?
       catch e =>
         let err ←   e.toMessageData.toString
         traceAide `leanaide.codegen.info s!"Error in processing source for command {source.pretty};\nError: {err}"
         traceAide `leanaide.codegen.info err
+        termState.restore
+        set translateState
         continue
 
     match code? with
     | none => do -- error with obtaining commands
       continue
     | some code => do
-      accum := accum.push code
-      -- TODO(generation-check-homogeneous): Call a transactional command commit
-      -- here. Only successfully elaborated user declarations should be written
-      -- or added to the later prompt/frontend prelude; diagnostics and failed
-      -- placeholders must remain structured errors outside `cmdPrelude`.
-      Translate.addCommands code
+      let safeCmds ← runAndCommitCommands code
+      accum := accum.push <| ←  mkCommandSeq safeCmds
   if accum.isEmpty then
     let empty : Array <| TSyntax `command := #[]
     `(commandSeq| $empty*)
@@ -471,79 +463,142 @@ partial def getVars (type: Expr) : MetaM <| List Name := do
       return n::names
   | _ => return []
 
-
-def findLocalDecl? (name: Name) (type : Expr) : MetaM <| Option FVarId := do
+def findUniqueCompatibleDecl?
+    (bi : BinderInfo) (type : Expr) (consumed : FVarIdSet) :
+    MetaM (Option LocalDecl)  := do
   let lctx ← getLCtx
-  match lctx.findFromUserName? name with
-  | some (.cdecl _ fVarId _ dtype ..) =>
-    let check ← isDefEq dtype type
-    logInfo m!"Checking {dtype} and {type} gives {check}"
-    if check
-      then return fVarId
-      else return none
-  | _ =>
-    if ← isProp type then
-      lctx.decls.findSomeM? fun decl =>
-        match decl with
-        | some <| .cdecl _ fVarId _ dtype .. => do
-          let check ← isDefEq dtype type
-          traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
-          if check then pure <| some fVarId
-          else pure none
-        | _ => pure none
-    else
+  let mut found? : Option LocalDecl := none
+
+  for decl? in lctx.decls do
+    let some decl := decl? | continue
+
+    if decl.isImplementationDetail || consumed.contains decl.fvarId then
+      continue
+
+    let roleMatches : Bool :=
+      match decl with
+      | .cdecl (bi := declBi) .. => declBi == bi
+      | .ldecl .. => bi == .default
+
+    unless roleMatches do
+      continue
+
+    if ← isDefEqReadOnly decl.type type then
+      if found?.isSome then
+        return none
+      found? := some decl
+
+  return found?
+
+def findUniqueCompatibleLetDecl?
+    (type value : Expr) (nondep : Bool) (consumed : FVarIdSet) :
+    MetaM (Option LocalDecl) := do
+  let lctx ← getLCtx
+  let mut found? : Option LocalDecl := none
+
+  for decl? in lctx.decls do
+    let some decl := decl? | continue
+    if decl.isImplementationDetail || consumed.contains decl.fvarId then
+      continue
+
+    let .ldecl (type := declType) (value := declValue)
+        (nondep := declNondep) .. := decl
+      | continue
+
+    unless declNondep == nondep do
+      continue
+    unless ← isDefEqReadOnly declType type do
+      continue
+
+    -- Never inspect a nondependent ldecl's potentially invalid RHS.
+    if !nondep then
+      unless ← isDefEqReadOnly declValue value do
+        continue
+
+    if found?.isSome then
       return none
+    found? := some decl
 
+  return found?
 
-partial def dropLocalContext (type: Expr) : MetaM Expr := do
+partial def dropLocalContext (type: Expr) (consumed: FVarIdSet := ∅) : MetaM Expr := do
   match type with
-  | .forallE name binderType body _ => do
+  | .forallE rawName binderType body bi => do
     let lctx ← getLCtx
-    match lctx.findFromUserName? name with
-    | some (.cdecl _ fVarId _ dtype ..) =>
-      let check ← match dtype, binderType with
-      | .sort _, .sort _ => pure true
-      | _, _ =>   isDefEq dtype binderType
+    match introUserName? rawName with
+    | some publicName =>
+      match lctx.findFromUserName? publicName with
+      | some (.cdecl _ fVarId _ dtype _ _) =>
+        if consumed.contains fVarId then
+          return type
+        let check ← isDefEqReadOnly dtype binderType
         traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 (mkFVar fVarId)
-        dropLocalContext body'
-      else
-        traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
-        return type
-    | some (.ldecl _ _ _ dtype value ..) =>
-      let check ← isDefEq dtype binderType
-      traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 value
-        dropLocalContext body'
-      else
-        traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
-        return type
-    | none =>
-      match ← findLocalDecl? name binderType with
-      | some fVarId =>
-        let body' := body.instantiate1 (mkFVar fVarId)
-        dropLocalContext body'
+        if check then
+          let body' := body.instantiate1 (mkFVar fVarId)
+          dropLocalContext body' (consumed.insert fVarId)
+        else
+          traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+          return type
+      | some (.ldecl _ fVarId _ dtype  ..) =>
+        if consumed.contains fVarId then
+          return type
+        let check ← isDefEqReadOnly dtype binderType
+        traceAide `leanaide.lctx.debug s!"Checking {dtype} and {type} gives {check}"
+        if check then
+          let body' := body.instantiate1 (mkFVar fVarId)
+          dropLocalContext body' (consumed.insert fVarId)
+        else
+          traceAide `leanaide.lctx.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
+          return type
       | none =>
-        return type
-  | .letE name ltype value body _ =>
+        match ← findUniqueCompatibleDecl? bi binderType consumed with
+        | some decl =>
+          dropLocalContext (
+            body.instantiate1 (mkFVar decl.fvarId)) (consumed.insert decl.fvarId)
+        | none => return type
+    | none =>
+        -- Anonymous/internal binder: do not manufacture `inst`, `a`, etc.
+        match ← findUniqueCompatibleDecl? bi binderType consumed with
+        | some decl =>
+          dropLocalContext (
+            body.instantiate1 (mkFVar decl.fvarId)) (consumed.insert decl.fvarId)
+        | none => return type
+  | .letE rawName ltype value body nondep =>
     let lctx ← getLCtx
-    match lctx.findFromUserName? name with
-    | some (.ldecl _ _ _ dtype dvalue ..) =>
-      let check ← isDefEq dtype ltype <&&> isDefEq dvalue value
-      -- logInfo m!"Checking {dtype} and {type} gives {check}"
-      if check then
-        let body' := body.instantiate1 value
-        dropLocalContext body'
-      else
-        logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
-        return type
-    | _ =>
-      withLetDecl name ltype value fun x => do
-          let body' := body.instantiate1 x
-          let inner ← dropLocalContext body'
-          mkLetFVars #[x] inner
+    match introUserName? rawName with
+    | some publicName =>
+      match lctx.findFromUserName? publicName with
+      | some (.ldecl _ fVarId _ dtype dvalue declNondep ..) =>
+        if consumed.contains fVarId then
+          return type
+        let check ←
+          if declNondep != nondep then
+            pure false
+          else
+          if nondep then withNewMCtxDepth <| isDefEqGuarded dtype ltype
+          else withNewMCtxDepth <| isDefEqGuarded dtype ltype <&&>
+          isDefEqGuarded dvalue value
+        -- logInfo m!"Checking {dtype} and {type} gives {check}"
+        if check then
+          let body' := body.instantiate1 (mkFVar fVarId)
+          dropLocalContext body' (consumed.insert fVarId)
+        else
+          logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr type} or {← PrettyPrinter.ppExpr dvalue} and {← PrettyPrinter.ppExpr value}"
+          return type
+      | _ =>
+        withLetDecl publicName ltype value (nondep := nondep) fun x => do
+            let body' := body.instantiate1 x
+            let inner ← dropLocalContext body' consumed
+            mkLetFVars #[x] inner
+    | none =>
+        match ← findUniqueCompatibleLetDecl? ltype value nondep consumed with
+        | some decl =>
+            dropLocalContext (
+              body.instantiate1 (mkFVar decl.fvarId)) (consumed.insert decl.fvarId)
+        | none =>
+            withLetDecl rawName ltype value (nondep := nondep) fun x => do
+              let inner ← dropLocalContext (body.instantiate1 x) consumed
+              mkLetFVars #[x] inner
   | _ => return type
 
 partial def fillLocalContext (expr: Expr) : MetaM Expr := do
@@ -552,7 +607,7 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
     | some (.cdecl _ fVarId _ dtype ..) =>
-      let check ← isDefEq dtype binderType
+      let check ← isDefEqReadOnly dtype binderType
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 (mkFVar fVarId)
@@ -561,7 +616,7 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
         logToStdErr `leanaide.translate.info s!"Matched username but not {← PrettyPrinter.ppExpr dtype} and {← PrettyPrinter.ppExpr binderType}"
         return expr
     | some (.ldecl _ _ _ dtype value ..) =>
-      let check ← isDefEq dtype binderType
+      let check ← isDefEqReadOnly dtype binderType
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
         let body' := body.instantiate1 value
@@ -574,7 +629,7 @@ partial def fillLocalContext (expr: Expr) : MetaM Expr := do
     let lctx ← getLCtx
     match lctx.findFromUserName? name with
     | some (.ldecl _ _ _ dtype dvalue ..) =>
-      let check ← isDefEq dtype type <&&> isDefEq dvalue value
+      let check ← withNewMCtxDepth <| isDefEqGuarded dtype type <&&> isDefEqGuarded dvalue value
       -- logInfo m!"Checking {dtype} and {type} gives {check}"
       if check then
           let body' := body.instantiate1 dvalue
@@ -667,12 +722,14 @@ def cmdResolveExistsHave (type : Syntax.Term) : TermElabM <| Array Syntax.Comman
 def purgeLocalContext: Syntax.Command →  TranslateM Syntax.Command
 | `(command|def $name  : $type := $value) => do
   let typeElab ← elabType type
-  let type ← dropLocalContext typeElab
+  let type ← dropLocalContext typeElab ∅
+  registerUniverseParamsFromExpr type
   let type ← delabDetailed type
   `(command|def $name : $type := $value)
 | `(command|theorem $name  : $type := $value) => do
   let typeElab ← elabType type
-  let type ← dropLocalContext typeElab
+  let type ← dropLocalContext typeElab ∅
+  registerUniverseParamsFromExpr type
   let type ← delabDetailed type
   `(command|theorem $name : $type := $value)
 | stx => return stx
@@ -768,7 +825,7 @@ partial def orAllWithGoal (terms: List Expr) (goal: Expr) : MetaM Expr := do
       let inner ← orAllWithGoal terms type
       mkForallFVars #[x] inner
   | _ =>
-    let terms ← terms.mapM dropLocalContext
+    let terms ← terms.mapM (dropLocalContext · ∅)
     orAllSimpleExpr terms
 
 

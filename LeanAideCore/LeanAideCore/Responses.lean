@@ -456,7 +456,7 @@ def leanFromStructuredJsonTask (data: Json) (translator : Translator) : Translat
         let code ←
           PrettyPrinter.ppCategory ``commandSeq codeStx
         return Json.mkObj
-          [("result", "success"), ("document_code", code.pretty), ("declarations", toJson declarations), ("top_code", ← topCodeM)]
+          [("result", "success"), ("document_code", code.pretty), ("declarations", toJson declarations), ("top_code", (← topCodeM) ++ "\n" ++ (← universeCommandStr))]
       catch e =>
         return Json.mkObj [("result", "error"), ("error", s!"error in code generation: {← e.toMessageData.format}")]
     | _ => return Json.mkObj [("result", "error"), ("error", s!"no structured proof found")]
@@ -471,13 +471,17 @@ def elaborateTask (data: Json) (translator : Translator) : TranslateM Json := do
     match data.getObjValAs? String "document_code" with
     | Except.ok code => do
       let names? := data.getObjValAs? (List Name) "declarations" |>.toOption
+      -- TODO-TopCodeValidationImportReplay: final validation should not replay
+      -- import-containing `top_code` inside an already imported codegen process.
+      -- Use a fresh frontend check, or split imports from the in-process prefix.
+      let topCode := data.getObjValAs? String "top_code" |>.toOption.getD (← topCodeM)
       try
         let (exprs, logs) ←
           match names? with
           | some names =>
-          elabFrontDefsExprM code names
+          elabFrontDefsExprM code names (top := topCode)
           | none =>
-            elabFrontDefsNewExprM code
+            elabFrontDefsNewExprM code (top := topCode)
         let names := names?.getD <| exprs.map (fun (n, _) => n)
         let describeSorries := data.getObjValAs? Bool "describe_sorries" |>.toOption |>.getD false
         let hasErrors := logs.toList.any

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import AliasChoices, BaseModel, Field
 
@@ -158,6 +158,26 @@ class DocumentRefinementSpec(BaseModel):
     notes: list[str] = Field(default_factory=list)
 
 
+class SourceCoveragePatchSpec(BaseModel):
+    action: Literal["insert_child", "replace_child"]
+    child: DocumentChildSpec
+    target_id: str | None = Field(
+        default=None,
+        description="Existing document-node id replaced by a replace_child patch.",
+    )
+    after_id: str | None = Field(
+        default=None,
+        description="Existing sibling id after which an inserted child belongs.",
+    )
+    source_block_ids: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
+class SourceCoverageAuditSpec(BaseModel):
+    patches: list[SourceCoveragePatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
 class ClaimPatchSpec(BaseModel):
     path: str = Field(
         description=(
@@ -188,6 +208,32 @@ class ClaimPatchSpec(BaseModel):
 
 class ClaimAuditSpec(BaseModel):
     patches: list[ClaimPatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
+class CalculationConclusionSpec(BaseModel):
+    claim: str
+    proof_method: str
+    start: str | None = None
+    relation: str | None = None
+    target: str | None = None
+    side_conditions: list[str] = Field(default_factory=list)
+
+
+class CalculationStringPatchSpec(BaseModel):
+    path: str = Field(description="JSON pointer to a calculation string field.")
+    replacement: str
+
+
+class CalculationAuditPatchSpec(BaseModel):
+    path: str = Field(description="JSON pointer to the calculation proof object.")
+    conclusion: CalculationConclusionSpec | None = None
+    string_patches: list[CalculationStringPatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
+class CalculationAuditSpec(BaseModel):
+    patches: list[CalculationAuditPatchSpec] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
 
 
@@ -308,4 +354,43 @@ class ProofSanityPatchSpec(BaseModel):
 
 class ProofSanityAuditSpec(BaseModel):
     patches: list[ProofSanityPatchSpec] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+
+class LeanJsonRepairPatchSpec(BaseModel):
+    path: str = Field(
+        description=(
+            "JSON pointer path to the object or field being repaired, for example "
+            "`/document/body/0/proof/proof_steps/1` or "
+            "`/document/body/0/proof/proof_steps/1/claim`."
+        )
+    )
+    action: Literal[
+        "replace_object",
+        "replace_string",
+        "insert_before",
+        "remove_object",
+        "append_hypothesis",
+    ] = Field(
+        description=(
+            "`replace_object` replaces the object at path with `value`; "
+            "`replace_string` replaces a string field with `text`; "
+            "`insert_before` inserts `value` before the object at path in an array; "
+            "`remove_object` removes the object at path from an array or object; "
+            "`append_hypothesis` appends `value` to a theorem object's hypothesis array."
+        )
+    )
+    value: dict[str, Any] | None = Field(
+        default=None,
+        description="Replacement, insertion, or hypothesis object for object-valued actions.",
+    )
+    text: str | None = Field(
+        default=None,
+        description="Replacement string for `replace_string` patches.",
+    )
+    notes: list[str] = Field(default_factory=list)
+
+
+class LeanJsonRepairSpec(BaseModel):
+    patches: list[LeanJsonRepairPatchSpec] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)

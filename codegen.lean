@@ -153,6 +153,11 @@ def runCodegen (inputPath : System.FilePath) : IO UInt32 := do
       match result.getObjVal? "declarations" with
       | Except.ok decls => IO.eprintln s!"Declarations: {decls.compress}"
       | Except.error _ => pure ()
+      -- TODO-FinalValidationImports: `top_code` normally contains imports.
+      -- Passing that through in-process frontend validation can produce
+      -- "invalid 'import' command" because codegen is already running in an
+      -- imported environment.  Validate the exact generated file in a fresh
+      -- frontend, or strip imports from the in-process validation prefix.
       let core := elaborateTask result translator |>.runToCore
       let result' ← core.run' ctx {env := env} |>.runToIO'
       match result'.getObjValAs? String "result" with

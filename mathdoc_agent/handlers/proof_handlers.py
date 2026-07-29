@@ -328,6 +328,42 @@ class SimpleProofHandler(ProofRefinementHandler[SimpleProofRefinementSpec]):
             or bool(step.proof_method and len(step.proof_method) > 180)
         )
 
+    def _is_generic_summary_assertion(self, step: LogicalProofStepData) -> bool:
+        if step.type != "assert_statement":
+            return False
+        claim = (step.claim or "").casefold()
+        return any(
+            marker in claim
+            for marker in (
+                "whole proof",
+                "preceding reasoning",
+                "desired result follows",
+                "desired conclusion follows",
+                "all the preceding",
+            )
+        )
+
+    def _fallback_fragment_step(self, text: str) -> LogicalProofStepData:
+        stripped = " ".join(text.split())
+        lowered = stripped.casefold()
+        if lowered.startswith("let "):
+            match = re.match(r"let\s+([A-Za-z_][A-Za-z0-9_']*)", stripped, re.IGNORECASE)
+            return LogicalProofStepData(
+                type="let_statement",
+                variable_name=match.group(1) if match else None,
+                statement=stripped,
+            )
+        if lowered.startswith(("fix ", "assume ", "suppose ")):
+            return LogicalProofStepData(
+                type="assume_statement",
+                assumption=stripped,
+            )
+        return LogicalProofStepData(
+            type="assert_statement",
+            claim=stripped,
+            proof_method="Refined from this source proof fragment.",
+        )
+
     def _source_has_multiple_steps(self, text: str) -> bool:
         display_count = len(re.findall(r"\\\[.*?\\\]", text, flags=re.DOTALL))
         sentence_count = len(re.findall(r"(?<=[.!?])\s+", " ".join(text.split())))
@@ -393,7 +429,10 @@ class SimpleProofHandler(ProofRefinementHandler[SimpleProofRefinementSpec]):
                     kind=kind,
                     status=NodeStatus.raw,
                     text=text,
-                    goal=None if kind == ProofKind.calculation else text,
+                    # These are mechanically split proof fragments, not named
+                    # local theorems. Leaving the goal unset makes export flatten
+                    # their refined steps into the surrounding proof.
+                    goal=None,
                     hypotheses=node.hypotheses,
                 )
             )
@@ -465,6 +504,12 @@ class SimpleProofHandler(ProofRefinementHandler[SimpleProofRefinementSpec]):
             SimpleProofRefinementSpec,
         )
         proof_steps = spec.proof_steps or self._fallback_proof_steps(node.text)
+        if (
+            node.goal is None
+            and len(proof_steps) == 1
+            and self._is_generic_summary_assertion(proof_steps[0])
+        ):
+            proof_steps = [self._fallback_fragment_step(node.text)]
         if self._needs_further_refinement(node, proof_steps):
             children = self._decompose_for_refinement(node)
             if len(children) >= 2:

@@ -56,6 +56,83 @@ def _attach_adjacent_proof_children(spec: DocumentRefinementSpec) -> list:
     return children
 
 
+def document_node_from_child_spec(
+    parent_id: str,
+    child,
+    *,
+    child_id: str | None = None,
+) -> DocumentNode:
+    """Build one document node from parser or source-coverage output."""
+    child_id = child_id or f"{parent_id}.{child.id_suffix}"
+    child_kind = kind_key(child.kind)
+    data = metadata_entries_to_dict(child.data_entries)
+    if child.statement is not None:
+        data["statement"] = child.statement
+    assumptions = [
+        entry.value
+        for entry in child.data_entries
+        if entry.key == "assumption" and entry.value.strip()
+    ]
+    if assumptions and child_kind in THEOREM_LIKE_KINDS:
+        data["assumptions"] = assumptions
+    if child_kind == DocumentKind.structure_definition.value:
+        data = StructureDefinitionData(
+            name=child.name or child.title or child.label or child.id_suffix,
+            is_class=bool(child.is_class),
+            is_prop=bool(child.is_prop),
+            parameters=child.parameters,
+            extends=child.extends,
+            fields=child.fields,
+        ).model_dump()
+    elif child_kind == DocumentKind.instance_definition.value:
+        data = InstanceDefinitionData(
+            name=child.name,
+            class_name=child.class_name,
+            target=child.target,
+            parameters=child.parameters,
+            gives=child.gives
+            or [
+                {"name": field.name, "value": field.type}
+                for field in child.fields
+                if field.name is not None
+            ],
+            value=child.value,
+        ).model_dump()
+    elif child_kind == DocumentKind.inductive_type_definition.value:
+        data = InductiveTypeDefinitionData(
+            name=child.name or child.title or child.label or child.id_suffix,
+            is_prop=bool(child.is_prop),
+            parameters=child.parameters,
+            indices=child.indices,
+            constructors=child.constructors,
+        ).model_dump()
+    proof = None
+    if child.proof_text:
+        statement = str(child.statement or data.get("statement") or child.text)
+        proof = ProofTree(
+            id=f"{child_id}.proof",
+            theorem_statement=statement,
+            root=ProofNode(
+                id=f"{child_id}.proof.root",
+                kind=ProofKind.unknown,
+                status=NodeStatus.raw,
+                text=child.proof_text,
+                goal=statement,
+            ),
+        )
+    return DocumentNode(
+        id=child_id,
+        kind=child.kind,
+        status=NodeStatus.decomposed if proof else NodeStatus.classified,
+        title=child.title,
+        label=child.label,
+        text=child.text,
+        data=data,
+        proof=proof,
+        notes=child.notes,
+    )
+
+
 class UnknownDocumentHandler(DocumentRefinementHandler[DocumentRefinementSpec]):
     kind = DocumentKind.unknown.value
     output_model = DocumentRefinementSpec
@@ -75,76 +152,7 @@ class UnknownDocumentHandler(DocumentRefinementHandler[DocumentRefinementSpec]):
         )
         children: list[DocumentNode] = []
         for child in _attach_adjacent_proof_children(spec):
-            child_id = f"{node.id}.{child.id_suffix}"
-            child_kind = kind_key(child.kind)
-            data = metadata_entries_to_dict(child.data_entries)
-            if child.statement is not None:
-                data["statement"] = child.statement
-            assumptions = [
-                entry.value
-                for entry in child.data_entries
-                if entry.key == "assumption" and entry.value.strip()
-            ]
-            if assumptions and child_kind in THEOREM_LIKE_KINDS:
-                data["assumptions"] = assumptions
-            if child_kind == DocumentKind.structure_definition.value:
-                data = StructureDefinitionData(
-                    name=child.name or child.title or child.label or child.id_suffix,
-                    is_class=bool(child.is_class),
-                    is_prop=bool(child.is_prop),
-                    parameters=child.parameters,
-                    extends=child.extends,
-                    fields=child.fields,
-                ).model_dump()
-            elif child_kind == DocumentKind.instance_definition.value:
-                data = InstanceDefinitionData(
-                    name=child.name,
-                    class_name=child.class_name,
-                    target=child.target,
-                    parameters=child.parameters,
-                    gives=child.gives
-                    or [
-                        {"name": field.name, "value": field.type}
-                        for field in child.fields
-                        if field.name is not None
-                    ],
-                    value=child.value,
-                ).model_dump()
-            elif child_kind == DocumentKind.inductive_type_definition.value:
-                data = InductiveTypeDefinitionData(
-                    name=child.name or child.title or child.label or child.id_suffix,
-                    is_prop=bool(child.is_prop),
-                    parameters=child.parameters,
-                    indices=child.indices,
-                    constructors=child.constructors,
-                ).model_dump()
-            proof = None
-            if child.proof_text:
-                statement = str(child.statement or data.get("statement") or child.text)
-                proof = ProofTree(
-                    id=f"{child_id}.proof",
-                    theorem_statement=statement,
-                    root=ProofNode(
-                        id=f"{child_id}.proof.root",
-                        kind=ProofKind.unknown,
-                        status=NodeStatus.raw,
-                        text=child.proof_text,
-                        goal=statement,
-                    ),
-                )
-            children.append(
-                DocumentNode(
-                    id=child_id,
-                    kind=child.kind,
-                    status=NodeStatus.decomposed if proof else NodeStatus.classified,
-                    title=child.title,
-                    label=child.label,
-                    text=child.text,
-                    data=data,
-                    proof=proof,
-                    notes=child.notes,
-                )
-            )
+            children.append(document_node_from_child_spec(node.id, child))
         return node.model_copy(
             update={
                 "kind": DocumentKind.document,

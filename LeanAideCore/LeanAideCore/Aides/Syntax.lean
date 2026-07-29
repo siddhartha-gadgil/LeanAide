@@ -139,8 +139,10 @@ The binder shape is preserved:
 * `BinderInfo.strictImplicit` becomes `⦃x : T⦄`;
 * `BinderInfo.instImplicit` becomes `[x : T]`.
 
-Local `let` declarations are skipped, because a `variable` command cannot
-preserve their values.
+Local `let` declarations become ordinary explicit typed binders.  The
+temporary frontend needs their names and types for dependent declarations;
+their definitional values remain available in the real Meta context and are
+not delaborated here.
 -/
 def localDeclToBracketedBinder? (decl : LocalDecl) :
     MetaM (Option (TSyntax `Lean.Parser.Term.bracketedBinder)) := do
@@ -161,8 +163,10 @@ def localDeclToBracketedBinder? (decl : LocalDecl) :
         | BinderInfo.instImplicit =>
             `(bracketedBinder| [$nameStx:ident : $typeStx:term])
       return some binder
-  | .ldecl .. =>
-      return none
+  | .ldecl _ _ userName type .. =>
+      let nameStx := mkIdent userName
+      let typeStx ← delabLocalDeclType type
+      `(bracketedBinder| ($nameStx:ident : $typeStx:term))
 
 /-- Return the current local context as `bracketedBinder`s in dependency order. -/
 def localContextBracketedBinders :

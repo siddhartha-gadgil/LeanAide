@@ -11,17 +11,19 @@ Code from Lean 4 copied, simplified and customized. The main change is that inst
 In the `runFrontendM` function the environment is modified if the `modifyEnv` flag is set to true. The `elabFrontDefValueM` function is used to get the value of a definition in the environment. The `checkElabFrontM` function is used to check if the code has any errors.
 -/
 
-def simpleRunFrontend
-    (input : String)
-    (env: Environment)
-    (opts : Options := {}) (top : String := "universe u v w u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8 u_9 u_10 u₁ u₂ u₃
+def defaultTop : String := s!"{univLine}
 set_option maxHeartbeats 10000000
 set_option linter.unreachableTactic false
 set_option linter.unusedSimpArgs false
 set_option linter.unusedTactic false
 set_option linter.unusedVariables false
 open scoped Nat
-")
+"
+
+def simpleRunFrontend
+    (input : String)
+    (env: Environment)
+    (opts : Options := {}) (top : String := defaultTop)
     (fileName : String := "<input>")
     : IO (Environment × MessageLog) := unsafe do
   let inputCtx := Parser.mkInputContext (top ++ input) fileName
@@ -30,18 +32,33 @@ open scoped Nat
   let s ← IO.processCommands inputCtx parserState commandState
   pure (s.commandState.env, s.commandState.messages)
 
-def runFrontendM (input: String)(modifyEnv: Bool := false) : MetaM (Environment × MessageLog) := do
+def runFrontendM (input: String)(modifyEnv: Bool := false) (top : String := defaultTop) : MetaM (Environment × MessageLog) := do
   traceAide `leanaide.frontend.info s!"Running frontend on input:\n{input}"
-  let (env, msgs) ← simpleRunFrontend input (← getEnv)
+  let (env, msgs) ← simpleRunFrontend input (← getEnv) (top := top)
   traceAide `leanaide.frontend.info s!"Frontend finished with {msgs.toList.length} messages"
   for msg in msgs.toList do
     traceAide `leanaide.frontend.debug s!"{← msg.toString}"
   if modifyEnv then setEnv env
   return (env, msgs)
 
+def runFrontendSafeM (input: String) (top : String := defaultTop) : MetaM Bool := do
+  traceAide `leanaide.frontend.info s!"Running frontend on input:\n{input}"
+  let (env, msgs) ← simpleRunFrontend input (← getEnv) (top := top)
+  traceAide `leanaide.frontend.info s!"Frontend finished with {msgs.toList.length} messages"
+  let safe := msgs.toList.all (fun msg => msg.severity != MessageSeverity.error)
+  traceAide `leanaide.frontend.info s!"Frontend safe: {safe}"
+  for msg in msgs.toList do
+    traceAide `leanaide.frontend.debug s!"{← msg.toString}"
+  if safe then setEnv env
+  else
+    traceAide `leanAide.frontend.info s!"Error when running frontend:\n{input}\nMessages:"
+    for msg in msgs.toList do
+      traceAide `leanaide.frontend.info s!"{← msg.toString}"
+  return safe
+
 -- variable [LeanAideBaseDir]
 
-def runFrontEndForMessages (input: String) (envHash? : Option UInt64) : MetaM MessageLog := do
+def runFrontEndForMessages (input: String) (envHash? : Option UInt64) (top : String := defaultTop) : MetaM MessageLog := do
   let hashString := match envHash? with
   | none => ""
   | some h => s!"_{h}"
@@ -63,15 +80,15 @@ def runFrontEndForMessages (input: String) (envHash? : Option UInt64) : MetaM Me
              traceAide `leanaide.frontend.debug s!"{← msg.toString}"
            return msgs
   traceAide `leanaide.frontend.info s!"Running frontend (no cache) on input:\n{input}"
-  let (_, msgs) ← runFrontendM input
+  let (_, msgs) ← runFrontendM input (top := top)
   let serialMsgs ←  msgs.toList.mapM fun m => m.serialize
   let json := toJson serialMsgs
   IO.FS.writeFile cacheFile (json.pretty)
   traceAide `leanaide.frontend.info s!"Frontend wrote to {cacheFile} with {msgs.toList.length} messages"
   return msgs
 
-def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr := do
-  let (env, _) ← runFrontendM s modifyEnv
+def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) (top : String := defaultTop) : MetaM Expr := do
+  let (env, _) ← runFrontendM s modifyEnv (top := top)
   let seek? : Option ConstantInfo :=  env.find? n
   match seek? with
   | none => throwError "Definition not found"
@@ -79,8 +96,8 @@ def elabFrontDefExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr
     | none => throwError "Definition has no value"
     | some val => return val
 
-def elabFrontDefTypeValExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM <| Expr × Expr := do
-  let (env, _) ← runFrontendM s modifyEnv
+def elabFrontDefTypeValExprM(s: String)(n: Name)(modifyEnv: Bool := false) (top : String := defaultTop) : MetaM <| Expr × Expr := do
+  let (env, _) ← runFrontendM s modifyEnv (top := top)
   let seek? : Option ConstantInfo :=  env.find? n
   match seek? with
   | none => throwError "Definition not found"
@@ -89,8 +106,8 @@ def elabFrontDefTypeValExprM(s: String)(n: Name)(modifyEnv: Bool := false) : Met
     | some val => return (seek.type, val)
 
 
-def elabFrontThmExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr := do
-  let (env, msgs) ← runFrontendM s modifyEnv
+def elabFrontThmExprM(s: String)(n: Name)(modifyEnv: Bool := false) (top : String := defaultTop) : MetaM Expr := do
+  let (env, msgs) ← runFrontendM s modifyEnv (top := top)
   logInfo "Messages"
   for msg in msgs.toList do
     logInfo msg.data
@@ -99,8 +116,8 @@ def elabFrontThmExprM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM Expr
   | none => throwError "Definition not found"
   | some seek => return seek.type
 
-def elabFrontDefsExprM(s: String)(ns: List Name)(modifyEnv: Bool := false) : MetaM <| List (Name × Expr) × MessageLog := do
-  let (env, msgs) ← runFrontendM s modifyEnv
+def elabFrontDefsExprM(s: String)(ns: List Name)(modifyEnv: Bool := false) (top : String := defaultTop) : MetaM <| List (Name × Expr) × MessageLog := do
+  let (env, msgs) ← runFrontendM s modifyEnv (top := top)
   let nameDefs := ns.filterMap fun n =>
     match env.find? n with
     | none => none
@@ -115,8 +132,8 @@ def dropPrefixes : Name → Name
   ---   #eval dropPrefixes `LeanAideCore.SimpleFrontend.elabFrontDefsExprAtM
 
 
-def elabFrontDefsExprAtM(s: String)(pfx: Name)(modifyEnv: Bool := false) : MetaM <| Array (Name × Expr) × MessageLog := do
-  let (env, msgs) ← runFrontendM s modifyEnv
+def elabFrontDefsExprAtM(s: String)(pfx: Name)(modifyEnv: Bool := false) (top : String := defaultTop) : MetaM <| Array (Name × Expr) × MessageLog := do
+  let (env, msgs) ← runFrontendM s modifyEnv (top := top)
   let decls := env.constants.map₁.toArray
   let ns := decls.filterMap (fun (n, _) => if pfx.isPrefixOf n then some n else none)
   logInfo "Looking for declarations with suffix `eg"
@@ -145,16 +162,16 @@ def elabFrontDefsExprAtM(s: String)(pfx: Name)(modifyEnv: Bool := false) : MetaM
 
 --    #eval (`leanaide_scratch).isPrefixOf `leanaide_scratch.eg
 
-def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) : MetaM String := do
-  let val ← elabFrontDefExprM s n modifyEnv
+def elabFrontDefViewM(s: String)(n: Name)(modifyEnv: Bool := false) (top : String := defaultTop) : MetaM String := do
+  let val ← elabFrontDefExprM s n modifyEnv (top := top)
   let fmt ←  ppExpr val
   return fmt.pretty
 
 
-def elabFrontTheoremExprMStrict (type: String) : MetaM <| Except (List String) Expr := do
+def elabFrontTheoremExprMStrict (type: String) (top : String := defaultTop) : MetaM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem
-  let s := s!"set_option autoImplicit false in\ntheorem {n} : {type} := by sorry"
-  let (env, logs) ←  runFrontendM s
+  let s := s!"set_option autoImplicit true in\ntheorem {n} : {type} := by sorry"
+  let (env, logs) ←  runFrontendM s (top := top)
   let errors := logs.toList.filter (·.severity == MessageSeverity.error)
   let errorStrings ←  errors.mapM (·.data.toString)
   if errors.isEmpty then
@@ -165,10 +182,10 @@ def elabFrontTheoremExprMStrict (type: String) : MetaM <| Except (List String) E
   else
     return Except.error errorStrings
 
-def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr := do
+def elabFrontTheoremExprM (type: String) (top : String := defaultTop) : MetaM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem
-  let s := s!"set_option autoImplicit false in\nnoncomputable def {n} : {type} := by sorry"
-  let (env, logs) ←  runFrontendM s
+  let s := s!"set_option autoImplicit true in\nnoncomputable def {n} : {type} := by sorry"
+  let (env, logs) ←  runFrontendM s (top := top)
   let errors := logs.toList.filter (·.severity == MessageSeverity.error)
   let errorStrings ←  errors.mapM (·.data.toString)
   if errors.isEmpty then
@@ -182,10 +199,10 @@ def elabFrontTheoremExprM (type: String) : MetaM <| Except (List String) Expr :=
 
 --    #eval elabFrontTheoremExprM "∀ n: Nat, n ≤ n + 1"
 
-def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
+def elabFrontTypeExprM(type: String) (top : String := defaultTop) : MetaM <| Except (List String) Expr := do
   let n := `my_shiny_new_theorem
   let s := s!"def {n} : {type} := by sorry"
-  let (env, logs) ←  runFrontendM s
+  let (env, logs) ←  runFrontendM s (top := top)
   let errors := logs.toList.filter (·.severity == MessageSeverity.error)
   let errorStrings ←  errors.mapM (·.data.toString)
   if errors.isEmpty then
@@ -196,8 +213,8 @@ def elabFrontTypeExprM(type: String) : MetaM <| Except (List String) Expr := do
   else
     return Except.error errorStrings
 
-def checkElabFrontM(s: String) (envHash? : Option UInt64) : MetaM <| List String := do
-  let log ← runFrontEndForMessages  s envHash?
+def checkElabFrontM(s: String) (envHash? : Option UInt64) (top : String := defaultTop) : MetaM <| List String := do
+  let log ← runFrontEndForMessages  s envHash? (top := top)
   let mut l := []
   for msg in log.toList do
     if msg.severity == MessageSeverity.error then
@@ -207,19 +224,19 @@ def checkElabFrontM(s: String) (envHash? : Option UInt64) : MetaM <| List String
       l := l.append [x]
   return l
 
-def checkTypeElabFrontM(s: String) (envHash? : Option UInt64) : MetaM <| List String := do
-  checkElabFrontM s!"example : {s} := by sorry" envHash?
+def checkTypeElabFrontM(s: String) (envHash? : Option UInt64) (top : String := defaultTop) : MetaM <| List String := do
+  checkElabFrontM s!"example : {s} := by sorry" envHash? (top := top)
 
-def checkTermElabFrontM(s: String) (envHash? : Option UInt64) : MetaM <| List String := do
-  checkElabFrontM s!"example := {s}" envHash?
+def checkTermElabFrontM(s: String) (envHash? : Option UInt64) (top : String := defaultTop) : MetaM <| List String := do
+  checkElabFrontM s!"example := {s}" envHash? (top := top)
 
 
 
 --    #eval checkTermElabFrontM "(fun n => 3 : Nat → Nat)"
 
-def newDeclarations (s: String) : MetaM <| Array Name := do
+def newDeclarations (s: String) (top : String := defaultTop) : MetaM <| Array Name := do
   let constants := (← getEnv).constants
-  let (env, _) ← runFrontendM s
+  let (env, _) ← runFrontendM s (top := top)
   let mut newConstants := #[]
   for (n, _) in env.constants do
     unless n.isInternal do
@@ -228,9 +245,9 @@ def newDeclarations (s: String) : MetaM <| Array Name := do
   return newConstants
 
 
-def elabFrontDefsNewExprM(s: String)(modifyEnv: Bool := false) : MetaM <| List (Name × Expr) × MessageLog := do
+def elabFrontDefsNewExprM(s: String)(top : String := defaultTop) : MetaM <| List (Name × Expr) × MessageLog := do
   let constants := (← getEnv).constants
-  let (env, msgs) ← runFrontendM s modifyEnv
+  let (env, msgs) ← runFrontendM s (top := top)
   let mut nameDefs := #[]
   for (n, d) in env.constants do
     unless n.isInternal do

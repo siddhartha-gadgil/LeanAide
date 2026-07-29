@@ -45,20 +45,24 @@ disable the timeout.
 The default JSON generation path in `mathdoc_agent/pipeline.py` is:
 
 1. Parse source text into a `MathDocument` using `document_parser_agent`.
-2. Refine attached proofs using the proof classifier and proof refiners.
-3. Resolve proof kinds that do not have direct Lean codegen handlers.
-4. Record Mathlib definition reuse using local similarity search, an LLM exact
+2. Compare the parsed root children with the original Markdown blocks and use
+   `source_coverage_audit_agent` to restore omissions or lossy summaries.
+3. Refine attached proofs using the proof classifier and proof refiners.
+4. Resolve proof kinds that do not have direct Lean codegen handlers.
+5. Record Mathlib definition reuse using local similarity search, an LLM exact
    match check, and LeanSearch fallback.
-5. Export the document to PaperStructure JSON.
-6. Rewrite `deduced_from_claim` dependencies into explicit Lean-friendly proof
+6. Export the document to PaperStructure JSON.
+7. Rewrite `deduced_from_claim` dependencies into explicit Lean-friendly proof
    steps.
-7. Audit public `claim` fields.
-8. Repair informal local notation.
-9. Audit risky proof-step assertions.
-10. Repair proof-sanity issues.
-11. Re-run residual `deduced_from_claim` materialization and informal notation
-    repair.
-12. Run deterministic Lean-facing JSON finalization.
+8. Audit public `claim` fields, then mandatorily rewrite theorem claims still
+   detected as English prose or as formally unclosed.
+9. Repair informal local notation and audit structured calculation continuity
+   and terminal conclusions.
+10. Audit and repair risky proof-step assertions.
+11. Re-run residual dependency materialization, notation repair, calculation
+    audit, and mandatory theorem-claim rewriting.
+12. Enrich theorem dependencies and run deterministic Lean-facing JSON
+    finalization.
 
 When the caller supplies custom document or proof registries, the pipeline does
 not automatically use the default post-processing agents unless they are also
@@ -206,6 +210,9 @@ Function:
 - Attach following proof prose to theorem-like items through `proof_text`.
 - Extract Lean-facing metadata for definitions and declarations without placing
   local definitions inside theorem statements.
+- For ordinary definitions, use `data_entries` key `term` for the ASCII name
+  and key `definitions` for the complete defining formula. The legacy keys
+  `definition` and `definiens` remain accepted on input.
 
 Output schema: `DocumentRefinementSpec`.
 
@@ -266,6 +273,35 @@ Structured inductive constructor output:
 target when the inductive type is indexed. Constructor argument `binder` is
 optional and may be `default`, `implicit`, or `typeclass`; omitted means
 `default`.
+
+### `source_coverage_audit_agent`
+
+The source-coverage audit runs after document parsing and before attached proof
+refinement. A deterministic token-recall check splits the original Markdown
+into stable blocks and sends only blocks with low coverage, together with the
+three nearest parsed children, to this agent.
+
+Coverage is measured against fields that survive export. Raw source retained
+inside definition, theorem, or section nodes does not count as structured
+coverage; this prevents a section from silently absorbing a missing paragraph
+and prevents a definition's source copy from hiding truncated metadata.
+
+The agent returns `SourceCoverageAuditSpec` patches. `insert_child` restores an
+omitted paragraph or mathematical item at root-child level; `replace_child`
+replaces a lossy parsed child while retaining its node id. Complete formulas,
+hypotheses, defining fields, theorem statements, and attached proof text must be
+preserved. Explicit formulas must not be replaced by a list of property names.
+
+The deterministic candidate threshold and request bound are controlled by:
+
+```text
+MATHDOC_AGENT_SOURCE_COVERAGE_THRESHOLD
+MATHDOC_AGENT_SOURCE_COVERAGE_MAX_BLOCKS
+```
+
+They default to `0.72` and `40`, respectively. Any blocks still below the
+threshold after patching are recorded in the document root notes rather than
+being silently omitted.
 
 ## Proof Classification Agent
 
@@ -548,6 +584,27 @@ Output schema: `CalculationRefinementSpec`.
 
 Allowed `relation` values are `=`, `<=`, `<`, `>=`, `>`, `<->`, `->`, and
 `equiv_mod`.
+
+### `calculation_audit_agent`
+
+This post-export agent receives only structured calculations that fail a
+deterministic check. The check requires the declared start to match the first
+step, adjacent endpoints to match, the last endpoint to match the target,
+relations to compose, and an explicit `calculation_conclusion` assertion equal
+to `claim_label` when present.
+
+The deterministic check selects the main chain from the overall claim's left
+endpoint. Earlier group identities and separate induction-hypothesis bounds may
+remain as auxiliary assertions. An existing exact overall assertion with a
+nonempty combination method is marked as the terminal conclusion, avoiding a
+duplicate conclusion on the second audit pass.
+
+An otherwise valid chain is closed deterministically. For mismatched notation,
+the agent may return a `CalculationAuditSpec` with narrowly scoped endpoint
+string patches and a terminal conclusion. It must leave genuine mathematical
+gaps unpatched. Residual defects are emitted under `lean_validation` with
+specific calculation issue codes. The pipeline runs this audit after each
+notation-repair phase.
 
 ### `specialize_agent`
 
@@ -857,7 +914,7 @@ Allowed actions:
 - `insert_lemma_before`: insert a named theorem with its own proof steps.
 
 After applying patches, the pipeline deterministically materializes any
-remaining `deduced_from_claim` dependencies as explicit assertions.
+remaining `deduced_from_claim` dependencies as named local theorem obligations.
 
 ### `claim_audit_agent`
 
@@ -874,6 +931,8 @@ claim_audit_agent = _agent(
 Used by:
 
 - `audit_claims_for_lean` after `deduced_from_claim` rewrite.
+- `rewrite_informal_claims_for_lean` after the ordinary audit and again after
+  later JSON repair passes.
 
 Expected input payload:
 
@@ -945,6 +1004,16 @@ Function:
   available in context.
 - Send claims in bounded batches controlled by
   `MATHDOC_AGENT_CLAIM_AUDIT_BATCH_SIZE` (default `30`).
+- Treat theorem claims beginning with English quantifier or hypothesis phrases
+  such as “for every”, “there exists”, “given”, or “if” as mandatory rewrite
+  candidates. The dedicated rewrite pass retries at most twice and requires one
+  closed Lean `Prop` term for every candidate.
+- Also require rewriting when a theorem has structured ambient hypotheses but
+  its symbolic claim contains no quantifier or implication; a short expression
+  such as `l(a) ≤ ...` is not closed merely because its source paragraph defines
+  `G`, `l`, and `a`.
+- Preserve a residual failure as an `informal_theorem_claim` entry under
+  `lean_validation`; never silently accept the prose theorem statement.
 
 Output schema: `ClaimAuditSpec`.
 
@@ -968,6 +1037,92 @@ Allowed actions:
 - `replace_claim`: replace only the claim string.
 - `replace_assertion_with_steps`: replace the enclosing `assert_statement` with
   a proof object containing smaller `LogicalProofStepData` steps.
+
+### `lean_json_repair_agent`
+
+Definition:
+
+```python
+lean_json_repair_agent = _agent(
+    "Lean JSON repairer",
+    prompts.LEAN_JSON_REPAIR_INSTRUCTIONS,
+    LeanJsonRepairSpec,
+)
+```
+
+Used by:
+
+- `repair_lean_json_with_llm` after theorem-dependency enrichment and before
+  final deterministic Lean-facing normalization.
+
+Expected input payload:
+
+```json
+{
+  "task": "Repair high-risk exported PaperStructure JSON before Lean code generation. Return only JSON-pointer patches.",
+  "repair_entries": [
+    {
+      "path": "/document/body/0/proof/proof_steps/1",
+      "reasons": ["informal_or_compound_string", "theorem_dependency"],
+      "object": {
+        "type": "assert_statement",
+        "claim": "l applied to v equals f applied to m + 1 and k - 1",
+        "deduced_from_theorem": [
+          {
+            "claim": "general theorem",
+            "lean_name_candidate": "candidate_name"
+          }
+        ]
+      }
+    }
+  ],
+  "patch_rules": {
+    "replace_object": "Use for malformed or understructured JSON objects.",
+    "replace_string": "Use for one bad Lean-facing string field.",
+    "insert_before": "Use to add a local theorem, let, or assumption before use.",
+    "remove_object": "Use only for duplicate context facts already available.",
+    "append_hypothesis": "Use to add missing theorem context from source."
+  }
+}
+```
+
+Function:
+
+- Consolidate paraphrase-sensitive repairs that rule-based passes may miss.
+- Add formal theorem hypotheses from source context when the phrasing is not
+  caught by deterministic context parsing.
+- Repair informal application prose, mixed relation chains, informal predicates,
+  theorem-dependency instantiations, materialized local obligations, and complex
+  construction/destructuring prose in one local patch set.
+- Keep edits scoped to high-risk JSON entries selected by deterministic
+  linters.
+- Send bounded batches controlled by
+  `MATHDOC_AGENT_LEAN_JSON_REPAIR_BATCH_SIZE` (default `20`).
+
+Output schema: `LeanJsonRepairSpec`.
+
+```json
+{
+  "patches": [
+    {
+      "path": "/document/body/0/proof/proof_steps/1/claim",
+      "action": "replace_string",
+      "text": "l v = f (m + 1) (k - 1)",
+      "value": null,
+      "notes": []
+    }
+  ],
+  "notes": []
+}
+```
+
+Allowed actions:
+
+- `replace_object`: replace the object at `path`.
+- `replace_string`: replace the string field at `path`.
+- `insert_before`: insert an object before an array item.
+- `remove_object`: remove an object or field.
+- `append_hypothesis`: append one hypothesis object to a theorem.
 
 ### `informal_notation_repair_agent`
 
@@ -1223,6 +1378,10 @@ MATHDOC_AGENT_LOCAL_LEANSEARCH_MODEL
 MATHDOC_AGENT_LEANSEARCH_DEFINITION_CACHE
 MATHDOC_AGENT_LOCAL_DEFINITION_CACHE
 MATHDOC_AGENT_LEANSEARCH_DEFINITION_SEED
+MATHDOC_AGENT_LEANSEARCH_TIMEOUT_SECONDS
+MATHDOC_AGENT_LOCAL_LEANSEARCH_TIMEOUT_SECONDS
+MATHDOC_AGENT_REMOTE_LEANSEARCH
+MATHDOC_AGENT_LEANSEARCH_CIRCUIT_FAILURES
 ```
 
 Expected LLM input object:
@@ -1259,30 +1418,53 @@ filtered again for definition-like kind, compatible name, and compatible type.
 
 ## Non-Agent LeanSearch Enrichment
 
-`run_agent_typed` calls `enrich_deduced_from_theorems` on every typed agent
-output. This is a helper, not a separate LLM agent.
+The pipeline calls `enrich_theorem_dependencies` once, after all proof repair
+passes and immediately before final Lean-facing lint. It runs in a worker thread
+so synchronous HTTP clients do not block the async agent loop.
 
 Function:
 
-- Walk the returned Pydantic model.
+- Walk only the final JSON document.
 - Find objects in `deduced_from_theorem`.
-- Build a LeanSearch query from `lean_name`, `name`, `claim`, and
-  `description`.
-- Query LeanSearch through `mathdoc_agent/mathagents/leansearch.py`.
-- If the top theorem-like result is a theorem or lemma, fill `lean_name`.
-- Cache query results in memory.
+- Resolve references to labels of theorems in the same generated document
+  directly, without any external search.
+- Build a query from `claim`, `name`, or `description`.
+- Prefer a broad search of the local generated-description index, lexically
+  rerank its candidates, and ask the exact-match LLM to select a semantically
+  identical theorem or lemma.
+- Fall back to remote LeanSearch only when local search has no match.
+- Filter out instances, `noConfusion` declarations, and non-theorem results.
+- Record a selected name as `lean_name_candidate` with
+  `verification_status: semantic_match`. It is not promoted to executable
+  `lean_name` without an instantiated `lean_term`.
+- Persist positive and confirmed-negative matches. Remote request failures are
+  not persisted.
+- Open a run-wide remote circuit breaker after the configured number of
+  failures, preventing a remote outage from causing one timeout per dependency.
+- Reset transient failures and the circuit at the start of the next document,
+  so a restarted local or remote service is retried.
 
-Environment variable:
+Environment variables:
 
 ```text
 MATHDOC_AGENT_LEANSEARCH_DEDUCED_THEOREMS
+MATHDOC_AGENT_LOCAL_THEOREM_SEARCH
+MATHDOC_AGENT_REMOTE_LEANSEARCH
+MATHDOC_AGENT_LEANSEARCH_TIMEOUT_SECONDS
+MATHDOC_AGENT_LOCAL_LEANSEARCH_TIMEOUT_SECONDS
+MATHDOC_AGENT_LEANSEARCH_CIRCUIT_FAILURES
+MATHDOC_AGENT_THEOREM_MATCH_CACHE
 ```
 
-This is enabled by default. Set it to `0`, `false`, or `no` to disable theorem
-dependency enrichment.
+Local and remote search are enabled by default. Set the corresponding flag to
+`0`, `false`, or `no` to disable all enrichment, local theorem search, or remote
+fallback respectively. Disabling search enrichment still resolves theorem
+labels declared in the same document because that operation is local and
+deterministic.
 
-The helper should not be used to invent theorem names. Its purpose is to attach
-an exact Lean name only when the search helper returns one.
+The helper must not use the first search result merely because its kind is
+`theorem`. The exact-match decision uses candidate names, types, and docstrings;
+formal use still requires a separately supplied and elaborated `lean_term`.
 
 ## Local Claim Agent Slot
 

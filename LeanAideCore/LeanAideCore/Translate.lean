@@ -110,6 +110,10 @@ def Translator.getLeanCodeJson (s: String)
     (translator : Translator)(header: String := "Theorem") : TranslateM <| Json × Json × Array (String × Json) := do
   traceAide `leanaide.translate.debug  s!"translating string `{s}` with  examples"
   -- logToStdErr `leanaide.translate.info s!"translating string `{s}` with  examples"
+  -- TODO-TranslationPromptScope: do not unconditionally prepend every
+  -- `promptContext` entry.  Accept an explicit scope/filter so local-assertion
+  -- translation can exclude the current goal while retaining prompt-only
+  -- assumptions; `translateMessages` will still supply the formal local lctx.
   let s ← withPreludes s
   setContext s
   match ← getCachedJson? s with
@@ -491,21 +495,22 @@ def translateDefCmdM? (s: String) (translator : Translator)
     let s := extractLean s
     -- let s := s.replace "\n" " "
     let s := if s.startsWith "definition " then s.replace "definition " "def " else s
+    let s := if s.startsWith "let " then "def " ++ s.drop 4 else s
     let cmd? := runParserCategory (← getEnv) `command s
     match cmd? with
     | Except.error e =>
       checks := checks.push <| .unparsed s e context?
     | Except.ok cmd =>
-      -- TODO(generation-check-homogeneous): Validate the accumulated prelude
-      -- separately and accept/reject this candidate using only diagnostics in
-      -- the candidate source range. A bad prelude must be a generator error,
-      -- not a repeated `CmdElabError` attached to every LLM candidate.
       let check ← checkElabFrontM (← withCommandPrelude s) (← cmdPreludeBlob).hash
       if check.isEmpty then return .ok ⟨ cmd ⟩
-      checks := checks.push (.parsed s check context?)
-      trace[Translate.info] s!"Not a valid command:\n{s}"
-      for chk in check do
-        trace[Translate.info] chk
+      let preludeCheck ← checkElabFrontM (← withCommandPrelude "") (← cmdPreludeBlob).hash
+      if preludeCheck.isEmpty then
+        checks := checks.push (.parsed s check context?)
+        traceAide `leanaide.translate.info  s!"Not a valid command:\n{s}"
+        for chk in check do
+          trace[Translate.info] chk
+      else
+        traceAide `leanaide.translate.info  s!"Prelude is invalid:\n{← withCommandPrelude ""}\nFor:{s}"
   return .error checks
 
 def translateDefData? (s: String)

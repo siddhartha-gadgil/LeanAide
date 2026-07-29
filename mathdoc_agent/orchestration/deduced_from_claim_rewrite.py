@@ -27,11 +27,83 @@ def _same_claim(left: str, right: str) -> bool:
     return _normalized_claim(left) == _normalized_claim(right)
 
 
+def _normalize_context_text(text: str) -> str:
+    normalized = " ".join(text.strip().split()).casefold()
+    normalized = normalized.replace("→", "->")
+    normalized = normalized.replace("\\to", "->")
+    normalized = normalized.replace("pseudo-length", "pseudo length")
+    normalized = normalized.replace("pseudo_length", "pseudo length")
+    normalized = re.sub(r"\b(assume|suppose|fix|let)\s+(that\s+)?", "", normalized)
+    normalized = re.sub(r"\bbe\b", "is", normalized)
+    normalized = re.sub(r"\bon\s+[a-z][a-z0-9_']*\b", "", normalized)
+    normalized = re.sub(
+        r"\b([a-z][a-z0-9_']*)\s*:\s*[^,.;]+?\s+is\b",
+        r"\1 is",
+        normalized,
+    )
+    normalized = re.sub(r"\b(a|an|the)\b", " ", normalized)
+    normalized = re.sub(r"[^a-z0-9_'<>=≤≥+\-*/^⁻¹]+", " ", normalized)
+    return " ".join(normalized.split())
+
+
+def _positive_subject(text: str) -> str | None:
+    normalized = " ".join(text.strip().split())
+    match = re.fullmatch(
+        r"(?:0|zero)\s*(?:<|≤|<=)\s*([A-Za-z_][A-Za-z0-9_']*)",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if match is not None and "<" in match.group(0):
+        return match.group(1)
+    match = re.search(
+        r"\b([A-Za-z_][A-Za-z0-9_']*)\s+is\s+(?:a\s+)?positive\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if match is not None:
+        return match.group(1)
+    match = re.search(
+        r"\b([A-Za-z_][A-Za-z0-9_']*)\s+(?:positive\s+)?(?:integer|natural number|nat)\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if match is not None and "positive" in normalized.casefold():
+        return match.group(1)
+    return None
+
+
+def _claim_available_in_context(claim: str, context: list[str]) -> bool:
+    claim_nf = _normalize_context_text(claim)
+    if not claim_nf:
+        return False
+    context_nfs = [_normalize_context_text(item) for item in context if item.strip()]
+    if any(claim_nf == item for item in context_nfs):
+        return True
+    if any(claim_nf and claim_nf in item for item in context_nfs):
+        return True
+    positive_subject = _positive_subject(claim)
+    if positive_subject is not None:
+        return any(_positive_subject(item) == positive_subject for item in context)
+    return False
+
+
 def _assumption_from_step(value: Any) -> str | None:
     if isinstance(value, dict) and value.get("type") == "assume_statement":
         assumption = value.get("assumption")
         if isinstance(assumption, str) and assumption.strip():
             return assumption
+        variable_name = value.get("variable_name")
+        variable_type = value.get("variable_type")
+        properties = value.get("properties")
+        if isinstance(variable_name, str) and variable_name.strip():
+            if isinstance(variable_type, str) and variable_type.strip():
+                text = f"{variable_name} is a {variable_type}"
+            else:
+                text = variable_name
+            if isinstance(properties, str) and properties.strip():
+                text = f"{text}; {properties}"
+            if text != variable_name:
+                return text
     return None
 
 
@@ -157,7 +229,10 @@ def _remove_hypothesis_duplicates(value: Any, hypotheses: list[str] | None = Non
             for item in dependencies
             if not (
                 isinstance(item, str)
-                and any(_same_claim(item, hypothesis) for hypothesis in local_hypotheses)
+                and (
+                    any(_same_claim(item, hypothesis) for hypothesis in local_hypotheses)
+                    or _claim_available_in_context(item, local_hypotheses)
+                )
             )
         ]
         if remaining:
@@ -165,6 +240,11 @@ def _remove_hypothesis_duplicates(value: Any, hypotheses: list[str] | None = Non
         else:
             cleaned.pop("deduced_from_claim", None)
     return cleaned
+
+
+def remove_contextual_deduced_from_claims(data: dict[str, Any]) -> dict[str, Any]:
+    """Remove `deduced_from_claim` entries already available in local context."""
+    return _remove_hypothesis_duplicates(deepcopy(data))
 
 
 def _pop_remaining_claim_dependencies(value: dict[str, Any]) -> list[str]:
@@ -187,13 +267,13 @@ def _lean_identifier_from_text(value: str, *, fallback: str = "local_obligation"
     return identifier
 
 
-def _materialized_have_from_claim(claim: str) -> dict[str, Any]:
+def _local_obligation_theorem_from_claim(claim: str) -> dict[str, Any]:
     name = _lean_identifier_from_text(claim)
     return {
-        "type": "assert_statement",
+        "type": "theorem",
         "name": name,
         "claim": claim,
-        "proof_method": "Named local obligation from unresolved claim dependency.",
+        "formalization_status": "local_obligation",
         "source": {
             "text": claim,
             "kind": "deduced_from_claim",
@@ -201,24 +281,29 @@ def _materialized_have_from_claim(claim: str) -> dict[str, Any]:
     }
 
 
+def local_obligation_theorem_from_claim(claim: str) -> dict[str, Any]:
+    """Return a named local theorem obligation for an unresolved claim."""
+    return _local_obligation_theorem_from_claim(claim)
+
+
 def _materialize_self_dependencies(value: dict[str, Any], claims: list[str]) -> dict[str, Any]:
     if not claims:
         return value
-    haves = [_materialized_have_from_claim(claim) for claim in claims]
+    obligations = [_local_obligation_theorem_from_claim(claim) for claim in claims]
     if value.get("type") == "proof":
         proof_steps = value.get("proof_steps")
         if isinstance(proof_steps, list):
-            value["proof_steps"] = [*haves, *proof_steps]
+            value["proof_steps"] = [*obligations, *proof_steps]
         else:
-            value["proof_steps"] = haves
+            value["proof_steps"] = obligations
         return value
     if value.get("type") in {"assert_statement", "conclude_statement"}:
-        return {"type": "proof", "proof_steps": [*haves, value]}
+        return {"type": "proof", "proof_steps": [*obligations, value]}
     return value
 
 
 def materialize_remaining_deduced_from_claims(value: Any, *, in_list: bool = False) -> Any:
-    """Turn residual `deduced_from_claim` dependencies into explicit haves."""
+    """Turn residual `deduced_from_claim` dependencies into local theorem obligations."""
     if isinstance(value, list):
         materialized: list[Any] = []
         for item in value:
@@ -226,7 +311,7 @@ def materialize_remaining_deduced_from_claims(value: Any, *, in_list: bool = Fal
             if isinstance(transformed, dict):
                 claims = _pop_remaining_claim_dependencies(transformed)
                 materialized.extend(
-                    _materialized_have_from_claim(claim) for claim in claims
+                    _local_obligation_theorem_from_claim(claim) for claim in claims
                 )
             materialized.append(transformed)
         return materialized

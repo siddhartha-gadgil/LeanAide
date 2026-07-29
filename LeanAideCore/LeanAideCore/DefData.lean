@@ -16,18 +16,24 @@ def foldContext (type: Syntax.Term) : List Syntax → CoreM (Syntax.Term)
         `(($n : $type) → $tailType)
     | `(funImplicitBinder |{$n:ident : $type:term}) => do
         `({$n : $type} → $tailType)
+    | `(funBinder|($n:ident $ms:ident* : $type:term)) => do
+        `(($n $ms* : $type) → $tailType)
+    | `(funImplicitBinder |{$n:ident $ms:ident* : $type:term}) => do
+        `({$n $ms:ident* : $type} → $tailType)
     | `(funBinder|(_ : $type:term)) => do
         `((_ : $type) → $tailType)
     | `(funImplicitBinder|{_ : $type:term}) => do
         `({_ : $type} → $tailType)
+    | `(funBinder|⦃$ids* : $type:term⦄) => do
+        `(⦃$ids* : $type⦄ → $tailType)
     | `(instBinder|[$n:ident : $type:term]) => do
         `([$n : $type] → $tailType)
     | `(instBinder|[$type:term]) => do
         `([$type] → $tailType)
-    | `(bracketedBinderF|⦃$n:ident : $type:term⦄) => do
-        `(($n : $type) → $tailType)
-    | `(bracketedBinderF|($n:ident : $type:term)) => do
-        `(($n : $type) → $tailType)
+    | `(bracketedBinderF|($ids* : $type:term)) => do
+        `(($ids* : $type) → $tailType)
+    | `(bracketedBinderF|{$ids* : $type:term}) => do
+        `({$ids* : $type} → $tailType)
     | _ =>
         IO.println s!"foldContext: {x}, i.e., {x.reprint.get!} could not be folded"
         return type
@@ -99,25 +105,31 @@ open Elab Term  in
 def toDeclaration (data: DefData) : TermElabM Declaration := do
     let typeExpr ← elabType data.type
     let valueExpr ← elabTerm data.value typeExpr
+    Term.synthesizeSyntheticMVarsNoPostponing
     let valueExpr ← instantiateMVars valueExpr
     let typeExpr ← instantiateMVars typeExpr
-    Term.synthesizeSyntheticMVarsNoPostponing
+    if typeExpr.hasExprMVar || valueExpr.hasExprMVar || typeExpr.hasLevelMVar || valueExpr.hasLevelMVar then
+        throwError s!"toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr} has unresolved metavariables"
     -- logInfo s!"toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr}"
     -- logInfo s!"Mvar? : {valueExpr.hasExprMVar}, {valueExpr.hasLevelMVar}"
     -- logInfo s!"{repr valueExpr}"
     let decl ← match data.isProp with
     | true => do
+        let levelParams := (collectLevelParams {} typeExpr).params.toList
+        let valParams := (collectLevelParams {} valueExpr).params.toList
+        if valParams.any (fun p => !levelParams.contains p) then
+            throwError s!"toDeclaration: {data.name} : {← PrettyPrinter.ppExpr typeExpr} := {← PrettyPrinter.ppExpr valueExpr} has level parameters in the value not present in the type"
         let decl := .thmDecl {
             name := data.name,
             type := typeExpr,
             value := valueExpr,
-            levelParams := []
+            levelParams := levelParams
         }
         return decl
     | false => do
         let decl := Declaration.defnDecl {
             name := data.name,
-            levelParams := [],
+            levelParams := collectLevelParams (collectLevelParams {} typeExpr) valueExpr |>.params.toList,
             type := typeExpr,
             value := valueExpr,
             hints := ReducibilityHints.abbrev,

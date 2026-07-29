@@ -18,6 +18,7 @@ from typing import Any
 
 DEFAULT_LEANSEARCH_API_URL = "https://leansearch.net/search"
 DEFAULT_USER_AGENT = "mathdoc_agent leansearch helper"
+DEFAULT_LEANSEARCH_TIMEOUT_SECONDS = 10.0
 
 
 class LeanSearchError(RuntimeError):
@@ -104,6 +105,20 @@ def _leansearch_api_url(api_url: str | None = None) -> str:
     )
 
 
+def leansearch_timeout_seconds(timeout: float | None = None) -> float:
+    """Return the explicit or configured remote LeanSearch timeout."""
+    if timeout is not None:
+        return timeout
+    value = os.environ.get("MATHDOC_AGENT_LEANSEARCH_TIMEOUT_SECONDS")
+    if value is None:
+        return DEFAULT_LEANSEARCH_TIMEOUT_SECONDS
+    try:
+        configured = float(value)
+    except ValueError:
+        return DEFAULT_LEANSEARCH_TIMEOUT_SECONDS
+    return configured if configured > 0 else DEFAULT_LEANSEARCH_TIMEOUT_SECONDS
+
+
 def _https_context() -> ssl.SSLContext | None:
     try:
         import certifi
@@ -117,7 +132,7 @@ def query_leansearch(
     *,
     num_results: int = 6,
     api_url: str | None = None,
-    timeout: float = 30.0,
+    timeout: float | None = None,
     user_agent: str = DEFAULT_USER_AGENT,
 ) -> list[LeanSearchResult]:
     """Look up Lean/Mathlib declarations with the LeanSearch API.
@@ -126,6 +141,7 @@ def query_leansearch(
     in LeanSearchClient, but returns parsed Python objects for agent code.
     """
     payload = leansearch_payload(query, num_results)
+    request_timeout = leansearch_timeout_seconds(timeout)
     request = urllib.request.Request(
         _leansearch_api_url(api_url),
         data=json.dumps(payload).encode("utf-8"),
@@ -139,16 +155,16 @@ def query_leansearch(
     try:
         context = _https_context()
         if context is None:
-            response_cm = urllib.request.urlopen(request, timeout=timeout)
+            response_cm = urllib.request.urlopen(request, timeout=request_timeout)
         else:
             response_cm = urllib.request.urlopen(
                 request,
-                timeout=timeout,
+                timeout=request_timeout,
                 context=context,
             )
         with response_cm as response:
             response_data = response.read().decode("utf-8")
-    except urllib.error.URLError as error:
+    except (urllib.error.URLError, TimeoutError, OSError) as error:
         raise LeanSearchError(f"LeanSearch request failed: {error}") from error
 
     try:
@@ -182,7 +198,7 @@ def lookup_theorems(
     *,
     num_results: int = 6,
     api_url: str | None = None,
-    timeout: float = 30.0,
+    timeout: float | None = None,
 ) -> list[LeanSearchResult]:
     """Alias for theorem lookup in Lean/Mathlib via LeanSearch."""
     return query_leansearch(

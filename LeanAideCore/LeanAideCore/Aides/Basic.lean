@@ -302,12 +302,7 @@ partial def polyParser (parser: Parser) (input: String) (fileName := "<input>") 
     else
       return (← polyParser parser tail.toString fileName)
 
--- TODO(generation-check-homogeneous): Do not use this power-set construction
--- for LLM recovery: it returns `2^n - 1` line subsets. Replace its codegen use
--- with a bounded syntax-aware candidate extractor. Arbitrary subsets discard
--- required `let` binders and can promote `sorry`/proof-body lines to apparent
--- theorem types, as happened for Lemma 5. Remove this helper if no other caller
--- requires the exhaustive behavior.
+-- Not used anymore.
 partial def lineBlocks (input: String) : List String :=
   let tail := input.dropWhile (fun c => c != '\n') |>.drop 1
     if tail.isEmpty then
@@ -451,6 +446,35 @@ def checkTacticSafe (mvarId: MVarId)(tacticCode: Syntax):
     logWarning e.toMessageData
     return false
 
+def checkTacticSafe' (mvarId: MVarId)(tacticCode: Syntax):
+    TermElabM (Bool × Nat) := withoutModifyingState do
+  let ctx ← readThe Term.Context
+  let s ← getThe Term.State
+  let mctx ← readThe Meta.Context
+  let s' ← getThe Meta.State
+  let state ← saveState
+  let res ← Core.tryCatchRuntimeEx (do
+      let res ← runTacticToCore mvarId tacticCode ctx s mctx s'
+      pure <| Except.ok res
+      ) (fun e => pure <| Except.error e)
+  match res with
+  | Except.ok ((mvarIds, s), ms) => do
+    set ms
+    set s
+    return (true, mvarIds.length)
+  | Except.error e =>
+    state.restore
+    logWarning e.toMessageData
+    return (false, 1)
+
+def checkTacticsFromString (mvarId: MVarId)(tacticCode: String):
+    TermElabM (Nat × Option Syntax) := do
+  match runParserCategory (← getEnv) `tacticSeq tacticCode with
+  | .ok stx =>
+    let (chk, n) ← checkTacticSafe' mvarId stx
+    if chk then return (n, some stx) else return (n, none)
+  | _ => return (1, none)
+
 -- from batteries
 def List.scanl' (f : α → β → α) (a : α) : List β → List α
   | [] => [a]
@@ -509,6 +533,9 @@ partial def identNames : Syntax → MetaM (List Name)
 | _ => return []
 
 namespace LeanAide
+
+def isDefEqReadOnly (a b : Expr) : MetaM Bool :=
+  withNewMCtxDepth <| isDefEqGuarded a b
 
 open Elab Term
 

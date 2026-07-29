@@ -36,7 +36,7 @@ def Translator.ofCli (p: Parsed) : IO Translator :=
       else pb₁
   let pb := pb.simplify
   let queryNum := p.flag? "num_responses" |>.map (fun s => s.as! Nat)
-    |>.getD 8
+    |>.getD 4
   let temp10 := p.flag? "temperature" |>.map (fun s => s.as! Nat)
     |>.getD 10
   let temp : JsonNumber := ⟨temp10, 1⟩
@@ -77,7 +77,7 @@ def process : Cmd := `[Cli|
     concise_descriptions : Nat; "Number of example concise descriptions (default 2)."
     leansearch_prompts: Nat; "Number of examples from LeanSearch"
     moogle_prompts: Nat; "Number of examples from Moogle"
-    n, num_responses : Nat;    "Number of responses to ask for (default 8)."
+    n, num_responses : Nat;    "Number of responses to ask for (default 4)."
     t, temperature : Nat;  "Scaled temperature `t*10` for temperature `t` (default 10)."
     m, model : String ; "Model to be used (default `gpt-5.5`)"
     azure; "Use Azure instead of OpenAI."
@@ -108,7 +108,7 @@ def Translator.CliDefaultJson := json% {"useInstructions": false,
   [{"similarSearch": {"n": 20, "descField": "docString"}},
    {"similarSearch": {"n": 2, "descField": "concise-description"}},
    {"similarSearch": {"n": 2, "descField": "description"}}]},
- "params": {"temp": 1, "stopTokens": [], "n": 8, "maxTokens": 1600},
+ "params": {"temp": 1, "stopTokens": [], "n": 4, "maxTokens": 1600},
  "messageBuilder": {"directBuilder":
   {"userHead": "user",
   "headMessage":

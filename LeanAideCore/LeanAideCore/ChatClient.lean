@@ -176,13 +176,14 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM 
   -- traceAide `leanaide.llm.info s!"Querying {url} at {← IO.monoMsNow }"
   let start ← IO.monoMsNow
   let baseArgs :=
-    #[url, "-X", "POST", "-H", "Content-Type: application/json"]
+    #[url, "--fail-with-body", "--max-time", "300", "-X", "POST", "-H",
+      "Content-Type: application/json"]
   let args := match authHeader? with
     | some h => #["-H", h] ++ baseArgs
     | none => baseArgs
   -- logInfo s!"Querying {url} with {data}"
-  let output ← IO.Process.output {cmd := "curl", args := (args ++ #["--data", data])}
-  let output := output.stdout
+  let result ← IO.Process.output {cmd := "curl", args := (args ++ #["--data", data])}
+  let output := result.stdout
   trace[Translate.info] "Model response: {output}"
   let queryJs := Json.mkObj [
     ("url", Json.str url),
@@ -190,6 +191,13 @@ def queryAux (server: ChatServer)(messages : Json)(params : ChatParams) : MetaM 
     ("data", data)]
   traceAide `leanaide.llm.info s!"Received response from {url} at {← IO.monoMsNow }; time taken: {(← IO.monoMsNow) - start}"
   traceAide `leanaide.llm.info s!"Response: {output}" -- uncomment for debugging
+  if result.exitCode != 0 then
+    let error := s!"curl failed with exit code {result.exitCode}: {result.stderr}"
+    traceAide `leanaide.llm.info s!"{error}; response: {output}"
+    traceAide `leanaide.llm.info
+      (Json.mkObj [("query", queryJs), ("success", false), ("error", error),
+        ("response", output)]).compress
+    return .null
   match Lean.Json.parse output with
   | Except.ok j =>
     traceAide `leanaide.llm.info
@@ -675,6 +683,10 @@ def theoremName (server: ChatServer)
 
 def fullStatement (server: ChatServer)
   (statement: String): MetaM String := do
+    -- TODO-ClaimRewriteOnly: for a local-assertion caller, explicitly require
+    -- preservation of local identifiers and prohibit adding surrounding
+    -- hypotheses, binders, or a different conclusion.  The rewritten text must
+    -- subsequently be translated under isolated local-assertion prompt scope.
     let query := s!"Rewrite the following in typical mathematical English using LaTeX if necessary:\n{statement}\nGive ONLY the English statement."
     let statementsArr ←  server.mathCompletions query 1
     return statementsArr[0]? |>.getD statement

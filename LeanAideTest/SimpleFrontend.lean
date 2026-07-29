@@ -120,7 +120,7 @@ info: Definition: newDef with value fun {𝕜} [NontriviallyNormedField 𝕜] {H
     [TopologicalSpace G] [ChartedSpace H G] [Group G] {a} [LieGroup I ⊤ G] [ENat.LEInfty a] =>
   sorry
 ---
-info: declaration uses 'sorry'
+info: declaration uses `sorry`
 -/
 #guard_msgs in
 #defs "instance newDef{𝕜 : Type u_1} [NontriviallyNormedField 𝕜] {H : Type u_2} [TopologicalSpace H] {E : Type u_3} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type u_4} [TopologicalSpace G] [ChartedSpace H G] [Group G] {a : WithTop ℕ∞} [LieGroup I (↑⊤) G] [h : ENat.LEInfty a] :
