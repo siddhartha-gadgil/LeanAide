@@ -208,9 +208,6 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   catch _ =>
   traceAide `leanaide.codegen.info "Trying exact tactics or automation"
 
-  -- TODO-PseudoLengthLocalExpander: expose conjuncts of pseudo-length and
-  -- homogeneous pseudo-length hypotheses as named local haves before broad
-  -- automation, so later tactics work on smaller goals with reusable facts.
   -- TODO-TacticOrderQuick: keep this generic automation path, but split its
   -- tactics into cheap deterministic candidates and expensive suggestion
   -- queries.  The July 28 traces show time lost when slow failing `simp?` /
@@ -319,10 +316,13 @@ def findTactics? (goal :  MVarId):
 def findTacticsI (goal :  MVarId):
     TranslateM (Array (Syntax.Tactic)) := goal.withContext do
   let tacs? ← findTactics? goal
-  -- TODO-RepeatSorryProofFailure: terminal `repeat (sorry)` is an open proof
-  -- obligation, not a successful proof result; diagnostics should report it.
   let defaultTacs ← `(tacticSeq| repeat (sorry))
-  return getTactics <| tacs?.getD defaultTacs
+  match tacs? with
+  | none =>
+    traceAide `leanaide.codegen.info s!"no tactics found for goal: {← ppExpr <| ← goal.getType}; falling back to default tactics: {← PrettyPrinter.ppCategory ``tacticSeq defaultTacs}"
+    return getTactics defaultTacs
+  | some tacs =>
+    return getTactics <| tacs
 
 /--
 Empty tactic sequence, used as an initial value for accumulating tactics.
@@ -370,8 +370,7 @@ def getCodeTactics (translator: CodeGenerator) (goal :  MVarId)
       appendTacticSeqSeq tacs (← `(tacticSeq| $autoTacs*))
     | none => do
       traceAide `leanaide.codegen.info s!"no auto tactics found for goal: {← ppExpr <| ← goal.getType}"
-      -- TODO-RepeatSorryProofFailure: this fallback should propagate a proof
-      -- failure status instead of being treated as generated proof success.
+      traceAide `leanaide.codegen.info s!"returning repeat (sorry) for goal: {← ppExpr <| ← goal.getType}"
       appendTacticSeqSeq tacs (← `(tacticSeq| repeat (sorry)))
 
 

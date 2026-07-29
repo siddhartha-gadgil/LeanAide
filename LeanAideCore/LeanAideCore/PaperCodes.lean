@@ -290,10 +290,9 @@ def checkCode (_ : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKi
         return s!" with value `{valueStr}`"
     let valueStr := valueStr?.getD ""
     let typeLit := Syntax.mkStrLit s!"{name} has type {typeStr}{valueStr}"
-    -- TODO-GeneratedDiagnosticCommands: command-generation diagnostics should
-    -- not become active #check/#eval commands in generated code or preludes.
-    let stx : TSyntax ``commandSeq ←  `(commandSeq| #check $typeLit)
-    return some stx
+    let stx : Syntax.Command ←  `(command| #check $typeLit)
+    addPromptContext <| (← PrettyPrinter.ppCommand stx).pretty
+    return none
 | some goal, ``tacticSeq, js => goal.withContext do
   let .ok (name : Name) := fromJson? js | throwError "'check' must be a key-value pair with value a name"
   match (← getEnv).find? name with
@@ -447,6 +446,9 @@ where
       s!"codegen: no 'claim' found in 'theorem'"
     traceAide `leanaide.papercodes.info s!"Translating claim: {claim}"
     let type ← translator.translateToPropStrict claim
+    -- TODO-LetHaveStatementResolution: when a generated theorem/lemma claim
+    -- elaborates to a proposition containing `let`/`have` binders, resolve or
+    -- split it here at the Expr level before delaboration and proof search.
     traceAide `leanaide.papercodes.info s!"Obtained type from translation: {← ppExpr type}"
     let hypSize ←
       match js.getObjValAs? (Array Json)  "hypothesis" with
@@ -981,6 +983,9 @@ where typeStx (js: Json) :
   -- isolated prompt and target-copy diagnostics; the command-level assertion
   -- variants should continue to use declaration mode.
   let type ← translator.translateToPropStrict claim
+  -- TODO-LetHaveStatementResolution: local assertion lemmas should apply the
+  -- same Expr-level `let`/`have` statement resolution before generating
+  -- theorem/have syntax and invoking proof search.
   Term.synthesizeSyntheticMVarsNoPostponing
   let type ← instantiateMVars type
   if type.hasLevelMVar then
