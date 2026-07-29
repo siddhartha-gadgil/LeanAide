@@ -208,9 +208,6 @@ def getCodeTacticsAux (translator: CodeGenerator) (goal :  MVarId)
   catch _ =>
   traceAide `leanaide.codegen.info "Trying exact tactics or automation"
 
-  -- TODO-PseudoLengthLocalExpander: expose conjuncts of pseudo-length and
-  -- homogeneous pseudo-length hypotheses as named local haves before broad
-  -- automation, so later tactics work on smaller goals with reusable facts.
   -- TODO-TacticOrderQuick: keep this generic automation path, but split its
   -- tactics into cheap deterministic candidates and expensive suggestion
   -- queries.  The July 28 traces show time lost when slow failing `simp?` /

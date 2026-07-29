@@ -290,9 +290,10 @@ eager list:
 5. **P1:** normalize Python JSON claims before codegen: remove duplicate
    hypotheses, replace “applied to” prose, formalize or eliminate “is
    conjugate to”, and avoid asserting hypotheses that are already in scope.
-6. **P1:** add a pseudo-length/homogeneous-pseudo-length local expander that
-   creates reusable local haves from the conjunctive definition once per proof
-   branch.
+6. **P1:** when generating theorem/lemma declarations or assertion haves,
+   resolve translated statements whose elaborated propositions contain
+   `let`/`have` binders, so later proof search sees the branch-local
+   proposition rather than a theorem-shaped wrapper.
 7. **P1:** avoid generating public definitions when Mathlib lookup has already
    identified an equivalent or intended existing name.
 
@@ -305,7 +306,7 @@ Focused TODO markers for these priorities:
 | P0 active diagnostic `#check` commands | `TODO-GeneratedDiagnosticCommands` | `LeanAide/Codegen.lean`, inside `elabCode`; `LeanAideCore/LeanAideCore/PaperCodes.lean`, inside the `check` command generator |
 | P0 staged automation/timing | `TODO-TacticOrderQuick`, `TODO-TacticOrderLazy` | `LeanAideCore/LeanAideCore/CodegenCore.lean`, near `getQuickTactics?` and `findTactics?`; `LeanAideCore/LeanAideCore/RunTactics.lean`, near `runTacticsAndFindTryThis?` |
 | P1 Python JSON normalization | implemented for duplicate contextual dependencies, informal `applied to`, mixed relation chains, stale materialized claim markers, and residual `deduced_from_claim`; remaining exact theorem-term work is `TODO-TheoremDependencyLeanTerm`; remaining construction-schema work is `TODO-StructuredConstructionSchema` | `mathdoc_agent/orchestration/lean_lint.py`, `mathdoc_agent/orchestration/lean_json_repair.py`, `mathdoc_agent/orchestration/deduced_from_claim_rewrite.py`; TODOs in `mathdoc_agent/orchestration/mathlib_reuse.py` and `mathdoc_agent/mathagents/prompts.py` |
-| P1 pseudo-length local expander | `TODO-PseudoLengthLocalExpander` | `LeanAideCore/LeanAideCore/CodegenCore.lean`, before broad quick automation |
+| P1 `let`/`have` binders inside translated statements | `TODO-LetHaveStatementResolution` | `LeanAideCore/LeanAideCore/PaperCodes.lean`, in `theoremCodeCore.thmStxParts` and `assertionCode.typeStx`, immediately after `translateToPropStrict` produces the statement `Expr` and before delaboration/proof search |
 | P1 Mathlib definition reuse/no duplicate public definitions | implemented by the Mathlib-reuse cache and exact-definition recording; keep auditing generated JSON for duplicate public definitions when reuse metadata is present | `mathdoc_agent/orchestration/mathlib_reuse.py`, especially `record_mathlib_definitions` and `find_mathlib_definition` |
 
 Python/JSON implementation status for the P1 work:
