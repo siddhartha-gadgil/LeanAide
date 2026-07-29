@@ -28,7 +28,7 @@ theorem InfiniteOddNumbers : ∀ n:ℕ, ∃ m:ℕ, m > n ∧ Odd m := by sorry
 
 ## Setting up LeanAide
 
-To either experiment directly with `LeanAide` or use it via the server-client setup as a dependency in your own project, you need to first install LeanAide. 
+To either experiment directly with `LeanAide` or use it via the server-client setup as a dependency in your own project, you need to first install LeanAide.
 
 First clone the repository. Next, from the root of the repository, run the following commands to build and fetch pre-loaded embeddings:
 
