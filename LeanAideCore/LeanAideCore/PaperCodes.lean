@@ -363,12 +363,12 @@ def sectionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: S
     s!"codegen: 'section' does not work for kind {kind}"
 
 /--
-Peel leading `let` binders from a translated theorem expression.
+Peel leading `let` binders from a translated proposition expression.
 
 When `peelLets` is true, each leading `let` is converted to an emitted tactic
 (`have` for propositional bindings, `let` otherwise) and the continuation is run
 under the matching `withLetDecl` context.  This keeps proof generation and the
-eventual emitted local lemma in the same context.
+eventual emitted local theorem/assertion in the same context.
 -/
 partial def withPeeledLets
     (type : Expr) (peelLets: Bool)
@@ -490,9 +490,6 @@ where
       s!"codegen: no 'claim' found in 'theorem'"
     traceAide `leanaide.papercodes.info s!"Translating claim: {claim}"
     let type ← translator.translateToPropStrict claim
-    -- TODO-LetHaveStatementResolution: when a generated theorem/lemma claim
-    -- elaborates to a proposition containing `let`/`have` binders, resolve or
-    -- split it here at the Expr level before delaboration and proof search.
     traceAide `leanaide.papercodes.info s!"Obtained type from translation: {← ppExpr type}"
     let hypSize ←
       match js.getObjValAs? (Array Json)  "hypothesis" with
@@ -954,11 +951,11 @@ If the assertion involves existential quantification, additional handling is don
 @[codegen "assert_statement"]
 def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind: SyntaxNodeKinds) → Json → TranslateM (Option (TSyntax kind))
 | _, `command, js => do
-  let (stx, tac, _, names) ← typeStx js
+  let (stx, tac, _, names, _, _) ← typeStx js (peelLets := false)
   registerUniverseNames names.toArray
   `(command| example : $stx := by $tac)
 | _, `commandSeq, js => do
-  let (stx, tac, isProp, names) ← typeStx js
+  let (stx, tac, isProp, names, _, _) ← typeStx js (peelLets := false)
   registerUniverseNames names.toArray
   let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
@@ -970,24 +967,25 @@ def assertionCode (translator : CodeGenerator := {}) : Option MVarId →  (kind:
     cmdResolveExistsHave stx
   mkCommandSeq <| #[head] ++ resolvedCmds
 | _, ``tacticSeq, js => do
-  let (stx, tac, _, names) ← typeStx js
+  let (stx, tac, _, names, letTacs, resTacs) ← typeStx js
   registerUniverseNames names.toArray
   let hash₀ := hash ((← ppTerm {env := ← getEnv} stx).pretty)
   let name := mkIdent <| Name.mkSimple s!"assert_{hash₀}"
   let headTac ← `(tactic| have $name : $stx := by $tac)
   traceAide `leanaide.papercodes.info s!"codegen: assertionCode: headTac: {← PrettyPrinter.ppTactic headTac}"
-  let resTacs ← resolveExistsHave stx
   traceAide `leanaide.papercodes.info s!"codegen: assertionCode: resolved exists have tactics (size {resTacs.size})"
-  let tacSeq := #[headTac] ++ resTacs
+  let tacSeq := letTacs ++ #[headTac] ++ resTacs
   `(tacticSeq| $tacSeq*)
 | _, `tactic, js => do
-  let (stx, tac, _, names) ← typeStx js
+  let (stx, tac, _, names, _, _) ← typeStx js (peelLets := false)
   registerUniverseNames names.toArray
   `(tactic| have : $stx := by $tac)
 | _, kind, _ => throwError
     s!"codegen: test does not work for kind {kind}"
-where typeStx (js: Json) :
-    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) × Bool × (List Name) :=      withoutModifyingTranslateAndTermState do
+where typeStx (js: Json) (peelLets: Bool := true) :
+    TranslateM <| Syntax.Term × (TSyntax ``tacticSeq) × Bool × (List Name)
+      × Array Syntax.Tactic × Array Syntax.Tactic :=
+      withoutModifyingTranslateAndTermState do
   let .ok  claim := js.getObjValAs? String "claim" | throwError
     s!"codegen: no claim found in 'assertion_statement'"
   let deducedFrom? := js.getObjValAs? (Array Json) "deduced_from_theorem" |>.toOption
@@ -1032,22 +1030,29 @@ where typeStx (js: Json) :
   -- isolated prompt and target-copy diagnostics; the command-level assertion
   -- variants should continue to use declaration mode.
   let type ← translator.translateToPropStrict claim
-  -- TODO-LetHaveStatementResolution: local assertion lemmas should apply the
-  -- same Expr-level `let`/`have` statement resolution before generating
-  -- theorem/have syntax and invoking proof search.
   Term.synthesizeSyntheticMVarsNoPostponing
   let type ← instantiateMVars type
   if type.hasLevelMVar then
     throwError s!"codegen: 'assertion_statement' {claim} has unresolved level metavariables in type {← ppExpr type}"
   let names := collectLevelParams {} type |>.params.toList
-  let mvar ← mkFreshExprMVar type
-  let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError
-    s!"codegen: failed to apply deduction theorems for assertion; deduction tactics:\n{deductionHaves}"
-  let .some tacs ← findTactics? mvarId | throwError
-    s!"codegen: failed to find tactics for assertion {claim} with type {← ppExpr type}"
-  let tacs := getTactics tacs
+  let (letTacs, result) ←
+    withPeeledLets type peelLets fun bodyType => do
+      let mvar ← mkFreshExprMVar bodyType
+      let some mvarId ← runForSingleGoal mvar.mvarId! (← `(tacticSeq| $deductionHaves*)) | throwError
+        s!"codegen: failed to apply deduction theorems for assertion; deduction tactics:\n{deductionHaves}"
+      let .some tacs ← findTactics? mvarId | throwError
+        s!"codegen: failed to find tactics for assertion {claim} with type {← ppExpr bodyType}"
+      let tacs := getTactics tacs
+      let stx ← delabDetailed bodyType
+      let resTacs ←
+        if peelLets then
+          resolveExistsHave stx
+        else
+          pure #[]
+      pure (stx, tacs, resTacs, ← isProp bodyType)
+  let (stx, tacs, resTacs, bodyIsProp) := result
   addPromptContext <| "Assume: " ++ claim
-  return (← delabDetailed type, ← `(tacticSeq| $tacs*), ← isProp type, names)
+  return (stx, ← `(tacticSeq| $tacs*), bodyIsProp, names, letTacs, resTacs)
 
 /--
 Generate code for a non-destructive specialization of an already proved claim.
