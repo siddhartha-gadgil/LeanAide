@@ -10,6 +10,18 @@ namespace LeanAide
 
 #logIO leanaide.interpreter.info
 
+def tryTacticOnGoalAndAddSuggestion (ref : Syntax) (goal : MVarId)
+    (tactic : Syntax.Tactic) : TacticM Unit := do
+  let state ← saveState
+  let (mvars, _) ←
+      withoutErrToSorry do
+      Elab.runTactic goal tactic
+  state.restore
+  if mvars.isEmpty then
+    TryThis.addSuggestion ref tactic
+  else
+    traceAide `leanaide.interpreter.debug s!"tryTacticOnGoalAndAddSuggestion: tactic did not close the goal {← PrettyPrinter.ppExpr <| ← goal.getType}"
+
 structure MessageCore where
   severity: MessageSeverity
   text : String
@@ -540,5 +552,6 @@ partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := [
 --       `(grindParam| $id:ident)
 --     )
 --   evalTactic <| ← `(tactic| grind +ring +splitIndPred +splitImp [$ids,*] )
+
 
 end LeanAide
