@@ -274,6 +274,13 @@ def extractJson (s: String) : Json :=
   | Except.ok j => j
   | Except.error _ => Json.str code.toString
 
+def lines (s: String) : List String := s.splitOn "\n"
+
+def dropImportLines (s: String) : String :=
+  let lines := s.splitOn "\n"
+  let lines := lines.filter fun l => !l.startsWith "import "
+  String.intercalate "\n" lines
+
 def partialParser  (parser : Parser) (input : String) (fileName := "<input>") : MetaM <| Except String (Syntax × String × String) := do
   let env ← getEnv
   -- let c := mkParserContext (mkInputContext input fileName) { env := env, options := {} }
