@@ -11,7 +11,7 @@ namespace LeanAide
 #logIO leanaide.interpreter.info
 
 def tryTacticOnGoalAndAddSuggestion (ref : Syntax) (goal : MVarId)
-    (tactic : Syntax.Tactic) : TacticM Unit := do
+    (tactic : Syntax.Tactic) : TermElabM Unit := do
   let state ← saveState
   let (mvars, _) ←
       withoutErrToSorry do
