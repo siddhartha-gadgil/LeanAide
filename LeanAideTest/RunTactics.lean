@@ -1,17 +1,38 @@
 import Lean
 import Mathlib
 import LeanAide
+import LeanAideCore.RunTactics
 set_option linter.unusedTactic false
 set_option linter.unreachableTactic false
 
 open Lean Meta LeanAide Elab Term Parser Tactic PrettyPrinter
+
+syntax (name := testTryTacticOnGoalAndAddSuggestion)
+  "test_try_tactic_on_goal " tactic : tactic
+
+@[tactic testTryTacticOnGoalAndAddSuggestion]
+def evalTestTryTacticOnGoalAndAddSuggestion : Tactic := fun stx => do
+  match stx with
+  | `(tactic| test_try_tactic_on_goal $tac:tactic) =>
+        tryTacticOnGoalAndAddSuggestion stx (← getMainGoal) tac
+  | _ => throwUnsupportedSyntax
+
+
+/--
+info: Try this:
+  [apply] rfl
+-/
+#guard_msgs in
+example : 5 = 4 + 1 := by
+  test_try_tactic_on_goal rfl
+  rfl
 
 elab "#findTryThis?" goal:term "using" tactics:tacticSeq,* : command =>
   Command.liftTermElabM do
     let goal ← Term.elabTerm goal none
     let mvar ← mkFreshExprMVar goal
     let tactics? ←
-      runTacticsAndFindTryThis? mvar.mvarId! tactics.getElems.toList
+      runTacticsAndFindTryThis? mvar.mvarId! tactics.getElems.toList none
     match tactics? with
     | some tacticSeq =>
       logInfo m!"#findTryThis? found tactics: {← ppCategory ``tacticSeq tacticSeq}"
@@ -125,7 +146,7 @@ info: #findTryThis? found tactics: ⏎
 info: #findTryThis? found tactics: ⏎
   intro n
   apply Nat.le_of_succ_le_succ
-  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Nat.reduceLeDiff]
+  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Order.add_one_le_iff, Lake.FamilyOut.fam_eq]
 -/
 #guard_msgs in
 #findTryThis? ∀(n : Nat), n + 1 ≤ 3 using try_this (intro n; apply Nat.le_of_succ_le_succ) then (simp?; sorry)
@@ -149,12 +170,12 @@ trace: [leanaide.frontend.debug] Try this:
       [apply] intro n; apply Nat.le_of_succ_le_succ
     ⏎
 [leanaide.frontend.debug] Try this:
-      [apply] simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Nat.reduceLeDiff]
+      [apply] simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Order.add_one_le_iff, Lake.FamilyOut.fam_eq]
     ⏎
-[leanaide.frontend.debug] <input>:5:46: error: unsolved goals
+[leanaide.frontend.debug] <input>:8:46: error: unsolved goals
     case a
     n : ℕ
-    ⊢ n ≤ 2
+    ⊢ n + 1 < 4
 -/
 #guard_msgs in
 #findTryThis? ∀(n : Nat), n + 1 ≤ 3 using try_this (intro n; apply Nat.le_of_succ_le_succ) then (simp?; try(simp?); sorry)
