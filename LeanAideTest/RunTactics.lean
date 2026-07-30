@@ -182,3 +182,38 @@ trace: [leanaide.frontend.debug] Try this:
 
 example : ∀ (n : ℕ), n + (1 : ℕ) ≤ (3 : ℕ) := by
   try_this(intro n; apply Nat.le_of_succ_le_succ)then(simp?; sorry)
+
+
+/--
+info: Try this:
+  [apply] apply hq
+---
+warning: unused variable `hp`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+-/
+#guard_msgs in
+example (P Q : Prop) (hp : P) (hq : Q) : Q := by
+  apply_any?
+  exact hq
+
+/--
+info: Try this:
+  [apply] apply ‹P›
+-/
+#guard_msgs in
+theorem hidden_hypotheses_example (P Q : Prop) (h : P ∧ Q) : P := by
+  -- We use `cases` to split the conjunction (AND) into its two parts.
+  -- However, we didn't tell Lean what to name the two new hypotheses!
+  cases h
+  apply_any?
+  -- At this exact line, if you look at the Lean infoview,
+  -- your proof state looks like this:
+  -- P Q : Prop
+  -- ✝¹ : P
+  -- ✝ : Q
+  -- ⊢ P
+  -- Because they have daggers, we cannot type `exact ✝¹`.
+  -- Instead, we can use the French quote syntax we discussed earlier
+  -- to extract the inaccessible hypothesis by its type:
+  exact ‹P›

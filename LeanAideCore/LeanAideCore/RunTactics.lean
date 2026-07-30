@@ -510,6 +510,53 @@ partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := [
   | _, _ => do
     return (goal, accum)
 
+
+syntax (name := applyAnyTac) "apply_any?" : tactic
+
+@[tactic applyAnyTac] def applyAnyTacWrapper: Tactic := fun stx => do
+  let goal ← getMainGoal
+  goal.withContext do
+
+    let lctx ← getLCtx
+    let visibleDecls := lctx.decls.toList.filterMap id |>.filter
+      (fun d => !d.isImplementationDetail)
+
+    let mut foundTac? : Option (TSyntax `tactic) := none
+
+    for decl in visibleDecls do
+      let isAccessible := !decl.userName.hasMacroScopes && !decl.userName.isInternal
+
+      let tac ← if isAccessible then
+        let id := mkIdent decl.userName
+        `(tactic| apply $id)
+      else
+        let typeStx ← delabDetailed decl.type
+        `(tactic| apply ‹$typeStx›)
+
+      let state ← saveState
+
+      let success ← try
+        evalTactic tac
+        pure true
+      catch _ =>
+        pure false
+
+      state.restore
+      if success then
+        foundTac? := some tac
+
+        break
+      else
+        state.restore
+
+    match foundTac? with
+    | some tac =>
+      TryThis.addSuggestion stx tac
+    | none =>
+      traceAide `leanaide.interpreter.debug s!"apply_any? tactic did not find any applicable hypothesis."
+      throwError "apply_any? failed: no local hypotheses could close the goal."
+
+
 -- open Lean Tactic Elab
 -- def getPremiseNames (goalType: Expr)
 --     (selector: Option Selector := none)
