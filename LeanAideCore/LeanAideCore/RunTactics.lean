@@ -510,6 +510,44 @@ partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := [
   | _, _ => do
     return (goal, accum)
 
+
+syntax (name := applyAnyTac) "apply_any?" : tactic
+
+@[tactic applyAnyTac] def applyAnyTacImpl: Tactic := fun stx => do
+  let goal ← getMainGoal
+  goal.withContext do
+
+    let lctx ← getLCtx
+
+    for decl in lctx do
+      let isAccessible := !decl.userName.hasMacroScopes && !decl.userName.isInternal
+
+      let tac ← if isAccessible then
+        let id := mkIdent decl.userName
+        `(tactic| apply $id)
+      else
+        let typeStx ← delabDetailed decl.type
+        `(tactic| apply ‹$typeStx›)
+
+      let state ← saveState
+
+      try
+        let (mvars, _) ← Elab.runTactic goal tac
+        state.restore
+        if mvars.isEmpty then
+          TryThis.addSuggestion stx tac
+          return
+        else
+          continue
+      catch _ =>
+          state.restore
+          continue
+    traceAide `leanaide.interpreter.debug s!"apply_any? tactic did not find any applicable hypothesis."
+    throwError "apply_any? could not close the goal using hypotheses"
+
+
+
+
 -- open Lean Tactic Elab
 -- def getPremiseNames (goalType: Expr)
 --     (selector: Option Selector := none)
