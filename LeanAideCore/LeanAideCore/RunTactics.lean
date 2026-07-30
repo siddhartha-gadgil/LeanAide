@@ -513,17 +513,13 @@ partial def extractIntros (goal: MVarId) (maxDepth : Nat) (accum: List Name := [
 
 syntax (name := applyAnyTac) "apply_any?" : tactic
 
-@[tactic applyAnyTac] def applyAnyTacWrapper: Tactic := fun stx => do
+@[tactic applyAnyTac] def applyAnyTacImpl: Tactic := fun stx => do
   let goal ← getMainGoal
   goal.withContext do
 
     let lctx ← getLCtx
-    let visibleDecls := lctx.decls.toList.filterMap id |>.filter
-      (fun d => !d.isImplementationDetail)
 
-    let mut foundTac? : Option (TSyntax `tactic) := none
-
-    for decl in visibleDecls do
+    for decl in lctx do
       let isAccessible := !decl.userName.hasMacroScopes && !decl.userName.isInternal
 
       let tac ← if isAccessible then
@@ -535,26 +531,21 @@ syntax (name := applyAnyTac) "apply_any?" : tactic
 
       let state ← saveState
 
-      let success ← try
-        evalTactic tac
-        pure true
-      catch _ =>
-        pure false
-
-      state.restore
-      if success then
-        foundTac? := some tac
-
-        break
-      else
+      try
+        let (mvars, _) ← Elab.runTactic goal tac
         state.restore
+        if mvars.isEmpty then
+          TryThis.addSuggestion stx tac
+          return
+        else
+          continue
+      catch _ =>
+          state.restore
+          continue
+    traceAide `leanaide.interpreter.debug s!"apply_any? tactic did not find any applicable hypothesis."
+    throwError "apply_any? could not close the goal using hypotheses"
 
-    match foundTac? with
-    | some tac =>
-      TryThis.addSuggestion stx tac
-    | none =>
-      traceAide `leanaide.interpreter.debug s!"apply_any? tactic did not find any applicable hypothesis."
-      throwError "apply_any? failed: no local hypotheses could close the goal."
+
 
 
 -- open Lean Tactic Elab

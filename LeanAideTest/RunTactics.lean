@@ -180,9 +180,11 @@ trace: [leanaide.frontend.debug] Try this:
 #guard_msgs in
 #findTryThis? ∀(n : Nat), n + 1 ≤ 3 using try_this (intro n; apply Nat.le_of_succ_le_succ) then (simp?; try(simp?); sorry)
 
+/-
 example : ∀ (n : ℕ), n + (1 : ℕ) ≤ (3 : ℕ) := by
   try_this(intro n; apply Nat.le_of_succ_le_succ)then(simp?; sorry)
 
+-/
 
 /--
 info: Try this:
@@ -195,7 +197,7 @@ Note: This linter can be disabled with `set_option linter.unusedVariables false`
 #guard_msgs in
 example (P Q : Prop) (hp : P) (hq : Q) : Q := by
   apply_any?
-  exact hq
+  apply hq
 
 /--
 info: Try this:
@@ -217,3 +219,8 @@ theorem hidden_hypotheses_example (P Q : Prop) (h : P ∧ Q) : P := by
   -- Instead, we can use the French quote syntax we discussed earlier
   -- to extract the inaccessible hypothesis by its type:
   exact ‹P›
+
+/-- error: apply_any? could not close the goal using hypotheses -/
+#guard_msgs in
+example (P Q : Prop) (h : P ∧ Q) : P := by
+  apply_any?
