@@ -1,5 +1,6 @@
 import Lean
 
+
 open Lean Meta Elab Term
 
 namespace LeanAide
@@ -18,7 +19,6 @@ def levelNames :=
   [`u, `v, `u_1, `u_2, `u_3, `u_4, `u_5, `u_6, `u_7, `u_8, `u_9, `u_10, `u_11, `u₁, `u₂, `v₁, `v₂, `uι, `W₁, `W₂, `w₁, `w₂, `u', `v', `uu, `w, `w', `wE, `uE, `x]
 
 def univLine : String := levelNames.foldl (fun s u => s!"{s} {u}") "universe"
-
 
 def topCodeData : TopCodeData :=
   { imports := ["import Mathlib"]
@@ -86,19 +86,56 @@ initialize registerBuiltinAttribute {
 
 open Parser Tactic
 
-initialize extraAutoTacticsExt :
-    SimpleScopedEnvExtension (TSyntax ``tacticSeq) (Array (TSyntax ``tacticSeq)) ←
+initialize staticAutoTacticsExt :
+    SimpleScopedEnvExtension (Nat × TSyntax ``tacticSeq) (Array (Nat × TSyntax ``tacticSeq)) ←
   registerSimpleScopedEnvExtension {
     addEntry := fun m n =>
         m.push n
     initial := #[] -- empty by default
   }
 
-elab "#add_auto_tactics" "[" tacs:tacticSeq,* "]" : command => do
-  for tac in tacs.getElems do
-    extraAutoTacticsExt.add tac
+syntax "#add_auto_tactics" ("(level:=" num")")? "[" tacticSeq,* "]" : command
 
-def getAutoTactics : MetaM (Array (TSyntax ``tacticSeq)) := do
-  return extraAutoTacticsExt.getState (← getEnv)
+elab_rules : command
+  | `(command| #add_auto_tactics (level:=$n:num) [ $tacs,* ]) => do
+    for tac in tacs.getElems do
+      staticAutoTacticsExt.add (n.getNat, tac)
+  | `(command| #add_auto_tactics [ $tacs,* ]) => do
+    for tac in tacs.getElems do
+      staticAutoTacticsExt.add (0, tac)
+
+def getStaticAutoTactics (maxLevel : Nat) : MetaM (Array (Nat × TSyntax ``tacticSeq)) := do
+  return (staticAutoTacticsExt.getState (← getEnv)).filter (fun (level, _) => level ≤ maxLevel)
+
+initialize dynamicAutoTacticsExt :
+    SimpleScopedEnvExtension (Nat × Name) (Array (Nat × Name)) ←
+  registerSimpleScopedEnvExtension {
+    addEntry := fun m n =>
+        m.push n
+    initial := #[] -- empty by default
+  }
+
+syntax (name := autoTacticGen) "auto_tactic_gen" num : attr
+
+initialize registerBuiltinAttribute {
+  name := `auto_tactic_gen
+  descr := "Register goal dependent dynamic auto tactics."
+  add := fun decl stx kind => MetaM.run' do
+    let declTy := (← getConstInfo decl).type
+    let expectedType := Lean.Expr.forallE Lean.Name.anonymous (Lean.Expr.const `Lean.MVarId []) (Lean.Expr.forallE Lean.Name.anonymous (Lean.Expr.app (Lean.Expr.const `Array [Lean.Level.zero]) (Lean.Expr.const `Lean.Name [])) (Lean.Expr.app (Lean.Expr.const `Lean.Meta.MetaM []) (Lean.Expr.app (Lean.Expr.const `Lean.TSyntax []) (Lean.Expr.app (Lean.Expr.app (Lean.Expr.app (Lean.Expr.const `List.cons [Lean.Level.zero]) (Lean.Expr.const `Lean.SyntaxNodeKind [])) (Lean.Expr.app (Lean.Expr.const `Lean.Name.mkStr1 []) (Lean.Expr.lit (Lean.Literal.strVal "tacticSeq")))) (Lean.Expr.app (Lean.Expr.const `List.nil [Lean.Level.zero]) (Lean.Expr.const `Lean.SyntaxNodeKind []))))) (Lean.BinderInfo.default)) (Lean.BinderInfo.default)
+
+    unless (← withNewMCtxDepth <| isDefEqGuarded declTy expectedType) do
+      throwError s!"auto_tactic_gen attribute can only be applied to functions of type MVarId → Array Name → MetaM (TSyntax `tacticSeq), type of {decl} is {declTy}"
+    let level := stx.toNat
+    dynamicAutoTacticsExt.add (level, decl)
+}
+
+def getDynamicAutoTactics (goal : MVarId) (localNames: Array Name)(maxLevel : Nat) : MetaM (Array (Nat × TSyntax ``tacticSeq)) := do
+  let dynTacs := (dynamicAutoTacticsExt.getState (← getEnv)).filter (fun (level, _) => level ≤ maxLevel)
+  dynTacs.mapM fun (level, fn) => do
+    let tac ← unsafe evalConst (MVarId → Array Name → MetaM (TSyntax ``tacticSeq)) fn
+    let tacStx ← tac goal localNames
+    return (level, tacStx)
+
 
 end LeanAide

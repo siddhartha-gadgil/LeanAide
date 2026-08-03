@@ -173,6 +173,7 @@ structure Translate.State where
   labelledTheorems : Array LabelledTheorem := #[]
   recentTranslations: Array ChatPair := #[] -- (input, output)
   numRecentTranslationsToUse : Nat := 0
+  automationLevel : Nat := 3
 deriving Inhabited
 
 /-- Monad with environment for translation -/
@@ -601,6 +602,16 @@ def withDeferredTheorems (x?: TranslateM (Option (TSyntax ``commandSeq))) : Tran
       let fullCmds := cmds ++ resCmds.push (← `(command| end))
       `(commandSeq| $fullCmds*)
 
+def getAutomationLevel : TranslateM Nat := return (← get).automationLevel
+
+def setAutomationLevel (n: Nat) : TranslateM Unit := do
+  modify fun s => {s with automationLevel := n}
+
+def withAutomationLevel (n: Nat) (x: TranslateM α) : TranslateM α := do
+  let oldLevel ← getAutomationLevel
+  setAutomationLevel n
+  try x finally setAutomationLevel oldLevel
+
 end Translate
 
 namespace TranslateM
@@ -614,15 +625,19 @@ def runWithEmbeddings (em : EmbedMap)
   x.run' {} |>.run'.run'
 
 
-def runToCore (x: TranslateM α) (em?: Option EmbedMap := none) (outputFile?: Option System.FilePath := none) : CoreM α := do
+def runToCore (x: TranslateM α) (em?: Option EmbedMap := none) (outputFile?: Option System.FilePath := none) (automationLevel? : Option Nat := some 3) : CoreM α := do
   match em? with
   | some em => runWithEmbeddings em x
   | none =>
-    match outputFile? with
-    | some file => do
+    match outputFile?, automationLevel? with
+    | some file, some level => do
+      IO.FS.writeFile file topCode
+      x.run' {outputFile := some file, automationLevel := level} |>.run'.run'
+    | some file, none =>
       IO.FS.writeFile file topCode
       x.run' {outputFile := some file} |>.run'.run'
-    | none => x.run' {} |>.run'.run'
+    | none, some level => x.run' {automationLevel := level} |>.run'.run'
+    | none, none => x.run' {} |>.run'.run'
 
 section Async
 open Std.Internal.IO.Async Async

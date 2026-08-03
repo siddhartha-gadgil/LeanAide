@@ -12,7 +12,7 @@ set_option maxRecDepth 1000
 set_option compiler.extract_closed false
 
 def usage : String :=
-  "Usage: lake env lean --run codegen.lean <structured-json-file>"
+  "Usage: lake env lean --run codegen.lean <structured-json-file> <--automation-level= n>"
 
 def stripJsonSuffix (name : String) : String :=
   if name.endsWith ".json" then
@@ -113,7 +113,7 @@ def formatElaborationResult (result : Json) : String :=
     formatSorries "Sorries after purge" "Sorries after purge: none" sorriesAfterPurge
   ]
 
-def runCodegen (inputPath : System.FilePath) : IO UInt32 := do
+def runCodegen (inputPath : System.FilePath) (level? : Option Nat) : IO UInt32 := do
   initSearchPath (← findSysroot)
   let raw ← IO.FS.readFile inputPath
   let js ←
@@ -135,7 +135,7 @@ def runCodegen (inputPath : System.FilePath) : IO UInt32 := do
       maxHeartbeats := 0
       maxRecDepth := 1000000 }
   let translator : Translator := {}
-  let core := leanFromStructuredJsonTask (taskJson js) translator |>.runToCore (outputFile? := some (liveOutputPathFor inputPath))
+  let core := leanFromStructuredJsonTask (taskJson js) translator |>.runToCore (outputFile? := some (liveOutputPathFor inputPath)) (automationLevel? := level?)
   let result ← core.run' ctx {env := env} |>.runToIO'
   match result.getObjValAs? String "result" with
   | Except.ok "success" =>
@@ -192,9 +192,25 @@ def runCodegen (inputPath : System.FilePath) : IO UInt32 := do
       IO.eprintln result.pretty
       return 1
 
-def main (args : List String) : IO UInt32 := do
+def autLevelFlagPrefix : String := "--automation-level="
+
+def parseArgs (args : List String) : Except String (System.FilePath × Option Nat) :=
   match args with
-  | [input] => runCodegen input
-  | _ => do
+  | [input, levelFlag] =>
+      if levelFlag.startsWith autLevelFlagPrefix then
+        let levelStr := levelFlag.drop autLevelFlagPrefix.length
+        match levelStr.toNat? with
+        | some n => Except.ok (System.mkFilePath [input], some n)
+        | none => Except.error s!"Invalid automation level: {levelStr}"
+      else
+        Except.error s!"Unknown argument: {levelFlag}"
+  | [input] => Except.ok (System.mkFilePath [input], none)
+  | _ => Except.error usage
+
+def main (args : List String) : IO UInt32 := do
+  match parseArgs args with
+  | Except.ok (inputPath, level?) => runCodegen inputPath level?
+  | Except.error err => do
+      IO.eprintln err
       IO.eprintln usage
       return 1
