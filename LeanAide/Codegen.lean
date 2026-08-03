@@ -36,7 +36,7 @@ end Codegen
 
 set_option linter.unreachableTactic false in
 set_option linter.unusedTactic false in
-#add_auto_tactics [hammer {aesopPremises := 5, autoPremises := 0}, try_this (constructor) then (grind?)]
+#add_auto_tactics (level:= 3) [hammer {aesopPremises := 5, autoPremises := 0}, try_this (constructor) then (grind?)]
 
 
 -- #eval getAutoTactics
@@ -85,7 +85,6 @@ example : True := by
     use 3
   let ⟨n, h⟩ := egExists
   simp
-
 
 
 

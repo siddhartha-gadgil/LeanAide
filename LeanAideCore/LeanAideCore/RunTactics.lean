@@ -2,6 +2,7 @@ import Lean
 import LeanAideCore.Aides
 import LeanAideCore.SimpleFrontend
 import LeanAideCore.DefData
+import LeanAideCore.ConfigExts
 import Lean.LibrarySuggestions
 
 open Lean Meta Elab Term PrettyPrinter Nat Tactic
@@ -143,6 +144,10 @@ def simpWithSuggestions (goal: MVarId) (localNames : Array Name) (maxSuggestions
       `(simpLemma| $id:ident)
   `(tacticSeq| simp? [$params,*])
 
+def automationTactics (goal : MVarId) (localNames: Array Name)(maxLevel : Nat) : MetaM (List (TSyntax ``tacticSeq)) := do
+  let staticTacs ← getStaticAutoTactics maxLevel
+  let dynamicTacs ← getDynamicAutoTactics goal localNames maxLevel
+  return ((staticTacs ++ dynamicTacs).qsort (fun (level1, _) (level2, _) => level1 < level2)).toList.map (fun (_, tac) => tac)
 
 open Parser.Tactic
 def runForSingleGoal (mvarId : MVarId) (tacticCode : TSyntax ``tacticSeq) : TermElabM <| Option MVarId :=
@@ -366,12 +371,8 @@ def runTacticsAndFindTryThis? (goal : MVarId) (tacticSeqs : List (TSyntax ``tact
 
 
 def getQuickTactics? (goal: MVarId) (envHash? : Option UInt64) : TermElabM <| Option (TSyntax ``tacticSeq) := do
-  -- TODO-TacticOrderQuick: `try simp?; exact?` can be a slow failing
-  -- suggestion query.  Split cheap deterministic automation from expensive
-  -- suggestion tactics, and order this list using trace data on which tactic
-  -- succeeds fastest.
-  let tactics? ←
-    runTacticsAndFindTryThis? goal [← `(tacticSeq| simp?), ← `(tacticSeq| try simp?; exact?), ← `(tacticSeq| grind?)] envHash? (strict := true)
+  let autoTacs ← automationTactics goal #[] 1
+  let tactics? ← runTacticsAndFindTryThis? goal autoTacs envHash?
   match tactics? with
   | none => return none
   | some tacs =>
@@ -546,7 +547,12 @@ syntax (name := applyAnyTac) "apply_any?" : tactic
     throwError "apply_any? could not close the goal using hypotheses"
 
 
+#add_auto_tactics (level:= 0) [apply_any?]
+#add_auto_tactics (level:= 1) [simp?, grind?]
+#add_auto_tactics (level:= 2) [grind? +locals, try simp; exact?]
 
+
+@[auto_tactic_gen 2] def simpSuggestions: MVarId → Array Name → MetaM (TSyntax ``tacticSeq) := fun goal localNames => simpWithSuggestions goal localNames
 
 -- open Lean Tactic Elab
 -- def getPremiseNames (goalType: Expr)

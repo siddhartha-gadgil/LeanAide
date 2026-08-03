@@ -28,7 +28,7 @@ instance : ToString SyntaxNodeKinds where
 
 namespace Codegen
 
-#add_auto_tactics [llm?]
+#add_auto_tactics (level:=3) [llm?]
 
 #logIO leanaide.codegen.info
 #logFile leanaide.codegen.info
@@ -299,16 +299,8 @@ def findTactics? (goal :  MVarId):
   traceAide `leanaide.codegen.info "Trying automation tactics"
   let localNames  ← Translate.defsNames
   traceAide `leanaide.codegen.info s!"previous definitions/theorems names: {localNames}"
-  -- TODO-TacticOrderLazy: these suggestion tactics are constructed eagerly
-  -- before the ordered tactic search.  Stage this so cheaper automation can
-  -- succeed without paying for expensive failed `simp?`/`grind?` suggestion
-  -- search.
-  let grindWs ← grindWithSuggestions
-  let simpWs ← simpWithSuggestions goal localNames
-  runTacticsAndFindTryThis? goal ([← `(tacticSeq|  simp?), ← `(tacticSeq | grind?),
-  -- ← `(tacticSeq| try?),
-  grindWs, simpWs, ← `(tacticSeq| try simp; exact?)] ++ (← getAutoTactics).toList)
-    (← cmdPreludeBlob).hash (strict := true)
+  let autoTacs ← automationTactics goal localNames (← getAutomationLevel)
+  runTacticsAndFindTryThis? goal autoTacs (← cmdPreludeBlob).hash
 
 /- Find tactics using automation. Defaults to `repeat (sorry)` if no tactics are found. Use
 `findTactics?` to keep errors explicit.
