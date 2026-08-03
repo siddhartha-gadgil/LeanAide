@@ -2,6 +2,7 @@ import Lean
 import LeanAideCore.Aides
 import LeanAideCore.SimpleFrontend
 import LeanAideCore.DefData
+import LeanAideCore.ConfigExts
 import Lean.LibrarySuggestions
 
 open Lean Meta Elab Term PrettyPrinter Nat Tactic
@@ -546,7 +547,12 @@ syntax (name := applyAnyTac) "apply_any?" : tactic
     throwError "apply_any? could not close the goal using hypotheses"
 
 
+#add_auto_tactics (level:= 0) [apply_any?]
+#add_auto_tactics (level:= 1) [simp?, grind?]
+#add_auto_tactics (level:= 2) [grind? +locals, try simp; exact?]
 
+
+@[auto_tactic_gen 2] def simpSuggestions: MVarId → Array Name → MetaM (TSyntax ``tacticSeq) := fun goal localNames => simpWithSuggestions goal localNames
 
 -- open Lean Tactic Elab
 -- def getPremiseNames (goalType: Expr)

@@ -158,7 +158,7 @@ def runCodegen (inputPath : System.FilePath) (level? : Option Nat) : IO UInt32 :
       -- "invalid 'import' command" because codegen is already running in an
       -- imported environment.  Validate the exact generated file in a fresh
       -- frontend, or strip imports from the in-process validation prefix.
-      let core := elaborateTask result translator |>.runToCore
+      let core := elaborateTask result translator |>.runToCore (automationLevel? := level?)
       let result' ← core.run' ctx {env := env} |>.runToIO'
       match result'.getObjValAs? String "result" with
       | Except.ok "success" =>

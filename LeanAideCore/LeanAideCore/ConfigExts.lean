@@ -115,17 +115,33 @@ initialize dynamicAutoTacticsExt :
     initial := #[] -- empty by default
   }
 
-syntax (name := autoTacticGen) "auto_tactic_gen" num : attr
-
 initialize registerBuiltinAttribute {
   name := `auto_tactic_gen
   descr := "Register goal dependent dynamic auto tactics."
   add := fun decl stx kind => MetaM.run' do
     let declTy := (← getConstInfo decl).type
-    let expectedType := Lean.Expr.forallE Lean.Name.anonymous (Lean.Expr.const `Lean.MVarId []) (Lean.Expr.forallE Lean.Name.anonymous (Lean.Expr.app (Lean.Expr.const `Array [Lean.Level.zero]) (Lean.Expr.const `Lean.Name [])) (Lean.Expr.app (Lean.Expr.const `Lean.Meta.MetaM []) (Lean.Expr.app (Lean.Expr.const `Lean.TSyntax []) (Lean.Expr.app (Lean.Expr.app (Lean.Expr.app (Lean.Expr.const `List.cons [Lean.Level.zero]) (Lean.Expr.const `Lean.SyntaxNodeKind [])) (Lean.Expr.app (Lean.Expr.const `Lean.Name.mkStr1 []) (Lean.Expr.lit (Lean.Literal.strVal "tacticSeq")))) (Lean.Expr.app (Lean.Expr.const `List.nil [Lean.Level.zero]) (Lean.Expr.const `Lean.SyntaxNodeKind []))))) (Lean.BinderInfo.default)) (Lean.BinderInfo.default)
+    let expectedType := Lean.Expr.forallE Lean.Name.anonymous (Lean.Expr.const `Lean.MVarId []) (Lean.Expr.forallE
+    Lean.Name.anonymous
+    (Lean.Expr.app (Lean.Expr.const `Array [Lean.Level.zero]) (Lean.Expr.const `Lean.Name []))
+    (Lean.Expr.app
+      (Lean.Expr.const `Lean.Meta.MetaM [])
+      (Lean.Expr.app
+        (Lean.Expr.const `Lean.TSyntax [])
+        (Lean.Expr.app
+          (Lean.Expr.app
+            (Lean.Expr.app (Lean.Expr.const `List.cons [Lean.Level.zero]) (Lean.Expr.const `Lean.SyntaxNodeKind []))
+            (Lean.Expr.app
+              (Lean.Expr.app
+                (Lean.Expr.app
+                  (Lean.Expr.app (Lean.Expr.const `Lean.Name.mkStr4 []) (Lean.Expr.lit (Lean.Literal.strVal "Lean")))
+                  (Lean.Expr.lit (Lean.Literal.strVal "Parser")))
+                (Lean.Expr.lit (Lean.Literal.strVal "Tactic")))
+              (Lean.Expr.lit (Lean.Literal.strVal "tacticSeq"))))
+          (Lean.Expr.app (Lean.Expr.const `List.nil [Lean.Level.zero]) (Lean.Expr.const `Lean.SyntaxNodeKind [])))))
+    (Lean.BinderInfo.default)) (Lean.BinderInfo.default)
 
     unless (← withNewMCtxDepth <| isDefEqGuarded declTy expectedType) do
-      throwError s!"auto_tactic_gen attribute can only be applied to functions of type MVarId → Array Name → MetaM (TSyntax `tacticSeq), type of {decl} is {declTy}"
+      throwError s!"auto_tactic_gen attribute can only be applied to functions of type {expectedType}, type of {decl} is {declTy}"
     let level := stx.toNat
     dynamicAutoTacticsExt.add (level, decl)
 }
